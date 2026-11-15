@@ -1,15 +1,31 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import type { ReactNode } from "react";
+import "./globals.css";
 
 export const metadata: Metadata = {
   title: "01scale",
-  description: "Working prototypes, rebuilt hands-on one module at a time.",
+  description:
+    "Working prototypes of platform and AI products, built hands-on by Nikhil Shrivastava.",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <header className="site-header">
+          <div className="container">
+            <Link href="/" className="brand">
+              01scale
+            </Link>
+            <nav>
+              <Link href="/">Home</Link>
+              <Link href="/demos">Product demos</Link>
+            </nav>
+          </div>
+        </header>
+        <main className="container">{children}</main>
+      </body>
     </html>
   );
 }
