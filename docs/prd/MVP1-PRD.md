@@ -78,6 +78,8 @@ Every field returns: `value`, `confidence` (0–1), `source_page`, `source_quote
 - The model's own confidence is known to be poorly calibrated, which is why rule checks cap it. MVP2 adds an LLM judge.
 
 ## 11. Data model (initial)
+Summary only. The full design, table by table, is in each story's **Database design** and indexed in `docs/architecture/DATABASE-DESIGN.md`. The API that sits on top of it is indexed in `docs/architecture/API-DESIGN.md`.
+
 `users` (id, cognito_sub, email, created_at) · `documents` (id, user_id, s3_key, file_name, mime, pages, status, created_at) · `extraction_jobs` (id, document_id, status, model, prompt_version, tokens_in, tokens_out, cost_usd, duration_ms, error) · `fields` (id, job_id, name, value, confidence, source_page, source_quote, flagged, status, original_value) · `orders` (id, user_id, document_id, stripe_session_id, amount, currency, status) · `deliveries` (id, order_id, channel, status, sent_at) · `audit_events` (id, actor_id, action, target, metadata, created_at)
 
 ## 12. Non-functional requirements

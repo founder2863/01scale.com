@@ -6,6 +6,8 @@ I'm Nikhil Shrivastava, a platform and AI product leader with 17+ years in regul
 
 ## Principles
 
+- **API first.** The API is the product and the website is one client of it. Every endpoint is designed in its story before it is built. See the [API design](docs/architecture/API-DESIGN.md) and [database design](docs/architecture/DATABASE-DESIGN.md).
+- **Agents first.** Anything a person can do in the UI, an AI agent can do through the API with the user's permission: API keys, an OpenAPI contract and an MCP server.
 - **Ship end to end first, then build the identity provider by hand.** MVP1 uses AWS Cognito through standard OIDC; MVP2 replaces it with hand-built passwordless identity (magic links, passkeys, sessions), using only low-level libraries for crypto and email.
 - **Spec first.** Every module starts with a one-page spec and acceptance criteria.
 - **Show the why.** Each module has a decision log covering options, trade-offs and build-vs-buy.
@@ -20,7 +22,7 @@ First product: **DocFlow** — upload an invoice, Claude extracts the data, a hu
 | Phase | Epic | Status |
 |---|---|---|
 | 0 · Foundation | Hello world live at 01scale.com | ✅ Done |
-| MVP1 | E0 · Foundation: database, audit log, CI, eval harness | ⚪ Planned |
+| MVP1 | E0 · Foundation: database, audit log, CI, eval harness, API foundation, agent access (API keys + MCP) | ⚪ Planned |
 | | E1 · Accounts with AWS Cognito (sign-up, sign-in, recovery, account page) | ⚪ Planned |
 | | E2 · Document upload to S3 | ⚪ Planned |
 | | E3 · Extraction with Claude | ⚪ Planned |
@@ -35,7 +37,7 @@ First product: **DocFlow** — upload an invoice, Claude extracts the data, a hu
 | | E12 · Multi-document review and outputs | ⚪ Planned |
 | | E13 · Saved payment methods and payment history | ⚪ Planned |
 | | E14 · Notifications: email, SMS, push | ⚪ Planned |
-| Later | Business accounts, RBAC → ABAC, OIDC provider (SSO), SCIM, MCP server, review responder | ⚪ Backlog |
+| Later | Business accounts, RBAC → ABAC, OIDC provider (SSO), SCIM, OAuth for agent identity on the MCP server, review responder | ⚪ Backlog |
 
 ## Stack
 
@@ -45,6 +47,7 @@ First product: **DocFlow** — upload an invoice, Claude extracts the data, a hu
 | Hosting | Vercel |
 | Database | Neon (Postgres) + Drizzle ORM |
 | Files | AWS S3 |
+| API | REST under `/api/v1`, OpenAPI 3.1, MCP server for agents |
 | Identity | AWS Cognito via OIDC (MVP1) → hand-built (MVP2) |
 | AI | Claude API (MVP1) → Python + LangGraph on AWS Lambda (MVP2) |
 | Payments | Stripe (test mode) |
@@ -61,6 +64,7 @@ Built with Claude Code, from VS Code on a laptop and from the Claude app on a ph
 
 ## Each module includes
 
+- A story with acceptance criteria, API design and database design
 - `SPEC.md`: problem, user story, acceptance criteria, out of scope
 - `DECISIONS.md`: options considered and why
 - A tagged release and a 60-second demo walkthrough
