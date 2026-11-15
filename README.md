@@ -67,7 +67,15 @@ Built with Claude Code, from VS Code on a laptop and from the Claude app on a ph
 
 ## Running locally
 
-_Coming once the app is scaffolded._
+```bash
+npm install
+```
+
+```bash
+npm run dev
+```
+
+Then open http://localhost:3000.
 
 ## Contact
 
