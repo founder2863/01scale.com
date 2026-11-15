@@ -19,6 +19,7 @@ Nikhil is a platform & AI product leader (17+ years: identity, payments, integra
 | MVP2 PRD | `docs/prd/MVP2-PRD.md` |
 | MVP1 epics & issues | `docs/epics/MVP1-EPICS.md` |
 | MVP2 epics & issues | `docs/epics/MVP2-EPICS.md` |
+| Architecture decision (options, why distributed services) | `docs/architecture/ARCHITECTURE.md` |
 | API rules + endpoint index | `docs/architecture/API-DESIGN.md` |
 | Database rules + table index | `docs/architecture/DATABASE-DESIGN.md` |
 | Eval plan (LLM outputs) | `docs/evals/EVALS.md` |
