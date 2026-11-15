@@ -431,7 +431,7 @@ As Priya, I want to drag and drop or pick a file on my phone and see progress.
 
 ### MVP1-E7-03 · Email delivery — M
 - **AC1:** When the order is paid (triggered by the webhook, not the browser), an email is sent via Resend within 60 seconds. It contains the document name, amount paid and a link to `/documents/{id}/success`, not a raw S3 link.
-- **AC2:** A send failure retries 3 times with backoff and records `deliveries.status`. A permanent failure shows "Email couldn't be sent" on the success page.
+- **AC2:** A send failure retries 3 times with backoff and records the message's status. A permanent failure shows "Email couldn't be sent" on the success page.
 - **AC3:** The email passes SPF/DKIM for the sending domain (Resend domain verification for 01scale.com), with plain-text and HTML versions.
 - **Service:** Delivery; triggered by the DocFlow app
 - **API design:**
