@@ -1,5 +1,3 @@
-# 01scale.com
-Product Manager's Portfolio site
 # 01scale
 
 Working prototypes of products I've built in my career, rebuilt hands-on one module at a time and shipped live at **[01scale.com](https://01scale.com)**.
@@ -8,7 +6,7 @@ I'm Nikhil Shrivastava, a platform and AI product leader with 17+ years in regul
 
 ## Principles
 
-- **Build the identity provider, not just the login page.** Identity features (sessions, magic links, passkeys, SSO, RBAC/ABAC) are built by hand, using only low-level libraries for crypto and email. No auth vendor.
+- **Ship end to end first, then build the identity provider by hand.** MVP1 uses AWS Cognito through standard OIDC; MVP2 replaces it with hand-built passwordless identity (magic links, passkeys, sessions), using only low-level libraries for crypto and email.
 - **Spec first.** Every module starts with a one-page spec and acceptance criteria.
 - **Show the why.** Each module has a decision log covering options, trade-offs and build-vs-buy.
 - **Secure by default.** Threat model, rate limiting, no account enumeration, audit logging, OWASP ASVS as the checklist.
@@ -17,26 +15,27 @@ I'm Nikhil Shrivastava, a platform and AI product leader with 17+ years in regul
 
 ## Roadmap
 
-| Phase | Module | Status |
+First product: **DocFlow** — upload an invoice, Claude extracts the data, a human reviews what the system is unsure about, pay, and get JSON + CSV. Details: [MVP1 PRD](docs/prd/MVP1-PRD.md) · [MVP2 PRD](docs/prd/MVP2-PRD.md) · [Evals](docs/evals/EVALS.md).
+
+| Phase | Epic | Status |
 |---|---|---|
-| 0 · Foundation | Hello world live at 01scale.com, CI/CD, logging | 🟡 In progress |
-| 1 · Identity core | Sign-up, login, logout, sessions | ⚪ Planned |
-| | Password recovery | ⚪ Planned |
-| | Passwordless: magic link | ⚪ Planned |
-| | Passkeys + MFA | ⚪ Planned |
-| 2 · Accounts & access | Personal profile + photo | ⚪ Planned |
-| | Business accounts, memberships, invites | ⚪ Planned |
-| | RBAC → ABAC | ⚪ Planned |
-| | OIDC provider (SSO), SCIM provisioning | ⚪ Planned |
-| 3 · Agentic doc pipeline | Document upload | ⚪ Planned |
-| | Extractor agent → structured JSON + CSV | ⚪ Planned |
-| | Web research agent → document metadata | ⚪ Planned |
-| | Multi-agent orchestration (LangGraph) | ⚪ Planned |
-| 4 · Pay & deliver | Stripe Checkout (test mode) | ⚪ Planned |
-| | Payment unlocks download | ⚪ Planned |
-| | Email delivery workflow | ⚪ Planned |
-| 5 · Agent ecosystem | MCP server with OAuth (agent identity) | ⚪ Planned |
-| | Review responder with human-in-the-loop | ⚪ Planned |
+| 0 · Foundation | Hello world live at 01scale.com | ✅ Done |
+| MVP1 | E0 · Foundation: database, audit log, CI, eval harness | ⚪ Planned |
+| | E1 · Accounts with AWS Cognito (sign-up, sign-in, recovery, account page) | ⚪ Planned |
+| | E2 · Document upload to S3 | ⚪ Planned |
+| | E3 · Extraction with Claude | ⚪ Planned |
+| | E4 · Human review of low-confidence fields | ⚪ Planned |
+| | E5 · JSON review, metadata and CSV | ⚪ Planned |
+| | E6 · Payment (Stripe Checkout) | ⚪ Planned |
+| | E7 · Success, download and email | ⚪ Planned |
+| MVP2 | E8 · Passwordless identity built by hand (magic link, passkeys) | ⚪ Planned |
+| | E9 · Multi-document pipeline (LangGraph on Lambda) | ⚪ Planned |
+| | E10 · LLM as judge | ⚪ Planned |
+| | E11 · Web enrichment and chat correction | ⚪ Planned |
+| | E12 · Multi-document review and outputs | ⚪ Planned |
+| | E13 · Saved payment methods and payment history | ⚪ Planned |
+| | E14 · Notifications: email, SMS, push | ⚪ Planned |
+| Later | Business accounts, RBAC → ABAC, OIDC provider (SSO), SCIM, MCP server, review responder | ⚪ Backlog |
 
 ## Stack
 
@@ -46,9 +45,10 @@ I'm Nikhil Shrivastava, a platform and AI product leader with 17+ years in regul
 | Hosting | Vercel |
 | Database | Neon (Postgres) + Drizzle ORM |
 | Files | AWS S3 |
-| Agents | Python, LangGraph, Claude API on AWS Lambda |
+| Identity | AWS Cognito via OIDC (MVP1) → hand-built (MVP2) |
+| AI | Claude API (MVP1) → Python + LangGraph on AWS Lambda (MVP2) |
 | Payments | Stripe (test mode) |
-| Email | Resend |
+| Notifications | Resend (email); Twilio or AWS SNS (SMS) and Web Push (MVP2) |
 
 ## How it's built
 
