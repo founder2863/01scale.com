@@ -11,6 +11,8 @@
 ## 1. Summary
 MVP2 replaces Cognito with a hand-built passwordless identity system, handles batches of documents, adds an LLM judge and web enrichment with chat-based correction, introduces saved payment methods and payment history, and notifies users by SMS and push as well as email.
 
+**How it is built.** MVP2 is the next version of each platform service, not a rewrite of the app: Identity moves from consuming Cognito to being its own provider, Extraction gains orchestration and a judge, Payment and Delivery gain new capabilities. Each service keeps its API contract, so DocFlow changes only where it uses a new capability. See `docs/architecture/ARCHITECTURE.md` §8.
+
 ## 2. Why
 - **Identity:** prove the ability to build what an identity company sells (magic links, passkeys, sessions, account recovery), not just configure a vendor.
 - **Scale and trust:** real users process batches, and they need to trust the AI more than model self-confidence allows.

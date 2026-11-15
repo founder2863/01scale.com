@@ -3,16 +3,16 @@
 | | |
 |---|---|
 | Owner | Nikhil Shrivastava |
-| Status | Decided: distributed services (Option 3). Open points are listed in §10. |
+| Status | Decided by me: distributed services (Option 3). The supporting decisions are in §10. |
 | Related | `API-DESIGN.md`, `DATABASE-DESIGN.md`, `docs/prd/`, `docs/epics/` |
 
 ## 1. Summary
 
 01scale is a set of **platform components** (identity, upload, extraction, review, payment, delivery). Each is released, demoed and marketed on its own, with a UI, an API and MCP tools for AI agents. **Apps** are built by combining components. DocFlow is the first app; Procure-to-Pay and Order-to-Cash are examples of later ones.
 
-We compared three architectures and chose **distributed services**: each component is its own service with its own data, contract and release cycle. The reasons are product reasons (reuse across apps, independent evolution, independent release), not scale. §6 explains the choice and §7 states the cost we accepted.
+I compared three architectures and chose **distributed services**: each component is its own service with its own data, contract and release cycle. The reasons are product reasons (reuse across apps, independent evolution, independent release), not scale. §6 explains the choice and §7 states the cost I accepted.
 
-## 2. What we are building
+## 2. What I am building
 
 ```mermaid
 flowchart TB
@@ -150,9 +150,9 @@ flowchart TB
 
 ### The reasoning
 
-The deciding question was: **is 01scale one app, or a platform that many apps consume?**
+The question I asked myself was: **is 01scale one app, or a platform that many apps consume?**
 
-If it were one app (DocFlow only), Option 1 would be the right answer, and most experienced architects would say so. But the goal is a platform:
+If it were one app (DocFlow only), I would have chosen Option 1, and most experienced architects would say the same. But my goal is a platform:
 
 1. **Components are products, apps are customers (R1, R3).** Identity or Extraction must stand alone: its own release, its own demo, its own documentation, its own version history. When Procure-to-Pay arrives, it should adopt Extraction by calling it, not by being built inside DocFlow's codebase. A service with a published contract is the natural unit for that.
 
@@ -166,7 +166,7 @@ If it were one app (DocFlow only), Option 1 would be the right answer, and most 
 
 ### Why Option 1 was not a good fit
 
-Option 1 is a sound architecture, and it would have delivered DocFlow sooner and cheaper. It does not fit **these** requirements:
+Option 1 is a sound architecture, and it would have delivered DocFlow sooner and cheaper. I rejected it because it does not fit **these** requirements:
 
 | Requirement | Where Option 1 falls short |
 |---|---|
@@ -179,13 +179,13 @@ Option 1 is a sound architecture, and it would have delivered DocFlow sooner and
 
 ### Why not Option 2
 
-It improves boundaries but keeps one deployment and one runtime, so it misses R3, R5 and R6 in the same way Option 1 does. It remains useful inside the chosen design: shared code (the service template, the contract tooling) lives in packages.
+It improves boundaries but keeps one deployment and one runtime, so it misses R3, R5 and R6 in the same way Option 1 does. I still use it inside the chosen design: shared code (the service template, the contract tooling, each service's UI components) lives in packages.
 
-## 7. The cost we accepted, and how we contain it
+## 7. The cost I accepted, and how I contain it
 
-Choosing Option 3 without the usual scale or team-size pressure is a deliberate trade. Being explicit about it:
+I chose Option 3 without the usual scale or team-size pressure. That is a deliberate trade, and I want to be explicit about it:
 
-| Cost | How we contain it |
+| Cost | How I contain it |
 |---|---|
 | More to build before the first app works | One **service template** (logging, tracing, errors, auth check, CI, deploy) built once with the first service and copied by the rest. |
 | More to run and pay for | Serverless hosting that costs nothing when idle; the fewest moving parts that still keep services separate. |
@@ -194,11 +194,11 @@ Choosing Option 3 without the usual scale or team-size pressure is a deliberate 
 | Boundaries are expensive to move | Boundaries follow the product components already named in the PRD, and each contract is designed in its story before code is written. |
 | Risk of a "distributed monolith" (services that must change together) | Services depend only on each other's published contract. A change that needs two services to deploy at once is treated as a design fault. |
 
-**What would make us revisit:** if a boundary proves wrong (two services always change together), they are merged. Distribution is a tool for the requirements in §3, not a goal.
+**What would make me revisit:** if a boundary proves wrong (two services always change together), they are merged. Distribution is a tool for the requirements in §3, not a goal.
 
 ## 8. How each component evolves: from consumer to producer
 
-Every component follows the same path: **start by consuming an external cloud service behind our own contract, then replace the inside with our own implementation, one version at a time.** Apps keep calling the same contract throughout.
+Every component follows the same path: **start by consuming an external cloud service behind my own contract, then replace the inside with my own implementation, one version at a time.** Apps keep calling the same contract throughout.
 
 ```mermaid
 flowchart LR
@@ -257,25 +257,79 @@ These ladders are the direction; the exact steps for each are decided in that co
 | Shows its work | Its own page on 01scale.com: try-it demo, API reference, MCP tools, spec and decisions. |
 | Fails politely | Callers set timeouts and retry safely; one service being down degrades the app, it does not corrupt it. |
 
-Apps (DocFlow first) call the components' APIs in a fixed order. Events between services are added when a second consumer needs them.
+Apps (DocFlow first) call the components' APIs in a fixed order. A service tells an app that something finished (a job completed, an order was paid) with a signed event over HTTP. A message queue between services is added only when a second consumer needs it.
 
-## 10. Open decisions
+## 10. Supporting decisions I have taken
 
-These are not settled and are needed before the first service is built.
+| # | Question | My decision | Why |
+|---|---|---|---|
+| 1 | Repository layout | **One repository** holding every service, each in its own folder with its own pipeline, version and deployment | One place for docs, issues and the roadmap, and one pull request can show a contract change and its consumer together. Independence comes from separate pipelines and deployments, not separate repositories. |
+| 2 | Hosting | **Each service is its own Vercel project; Extraction moves to Python on AWS Lambda** when it reaches its orchestration version | Vercel keeps every service cheap and simple to run. Extraction is the one component that needs a different runtime and long-running work. |
+| 3 | Database isolation | **One Neon project with a separate schema and database role per service** | A service's login cannot see another service's tables, which gives real isolation at the lowest cost. Because nothing crosses schemas, a service can move to its own database later without changing the others. |
+| 4 | How apps use services | **The app calls each service's API in a fixed order**; services report completion with signed events over HTTP | The simplest thing that keeps services unaware of each other and of the app. |
+| 5 | First slice | **Identity, built complete** (UI, API, MCP tools, demo page), together with the gateway and the service template | It becomes the pattern every later service copies, and everything else depends on it. |
+| 6 | What each service shows when it ships | A try-it demo on its own, its API reference, its MCP tools, and its spec and decisions | Each component must be demoable and marketable by itself. |
+| 7 | Existing stories | Keep the epic and story IDs; every story names the service that owns it | The plan stays stable and traceable while the ownership becomes explicit. |
+| 8 | Visual drag-and-drop builder | Future scope | Many products already do this; my differentiator is the components themselves. |
 
-| # | Question | Options |
-|---|---|---|
-| 1 | Repository layout | One repository holding all services, or one per service |
-| 2 | Hosting | All on Vercel as separate projects, or a mix with AWS Lambda |
-| 3 | Database isolation | A separate database per service, or one database project with a separate schema and credentials per service |
-| 4 | Service-to-service communication | Plain HTTP first and events later, or events from the start |
-| 5 | Existing stories | Regroup the 65 stories by service, or keep the epics and label each story with its service |
-| 6 | Component names | Product names per component, or plain names for now |
-| 7 | Budget | Free tiers only, or a small monthly cost |
+### Repository layout
 
-## 11. What this changes in the existing plan
+```
+apps/
+  web/          01scale.com site and the gateway
+  docflow/      the DocFlow app: pages, its own API, the process record
+services/
+  identity/     each service: API, MCP server, migrations, tests, its own version
+  upload/
+  extraction/
+  review/
+  payment/
+  delivery/
+packages/
+  service-kit/  the template: auth check, errors, logging, audit, events
+  ui-*/         each service's UI components
+docs/
+```
 
-- `CLAUDE.md`, the PRDs and the epics currently describe a single Next.js app. They stay as they are until the questions in §10 are answered, then are updated in one change.
-- The API design already written per story carries over: the endpoints keep their paths behind the gateway, and each belongs to one service.
-- The database design carries over with one change: tables are grouped by owning service, and links between services become IDs, not foreign keys.
-- The first slice is the Identity service, built complete (UI, API, MCP tools, demo page), together with the gateway and the service template.
+### How it runs
+
+```mermaid
+flowchart TB
+  B["Browser"] --> W
+  A["AI agent"] --> W
+  subgraph Vercel
+    W["apps/web<br/>site + gateway"]
+    DFA["apps/docflow"]
+    I["identity"]
+    U["upload"]
+    X["extraction API"]
+    R["review"]
+    P["payment"]
+    D["delivery"]
+  end
+  subgraph AWS
+    S3[("S3<br/>files")]
+    L["Lambda<br/>extraction pipeline (later version)"]
+    C["Cognito<br/>(Identity v1 only)"]
+  end
+  subgraph Neon["Neon: one project, a schema and role per service"]
+    N[("identity · upload · extraction · review · payment · delivery · docflow")]
+  end
+  W --> DFA & I & U & X & R & P & D
+  DFA --> U & X & R & P & D
+  I --> C
+  U --> S3
+  X --> L
+  I & U & X & R & P & D & DFA --> N
+  P --> ST["Stripe"]
+  D --> RS["Resend"]
+  X --> CL["Claude API"]
+```
+
+## 11. What this changed in the plan
+
+- **Every story now names its owning service**, and its API design and database design follow this architecture: endpoints live under `/api/{service}/v1`, and tables live in that service's own schema.
+- **Three stories were added to the foundation epic**: the service template (`MVP1-E0-07`), the gateway (`MVP1-E0-08`) and the DocFlow app shell (`MVP1-E0-09`).
+- **DocFlow became a thin app.** It owns only the process record (which file, job, review task and order belong together) and the invoice outputs. Everything else is a platform service it calls.
+- **Services became app-agnostic.** Upload stores files, not invoices; Payment takes an order with an opaque reference; Review reviews a set of fields. That is what lets Procure-to-Pay or Order-to-Cash reuse them.
+- **Build order:** service template and gateway → Identity → Upload → Extraction → Review → Payment → Delivery, with DocFlow growing by one step as each service ships.

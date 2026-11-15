@@ -410,3 +410,8 @@ section:first-child .group-title {
 section[id] {
   scroll-margin-top: 76px;
 }
+
+.group-about {
+  margin: -6px 0 14px;
+  color: var(--muted);
+}

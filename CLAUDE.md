@@ -3,7 +3,11 @@
 Context for Claude Code sessions in this repo. Read this first, then the doc for the phase you're working on.
 
 ## What this is
-01scale.com is Nikhil Shrivastava's live portfolio of working prototypes. It shows hiring managers for platform product leadership roles his hands-on experience building with AI. The first product is **DocFlow** (working name): a user signs in, uploads a document, Claude extracts structured data, a human reviews low-confidence fields, the user pays, and the results (JSON + CSV) are delivered by download and email.
+01scale.com is Nikhil Shrivastava's live portfolio of working prototypes. It shows hiring managers for platform product leadership roles his hands-on experience building with AI.
+
+It is built as a **platform of independent services** (Identity, Upload, LLM Extraction, Human Review, Payment, Delivery) behind one gateway. Each service is released, demoed and marketed on its own, with a UI, an API and MCP tools for agents. **Apps** are assembled from the services. The first app is **DocFlow** (working name): a user signs in, uploads a document, Claude extracts structured data, a human reviews low-confidence fields, the user pays, and the results (JSON + CSV) are delivered by download and email.
+
+Later apps (for example Procure-to-Pay, Order-to-Cash) reuse the same services. Each service evolves through versions, from consuming an external cloud service to providing the capability itself, without its contract changing for the apps that use it. Read `docs/architecture/ARCHITECTURE.md` before any design or build work.
 
 It ships in two phases:
 - **MVP1:** the whole journey end to end, using managed services where they save time (AWS Cognito for identity).
@@ -19,20 +23,22 @@ Nikhil is a platform & AI product leader (17+ years: identity, payments, integra
 | MVP2 PRD | `docs/prd/MVP2-PRD.md` |
 | MVP1 epics & issues | `docs/epics/MVP1-EPICS.md` |
 | MVP2 epics & issues | `docs/epics/MVP2-EPICS.md` |
-| Architecture decision (options, why distributed services) | `docs/architecture/ARCHITECTURE.md` |
-| API rules + endpoint index | `docs/architecture/API-DESIGN.md` |
-| Database rules + table index | `docs/architecture/DATABASE-DESIGN.md` |
+| Architecture: options, Nikhil's decision and why, service evolution | `docs/architecture/ARCHITECTURE.md` |
+| API rules + endpoint index by service | `docs/architecture/API-DESIGN.md` |
+| Database rules + table index by service | `docs/architecture/DATABASE-DESIGN.md` |
 | Eval plan (LLM outputs) | `docs/evals/EVALS.md` |
 | Decision log per epic | `docs/decisions/<EPIC-ID>.md` |
 | Prompts (versioned) | `prompts/<name>/v<N>.md` |
 | Eval datasets & reports | `evals/datasets/`, `evals/reports/` |
 
-**Issue IDs:** `MVP1-E3-02` = MVP1, epic 3, story 2. Branch names, PR titles and commit messages reference the ID. When asked to create GitHub issues, create one issue per story from the epics file: title `[ID] Story title`, body = user story + acceptance criteria + API design + database design + evals, labels `mvp1|mvp2`, `epic:<E#>`, plus `llm` where evals apply.
+**Issue IDs:** `MVP1-E3-02` = MVP1, epic 3, story 2. Branch names, PR titles and commit messages reference the ID. When asked to create GitHub issues, create one issue per story from the epics file: title `[ID] Story title`, body = user story + acceptance criteria + service + API design + database design + evals, labels `mvp1|mvp2`, `epic:<E#>`, `service:<name>`, plus `llm` where evals apply.
 
 ## Principles
-- **API first.** The API is the product and the website is one client of it. Every backend capability is an endpoint under `/api/v1`, designed in its story before any code is written. Pages never read the database directly; they go through the same service functions as the API. Follow `docs/architecture/API-DESIGN.md` (JSON, problem+json errors, cursor pagination, idempotency keys, OpenAPI generated from zod).
-- **Agents first.** Anything a person can do in the UI, an AI agent can do through the API with the user's permission: API keys for auth without a browser, an OpenAPI contract, an MCP server exposing the same operations as tools, stable error codes and idempotent writes. When adding an endpoint, add its MCP tool in the same PR. Payment and account-security actions keep a human in the loop.
-- **Design lives in the story.** Each story in the epics files has an **API design** and a **Database design**. Build exactly that. If the design needs to change, update the story (and the index in `docs/architecture/`) in the same PR and say why in the description. Do not build endpoints or tables ahead of their story.
+- **Independent services.** Each platform service owns its code, its database schema, its API contract, its MCP tools, its UI components, its version and its deployment. A service never imports another service's code or touches another service's schema; it depends only on the other's published contract. Services are app-agnostic: no DocFlow-specific logic in a platform service. Architecture decisions in `ARCHITECTURE.md` are Nikhil's; write them in the first person singular ("I chose"), never "we".
+- **Apps are thin.** DocFlow holds only its pages, its process record and the order in which it calls services. If logic could be useful to a second app, it belongs in a service.
+- **API first.** Each service's API is its product; UIs and apps are clients of it. Every capability is an endpoint under `/api/{service}/v1`, designed in its story before any code is written. Nothing reads a service's database except that service. Follow `docs/architecture/API-DESIGN.md` (JSON, problem+json errors, cursor pagination, idempotency keys, per-service versioning, OpenAPI generated from zod).
+- **Agents first.** Anything a person can do in the UI, an AI agent can do through the API with the user's permission: API keys for auth without a browser, an OpenAPI contract, an MCP server per service exposing the same operations as tools (combined at the gateway), stable error codes and idempotent writes. When adding an endpoint, add its MCP tool in the same PR. Payment and account-security actions keep a human in the loop.
+- **Design lives in the story.** Each story in the epics files names its **Service** and has an **API design** and a **Database design**. Build exactly that. If the design needs to change, update the story (and the index in `docs/architecture/`) in the same PR and say why in the description. Do not build endpoints or tables ahead of their story.
 - **Phase-specific identity rule.**
   - MVP1: AWS Cognito (managed login) is allowed. Integrate it only through standard OIDC (authorization code + PKCE) with `openid-client`, so MVP2 can swap in the hand-built provider behind the same interface. No Amplify UI kits, no NextAuth.
   - MVP2: **build identity by hand.** No auth vendors or full auth frameworks (no Auth0, Clerk, Cognito, Better Auth, NextAuth). Allowed low-level libraries: `@node-rs/argon2` (password hashing), `jose` (JWT/JWS), `@simplewebauthn/*` (passkeys), Node `crypto`, Resend (email sending).
@@ -46,13 +52,17 @@ Nikhil is a platform & AI product leader (17+ years: identity, payments, integra
 ## Stack
 | Layer | MVP1 | MVP2 |
 |---|---|---|
-| App | Next.js (App Router) + TypeScript on Vercel | same |
-| API | REST under `/api/v1` (Next.js route handlers), OpenAPI 3.1 generated from zod | same |
-| Agent access | API keys + MCP server at `/api/mcp` | + OAuth for agent identity (later) |
+| Repository | One repo, npm workspaces: `apps/web` (site + gateway), `apps/docflow`, `services/<name>`, `packages/` | same |
+| Services and apps | Next.js (App Router) + TypeScript; each service is its own Vercel project | Extraction worker moves to Python on AWS Lambda |
+| Gateway | `apps/web` at 01scale.com routes `/api/{service}/…` to the owning service and exchanges cookie or API key for an access token | same |
+| API | REST under `/api/{service}/v1`, OpenAPI 3.1 generated from zod, versioned per service | same |
+| Service identity | Short-lived JWT access tokens issued by Identity, verified by each service (`jose`) | same |
+| Events | Signed HTTP events with an outbox per service | + queue (SQS) where a second consumer needs it |
+| Agent access | API keys + MCP server per service, combined at `/api/mcp` | + OAuth for agent identity (later) |
 | Identity | AWS Cognito via OIDC (`openid-client`) | Hand-built: magic link, passkeys, sessions |
-| Database | Neon Postgres + Drizzle ORM | same |
+| Database | Neon Postgres + Drizzle ORM: one project, a schema and role per service, no cross-schema access | same |
 | Files | AWS S3 (private bucket, presigned URLs) | same |
-| Extraction | Claude API (TypeScript SDK) from a Next.js route | Python + LangGraph orchestrator on AWS Lambda (fan-out per document) |
+| Extraction | Claude API (TypeScript SDK) inside the Extraction service | Python + LangGraph orchestrator on AWS Lambda (fan-out per document), same API contract |
 | Validation | zod schemas + rule validators | + LLM-as-judge |
 | Enrichment | — | Claude web search tool, with citations |
 | Payments | Stripe Checkout (test mode) | Stripe Customers, SetupIntents, saved methods |
@@ -62,13 +72,16 @@ Nikhil is a platform & AI product leader (17+ years: identity, payments, integra
 
 ## Workflow
 1. Work on a branch named after the issue ID, then open a PR with what changed, why, how to test, and the acceptance criteria checked off.
-2. Build API before UI within a story: schema and migration, service function, route handler with zod validation, OpenAPI entry, MCP tool, tests, then the page that calls it.
-3. When an endpoint ships, change its status on the site's APIs page (`app/apis/endpoints.ts`) and the module's status on the demos page (`app/demos/modules.ts`).
-4. Mark the story done in the epics file and keep README.md's roadmap in sync when an epic ships.
-5. Run evals with `npm run eval` on demand and on PRs labelled `evals`, not on every PR (they cost money).
-6. Cloud sessions have limited network access: don't rely on reaching Neon, AWS, Stripe or Anthropic from the session. Use PGlite, mocks and recorded fixtures for tests.
+2. Build inside the owning service's folder, API before UI: schema and migration, service function, route handler with zod validation, OpenAPI entry, MCP tool, tests, then the UI component and the app page that calls it. A story that touches two services changes the provider first, then the consumer.
+3. New services start from the service template (`packages/service-kit`, story `MVP1-E0-07`). Do not hand-roll auth checks, error formats, logging or events in a service.
+4. When an endpoint ships, change its status on the site's APIs page (`app/apis/endpoints.ts`) and the module's status on the demos page (`app/demos/modules.ts`).
+5. Mark the story done in the epics file, close its GitHub issue and keep README.md's roadmap in sync when an epic ships.
+6. Run evals with `npm run eval` on demand and on PRs labelled `evals`, not on every PR (they cost money).
+7. Cloud sessions have limited network access: don't rely on reaching Neon, AWS, Stripe or Anthropic from the session. Use PGlite, mocks and recorded fixtures for tests.
 
 ## Current status
 - Phase 0 (foundation): site live at 01scale.com on Vercel, with a home page, product demos page and APIs page.
-- All APIs and tables are designed in the stories; none is built yet.
-- **Next:** MVP1, starting with epic E0 (foundation), then E1 (accounts with Cognito). See `docs/epics/MVP1-EPICS.md`.
+- Architecture decided: independent services behind a gateway, one repo, Vercel (+ Lambda for Extraction later), one Neon project with a schema per service.
+- All APIs and tables are designed in the stories by owning service; none is built yet. The current code is still a single Next.js app at the repo root; moving it to `apps/web` is part of `MVP1-E0-07`.
+- MVP1 stories exist as GitHub issues labelled `mvp1`, `epic:<E#>`, `service:<name>`.
+- **Next:** MVP1 epic E0 (service template `E0-07`, gateway `E0-08`, then the rest of E0), then E1 (Identity with Cognito). See `docs/epics/MVP1-EPICS.md`.

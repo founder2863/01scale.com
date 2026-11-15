@@ -11,15 +11,15 @@ const total = apiGroups.reduce((sum, group) => sum + group.endpoints.length, 0);
 const rules = [
   {
     title: "API first",
-    text: "The API is the product and this website is one client of it. Every endpoint is designed in its story before any code is written.",
+    text: "Each service's API is its product, and this website is one client of it. Every endpoint is designed in its story before any code is written.",
   },
   {
     title: "Agents first",
-    text: "Anything a person can do here, an AI agent can do with the user's permission: API keys, an OpenAPI contract and an MCP server with the same operations as tools.",
+    text: "Anything a person can do here, an AI agent can do with the user's permission: API keys, an OpenAPI contract and an MCP server per service with the same operations as tools.",
   },
   {
-    title: "One set of rules",
-    text: "JSON under /api/v1, one error format with stable codes, cursor pagination, idempotent writes and short-lived links for files.",
+    title: "Independent services",
+    text: "Each service owns its data, versions its API on its own under /api/{service}/v1, and follows one set of rules: one error format, cursor pagination, idempotent writes.",
   },
 ];
 
@@ -31,8 +31,8 @@ export default function Apis() {
           <p className="eyebrow">API first · Agents first</p>
           <h1>APIs</h1>
           <p className="lead">
-            {total} endpoints, designed before they are built. Each one becomes
-            live as its module ships.
+            {total} endpoints across {apiGroups.length - 3} platform services, the
+            gateway and the DocFlow app. Designed before they are built.
           </p>
         </div>
       </section>
@@ -54,6 +54,7 @@ export default function Apis() {
               {group.title}
               <span className="status">Designed</span>
             </h2>
+            <p className="group-about">{group.about}</p>
             <ul className="endpoints">
               {group.endpoints.map((endpoint) => (
                 <li key={endpoint.method + endpoint.path}>
