@@ -1,10 +1,11 @@
 export type Module = { slug: string; title: string; description: string };
 
-export type ModuleGroup = { heading: string; modules: Module[] };
+export type ModuleGroup = { tag: string; heading: string; modules: Module[] };
 
 export const moduleGroups: ModuleGroup[] = [
   {
-    heading: "MVP1 · The full journey, end to end",
+    tag: "MVP1",
+    heading: "The full journey, end to end",
     modules: [
       {
         slug: "login-using-aws",
@@ -52,7 +53,8 @@ export const moduleGroups: ModuleGroup[] = [
     ],
   },
   {
-    heading: "MVP2 · Own identity, many documents, trustworthy AI",
+    tag: "MVP2",
+    heading: "Own identity, many documents, trustworthy AI",
     modules: [
       {
         slug: "passwordless-login",

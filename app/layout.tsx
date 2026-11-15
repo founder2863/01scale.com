@@ -17,7 +17,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <header className="site-header">
           <div className="container">
             <Link href="/" className="brand">
-              01scale
+              01<span>scale</span>
             </Link>
             <nav>
               <Link href="/">Home</Link>
@@ -25,7 +25,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             </nav>
           </div>
         </header>
-        <main className="container">{children}</main>
+        <main>{children}</main>
       </body>
     </html>
   );

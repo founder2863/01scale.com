@@ -11,34 +11,44 @@ export default function Demos() {
 
   return (
     <>
-      <h1>Product demos</h1>
-      <p className="lead">
-        DocFlow is built one module at a time. Each module below becomes a
-        working demo as it ships.
-      </p>
+      <section className="hero hero-small">
+        <div className="container">
+          <p className="eyebrow">DocFlow</p>
+          <h1>Product demos</h1>
+          <p className="lead">
+            DocFlow is built one module at a time. Each module below becomes a
+            working demo as it ships.
+          </p>
+        </div>
+      </section>
 
-      {moduleGroups.map((group) => (
-        <section key={group.heading}>
-          <h2>{group.heading}</h2>
-          <ol className="modules">
-            {group.modules.map((module) => {
-              number += 1;
-              return (
-                <li key={module.slug} id={module.slug}>
-                  <span className="module-number">{number}.</span>
-                  <div className="module-body">
-                    <div className="module-title">
-                      {module.title}
-                      <span className="status">Planned</span>
+      <div className="container content">
+        {moduleGroups.map((group) => (
+          <section key={group.tag}>
+            <h2 className="group-title">
+              <span className="group-tag">{group.tag}</span>
+              {group.heading}
+            </h2>
+            <ol className="modules">
+              {group.modules.map((module) => {
+                number += 1;
+                return (
+                  <li key={module.slug} id={module.slug}>
+                    <span className="module-number">{number}</span>
+                    <div className="module-body">
+                      <div className="module-title">
+                        {module.title}
+                        <span className="status">Planned</span>
+                      </div>
+                      <p>{module.description}</p>
                     </div>
-                    <p>{module.description}</p>
-                  </div>
-                </li>
-              );
-            })}
-          </ol>
-        </section>
-      ))}
+                  </li>
+                );
+              })}
+            </ol>
+          </section>
+        ))}
+      </div>
     </>
   );
 }
