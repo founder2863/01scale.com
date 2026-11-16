@@ -32,7 +32,7 @@ export default function Apis() {
           <h1>APIs</h1>
           <p className="lead">
             {total} endpoints across {apiGroups.length - 3} platform services, the
-            gateway and the DocFlow app. Designed before they are built.
+            gateway and the DocIntel app. Designed before they are built.
           </p>
         </div>
       </section>

@@ -1,5 +1,5 @@
 // Generated from the API design in docs/epics. Design only: none of these are built yet.
-// One group per platform service, plus the gateway and the DocFlow app.
+// One group per platform service, plus the gateway and the DocIntel app.
 export type Endpoint = {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   path: string;
@@ -707,7 +707,7 @@ export const apiGroups: ApiGroup[] = [
   {
     "tag": "App",
     "epic": "docflow",
-    "title": "DocFlow",
+    "title": "DocIntel",
     "about": "The first app: the invoice process assembled from the platform services.",
     "endpoints": [
       {
@@ -720,14 +720,14 @@ export const apiGroups: ApiGroup[] = [
       {
         "method": "GET",
         "path": "/api/docflow/v1/stats",
-        "summary": "My DocFlow totals for the account page.",
+        "summary": "My DocIntel totals for the account page.",
         "access": "Signed in",
         "story": "MVP1-E1-05"
       },
       {
         "method": "POST",
         "path": "/api/docflow/v1/documents",
-        "summary": "Start the DocFlow process for one invoice: creates the document and its upload.",
+        "summary": "Start the DocIntel process for one invoice: creates the document and its upload.",
         "access": "Signed in",
         "story": "MVP1-E2-02"
       },
@@ -741,14 +741,14 @@ export const apiGroups: ApiGroup[] = [
       {
         "method": "GET",
         "path": "/api/docflow/v1/documents",
-        "summary": "List my DocFlow documents with status and the next action.",
+        "summary": "List my DocIntel documents with status and the next action.",
         "access": "Signed in",
         "story": "MVP1-E2-05"
       },
       {
         "method": "GET",
         "path": "/api/docflow/v1/documents/{documentId}",
-        "summary": "Get one DocFlow document and the IDs of its parts in each service.",
+        "summary": "Get one DocIntel document and the IDs of its parts in each service.",
         "access": "Signed in",
         "story": "MVP1-E2-05"
       },

@@ -43,7 +43,7 @@ export const products = [
         "title": "Sign up with email verification",
         "size": "M",
         "pending": "",
-        "story": "As a new user, I want to sign up with my email and password so I can use DocFlow.",
+        "story": "As a new user, I want to sign up with my email and password so I can use DocIntel.",
         "acs": [
           {
             "label": "AC1",
@@ -359,7 +359,7 @@ export const products = [
           }
         ],
         "evals": "",
-        "service": "Identity; the account page is composed by the DocFlow app"
+        "service": "Identity; the account page is composed by the DocIntel app"
       },
       {
         "id": "MVP1-E0-06",
@@ -422,7 +422,7 @@ export const products = [
         "method": "GET",
         "path": "/api/docflow/v1/stats",
         "access": "Signed in",
-        "summary": "My DocFlow totals for the account page.",
+        "summary": "My DocIntel totals for the account page.",
         "detail": "→ `200 {documents_processed}`.",
         "story": "MVP1-E1-05"
       },
@@ -537,7 +537,7 @@ export const products = [
           }
         ],
         "evals": "",
-        "service": "Upload; composed by the DocFlow app"
+        "service": "Upload; composed by the DocIntel app"
       },
       {
         "id": "MVP1-E2-03",
@@ -556,11 +556,11 @@ export const products = [
           },
           {
             "label": "AC3",
-            "text": "If it passes, the file's status becomes `ready` and `file.uploaded` is audited. In DocFlow, the app then queues extraction (E3)."
+            "text": "If it passes, the file's status becomes `ready` and `file.uploaded` is audited. In DocIntel, the app then queues extraction (E3)."
           }
         ],
         "evals": "",
-        "service": "Upload; composed by the DocFlow app"
+        "service": "Upload; composed by the DocIntel app"
       },
       {
         "id": "MVP1-E2-04",
@@ -583,7 +583,7 @@ export const products = [
           }
         ],
         "evals": "",
-        "service": "Upload (UI component), used by the DocFlow app"
+        "service": "Upload (UI component), used by the DocIntel app"
       },
       {
         "id": "MVP1-E2-05",
@@ -602,7 +602,7 @@ export const products = [
           }
         ],
         "evals": "",
-        "service": "DocFlow app, plus Upload"
+        "service": "DocIntel app, plus Upload"
       }
     ],
     "endpoints": [
@@ -634,8 +634,8 @@ export const products = [
         "method": "POST",
         "path": "/api/docflow/v1/documents",
         "access": "Signed in",
-        "summary": "Start the DocFlow process for one invoice: creates the document and its upload.",
-        "detail": "Body `{file_name, mime, size}` → `201 {document, upload}`. Calls Upload `POST /files` with DocFlow's limits (PDF/PNG/JPG, 10 MB, 10 pages). Supports `Idempotency-Key`.",
+        "summary": "Start the DocIntel process for one invoice: creates the document and its upload.",
+        "detail": "Body `{file_name, mime, size}` → `201 {document, upload}`. Calls Upload `POST /files` with DocIntel's limits (PDF/PNG/JPG, 10 MB, 10 pages). Supports `Idempotency-Key`.",
         "story": "MVP1-E2-02"
       },
       {
@@ -674,7 +674,7 @@ export const products = [
         "method": "GET",
         "path": "/api/docflow/v1/documents",
         "access": "Signed in",
-        "summary": "List my DocFlow documents with status and the next action.",
+        "summary": "List my DocIntel documents with status and the next action.",
         "detail": "Query `status`, `cursor`, `limit` → `200 {data: [Document], next_cursor}`. `Document = {id, file_name, status, next_action: extract|review|results|pay|download, file_id, job_id?, review_task_id?, order_id?}`.",
         "story": "MVP1-E2-05"
       },
@@ -682,7 +682,7 @@ export const products = [
         "method": "GET",
         "path": "/api/docflow/v1/documents/{documentId}",
         "access": "Signed in",
-        "summary": "Get one DocFlow document and the IDs of its parts in each service.",
+        "summary": "Get one DocIntel document and the IDs of its parts in each service.",
         "detail": "→ `200 {document}`. Errors: `404`.",
         "story": "MVP1-E2-05"
       }
@@ -694,7 +694,7 @@ export const products = [
       },
       {
         "story": "MVP1-E2-04",
-        "text": "No new endpoints. The Upload UI component calls `POST /files`, PUTs the file to S3 and calls `complete`. Inside DocFlow it is pointed at DocFlow's `POST /documents` and `upload-complete` instead."
+        "text": "No new endpoints. The Upload UI component calls `POST /files`, PUTs the file to S3 and calls `complete`. Inside DocIntel it is pointed at DocIntel's `POST /documents` and `upload-complete` instead."
       }
     ],
     "dbNotes": [
@@ -706,7 +706,7 @@ export const products = [
       {
         "story": "MVP1-E2-02",
         "title": "Presigned upload URL",
-        "text": "`upload.files` (id, owner_id, s3_key, file_name, mime, size_bytes, pages, accept jsonb, status `pending_upload|ready|rejected|deleted`, rejection_reason, created_at). DocFlow: inserts `docflow.documents` with `file_id`."
+        "text": "`upload.files` (id, owner_id, s3_key, file_name, mime, size_bytes, pages, accept jsonb, status `pending_upload|ready|rejected|deleted`, rejection_reason, created_at). DocIntel: inserts `docflow.documents` with `file_id`."
       },
       {
         "story": "MVP1-E2-03",
@@ -761,7 +761,7 @@ export const products = [
           }
         ],
         "evals": "",
-        "service": "LLM Extraction; composed by the DocFlow app"
+        "service": "LLM Extraction; composed by the DocIntel app"
       },
       {
         "id": "MVP1-E3-02",
@@ -842,7 +842,7 @@ export const products = [
           }
         ],
         "evals": "",
-        "service": "LLM Extraction (UI component), used by the DocFlow app"
+        "service": "LLM Extraction (UI component), used by the DocIntel app"
       },
       {
         "id": "MVP1-E3-05",
@@ -1030,7 +1030,7 @@ export const products = [
           }
         ],
         "evals": "",
-        "service": "Human Review; composed by the DocFlow app"
+        "service": "Human Review; composed by the DocIntel app"
       },
       {
         "id": "MVP1-E4-04",
@@ -1139,7 +1139,7 @@ export const products = [
     "number": 6,
     "title": "JSON and CSV output",
     "group": "MVP1",
-    "service": "DocFlow app",
+    "service": "DocIntel app",
     "description": "Preview the final JSON, metadata and CSV before paying.",
     "status": "Planned",
     "detailed": false,
@@ -1170,7 +1170,7 @@ export const products = [
           }
         ],
         "evals": "",
-        "service": "DocFlow app"
+        "service": "DocIntel app"
       },
       {
         "id": "MVP1-E5-02",
@@ -1197,7 +1197,7 @@ export const products = [
           }
         ],
         "evals": "",
-        "service": "DocFlow app"
+        "service": "DocIntel app"
       },
       {
         "id": "MVP1-E5-03",
@@ -1216,7 +1216,7 @@ export const products = [
           }
         ],
         "evals": "",
-        "service": "DocFlow app"
+        "service": "DocIntel app"
       },
       {
         "id": "MVP1-E5-04",
@@ -1235,7 +1235,7 @@ export const products = [
           }
         ],
         "evals": "",
-        "service": "DocFlow app (files stored through Upload)"
+        "service": "DocIntel app (files stored through Upload)"
       }
     ],
     "endpoints": [
@@ -1271,7 +1271,7 @@ export const products = [
       },
       {
         "story": "MVP1-E5-04",
-        "text": "No new endpoints. DocFlow builds the files and stores them through Upload `POST /files` with a service token; `version` in `GET …/outputs` increments when they are regenerated."
+        "text": "No new endpoints. DocIntel builds the files and stores them through Upload `POST /files` with a service token; `version` in `GET …/outputs` increments when they are regenerated."
       }
     ],
     "dbNotes": [
@@ -1333,7 +1333,7 @@ export const products = [
           }
         ],
         "evals": "",
-        "service": "Payment; composed by the DocFlow app"
+        "service": "Payment; composed by the DocIntel app"
       },
       {
         "id": "MVP1-E6-02",
@@ -1383,7 +1383,7 @@ export const products = [
           }
         ],
         "evals": "",
-        "service": "Payment (UI component), used by the DocFlow app"
+        "service": "Payment (UI component), used by the DocIntel app"
       }
     ],
     "endpoints": [
@@ -1400,7 +1400,7 @@ export const products = [
         "path": "/api/docflow/v1/documents/{documentId}/checkout",
         "access": "Signed in",
         "summary": "Start payment for a document.",
-        "detail": "→ `201 {order_id, checkout_url}`. DocFlow sets the price and calls Payment `POST /orders`. Errors: `409` if already paid or not reviewed.",
+        "detail": "→ `201 {order_id, checkout_url}`. DocIntel sets the price and calls Payment `POST /orders`. Errors: `409` if already paid or not reviewed.",
         "story": "MVP1-E6-01"
       },
       {
@@ -1431,14 +1431,14 @@ export const products = [
     "apiNotes": [
       {
         "story": "MVP1-E6-03",
-        "text": "The page also calls DocFlow `POST …/checkout` (E6-01)."
+        "text": "The page also calls DocIntel `POST …/checkout` (E6-01)."
       }
     ],
     "dbNotes": [
       {
         "story": "MVP1-E6-01",
         "title": "Checkout session",
-        "text": "`payment.orders` (id, owner_id null, app, reference, description, stripe_session_id unique, amount, currency, status `pending|paid|expired|failed`, paid_at, created_at). Partial unique index on `(app, reference)` where status = `pending` prevents duplicate open orders. DocFlow stores the returned ID in `docflow.documents.order_id`."
+        "text": "`payment.orders` (id, owner_id null, app, reference, description, stripe_session_id unique, amount, currency, status `pending|paid|expired|failed`, paid_at, created_at). Partial unique index on `(app, reference)` where status = `pending` prevents duplicate open orders. DocIntel stores the returned ID in `docflow.documents.order_id`."
       },
       {
         "story": "MVP1-E6-02",
@@ -1488,7 +1488,7 @@ export const products = [
           }
         ],
         "evals": "",
-        "service": "DocFlow app"
+        "service": "DocIntel app"
       },
       {
         "id": "MVP1-E7-02",
@@ -1507,7 +1507,7 @@ export const products = [
           }
         ],
         "evals": "",
-        "service": "DocFlow app (links from Upload)"
+        "service": "DocIntel app (links from Upload)"
       },
       {
         "id": "MVP1-E7-03",
@@ -1530,7 +1530,7 @@ export const products = [
           }
         ],
         "evals": "",
-        "service": "Delivery; triggered by the DocFlow app"
+        "service": "Delivery; triggered by the DocIntel app"
       }
     ],
     "endpoints": [
@@ -1554,15 +1554,15 @@ export const products = [
     "apiNotes": [
       {
         "story": "MVP1-E7-01",
-        "text": "No new endpoints. The page polls `GET /api/payment/v1/orders/{orderId}` and then uses the DocFlow download endpoints."
+        "text": "No new endpoints. The page polls `GET /api/payment/v1/orders/{orderId}` and then uses the DocIntel download endpoints."
       },
       {
         "story": "MVP1-E7-02",
-        "text": "Uses DocFlow `GET …/outputs/{format}/download` (E5-03), which checks the Payment order and redirects to an Upload `download-url`."
+        "text": "Uses DocIntel `GET …/outputs/{format}/download` (E5-03), which checks the Payment order and redirects to an Upload `download-url`."
       },
       {
         "story": "MVP1-E7-03",
-        "text": "DocFlow calls `POST /messages` when it receives `payment.order.paid` on its webhook (E0-09), so the email is triggered by the server, not the browser."
+        "text": "DocIntel calls `POST /messages` when it receives `payment.order.paid` on its webhook (E0-09), so the email is triggered by the server, not the browser."
       }
     ],
     "dbNotes": [
@@ -2070,7 +2070,7 @@ export const products = [
           }
         ],
         "evals": "",
-        "service": "DocFlow app (files through Upload)"
+        "service": "DocIntel app (files through Upload)"
       },
       {
         "id": "MVP2-E9-02",
@@ -2093,7 +2093,7 @@ export const products = [
           },
           {
             "label": "AC4",
-            "text": "Progress is written to Extraction's own schema. The job-group status endpoint shows per-job step and status, and DocFlow's batch page reads it."
+            "text": "Progress is written to Extraction's own schema. The job-group status endpoint shows per-job step and status, and DocIntel's batch page reads it."
           },
           {
             "label": "AC5",
@@ -2120,7 +2120,7 @@ export const products = [
           }
         ],
         "evals": "MD-1 batch completeness, MD-2 batch latency, MD-3 accuracy in batch vs alone.",
-        "service": "DocFlow app"
+        "service": "DocIntel app"
       }
     ],
     "endpoints": [
@@ -2176,7 +2176,7 @@ export const products = [
     "apiNotes": [
       {
         "story": "MVP2-E9-02",
-        "text": "The Lambda pipeline is part of the Extraction service and writes to Extraction's own schema. DocFlow follows progress through `GET /job-groups/{groupId}` and the `extraction.job.*` events."
+        "text": "The Lambda pipeline is part of the Extraction service and writes to Extraction's own schema. DocIntel follows progress through `GET /job-groups/{groupId}` and the `extraction.job.*` events."
       }
     ],
     "dbNotes": [
@@ -2299,7 +2299,7 @@ export const products = [
       },
       {
         "story": "MVP2-E10-02",
-        "text": "No new endpoints. `Field` gains `judge: {verdict, reason, evidence_quote}` and `confidence_version`; DocFlow passes them on when it creates the review task."
+        "text": "No new endpoints. `Field` gains `judge: {verdict, reason, evidence_quote}` and `confidence_version`; DocIntel passes them on when it creates the review task."
       },
       {
         "story": "MVP2-E10-03",
@@ -2462,7 +2462,7 @@ export const products = [
     "apiNotes": [
       {
         "story": "MVP2-E11-02",
-        "text": "No new endpoints. DocFlow adds enrichment values to the review task as fields of `kind: enrichment` (with `source_urls`); accept or reject uses `PATCH /api/review/v1/tasks/{taskId}/fields/{fieldId}` (MVP1-E4-02)."
+        "text": "No new endpoints. DocIntel adds enrichment values to the review task as fields of `kind: enrichment` (with `source_urls`); accept or reject uses `PATCH /api/review/v1/tasks/{taskId}/fields/{fieldId}` (MVP1-E4-02)."
       }
     ],
     "dbNotes": [
@@ -2488,7 +2488,7 @@ export const products = [
     "number": 13,
     "title": "Multi-document review and outputs",
     "group": "MVP2",
-    "service": "DocFlow app",
+    "service": "DocIntel app",
     "description": "Review a whole batch in tabs and export combined outputs.",
     "status": "Planned",
     "detailed": false,
@@ -2515,7 +2515,7 @@ export const products = [
           }
         ],
         "evals": "",
-        "service": "DocFlow app"
+        "service": "DocIntel app"
       },
       {
         "id": "MVP2-E12-02",
@@ -2538,7 +2538,7 @@ export const products = [
           }
         ],
         "evals": "",
-        "service": "DocFlow app"
+        "service": "DocIntel app"
       }
     ],
     "endpoints": [
@@ -2698,7 +2698,7 @@ export const products = [
           }
         ],
         "evals": "",
-        "service": "Payment; composed by the DocFlow app"
+        "service": "Payment; composed by the DocIntel app"
       },
       {
         "id": "MVP2-E13-05",
@@ -2766,7 +2766,7 @@ export const products = [
         "path": "/api/docflow/v1/batches/{batchId}/pay",
         "access": "Signed in",
         "summary": "Pay for a batch with my default card in one tap.",
-        "detail": "→ `201 {payment_id, requires_action, client_secret?}`. DocFlow computes documents × unit price and calls Payment `POST /payments`.",
+        "detail": "→ `201 {payment_id, requires_action, client_secret?}`. DocIntel computes documents × unit price and calls Payment `POST /payments`.",
         "story": "MVP2-E13-04"
       },
       {

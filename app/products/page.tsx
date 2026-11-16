@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { products } from "./data";
+import { PRODUCT_NAME, VISION_HREF } from "./flow";
 import { groups } from "./tabs";
 
 export const metadata: Metadata = {
@@ -20,6 +21,9 @@ export default function Products() {
             read me, requirements, user journey, UI components, API, data model
             and schema.
           </p>
+          <Link href={VISION_HREF} className="button">
+            Read the {PRODUCT_NAME} product vision
+          </Link>
         </div>
       </section>
 
@@ -27,9 +31,10 @@ export default function Products() {
         {groups.map((group) => (
           <section key={group.tag} id={group.tag.toLowerCase()}>
             <h2 className="group-title">
+              <Link href={VISION_HREF}>{PRODUCT_NAME} Platform</Link>
               <span className="group-tag">{group.tag}</span>
-              {group.heading}
             </h2>
+            <p className="group-about">{group.heading}</p>
             <ul className="product-grid">
               {products
                 .filter((product) => product.group === group.tag)

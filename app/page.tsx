@@ -23,7 +23,7 @@ export default function Home() {
           <p>
             Each module is a small, working slice of a real product: sign-in,
             document upload, AI extraction, human review, payment and delivery.
-            The first product is DocFlow, which turns an uploaded invoice into
+            The first product is DocIntel, which turns an uploaded invoice into
             reviewed, structured data.
           </p>
         </section>

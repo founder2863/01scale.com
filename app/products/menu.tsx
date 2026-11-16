@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { products } from "./data";
+import { PRODUCT_NAME, VISION_HREF } from "./flow";
 import { groups } from "./tabs";
 
 export default function ProductsMenu() {
@@ -47,18 +48,26 @@ export default function ProductsMenu() {
               const isExpanded = expanded === group.tag;
               return (
                 <div className="menu-group" key={group.tag}>
-                  <button
-                    type="button"
-                    className="menu-group-title"
-                    aria-expanded={isExpanded}
-                    onClick={() => setExpanded(isExpanded ? "" : group.tag)}
-                  >
-                    <span className="group-tag">{group.tag}</span>
-                    <span className="menu-group-heading">{group.heading}</span>
-                    <span className="menu-chevron" aria-hidden="true">
+                  <div className="menu-group-title">
+                    <Link
+                      className="menu-group-link"
+                      href={VISION_HREF}
+                      onClick={() => setOpen(false)}
+                    >
+                      <span>{PRODUCT_NAME} Platform</span>
+                      <span className="group-tag">{group.tag}</span>
+                    </Link>
+                    <button
+                      type="button"
+                      className="menu-chevron"
+                      aria-expanded={isExpanded}
+                      aria-label={`${isExpanded ? "Hide" : "Show"} ${group.tag} modules`}
+                      onClick={() => setExpanded(isExpanded ? "" : group.tag)}
+                    >
                       {isExpanded ? "−" : "+"}
-                    </span>
-                  </button>
+                    </button>
+                    <span className="menu-group-heading">{group.heading}</span>
+                  </div>
                   <ul className={isExpanded ? "menu-items is-open" : "menu-items"}>
                     {products
                       .filter((product) => product.group === group.tag)

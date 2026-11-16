@@ -127,6 +127,19 @@ As a hiring manager, I want every module to have its own page laid out the same 
 - **API design:** No endpoints. The pages are static and read their content from `app/products/data.ts` (generated from the stories in `docs/epics/`) and `app/products/identity.ts` (generated with `docs/services/identity/`).
 - **Database design:** No tables.
 
+### MVP1-E0-11 · Product vision page and flow diagram — S
+As a hiring manager, I want one page that explains the whole product and shows where each component fits, so I understand the parts in context.
+- **AC1:** In the Products menu and on the Products page, the group headings read "DocIntel Platform MVP1" and "DocIntel Platform MVP2". Choosing a heading opens the product vision page.
+- **AC2:** The product vision page explains: what the product is, the problem and who it is for, why I am building it, why it is built from platform components, and what the end product will be (MVP1, MVP2, later).
+- **AC3:** The page shows the whole flow as a diagram: Sign in → Upload → Extract → Review → Results → Pay → Deliver, with the component behind each step and what the step does. Each step opens that component's page.
+- **AC4:** Every component page shows the same flow under its introduction, on every tab, with that component's step highlighted and the other steps visibly greyed out. The heading above it links to the vision page.
+- **AC5:** A module that spans steps (for example web enrichment and chat correction) highlights each step it belongs to. MVP2 modules highlight the step they extend.
+- **AC6:** On a phone every step is visible at once, so the highlighted step is never off-screen.
+- **AC7:** The product name is defined in one place on the site, so a rename is a single edit. DocIntel is a working name; the design documents and API addresses keep the earlier name, DocFlow, until the name is final.
+- **Service:** Site (`apps/web`)
+- **API design:** No endpoints. The flow and the mapping of modules to steps live in `app/products/flow.tsx`.
+- **Database design:** No tables.
+
 ---
 
 ## E1 · Accounts with AWS Cognito (MVP1 "a")

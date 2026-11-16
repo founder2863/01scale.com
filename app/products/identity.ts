@@ -1335,7 +1335,7 @@ export const identity = {
   ],
   "uiRules": [
     "Components call only the Identity API. They never read cookies or tokens from JavaScript; the session cookie is HttpOnly.",
-    "They ship as the package `packages/ui-identity` and are used by any app, not only DocFlow.",
+    "They ship as the package `packages/ui-identity` and are used by any app, not only DocIntel.",
     "Every state listed above is designed, including loading and failure.",
     "Keyboard reachable, visible focus, labelled controls, WCAG AA contrast, and usable at 320 pixels wide in light and dark mode.",
     "In version 1 the forms that take a password are AWS Cognito's hosted pages. 01scale never renders a password field."

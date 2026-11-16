@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { products } from "../../data";
+import { Flow, PRODUCT_NAME, VISION_HREF } from "../../flow";
 import { identity } from "../../identity";
 import { TabContent } from "../../sections";
 import { tabHref, tabs, type TabSlug } from "../../tabs";
@@ -62,6 +63,18 @@ export default async function ProductPage({ params }: { params: Promise<Params> 
               Module {product.number} of {products.length}
             </span>
           </p>
+        </div>
+      </section>
+
+      <section className="flow-band" aria-label={`Where this component sits in ${PRODUCT_NAME}`}>
+        <div className="container">
+          <p className="flow-band-title">
+            <Link href={VISION_HREF}>
+              {PRODUCT_NAME} Platform {product.group}
+            </Link>
+            <span>Where this component sits in the flow</span>
+          </p>
+          <Flow current={product.slug} />
         </div>
       </section>
 
