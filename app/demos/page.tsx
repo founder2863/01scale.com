@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { moduleGroups } from "./modules";
 
 export const metadata: Metadata = {
@@ -38,9 +39,14 @@ export default function Demos() {
                     <div className="module-body">
                       <div className="module-title">
                         {module.title}
-                        <span className="status">Planned</span>
+                        <span className="status">{module.status ?? "Planned"}</span>
                       </div>
                       <p>{module.description}</p>
+                      {module.href && (
+                        <p>
+                          <Link href={module.href}>Developer guide, API and data model →</Link>
+                        </p>
+                      )}
                     </div>
                   </li>
                 );

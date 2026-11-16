@@ -181,6 +181,34 @@ As a user, I want to see and manage my account.
 - **API design:** No new endpoints. The gateway turns a session cookie or API key into an access token (`POST /api/identity/v1/token`) and forwards it. Every service verifies the token itself against `GET /api/identity/v1/jwks`, returns `401` without one and `404` for other users' resources.
 - **Database design:** No schema change. Every query on a user-owned table filters by `owner_id` in the data-access layer, not in the route.
 
+### MVP1-E1-07 · Branded sign-in page and address — S
+**Status: pending.** Not needed for the first working login; build after `MVP1-E1-03`.
+As a visitor, I want the sign-in page to look like 01scale and live on a 01scale address, so I trust it with my password.
+- **AC1:** The Cognito managed login pages show the 01scale name, logo and brand blue `#0b00bf`, in light and dark mode, on phone and desktop.
+- **AC2:** The sign-in page is served from `https://auth.01scale.com` with a valid certificate (AWS Certificate Manager in `us-east-1`, plus the DNS records for 01scale.com). The `amazoncognito.com` address is no longer shown to users.
+- **AC3:** Verification and password-reset emails come from a 01scale sender address through Amazon SES, with 01scale wording, and pass SPF and DKIM. The 50-emails-a-day limit of the default sender no longer applies.
+- **AC4:** The change is configuration only: `COGNITO_DOMAIN` is updated and no Identity code or API contract changes. Sign-in, sign-out and password reset are re-tested end to end.
+- **AC5:** `docs/infra/cognito.md` is updated with the steps so the setup can be rebuilt.
+- **Service:** Identity
+- **API design:** No new endpoints and no contract change. The `Location` returned by `GET /api/identity/v1/auth/login` and the `logout_url` from `POST /api/identity/v1/auth/logout` now point at `auth.01scale.com`.
+- **Database design:** No schema change.
+
+### MVP1-E1-08 · Sign in with Google — M
+**Status: pending.** Not in the first version of login; build after `MVP1-E1-03`.
+As a user, I want to sign in with my Google account so I don't need another password.
+- **AC1:** The sign-in page shows "Continue with Google". Choosing it signs me in through Google and returns me to the page I asked for.
+- **AC2:** Google is added as an identity provider on the Cognito user pool, using an OAuth client from a Google Cloud project with the scopes `openid`, `email` and `profile`. Google's client secret is stored only in AWS.
+- **AC3:** One person is one user: when Google reports a verified email that matches an existing 01scale user, I am signed in to that same user and keep my documents. An unverified Google email is refused.
+- **AC4:** A first-time Google user gets a new 01scale user without a separate email verification step, because Google has already verified the email.
+- **AC5:** `auth.signup` and `auth.signin` audit events record `provider: google`.
+- **AC6:** No other service or app changes: sessions, access tokens and `GET /session` are identical whichever way the user signed in.
+- **AC7:** The Google Cloud and Cognito steps are added to `docs/infra/cognito.md`.
+- **Service:** Identity
+- **API design:**
+  - `GET /api/identity/v1/auth/login` (public) — gains an optional query parameter `provider=google`, which sends the browser straight to Google instead of showing the sign-in page first. Any other value returns `422 invalid_provider`. Omitted means the sign-in page, as today.
+  - `GET /api/identity/v1/auth/callback` is unchanged for callers. Internally it now accepts ID tokens for federated users and applies the linking rule in AC3.
+- **Database design:** `identity.user_logins` (id, user_id → users on delete cascade, provider `cognito|google`, subject, created_at; unique (`provider`, `subject`)). Cognito gives a federated user a different ID from the same person's password account, so one user can now have several logins. Sign-in looks up `user_logins` by provider and subject; if none matches, it links by verified email or creates a user. `identity.users.cognito_sub` is migrated into `user_logins` and dropped.
+
 ---
 
 ## E2 · Document upload to S3 (MVP1 "b")

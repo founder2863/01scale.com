@@ -44,7 +44,7 @@ export default function DemosMenu() {
         <ol className="menu-list" id="demos-menu">
           {modules.map((module) => (
             <li key={module.slug}>
-              <Link href={`/demos#${module.slug}`} onClick={() => setOpen(false)}>
+              <Link href={module.href ?? `/demos#${module.slug}`} onClick={() => setOpen(false)}>
                 {module.title}
               </Link>
             </li>

@@ -1,4 +1,11 @@
-export type Module = { slug: string; title: string; description: string };
+export type Module = {
+  slug: string;
+  title: string;
+  description: string;
+  // Set when the module has its own page; otherwise it links to its entry on /demos.
+  href?: string;
+  status?: "Planned" | "Designed" | "Live";
+};
 
 export type ModuleGroup = { tag: string; heading: string; modules: Module[] };
 
@@ -12,6 +19,8 @@ export const moduleGroups: ModuleGroup[] = [
         title: "Login using AWS",
         description:
           "Sign up, sign in and password reset with AWS Cognito, integrated through standard OIDC.",
+        href: "/demos/login",
+        status: "Designed",
       },
       {
         slug: "account-management",
