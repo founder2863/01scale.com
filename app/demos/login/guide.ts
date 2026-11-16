@@ -568,7 +568,7 @@ export const guide = {
           "type": "text",
           "nullable": "No",
           "default": "",
-          "constraints": "Unique ignoring case. Stored lower-cased. 3 to 320 characters and contains `@`",
+          "constraints": "Unique ignoring case. Stored lower-cased. 3 to 254 characters and contains `@`",
           "meaning": "The verified email address from Cognito. Shown in the UI and used by Delivery to send email."
         },
         {
@@ -600,7 +600,7 @@ export const guide = {
         "`users_pkey`: primary key (`id`)",
         "`users_cognito_sub_key`: unique (`cognito_sub`)",
         "`users_email_lower_key`: unique index on `lower(email)`",
-        "`users_email_format_check`: `email = lower(email)` and `email like '%_@_%'` and `length(email) between 3 and 320`"
+        "`users_email_format_check`: `email = lower(email)` and `email like '%_@_%'` and `length(email) between 3 and 254`"
       ],
       "sampleCols": [
         "id",
@@ -935,7 +935,7 @@ export const guide = {
         "Primary keys on every table; `cognito_sub`, `lower(email)` and `token_hash` are unique.",
         "A session cannot exist without its user (foreign key), and is deleted with the user.",
         "`token_hash` must be 64 hex characters; `expires_at` must be after `created_at`.",
-        "`email` must be lower-case, contain `@`, and be 3 to 320 characters.",
+        "`email` must be lower-case, contain `@`, and be 3 to 254 characters, the longest address a mail server accepts.",
         "Only one signing key can be active; a stored public key can never contain private material.",
         "Audit events can be added and read but never changed or deleted.",
         "Identity's database login can reach only the `identity` schema. No other service can read these tables."

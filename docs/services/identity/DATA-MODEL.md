@@ -52,7 +52,7 @@ One row per person. Created the first time someone completes sign-in with a veri
 |---|---|---|---|---|---|
 | `id` | `uuid` | No | generated (UUIDv7) | Primary key | The user's ID everywhere in 01scale. Other services store it as `owner_id`. Never changes. |
 | `cognito_sub` | `text` | No |  | Unique. 1 to 255 characters | Cognito's permanent ID for this person (the `sub` claim). Used to find the user at sign-in. Not the email, because an email can change. |
-| `email` | `text` | No |  | Unique ignoring case. Stored lower-cased. 3 to 320 characters and contains `@` | The verified email address from Cognito. Shown in the UI and used by Delivery to send email. |
+| `email` | `text` | No |  | Unique ignoring case. Stored lower-cased. 3 to 254 characters and contains `@` | The verified email address from Cognito. Shown in the UI and used by Delivery to send email. |
 | `email_verified_at` | `timestamptz` | No |  |  | When Identity first saw this email as verified. Always set, because unverified emails are refused. |
 | `is_admin` | `boolean` | No | false |  | Allows admin-only pages and endpoints. Set by hand in the database; there is no API to change it. |
 | `created_at` | `timestamptz` | No | now() |  | When the user first signed in. Shown as 'joined'. |
@@ -62,7 +62,7 @@ One row per person. Created the first time someone completes sign-in with a veri
 - `users_pkey`: primary key (`id`)
 - `users_cognito_sub_key`: unique (`cognito_sub`)
 - `users_email_lower_key`: unique index on `lower(email)`
-- `users_email_format_check`: `email = lower(email)` and `email like '%_@_%'` and `length(email) between 3 and 320`
+- `users_email_format_check`: `email = lower(email)` and `email like '%_@_%'` and `length(email) between 3 and 254`
 
 **Sample data**
 
@@ -172,7 +172,7 @@ The service template also gives Identity `idempotency_keys` and `outbound_events
 - Primary keys on every table; `cognito_sub`, `lower(email)` and `token_hash` are unique.
 - A session cannot exist without its user (foreign key), and is deleted with the user.
 - `token_hash` must be 64 hex characters; `expires_at` must be after `created_at`.
-- `email` must be lower-case, contain `@`, and be 3 to 320 characters.
+- `email` must be lower-case, contain `@`, and be 3 to 254 characters, the longest address a mail server accepts.
 - Only one signing key can be active; a stored public key can never contain private material.
 - Audit events can be added and read but never changed or deleted.
 - Identity's database login can reach only the `identity` schema. No other service can read these tables.
