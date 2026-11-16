@@ -37,7 +37,8 @@ export default function DemosMenu() {
         aria-controls="demos-menu"
         onClick={() => setOpen(!open)}
       >
-        Product demos <span aria-hidden="true">▾</span>
+        <span className="nav-wide">Product demos</span>
+        <span className="nav-narrow">Demos</span> <span aria-hidden="true">▾</span>
       </button>
       {open && (
         <ol className="menu-list" id="demos-menu">

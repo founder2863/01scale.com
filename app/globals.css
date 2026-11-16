@@ -418,9 +418,18 @@ section[id] {
 
 /* Narrow phones: the logo already links home */
 
-@media (max-width: 460px) {
-  .nav-home {
+.nav-narrow {
+  display: none;
+}
+
+@media (max-width: 560px) {
+  .nav-home,
+  .nav-wide {
     display: none;
+  }
+
+  .nav-narrow {
+    display: inline;
   }
 }
 

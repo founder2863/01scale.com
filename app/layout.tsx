@@ -25,6 +25,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               </Link>
               <DemosMenu />
               <Link href="/architecture">Architecture</Link>
+              <Link href="/apis">APIs</Link>
             </nav>
           </div>
         </header>

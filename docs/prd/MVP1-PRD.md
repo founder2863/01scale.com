@@ -5,16 +5,19 @@
 | Owner | Nikhil Shrivastava |
 | Status | Draft |
 | Epics | `docs/epics/MVP1-EPICS.md` (E0–E7) |
+| Architecture | `docs/architecture/ARCHITECTURE.md` |
 | Evals | `docs/evals/EVALS.md` (MVP1 section) |
 
 ## 1. Summary
 A signed-in user uploads an invoice, Claude extracts structured data with a confidence score per field, the user reviews the fields the system is unsure about, previews the final JSON and CSV, pays, and gets the files by download and email.
 
+**How it is built.** DocFlow is the first app on the 01scale platform. Each step of the journey is an independent platform service (Identity, Upload, LLM Extraction, Human Review, Payment, Delivery) with its own UI, API and MCP tools; DocFlow connects them in order and holds only the process record and the invoice outputs. The same services are meant to be reused by later apps.
+
 ## 2. Problem
 Small businesses and bookkeepers retype invoice data into spreadsheets and accounting tools by hand. Fully automatic extraction tools either make silent mistakes or demand reviewing every field. People need extraction that is right on the easy fields and honest about the hard ones.
 
 ## 3. Why this matters for the portfolio
-One journey that shows: managed identity done through open standards (OIDC), secure cloud file handling (S3), LLM extraction with measured quality (evals), human-in-the-loop design, payments with webhooks, and an event-driven delivery workflow.
+One journey, assembled from independently released platform services, that shows: managed identity done through open standards (OIDC), secure cloud file handling (S3), LLM extraction with measured quality (evals), human-in-the-loop design, payments with webhooks, and an event-driven delivery workflow.
 
 ## 4. Users
 - **Primary: "Priya", a bookkeeper** for 3–10 small clients. She processes about 50 invoices a month and wants clean CSVs for her accounting tool, and she doesn't trust tools that hide mistakes.
@@ -78,7 +81,18 @@ Every field returns: `value`, `confidence` (0–1), `source_page`, `source_quote
 - The model's own confidence is known to be poorly calibrated, which is why rule checks cap it. MVP2 adds an LLM judge.
 
 ## 11. Data model (initial)
-`users` (id, cognito_sub, email, created_at) · `documents` (id, user_id, s3_key, file_name, mime, pages, status, created_at) · `extraction_jobs` (id, document_id, status, model, prompt_version, tokens_in, tokens_out, cost_usd, duration_ms, error) · `fields` (id, job_id, name, value, confidence, source_page, source_quote, flagged, status, original_value) · `orders` (id, user_id, document_id, stripe_session_id, amount, currency, status) · `deliveries` (id, order_id, channel, status, sent_at) · `audit_events` (id, actor_id, action, target, metadata, created_at)
+Summary only. Each service owns its tables in its own schema; another service's record is referenced by ID. The full design, table by table, is in each story's **Database design** and indexed in `docs/architecture/DATABASE-DESIGN.md`. The APIs are indexed in `docs/architecture/API-DESIGN.md`.
+
+| Service | Main tables |
+|---|---|
+| Identity | `users`, `sessions`, `api_keys` |
+| Upload | `files` |
+| LLM Extraction | `jobs`, `fields` (the model's output, never edited) |
+| Human Review | `tasks`, `fields` (the human's final values), `field_changes` |
+| Payment | `orders`, `stripe_events` |
+| Delivery | `messages` |
+| DocFlow app | `documents` (the process record: file, job, review task and order IDs), `outputs` |
+| Every service | `audit_events`, `idempotency_keys`, `outbound_events` |
 
 ## 12. Non-functional requirements
 - **Security:**
@@ -105,7 +119,9 @@ Every field returns: `value`, `confidence` (0–1), `source_page`, `source_quote
 | Confidence badly calibrated | Rule-check cap now, LLM judge in MVP2, calibration tracked in evals |
 | Long extraction exceeds function time limits | Poll for status; documents capped at 10 pages; move to Lambda in MVP2 |
 | Webhook arrives late or twice | Success page polls order status; event-ID idempotency |
-| Cognito lock-in | OIDC-only integration so MVP2 swaps the provider without touching app code |
+| Cognito lock-in | OIDC-only integration inside the Identity service, so MVP2 swaps the provider without any other service or app changing |
+| Distributed services cost more to build and run than one app | One service template, serverless hosting, one database project with a schema per service; reasoning in `ARCHITECTURE.md` §7 |
+| A step fails between two services | Idempotent calls, events written with the change (outbox), retries, and a process record that can resume |
 | Cost overrun | Per-job cost logging, max page cap, monthly budget alert on the Anthropic and AWS accounts |
 
 ## 15. Release plan
