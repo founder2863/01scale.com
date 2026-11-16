@@ -20,8 +20,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               01<span>scale</span>
             </Link>
             <nav>
-              <Link href="/">Home</Link>
+              <Link href="/" className="nav-home">
+                Home
+              </Link>
               <DemosMenu />
+              <Link href="/architecture">Architecture</Link>
               <Link href="/apis">APIs</Link>
             </nav>
           </div>
