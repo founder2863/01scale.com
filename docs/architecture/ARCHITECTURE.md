@@ -271,6 +271,7 @@ Apps (DocFlow first) call the components' APIs in a fixed order. A service tells
 | 6 | What each service shows when it ships | A try-it demo on its own, its API reference, its MCP tools, and its spec and decisions | Each component must be demoable and marketable by itself. |
 | 7 | Existing stories | Keep the epic and story IDs; every story names the service that owns it | The plan stays stable and traceable while the ownership becomes explicit. |
 | 8 | Visual drag-and-drop builder | Future scope | Many products already do this; my differentiator is the components themselves. |
+| 9 | How services communicate and stay consistent | **Orchestration by the app, synchronous API calls plus signed events, no message broker yet.** Strong consistency inside a service, eventual consistency between services | Full reasoning in §12. |
 
 ### Repository layout
 
@@ -333,3 +334,116 @@ flowchart TB
 - **DocFlow became a thin app.** It owns only the process record (which file, job, review task and order belong together) and the invoice outputs. Everything else is a platform service it calls.
 - **Services became app-agnostic.** Upload stores files, not invoices; Payment takes an order with an opaque reference; Review reviews a set of fields. That is what lets Procure-to-Pay or Order-to-Cash reuse them.
 - **Build order:** service template and gateway → Identity → Upload → Extraction → Review → Payment → Delivery, with DocFlow growing by one step as each service ships.
+
+## 12. How services communicate and stay consistent
+
+This section records three linked decisions I took: how services talk to each other, how data stays correct without a shared transaction, and what I choose when the network fails.
+
+### 12.1 The problem
+
+Each service owns its data, and there are no foreign keys between schemas. That means the database can no longer guarantee two things for me across services:
+
+- **Atomicity:** one transaction cannot cover a change in Payment and a change in DocFlow.
+- **Referential integrity:** nothing stops a `file_id` stored in Extraction from pointing at a file that Upload has since deleted.
+
+Inside one service nothing changes: normal transactions and foreign keys apply. The question is only what replaces them between services.
+
+### 12.2 My decision: orchestration, not choreography
+
+There are two ways to run a process that spans services.
+
+| | Orchestration (my choice today) | Choreography (fully event-driven) |
+|---|---|---|
+| In plain terms | A conductor tells each musician when to play | Each musician listens to the others and decides when to come in |
+| Who knows the process | One place: the app (DocFlow) | Nobody: the process is spread across every service's reactions |
+| How services talk | The app calls each service's API; a service reports "finished" with a signed event | Every service publishes to a message broker and reacts to others' events |
+| Coupling | Services know nothing about each other or the app | Services know each other's events |
+| Seeing where a document is | Read one record | Reconstruct it from events across services |
+| Infrastructure | None beyond HTTP | A broker, schemas for events, dead-letter queues, replay tooling |
+
+```mermaid
+sequenceDiagram
+  participant D as DocFlow (orchestrator)
+  participant U as Upload
+  participant X as Extraction
+  participant R as Review
+  participant P as Payment
+  participant L as Delivery
+  D->>U: create file, confirm upload
+  D->>X: start job
+  X-->>D: event: job completed
+  D->>R: create review task
+  D->>X: re-check corrected values
+  D->>R: complete task
+  D->>P: create order
+  P-->>D: event: order paid
+  D->>L: send email
+```
+
+Solid arrows are synchronous API calls. Dashed arrows are signed events delivered over HTTP from the sending service's outbox.
+
+### 12.3 Why orchestration is the better choice today
+
+1. **There is one app and one consumer per event.** Choreography pays off when several independent consumers react to the same event. Today only DocFlow cares that a job completed or an order was paid.
+2. **The process is a fixed sequence.** Upload, extract, review, pay, deliver. A sequence is easiest to read, test and change when it is written in one place.
+3. **It keeps the services reusable.** Because DocFlow holds the order of steps, the services contain no knowledge of invoices or of each other. A second app can call the same services in a different order.
+4. **It is debuggable by one person.** One process record shows exactly where a document stopped and why. With choreography I would need tracing and event replay before I could answer the same question.
+5. **Payment needs a clear owner of the outcome.** Someone must decide "this is paid, unlock the download". An orchestrator makes that decision explicit instead of emerging from several services reacting independently.
+6. **It adds no infrastructure.** A broker is another system to run, secure and pay for, with no benefit at this scale.
+
+What I give up: DocFlow is a single point that must be running for the process to advance, and it makes more calls than a choreographed design would.
+
+### 12.4 How data stays correct without a shared transaction
+
+| Mechanism | In plain terms | What it protects against |
+|---|---|---|
+| **Process record** in the app (`docflow.documents`) | A checklist per document: which file, job, review task and order, and which step it is on | A failure halfway leaves the checklist showing where to resume. This is the saga pattern, orchestrated. |
+| **Idempotent calls** (idempotency keys, unique indexes) | Asking twice gives the same answer, never a second job or a second charge | Retries after a timeout, double clicks, repeated events |
+| **Outbox** | A service records "tell others" in the same transaction as the change, then delivers it with retries | An event lost after a commit, or an event sent for a change that rolled back |
+| **Check at the door** | When a service receives another service's ID, it asks that service whether the record exists and belongs to this user | Bad or foreign references at creation time |
+| **Delete events** | When a user or file is deleted, the owner announces it and others clean up | References going stale later |
+| **Missing is normal** | A referenced record that no longer exists returns a clear "not found", never a crash | The gap between a delete and its clean-up |
+| **Compensation** | If a later step cannot succeed, the app undoes or closes the earlier ones (expire the order, mark the document failed) | A process stuck half-done |
+| **Check at the moment of use** | Download asks Payment "is this order paid?" at download time, instead of trusting a copied flag | Acting on out-of-date information where money is involved |
+
+What this does not give me: an instant, all-or-nothing change across two services. Where I truly need that, the two pieces of data belong in the same service.
+
+### 12.5 My position on CAP
+
+When the network between two parts fails, a system must choose between answering with possibly stale data (availability) or refusing to answer (consistency). I choose per case:
+
+| Where | My choice | What the user sees |
+|---|---|---|
+| Inside one service | Consistent | Always the true current state |
+| Money and entitlements (is it paid, may they download) | Consistency first | If Payment cannot be reached, an error and a retry, never a guess |
+| Process status across services | Availability first, eventually consistent | A status that may lag by a few seconds until the event arrives |
+| Notifications | Availability first | An email may arrive late, but it arrives once |
+
+In one sentence: **strongly consistent within a service, eventually consistent between services, and never optimistic about money.**
+
+One limit I accepted with the single Neon project: the services share one database server, so a database outage affects all of them together. That decision buys data isolation, not failure isolation.
+
+### 12.6 When this should change, and why
+
+I will move from orchestration towards event-driven communication when one of these becomes true, not before:
+
+| Trigger | Why it changes the answer |
+|---|---|
+| A second app, or a second consumer of the same event | Point-to-point webhooks mean the sender must know every receiver. A broker lets a new consumer subscribe without the sender changing. |
+| Batches and long-running work (Extraction on AWS Lambda, 10 documents at once) | Work must queue, fan out and survive restarts. That is what a queue is for. |
+| A service that should react without being told | Example: Delivery sending a notification for any "order paid", whichever app caused it. The app should not have to remember to call it. |
+| Volume where synchronous chains hurt | Each synchronous hop adds latency and a failure point; a slow service would slow the whole process. |
+| The orchestrator becomes a bottleneck or a single point of failure | The process should survive the app being briefly down. |
+| Other teams or customers building on the components | They need a published stream of events to build on, without asking me to add a call for them. |
+
+### 12.7 How it improves, version by version
+
+| Version | Communication | Consistency | What it adds |
+|---|---|---|---|
+| **Today (MVP1)** | App orchestrates with API calls; services report completion with signed HTTP events from an outbox | Process record, idempotency, check at the moment of use | The simplest design that is still correct |
+| **Next (MVP2)** | A queue (SQS) inside Extraction for batch fan-out and retries; the app still orchestrates | Per-step checkpoints so a batch resumes instead of restarting | Reliable long-running work, with no change to any contract |
+| **Platform (second app)** | A shared event bus: services publish each event once, any app subscribes. Commands stay as API calls | A published catalogue of events with versions; consumers keep their own read copies | New apps and consumers without changing the services |
+| **Scale** | A durable workflow engine replaces the hand-built process record; a database per service | Automatic retries, timeouts and compensation defined per workflow; real failure isolation | The process survives any single part being down |
+
+Two things stay fixed through all of it: a service's API contract, and the rule that only the owning service writes its data. That is what lets the communication style change underneath without the apps noticing.
+
