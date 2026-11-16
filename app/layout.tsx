@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import DemosMenu from "./demos-menu";
+import ProductsMenu from "./products/menu";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -23,9 +23,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               <Link href="/" className="nav-home">
                 Home
               </Link>
-              <DemosMenu />
+              <ProductsMenu />
               <Link href="/architecture">Architecture</Link>
-              <Link href="/apis">APIs</Link>
             </nav>
           </div>
         </header>

@@ -1,5 +1,5 @@
 // Generated together with docs/services/identity/*.md from one source. Design only: not built yet.
-export const guide = {
+export const identity = {
   "overview": {
     "name": "Identity",
     "version": "Version 1 · Login with AWS Cognito",
@@ -1007,5 +1007,396 @@ export const guide = {
     "When sign-in fails at the callback, a person in a browser sees a JSON error. I propose redirecting browsers to a friendly `/sign-in-error` page and keeping JSON for API clients.",
     "Session lifetime is fixed at 7 days. Shorter is safer; longer is more convenient.",
     "Rate limit numbers are starting values to be tuned once there is real traffic."
+  ],
+  "journeys": [
+    {
+      "name": "Create an account",
+      "who": "A new visitor",
+      "trigger": "Taps Create account on any 01scale page.",
+      "stories": [
+        "MVP1-E1-02",
+        "MVP1-E1-03"
+      ],
+      "outcome": "A verified user exists and is signed in for 7 days on this browser.",
+      "steps": [
+        {
+          "person": "Taps Create account.",
+          "system": "Identity starts a login and sends the browser to the sign-up page hosted by AWS Cognito."
+        },
+        {
+          "person": "Enters an email and a password of 12 or more characters.",
+          "system": "Cognito checks the password rules and emails a 6-digit code."
+        },
+        {
+          "person": "Enters the code from the email.",
+          "system": "Cognito marks the email as verified and sends the browser back to 01scale."
+        },
+        {
+          "person": "Lands on the page they wanted, signed in, with their email shown in the header.",
+          "system": "Identity creates the user and a session, sets the session cookie, and records `auth.signup` and `auth.signin`."
+        }
+      ]
+    },
+    {
+      "name": "Sign in",
+      "who": "A returning user",
+      "trigger": "Taps Sign in.",
+      "stories": [
+        "MVP1-E1-03"
+      ],
+      "outcome": "A new session on this browser. Sessions on other devices are untouched.",
+      "steps": [
+        {
+          "person": "Taps Sign in.",
+          "system": "Identity sends the browser to Cognito's sign-in page."
+        },
+        {
+          "person": "Enters email and password.",
+          "system": "Cognito checks them and sends the browser back with a one-time code."
+        },
+        {
+          "person": "Lands on the page they wanted, signed in.",
+          "system": "Identity checks the response, finds the user, creates a session and records `auth.signin`."
+        }
+      ]
+    },
+    {
+      "name": "Open a protected page while signed out",
+      "who": "Anyone following a link",
+      "trigger": "Opens a page such as `/documents` without being signed in.",
+      "stories": [
+        "MVP1-E1-06"
+      ],
+      "outcome": "The user never has to find their way back.",
+      "steps": [
+        {
+          "person": "Opens the link.",
+          "system": "The gateway sees there is no session and redirects to sign-in, remembering the page as `return_to`."
+        },
+        {
+          "person": "Signs in (or creates an account).",
+          "system": "As in the journeys above."
+        },
+        {
+          "person": "Arrives on the page they first asked for.",
+          "system": "Identity redirects to `return_to`, which may only be a page on 01scale.com."
+        }
+      ]
+    },
+    {
+      "name": "Forgot password",
+      "who": "A user who cannot sign in",
+      "trigger": "Taps Forgot your password? on the sign-in page.",
+      "stories": [
+        "MVP1-E1-04"
+      ],
+      "outcome": "Only the browser that just signed in stays signed in.",
+      "steps": [
+        {
+          "person": "Enters their email.",
+          "system": "Cognito answers the same way whether or not the account exists, and emails a reset code if it does."
+        },
+        {
+          "person": "Enters the code and a new password.",
+          "system": "Cognito changes the password."
+        },
+        {
+          "person": "Signs in with the new password.",
+          "system": "Identity creates a new session and revokes every older session for that user, recording `auth.sessions_revoked`."
+        }
+      ]
+    },
+    {
+      "name": "Sign out",
+      "who": "A signed-in user",
+      "trigger": "Opens the user menu and taps Sign out.",
+      "stories": [
+        "MVP1-E1-03"
+      ],
+      "outcome": "The next sign-in shows the login form again. A token already issued to a service stops working within 5 minutes.",
+      "steps": [
+        {
+          "person": "Taps Sign out.",
+          "system": "Identity revokes the session, clears the cookie and records `auth.signout`."
+        },
+        {
+          "person": "Is returned to the home page, signed out.",
+          "system": "The browser is sent through Cognito's logout address so Cognito's own session ends too."
+        }
+      ]
+    }
+  ],
+  "edgeCases": [
+    {
+      "situation": "Cancels on the sign-in page",
+      "sees": "Returns to 01scale signed out, with a short message.",
+      "code": "`provider_error`"
+    },
+    {
+      "situation": "Takes longer than 10 minutes to sign in",
+      "sees": "Sees 'Sign-in took too long' and a button to start again.",
+      "code": "`login_expired`"
+    },
+    {
+      "situation": "Opens the sign-in link in a different browser",
+      "sees": "Sees 'Sign-in could not be completed' and starts again.",
+      "code": "`login_state_mismatch`"
+    },
+    {
+      "situation": "Has not verified their email",
+      "sees": "Is asked to enter the code first; no 01scale user is created.",
+      "code": "`email_not_verified`"
+    },
+    {
+      "situation": "Session reaches 7 days",
+      "sees": "Is asked to sign in again and returns to the same page.",
+      "code": "`not_authenticated`"
+    },
+    {
+      "situation": "AWS Cognito is unavailable",
+      "sees": "Sees 'Sign-in is temporarily unavailable. Try again.'",
+      "code": "`provider_unavailable`"
+    }
+  ],
+  "components": [
+    {
+      "name": "SignInButton",
+      "kind": "Component",
+      "purpose": "A link that starts sign-in.",
+      "states": [
+        "Default",
+        "Focus (visible outline)"
+      ],
+      "calls": [
+        "`GET /auth/login?mode=signin`"
+      ],
+      "props": [
+        {
+          "name": "returnTo",
+          "type": "string, optional",
+          "meaning": "Page to land on afterwards. Defaults to the current page."
+        },
+        {
+          "name": "label",
+          "type": "string, optional",
+          "meaning": "Button text. Default 'Sign in'."
+        }
+      ]
+    },
+    {
+      "name": "CreateAccountButton",
+      "kind": "Component",
+      "purpose": "A link that starts sign-up.",
+      "states": [
+        "Default",
+        "Focus"
+      ],
+      "calls": [
+        "`GET /auth/login?mode=signup`"
+      ],
+      "props": [
+        {
+          "name": "returnTo",
+          "type": "string, optional",
+          "meaning": "Page to land on afterwards."
+        },
+        {
+          "name": "label",
+          "type": "string, optional",
+          "meaning": "Button text. Default 'Create account'."
+        }
+      ]
+    },
+    {
+      "name": "SessionProvider and useSession()",
+      "kind": "Provider and hook",
+      "purpose": "Asks Identity once who is signed in and shares the answer with every component on the page.",
+      "states": [
+        "`loading`",
+        "`signed_in` with `user.id` and `user.email`",
+        "`signed_out`"
+      ],
+      "calls": [
+        "`GET /session`"
+      ],
+      "props": [
+        {
+          "name": "children",
+          "type": "nodes",
+          "meaning": "The part of the page that needs to know the user."
+        }
+      ]
+    },
+    {
+      "name": "UserMenu",
+      "kind": "Component",
+      "purpose": "Shows the signed-in user's email with a Sign out action, or the Sign in button when signed out.",
+      "states": [
+        "Loading (placeholder of the same size, so the header does not jump)",
+        "Signed out (shows SignInButton)",
+        "Signed in, closed",
+        "Signed in, open"
+      ],
+      "calls": [
+        "`GET /session` (through useSession)",
+        "`POST /auth/logout`"
+      ],
+      "props": [
+        {
+          "name": "returnTo",
+          "type": "string, optional",
+          "meaning": "Passed to the Sign in button."
+        }
+      ]
+    },
+    {
+      "name": "SignOutButton",
+      "kind": "Component",
+      "purpose": "Ends the session and follows the returned logout address.",
+      "states": [
+        "Default",
+        "Working (disabled while the request runs)",
+        "Failed (keeps the user signed in and shows a retry)"
+      ],
+      "calls": [
+        "`POST /auth/logout`"
+      ],
+      "props": [
+        {
+          "name": "label",
+          "type": "string, optional",
+          "meaning": "Button text. Default 'Sign out'."
+        }
+      ]
+    },
+    {
+      "name": "RequireSignIn",
+      "kind": "Wrapper",
+      "purpose": "Wraps a page that needs a signed-in user. Backs up the gateway's redirect for pages rendered in the browser.",
+      "states": [
+        "Loading (shows fallback)",
+        "Signed in (shows children)",
+        "Signed out (redirects to sign-in with `return_to` set to the current page)"
+      ],
+      "calls": [
+        "`GET /session` (through useSession)",
+        "`GET /auth/login`"
+      ],
+      "props": [
+        {
+          "name": "children",
+          "type": "nodes",
+          "meaning": "The protected content."
+        },
+        {
+          "name": "fallback",
+          "type": "node, optional",
+          "meaning": "Shown while the session is loading."
+        }
+      ]
+    },
+    {
+      "name": "SignInError",
+      "kind": "Page",
+      "purpose": "A plain-language page for a failed sign-in, with one button to start again. Proposed; see open questions.",
+      "states": [
+        "One message per error code",
+        "Unknown code (generic message)"
+      ],
+      "calls": [
+        "`GET /auth/login`"
+      ],
+      "props": [
+        {
+          "name": "code",
+          "type": "string",
+          "meaning": "The error code from the callback, mapped to a friendly message."
+        }
+      ]
+    }
+  ],
+  "hostedPages": [
+    {
+      "page": "Sign in",
+      "what": "Email and password, with links to create an account and to reset the password."
+    },
+    {
+      "page": "Create account",
+      "what": "Email and password with the 12-character rule shown."
+    },
+    {
+      "page": "Verify email",
+      "what": "Enter the 6-digit code; resend the code."
+    },
+    {
+      "page": "Forgot password",
+      "what": "Enter email, then the code and a new password."
+    }
+  ],
+  "uiRules": [
+    "Components call only the Identity API. They never read cookies or tokens from JavaScript; the session cookie is HttpOnly.",
+    "They ship as the package `packages/ui-identity` and are used by any app, not only DocFlow.",
+    "Every state listed above is designed, including loading and failure.",
+    "Keyboard reachable, visible focus, labelled controls, WCAG AA contrast, and usable at 320 pixels wide in light and dark mode.",
+    "In version 1 the forms that take a password are AWS Cognito's hosted pages. 01scale never renders a password field."
+  ],
+  "entities": [
+    {
+      "name": "User",
+      "table": "`identity.users`",
+      "what": "A person who has signed in at least once with a verified email.",
+      "relations": "Has many sessions. Is referenced by every other service as `owner_id`, by value only."
+    },
+    {
+      "name": "Session",
+      "table": "`identity.sessions`",
+      "what": "One browser's proof of sign-in, valid for 7 days.",
+      "relations": "Belongs to one user. Deleted with the user."
+    },
+    {
+      "name": "Signing key",
+      "table": "`identity.signing_keys`",
+      "what": "The key pair that signs access tokens.",
+      "relations": "Stands alone. One is active at a time."
+    },
+    {
+      "name": "Audit event",
+      "table": "`identity.audit_events`",
+      "what": "A permanent record that something happened.",
+      "relations": "Refers to a user and a target by ID, with no foreign key, so the record survives if the user is deleted."
+    }
+  ],
+  "lifecycles": [
+    {
+      "name": "User",
+      "text": "Created at the first successful sign-in → lives until the account is deleted (Account management)."
+    },
+    {
+      "name": "Session",
+      "text": "Active from sign-in → ends when it is revoked (sign-out, password reset) or when 7 days pass, whichever is first. It is never reactivated."
+    },
+    {
+      "name": "Signing key",
+      "text": "Active from creation → retired when a new key replaces it → still published for 10 minutes so recent tokens verify → no longer published."
+    },
+    {
+      "name": "Access token",
+      "text": "Never stored. Created on request, valid for 5 minutes, checked by signature only."
+    }
+  ],
+  "ddl": "-- Identity service, version 1 (login). Schema: identity.\n-- IDs are UUIDv7 values generated by the service.\n\ncreate schema if not exists identity;\n\ncreate table identity.users (\n  id                uuid        primary key,\n  cognito_sub       text        not null,\n  email             text        not null,\n  email_verified_at timestamptz not null,\n  is_admin          boolean     not null default false,\n  created_at        timestamptz not null default now(),\n\n  constraint users_cognito_sub_key unique (cognito_sub),\n  constraint users_cognito_sub_check check (length(cognito_sub) between 1 and 255),\n  constraint users_email_format_check check (\n    email = lower(email)\n    and email like '%_@_%'\n    and length(email) between 3 and 254\n  )\n);\n\ncreate unique index users_email_lower_key on identity.users (lower(email));\n\ncreate table identity.sessions (\n  id          uuid        primary key,\n  user_id     uuid        not null,\n  token_hash  text        not null,\n  created_at  timestamptz not null default now(),\n  expires_at  timestamptz not null,\n  revoked_at  timestamptz,\n\n  constraint sessions_user_id_fkey foreign key (user_id)\n    references identity.users (id) on delete cascade,\n  constraint sessions_token_hash_key unique (token_hash),\n  constraint sessions_token_hash_check check (token_hash ~ '^[0-9a-f]{64}$'),\n  constraint sessions_expiry_check check (expires_at > created_at),\n  constraint sessions_revoked_check check (revoked_at is null or revoked_at >= created_at)\n);\n\ncreate index sessions_user_id_idx on identity.sessions (user_id, created_at desc);\n\ncreate table identity.signing_keys (\n  kid                   text        primary key,\n  public_jwk            jsonb       not null,\n  private_key_encrypted text        not null,\n  created_at            timestamptz not null default now(),\n  retired_at            timestamptz,\n\n  constraint signing_keys_kid_check check (length(kid) between 1 and 64),\n  constraint signing_keys_public_only_check check (\n    public_jwk ?& array['kty', 'crv', 'x', 'y'] and not public_jwk ? 'd'\n  ),\n  constraint signing_keys_retired_check check (retired_at is null or retired_at >= created_at)\n);\n\n-- Only one key can be active (not retired) at a time.\ncreate unique index signing_keys_one_active_idx\n  on identity.signing_keys ((true)) where retired_at is null;\n\ncreate table identity.audit_events (\n  id          uuid        primary key,\n  actor_id    uuid,\n  actor_type  text        not null,\n  action      text        not null,\n  target_type text,\n  target_id   uuid,\n  metadata    jsonb       not null default '{}',\n  request_id  text,\n  created_at  timestamptz not null default now(),\n\n  constraint audit_events_actor_type_check\n    check (actor_type in ('user', 'api_key', 'service', 'system'))\n);\n\ncreate index audit_events_actor_idx on identity.audit_events (actor_id, created_at desc);\n\n-- The service's database login can reach only this schema,\n-- and can add and read audit events but never change or delete them.\ngrant usage on schema identity to identity_service;\ngrant select, insert, update, delete\n  on identity.users, identity.sessions, identity.signing_keys to identity_service;\ngrant select, insert on identity.audit_events to identity_service;\n",
+  "queries": [
+    {
+      "title": "Find the session for a cookie (every signed-in request)",
+      "sql": "select s.id, s.user_id, s.expires_at\nfrom identity.sessions s\nwhere s.token_hash = $1\n  and s.revoked_at is null\n  and s.expires_at > now();"
+    },
+    {
+      "title": "Sign out",
+      "sql": "update identity.sessions\nset revoked_at = now()\nwhere id = $1 and revoked_at is null;"
+    },
+    {
+      "title": "Revoke older sessions after a password reset",
+      "sql": "update identity.sessions\nset revoked_at = now()\nwhere user_id = $1\n  and created_at < $2      -- the sign-in time reported by Cognito\n  and revoked_at is null;"
+    }
   ]
 };

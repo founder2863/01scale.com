@@ -11,8 +11,8 @@ export default function Home() {
             01scale is a live portfolio of products I have built in my career,
             rebuilt one module at a time and shipped here as working demos.
           </p>
-          <Link href="/demos" className="button">
-            See the product demos
+          <Link href="/products" className="button">
+            See the products
           </Link>
         </div>
       </section>

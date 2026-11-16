@@ -26,7 +26,7 @@ Nikhil is a platform & AI product leader (17+ years: identity, payments, integra
 | Architecture: options, Nikhil's decision and why, service evolution | `docs/architecture/ARCHITECTURE.md` |
 | API rules + endpoint index by service | `docs/architecture/API-DESIGN.md` |
 | Database rules + table index by service | `docs/architecture/DATABASE-DESIGN.md` |
-| Per-service developer guide, API spec and data model | `docs/services/<service>/` (Identity login: `docs/services/identity/`) |
+| Per-service developer guide, user journeys, UI components, API spec, data model and schema | `docs/services/<service>/` (Identity login: `docs/services/identity/`) |
 | Infrastructure setup steps | `docs/infra/` (Cognito: `docs/infra/cognito.md`) |
 | Eval plan (LLM outputs) | `docs/evals/EVALS.md` |
 | Decision log per epic | `docs/decisions/<EPIC-ID>.md` |
@@ -76,13 +76,14 @@ Nikhil is a platform & AI product leader (17+ years: identity, payments, integra
 1. Work on a branch named after the issue ID, then open a PR with what changed, why, how to test, and the acceptance criteria checked off.
 2. Build inside the owning service's folder, API before UI: schema and migration, service function, route handler with zod validation, OpenAPI entry, MCP tool, tests, then the UI component and the app page that calls it. A story that touches two services changes the provider first, then the consumer.
 3. New services start from the service template (`packages/service-kit`, story `MVP1-E0-07`). Do not hand-roll auth checks, error formats, logging or events in a service.
-4. When an endpoint ships, change its status on the site's APIs page (`app/apis/endpoints.ts`) and the module's status on the demos page (`app/demos/modules.ts`). A module with a developer guide has its own page under `app/demos/<module>/`, opened from the Product demos menu; keep it in step with `docs/services/<service>/`.
-5. Mark the story done in the epics file, close its GitHub issue and keep README.md's roadmap in sync when an epic ships.
-6. Run evals with `npm run eval` on demand and on PRs labelled `evals`, not on every PR (they cost money).
-7. Cloud sessions have limited network access: don't rely on reaching Neon, AWS, Stripe or Anthropic from the session. Use PGlite, mocks and recorded fixtures for tests.
+4. Every module has a product page on the site at `/products/<module>`, built from one template with seven sections: Read Me, Requirement EPIC, User Journey, UI Components, API Spec, Data Model, Schema (`app/products/`, story `MVP1-E0-10`). A section whose design is not finalized shows "Coming Soon..."; never invent content to fill it. Page content comes from `app/products/data.ts` (the stories in `docs/epics/`) and a per-service file such as `app/products/identity.ts` (the docs in `docs/services/<service>/`): when a story or service doc changes, change the page data in the same PR. When an endpoint ships, also update `app/apis/endpoints.ts`.
+5. The site has three navigation items: Home, Products (two levels: MVP1, MVP2) and Architecture. The product's working name is **DocFlow** everywhere (site, docs, API paths); on the site it is defined once in `app/products/flow.tsx`, with the flow steps and which modules belong to each. Do not rename it unless Nikhil asks. `/products/vision` is the product vision page, and every module page shows the flow with its own step highlighted (story `MVP1-E0-11`): a new module must be added to a step in `flow.tsx`. Pages use the full screen width and must work from 320 to 1920 pixels wide, in light and dark mode.
+6. Mark the story done in the epics file, close its GitHub issue and keep README.md's roadmap in sync when an epic ships.
+7. Run evals with `npm run eval` on demand and on PRs labelled `evals`, not on every PR (they cost money).
+8. Cloud sessions have limited network access: don't rely on reaching Neon, AWS, Stripe or Anthropic from the session. Use PGlite, mocks and recorded fixtures for tests.
 
 ## Current status
-- Phase 0 (foundation): site live at 01scale.com on Vercel, with a home page, product demos page and APIs page.
+- Phase 0 (foundation): site live at 01scale.com on Vercel, with Home, Products (a page per module) and Architecture.
 - Architecture decided: independent services behind a gateway, one repo, Vercel (+ Lambda for Extraction later), one Neon project with a schema per service.
 - All APIs and tables are designed in the stories by owning service; none is built yet. The current code is still a single Next.js app at the repo root; moving it to `apps/web` is part of `MVP1-E0-07`.
 - MVP1 stories exist as GitHub issues labelled `mvp1`, `epic:<E#>`, `service:<name>`.
