@@ -650,3 +650,270 @@ section[id] {
 .button-solid:hover {
   background: var(--brand-bright);
 }
+
+/* Developer guide */
+
+.hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 18px 0 0;
+}
+
+.hero-meta span {
+  padding: 3px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.guide code {
+  padding: 1px 5px;
+  border-radius: 5px;
+  background: var(--chip-bg);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.85em;
+  overflow-wrap: anywhere;
+}
+
+.guide h3 {
+  margin: 28px 0 10px;
+  font-size: 1.05rem;
+}
+
+.guide h4 {
+  margin: 20px 0 8px;
+  color: var(--link);
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.guide section[id] {
+  scroll-margin-top: 120px;
+}
+
+.toc {
+  position: sticky;
+  top: 58px;
+  z-index: 5;
+  display: flex;
+  gap: 8px;
+  margin: -32px -16px 28px;
+  padding: 10px 16px;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+  white-space: nowrap;
+}
+
+.toc a {
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--chip-bg);
+  color: var(--chip-text);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.code {
+  max-width: 100%;
+  margin: 0 0 12px;
+  padding: 14px;
+  overflow-x: auto;
+  border-radius: 10px;
+  background: #0d1033;
+  color: #e6e8ff;
+  font-size: 0.8rem;
+  line-height: 1.55;
+}
+
+.guide .code code {
+  padding: 0;
+  background: none;
+  color: inherit;
+  font-size: inherit;
+  overflow-wrap: normal;
+  white-space: pre;
+}
+
+.endpoint,
+.more {
+  margin-bottom: 10px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+}
+
+.endpoint summary,
+.more summary {
+  padding: 14px 16px;
+  cursor: pointer;
+}
+
+.endpoint summary {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  list-style: none;
+}
+
+.endpoint summary::-webkit-details-marker {
+  display: none;
+}
+
+.endpoint-head {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.guide .endpoint-head code {
+  padding: 0;
+  background: none;
+  font-weight: 700;
+}
+
+.endpoint-head span {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.endpoint[open],
+.more[open] {
+  border-color: var(--brand-bright);
+}
+
+.endpoint-body,
+.more > :not(summary) {
+  padding: 0 16px 16px;
+}
+
+.more summary {
+  color: var(--link);
+  font-weight: 600;
+}
+
+.fields {
+  margin: 0;
+}
+
+.fields > div {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.fields > div:last-child {
+  border-bottom: 0;
+}
+
+.fields dt {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.fields dd {
+  margin: 4px 0 0;
+}
+
+.fields .constraint {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.chip {
+  padding: 0 8px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.status-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.status-list li {
+  display: flex;
+  gap: 10px;
+  padding: 6px 0;
+}
+
+.code-ok,
+.code-err {
+  flex: 0 0 auto;
+  align-self: flex-start;
+  min-width: 2.6rem;
+  padding: 1px 6px;
+  border-radius: 6px;
+  color: #ffffff;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.code-ok {
+  background: #0b7a4b;
+}
+
+.code-err {
+  background: #b4233c;
+}
+
+.table-block {
+  margin-bottom: 28px;
+}
+
+.table-scroll {
+  overflow-x: auto;
+}
+
+.table-scroll table {
+  border-collapse: collapse;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.table-scroll th,
+.table-scroll td {
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  text-align: left;
+}
+
+.table-scroll th {
+  background: var(--chip-bg);
+}
+
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.button-outline {
+  border: 2px solid var(--link);
+  background: none;
+  color: var(--link);
+  box-shadow: none;
+}
+
+.button-outline:hover {
+  background: var(--chip-bg);
+}

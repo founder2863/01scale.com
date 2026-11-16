@@ -26,6 +26,8 @@ Nikhil is a platform & AI product leader (17+ years: identity, payments, integra
 | Architecture: options, Nikhil's decision and why, service evolution | `docs/architecture/ARCHITECTURE.md` |
 | API rules + endpoint index by service | `docs/architecture/API-DESIGN.md` |
 | Database rules + table index by service | `docs/architecture/DATABASE-DESIGN.md` |
+| Per-service developer guide, API spec and data model | `docs/services/<service>/` (Identity login: `docs/services/identity/`) |
+| Infrastructure setup steps | `docs/infra/` (Cognito: `docs/infra/cognito.md`) |
 | Eval plan (LLM outputs) | `docs/evals/EVALS.md` |
 | Decision log per epic | `docs/decisions/<EPIC-ID>.md` |
 | Prompts (versioned) | `prompts/<name>/v<N>.md` |
@@ -74,7 +76,7 @@ Nikhil is a platform & AI product leader (17+ years: identity, payments, integra
 1. Work on a branch named after the issue ID, then open a PR with what changed, why, how to test, and the acceptance criteria checked off.
 2. Build inside the owning service's folder, API before UI: schema and migration, service function, route handler with zod validation, OpenAPI entry, MCP tool, tests, then the UI component and the app page that calls it. A story that touches two services changes the provider first, then the consumer.
 3. New services start from the service template (`packages/service-kit`, story `MVP1-E0-07`). Do not hand-roll auth checks, error formats, logging or events in a service.
-4. When an endpoint ships, change its status on the site's APIs page (`app/apis/endpoints.ts`) and the module's status on the demos page (`app/demos/modules.ts`).
+4. When an endpoint ships, change its status on the site's APIs page (`app/apis/endpoints.ts`) and the module's status on the demos page (`app/demos/modules.ts`). A module with a developer guide has its own page under `app/demos/<module>/`, opened from the Product demos menu; keep it in step with `docs/services/<service>/`.
 5. Mark the story done in the epics file, close its GitHub issue and keep README.md's roadmap in sync when an epic ships.
 6. Run evals with `npm run eval` on demand and on PRs labelled `evals`, not on every PR (they cost money).
 7. Cloud sessions have limited network access: don't rely on reaching Neon, AWS, Stripe or Anthropic from the session. Use PGlite, mocks and recorded fixtures for tests.
