@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 // The product's working name lives here so a rename is one edit.
-export const PRODUCT_NAME = "DocIntel";
+export const PRODUCT_NAME = "DocFlow";
 export const VISION_HREF = "/products/vision";
 
 // The end-to-end flow. Each step is one platform component; `modules` lists the

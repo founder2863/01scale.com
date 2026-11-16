@@ -10,7 +10,7 @@ const DOC_URL =
   "https://github.com/founder2863/01scale.com/blob/main/docs/architecture/ARCHITECTURE.md";
 
 const apps = [
-  { name: "DocIntel", note: "First app" },
+  { name: "DocFlow", note: "First app" },
   { name: "Procure-to-Pay", note: "Future" },
   { name: "Order-to-Cash", note: "Future" },
 ];
@@ -79,13 +79,13 @@ const costs = [
 ];
 
 const flow = [
-  "DocIntel asks Upload to store the file",
-  "DocIntel asks Extraction to start a job",
-  "Extraction tells DocIntel the job finished",
-  "DocIntel asks Review to open a task",
-  "DocIntel asks Payment to create an order",
-  "Payment tells DocIntel the order was paid",
-  "DocIntel asks Delivery to send the email",
+  "DocFlow asks Upload to store the file",
+  "DocFlow asks Extraction to start a job",
+  "Extraction tells DocFlow the job finished",
+  "DocFlow asks Review to open a task",
+  "DocFlow asks Payment to create an order",
+  "Payment tells DocFlow the order was paid",
+  "DocFlow asks Delivery to send the email",
 ];
 
 const ladders = [

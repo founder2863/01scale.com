@@ -126,11 +126,6 @@ export default function Vision() {
             the invoice-specific results. Everything else is a component it
             calls.
           </p>
-          <p className="note">
-            {PRODUCT_NAME} is a working name. The design documents and API
-            addresses still use the earlier one, DocFlow, until the name is
-            final.
-          </p>
         </section>
 
         <section id="why-build">
