@@ -83,7 +83,7 @@ As the owner, I want one template every service is built from, so each new servi
 - **AC3:** A boundary check fails the pipeline if a service imports another service's code or names another service's schema. Services depend only on each other's published contract.
 - **AC4:** Each service has its own pipeline, triggered only by changes to its folder or to `packages/`, and deploys on its own. Reverting one service does not redeploy the others.
 - **AC5:** Outbound events are written in the same database transaction as the change (outbox) and delivered with an HMAC signature and retries.
-- **AC6:** Each service ships a UI package (`packages/ui-<name>`) of React components that call only its API, and a page on 01scale.com with a try-it demo, the API reference, the MCP tools, and its spec and decisions.
+- **AC6:** Each service ships a UI package (`packages/ui-<name>`) of React components that call only its API, and a product page on 01scale.com built from the shared template (`MVP1-E0-10`): Read Me, Requirement EPIC, User Journey, UI Components, API Spec, Data Model and Schema, plus a try-it demo and its MCP tools once the service is live.
 - **AC7:** Every call to another service has a timeout and a safe retry; a service being down returns a clear `503` problem response, never corrupt data.
 - **Service:** Platform (service template)
 - **API design:** No endpoints of its own. The template gives every service the endpoints in E0-02, E0-05 and E0-06, access-token verification, the error format, and signed outbound events: `POST <subscriber_url>` with `{event_id, type, occurred_at, data}` and an `X-01scale-Signature` HMAC header, retried with backoff.
@@ -113,6 +113,19 @@ As the owner, I want DocFlow to be a thin app that only connects platform servic
 - **API design:**
   - `POST /api/docflow/v1/webhooks/{service}` (service) — Receives signed events from platform services and moves the process forward. HMAC-signed body `{event_id, type, occurred_at, data}` → `200`. Idempotent on `event_id`. Handles `extraction.job.completed|failed`, `payment.order.paid|expired|failed`, `identity.user.deleted`. Errors: `401` bad signature.
 - **Database design:** `docflow.documents` (id, owner_id, file_name, file_id, job_id, review_task_id, order_id, status `pending_upload|uploaded|rejected|extracting|extraction_failed|needs_review|reviewed|paid`, created_at). The process record: it holds only IDs of records owned by other services. `docflow.inbound_events` (event_id primary key, type, received_at) gives idempotency.
+
+### MVP1-E0-10 · Site navigation and product page template — M
+As a hiring manager, I want every module to have its own page laid out the same way, on any device, so I can judge the product thinking quickly.
+- **AC1:** The site has three navigation items: Home, Products and Architecture.
+- **AC2:** The Products menu is organized at two levels, MVP1 and MVP2, with the numbered modules under each. Every number is fully visible on a phone, including 10 to 15.
+- **AC3:** Choosing a module opens its own page in the same tab, with a service introduction at the top and seven sections: Read Me, Requirement EPIC, User Journey, UI Components, API Spec, Data Model and Schema. On a desktop the sections are a vertical list on the left; on a phone or tablet they are a bar that scrolls sideways and stays in view.
+- **AC4:** Every module uses the same template. A section whose design is not finalized shows "Coming Soon..." and says what will appear there. Requirements, endpoints and data notes that already exist in the stories are shown.
+- **AC5:** All seven sections are filled for Login using AWS (Identity, version 1).
+- **AC6:** Pages use the full width of the screen and work at 320, 390, 768, 1024, 1440 and 1920 pixels wide, in light and dark mode, with no sideways scrolling of the page.
+- **AC7:** Old addresses keep working: `/demos` opens Products and `/demos/login` opens Login using AWS.
+- **Service:** Site (`apps/web`)
+- **API design:** No endpoints. The pages are static and read their content from `app/products/data.ts` (generated from the stories in `docs/epics/`) and `app/products/identity.ts` (generated with `docs/services/identity/`).
+- **Database design:** No tables.
 
 ---
 
