@@ -104,6 +104,16 @@ As Priya, I want to sign in by clicking a link in my email.
 - **API design:** No new endpoints. The gateway checks the `Origin` header on cookie-authenticated writes; API-key requests are exempt from CSRF checks because they carry no ambient credentials.
 - **Database design:** No schema change.
 
+### MVP2-E8-10 · Account security on our own screens — S
+Decided by Nikhil on 17 Nov 2026 (issue #26): in MVP1, "Change password" uses Cognito's hosted forgot-password page; our own screens come with hand-built identity.
+As a user, I want to manage how I sign in on 01scale's own account page, without being sent to another site.
+- **AC1:** `/account/security` replaces MVP1's "Change password" button. MVP2 sign-in is passwordless, so there is no password to change: the page lists my sign-in methods (my email for magic links and codes, and my passkeys), and I can add a passkey, remove one (with re-authentication, `MVP2-E8-07`) or change my email.
+- **AC2:** No step sends me to an outside page. Every action is an Identity endpoint with its UI component in `packages/ui-identity`.
+- **AC3:** An MVP1 user who signed in with a password and has not yet set up a passkey sees a prompt to add one.
+- **Service:** Identity
+- **API design:** No new endpoints: composes `GET /api/identity/v1/passkeys` and `DELETE …/passkeys/{passkeyId}` (`MVP2-E8-04`), `POST /api/identity/v1/me/email-change` (`MVP2-E8-07`) and `GET /api/identity/v1/sessions` (`MVP2-E8-06`). Removes `POST /api/identity/v1/me/password-change` (MVP1), with a deprecation note in the changelog.
+- **Database design:** No schema change.
+
 ---
 
 ## E9 · Multi-document support (MVP2 "b") — `llm`
@@ -327,6 +337,23 @@ As Priya, I want to type "line 3 quantity should be 12" and have it fixed.
   - `POST /api/delivery/v1/notifications` (service) — Notify a user about an event on every channel they have enabled. Called by an app's server. Body `{user_id, event, payload, reference}` + `Idempotency-Key` → `202 {notification}`. Replaces direct use of `POST /messages` by apps.
   - `GET /api/delivery/v1/notifications` (signed in) — My notification log: each attempt per channel. Query `cursor`, `limit` → `200 {data: [{event, channel, status: sent|failed|skipped, attempts, created_at}], next_cursor}`.
 - **Database design:** `delivery.notifications` (id, owner_id, app, reference, event, channel `email|sms|push`, status `sent|failed|skipped`, attempts, last_error, created_at). MVP1 `delivery.messages` rows are migrated into it.
+
+---
+
+## E15 · Platform gateway (MVP2 "h")
+**Goal:** move the platform's protections from hosting settings into the gateway service itself.
+
+### MVP2-E15-01 · Rate limiting built into the gateway — M
+Decided by Nikhil on 17 Nov 2026 (issue #21): MVP1 uses Vercel firewall rules; MVP2 builds rate limiting into the gateway service.
+As the owner, I want rate limits that are part of the platform's own code, so they are versioned, tested and the same wherever the gateway runs.
+- **AC1:** The gateway limits requests per IP (300 a minute), per user (600 a minute) and per API key, with tighter limits on Identity's sign-in endpoints. Values are configuration, not code.
+- **AC2:** Over a limit, the answer is `429 rate_limited` with `Retry-After`, and every response carries `RateLimit-Limit`, `RateLimit-Remaining` and `RateLimit-Reset`.
+- **AC3:** Counters are shared by every running copy of the gateway, so a limit holds across instances.
+- **AC4:** The Vercel firewall rules from MVP1 are removed once the gateway's limits are live, and `docs/infra/` says so.
+- **AC5:** A test proves a burst over the limit is refused and the window resets.
+- **Service:** Gateway
+- **API design:** No new endpoints. Adds the `RateLimit-*` response headers and `429 rate_limited` to every route.
+- **Database design:** No tables: the gateway holds no data. Counters live in a shared key-value store (for example Upstash Redis); the store is chosen in the story, with its trade-offs in the decision log.
 
 ---
 

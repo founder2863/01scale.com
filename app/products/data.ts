@@ -1820,6 +1820,29 @@ export const products = [
         ],
         "evals": "",
         "service": "Identity and service template"
+      },
+      {
+        "id": "MVP2-E8-10",
+        "title": "Account security on our own screens",
+        "size": "S",
+        "pending": "",
+        "story": "Decided by Nikhil on 17 Nov 2026 (issue #26): in MVP1, \"Change password\" uses Cognito's hosted forgot-password page; our own screens come with hand-built identity. As a user, I want to manage how I sign in on 01scale's own account page, without being sent to another site.",
+        "acs": [
+          {
+            "label": "AC1",
+            "text": "`/account/security` replaces MVP1's \"Change password\" button. MVP2 sign-in is passwordless, so there is no password to change: the page lists my sign-in methods (my email for magic links and codes, and my passkeys), and I can add a passkey, remove one (with re-authentication, `MVP2-E8-07`) or change my email."
+          },
+          {
+            "label": "AC2",
+            "text": "No step sends me to an outside page. Every action is an Identity endpoint with its UI component in `packages/ui-identity`."
+          },
+          {
+            "label": "AC3",
+            "text": "An MVP1 user who signed in with a password and has not yet set up a passkey sees a prompt to add one."
+          }
+        ],
+        "evals": "",
+        "service": "Identity"
       }
     ],
     "endpoints": [
@@ -1992,6 +2015,10 @@ export const products = [
       {
         "story": "MVP2-E8-09",
         "text": "No new endpoints. The gateway checks the `Origin` header on cookie-authenticated writes; API-key requests are exempt from CSRF checks because they carry no ambient credentials."
+      },
+      {
+        "story": "MVP2-E8-10",
+        "text": "No new endpoints: composes `GET /api/identity/v1/passkeys` and `DELETE …/passkeys/{passkeyId}` (`MVP2-E8-04`), `POST /api/identity/v1/me/email-change` (`MVP2-E8-07`) and `GET /api/identity/v1/sessions` (`MVP2-E8-06`). Removes `POST /api/identity/v1/me/password-change` (MVP1), with a deprecation note in the changelog."
       }
     ],
     "dbNotes": [
@@ -2038,6 +2065,11 @@ export const products = [
       {
         "story": "MVP2-E8-09",
         "title": "Auth security hardening",
+        "text": "No schema change."
+      },
+      {
+        "story": "MVP2-E8-10",
+        "title": "Account security on our own screens",
         "text": "No schema change."
       }
     ]
