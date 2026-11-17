@@ -305,9 +305,9 @@ As Priya, I want to type "line 3 quantity should be 12" and have it fixed.
 - **Database design:** No schema change; index `payment.payments(owner_id, created_at desc)`.
 
 ### MVP2-E13-06 · Free plan and upgrade to paid — M
-Decided by Nikhil on 17 Nov 2026 (PR #64): MVP1 gives every user 100 requests a minute across all endpoints; MVP2 adds a freemium model with paid upgrades.
+Decided by Nikhil on 17 Nov 2026 (PR #64): MVP1 limits every user to 10 requests a minute that change something and 60 reads a minute (10 a minute in total with an API key), so the demo cannot be used in batch; MVP2 adds a freemium model with paid upgrades.
 As a user who has outgrown the free plan, I want to upgrade to a paid plan so I get higher limits without a new account.
-- **AC1:** Every user starts on the Free plan, with the MVP1 limit of 100 requests a minute. The plans and their limits are configuration, not code.
+- **AC1:** Every user starts on the Free plan, with the MVP1 limits (10 changes and 60 reads a minute; 10 a minute with an API key). Paid plans raise them and allow batch use. The plans and their limits are configuration, not code.
 - **AC2:** `/account/plan` shows my plan, my usage against its limits, and the paid plans with their prices. Upgrading goes through Stripe Checkout in subscription mode; downgrading or cancelling takes effect at the end of the paid period.
 - **AC3:** When I reach a limit, the answer says which limit and offers the upgrade, instead of only `429`.
 - **AC4:** The gateway applies the limits of my plan, read from my access token, so no service needs to know about plans.
