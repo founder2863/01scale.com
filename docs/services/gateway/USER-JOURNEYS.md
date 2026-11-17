@@ -15,6 +15,17 @@ The gateway has no screens; these are the paths requests take through it.
 
 **Result:** Services never saw the cookie.
 
+## A service calls another service
+
+**Who:** DocFlow, acting for a user after an extraction · **Starts when:** Needs to create a Review task. · **Stories:** `MVP1-E0-08`, `MVP1-E1-03`
+
+| Step | The person | The system |
+|---|---|---|
+| 1 | Gets a delegated token from Identity, through the gateway. | Identity signs a 5-minute token for the user with `act: service:docflow`. |
+| 2 | Calls `https://01scale.com/api/review/v1/tasks` with it. | The gateway checks the token's signature and expiry, adds `X-Request-Id`, and forwards it unchanged. |
+
+**Result:** The same address, rules and logs as any other caller.
+
 ## An agent connects
 
 **Who:** An AI agent with an API key · **Starts when:** Is set up with the platform's MCP address. · **Stories:** `MVP1-E0-08`, `MVP1-E0-06`

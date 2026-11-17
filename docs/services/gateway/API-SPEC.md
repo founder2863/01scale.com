@@ -25,7 +25,7 @@ Every error uses `application/problem+json` with a stable `code`. Branch on `cod
 
 **Platform health.** The gateway and every service behind it.
 
-Access: **Public** · Story: `MVP1-E0-08`
+Access: **Public** · Scope: None · Story: `MVP1-E0-08`
 
 **Inputs:** none.
 
@@ -93,7 +93,7 @@ GET /api/health HTTP/1.1
 
 **The whole platform's contract.** One OpenAPI 3.1 document merged from every service's own.
 
-Access: **Public** · Story: `MVP1-E0-08`
+Access: **Public** · Scope: None · Story: `MVP1-E0-08`
 
 **Inputs:** none.
 
@@ -138,7 +138,7 @@ GET /api/openapi.json HTTP/1.1
 
 **The whole platform's MCP server.** Every service's tools in one MCP server, named `<service>.<operationId>`.
 
-Access: **Signed in** · Story: `MVP1-E0-08`
+Access: **Signed in** · Scope: Per tool: each tool needs the scope of the endpoint it mirrors · Story: `MVP1-E0-08`
 
 **Inputs**
 
@@ -205,8 +205,9 @@ Content-Type: application/json
 
 | Topic | How it works |
 |---|---|
-| Routing (AC1) | `/api/{service}/…` is forwarded to that service's Vercel deployment, set by `GATEWAY_ROUTES`. Services accept requests only with the gateway's shared header (`X-01scale-Gateway`), so they cannot be reached at their own addresses from a browser. |
-| Who is calling (AC2, E1-06) | A session cookie or `Authorization: Bearer sk_01s_…` is exchanged at Identity's `POST /token` for a 5-minute access token, cached until 30 seconds before expiry, and forwarded as `Authorization: Bearer <access token>`. Cookies and API keys are removed before forwarding. Without either, public endpoints pass through and the rest answer `401`. |
+| Routing (AC1) | `/api/{service}/…` is forwarded to that service's Vercel deployment, set by `GATEWAY_ROUTES`. Services accept requests only with the gateway's shared header (`X-01scale-Gateway`), so they cannot be reached at their own addresses. |
+| Calls between services (decision on #21) | Services and apps call each other through the gateway, at the same public address as every other client, because each service's API is its product. One extra hop per call is the accepted cost; the gateway stays thin. |
+| Who is calling (AC2, E1-06) | A session cookie or `Authorization: Bearer sk_01s_…` is exchanged at Identity's `POST /token` for a 5-minute access token, cached until 30 seconds before expiry, and forwarded as `Authorization: Bearer <access token>`. Cookies and API keys are removed before forwarding. A request that already carries an access token (`Bearer eyJ…`: a service or delegated token from Identity) is checked for signature and expiry and passed on unchanged. Without any of these, public endpoints pass through and the rest answer `401`. |
 | Pages (E1-06 AC1) | Middleware sends signed-out visitors of `/documents`, `/review`, `/pay`, `/success` and `/account` to `GET /api/identity/v1/auth/login?return_to=…`. |
 | Origin check (AC4) | Writes made with a cookie need `Origin: https://01scale.com`; otherwise `403 origin_not_allowed`. Calls with an API key are not checked, as they come from no browser. |
 | Rate limits (AC4) | Per IP: 300 a minute; per user: 600 a minute; tighter limits on login endpoints (set in Identity's spec). Over the limit: `429 rate_limited` with `Retry-After`. Starting values. |
