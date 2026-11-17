@@ -1134,9 +1134,101 @@ export const docflow = {
       "code": "Prefixed with `'`"
     }
   ],
-  "components": [],
+  "components": [
+    {
+      "name": "DocumentsList",
+      "kind": "Page section",
+      "purpose": "My documents with name, date, status chip and the next action; an empty state with a sample invoice.",
+      "props": [
+        {
+          "name": "pageSize",
+          "type": "number, optional",
+          "meaning": "Default 20."
+        }
+      ],
+      "states": [
+        "Loading",
+        "Empty: 'Upload your first invoice' and the sample",
+        "Loaded",
+        "Failed: Retry"
+      ],
+      "calls": [
+        "`GET /documents`"
+      ]
+    },
+    {
+      "name": "JsonPreview",
+      "kind": "Component",
+      "purpose": "The JSON with syntax highlighting and folding; usable on a phone.",
+      "props": [
+        {
+          "name": "documentId",
+          "type": "string",
+          "meaning": "The document."
+        }
+      ],
+      "states": [
+        "Loading",
+        "Shown, folded at the first level on phones",
+        "Not ready",
+        "Failed: Retry"
+      ],
+      "calls": [
+        "`GET /documents/{documentId}/outputs/json/preview`"
+      ]
+    },
+    {
+      "name": "CsvPreview",
+      "kind": "Component",
+      "purpose": "The CSV as a table that scrolls inside its own box.",
+      "props": [
+        {
+          "name": "documentId",
+          "type": "string",
+          "meaning": "The document."
+        }
+      ],
+      "states": [
+        "Loading",
+        "Shown",
+        "Not ready",
+        "Failed: Retry"
+      ],
+      "calls": [
+        "`GET /documents/{documentId}/outputs/csv/preview`"
+      ]
+    },
+    {
+      "name": "DownloadButtons",
+      "kind": "Component",
+      "purpose": "Download JSON and Download CSV; 'Pay to download' while locked.",
+      "props": [
+        {
+          "name": "documentId",
+          "type": "string",
+          "meaning": "The document."
+        },
+        {
+          "name": "locked",
+          "type": "boolean",
+          "meaning": "From the outputs request."
+        }
+      ],
+      "states": [
+        "Locked",
+        "Unlocked",
+        "Working"
+      ],
+      "calls": [
+        "`GET /documents/{documentId}/outputs/{format}/download`"
+      ]
+    }
+  ],
   "hostedPages": [],
-  "uiRules": [],
+  "uiRules": [
+    "DocFlow's pages are built from the services' components; DocFlow adds only the documents list and the results views.",
+    "Same accessibility and size rules as every 01scale page."
+  ],
   "entities": [
     {
       "name": "Document",
