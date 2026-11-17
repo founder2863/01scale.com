@@ -51,14 +51,18 @@ ENDPOINTS = [
              json.dumps({"jsonrpc": "2.0", "id": 1, "result": {"structuredContent": {"file": {"id": "0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b", "status": "pending"}}}}, indent=2)),
 ]
 
+ENDPOINTS[4]["scope"] = "Per tool: each tool needs the scope of the endpoint it mirrors"
+
 NO_ENDPOINT = [
     {"topic": "Errors (E0-05 AC2)", "how": "RFC 9457 `application/problem+json`: `type`, `title`, `status`, `detail`, `code`, `request_id`, and `errors[]` (`field`, `code`, `message`) for validation. Codes shared by every service: `not_authenticated`, `insufficient_scope`, `validation_failed`, `idempotency_key_reused`, `rate_limited`, `dependency_unavailable`, `not_found`."},
-    {"topic": "Access tokens (E1-06)", "how": "`requireUser(scope)` verifies the ES256 token against Identity's `GET /jwks` (cached, refreshed on an unknown `kid`), checks `aud`, `exp` and the scope, and gives the handler `{userId, isAdmin, auth, akid}`. Queries on user-owned tables always filter by `owner_id` in the data-access layer."},
+    {"topic": "Access tokens (E1-06, decision on #24)", "how": "`requireUser(scope)` verifies the ES256 token against Identity's `GET /jwks` (cached, refreshed on an unknown `kid`), checks `aud`, `exp` and the scope, and gives the handler `{userId, isAdmin, auth, akid, act, app}`. It accepts `session`, `api_key` and `delegated` tokens: a delegated token is the user's token, so ownership checks are unchanged. `requireService(scope)` accepts only `auth: service`. Queries on user-owned tables always filter by `owner_id` in the data-access layer."},
+    {"topic": "Scopes (review finding M3)", "how": "Every endpoint states its scope: `<service>:read` for GET and `<service>:write` otherwise, unless its spec says otherwise (session only, admin, per tool, signature). A browser session has `*`; API keys and service clients have only what they were given."},
     {"topic": "Idempotency (E0-05 AC4)", "how": "`withIdempotency()` on create endpoints: the same key and body returns the stored response; the same key with another body answers `422 idempotency_key_reused`. Keys expire after 24 hours."},
     {"topic": "Pagination (E0-05 AC3)", "how": "Opaque cursor (base64url of the last row's `created_at` and `id`); `limit` 1 to 100; answers `{data, next_cursor}`."},
     {"topic": "Request IDs and logs (E0-05 AC6)", "how": "Takes `X-Request-Id` from the gateway (or makes one), returns it, and passes it on every outgoing call. Logs are JSON lines with the request ID, never document contents, tokens or personal data."},
-    {"topic": "Outbound events (E0-07 AC5)", "how": "`emit(type, data, subscribers)` writes one `outbound_events` row per subscriber in the caller's transaction. A delivery job sends them with an HMAC signature; retries back off 1 minute, 5, 30, 2 hours, 12 hours, then `failed`."},
-    {"topic": "Calls to other services (E0-07 AC7)", "how": "`callService()`: 5-second timeout, one retry for safe or idempotent calls, and a `503 dependency_unavailable` problem when the other service cannot answer."},
+    {"topic": "Outbound events (E0-07 AC5, decision on #13)", "how": "`emit(type, data)` writes one `outbound_events` row in the caller's transaction, addressed to the app that started the work: the `reference` prefix (`docflow:` …) is looked up in `EVENT_ROUTES`. An event with no route is stored as `failed` and never sent. Platform-wide events (`identity.user.deleted`) get one row per service and app. A delivery job sends them with an HMAC signature; retries back off 1 minute, 5, 30, 2 hours, 12 hours, then `failed`. The app stays the orchestrator; a broker replaces this routing when a second app arrives."},
+    {"topic": "Calls to other services (E0-07 AC7, decision on #21)", "how": "`callService()` always calls `https://01scale.com/api/{service}/v1/…` through the gateway, never a deployment address. It sends the caller's own token, or a service token, or a delegated token for a user (cached until 30 seconds before expiry), with a 5-second timeout, one retry for safe or idempotent calls, and a `503 dependency_unavailable` problem when the other service cannot answer."},
+    {"topic": "Audit of delegated calls", "how": "A call made with a delegated token is audited with the user as `actor_id`, `actor_type: service`, and `act` (for example `service:docflow`) in `metadata`, so the record shows both who it was for and who did it."},
     {"topic": "Audit (E0-02)", "how": "`audit(actor, action, target, metadata)` checks the action against the fixed list and the metadata against an allow-list of keys, then inserts. The role cannot update or delete audit rows."},
     {"topic": "Migrations (E0-01)", "how": "Drizzle migrations per service, run before a new version serves traffic. Each service's role can reach only its own schema; a test proves it cannot read another's."},
     {"topic": "Boundaries (E0-07 AC3)", "how": "A lint rule fails if a service imports another service's folder or names another schema in SQL. Services share only `packages/` and published contracts."},
@@ -249,9 +253,12 @@ MODULE = {
         {"name": "<SERVICE>_DATABASE_URL", "value": "Neon connection string for that service's role", "secret": "Yes"},
         {"name": "IDENTITY_JWKS_URL", "value": "`https://01scale.com/api/identity/v1/jwks`", "secret": "No"},
         {"name": "EVENTS_SIGNING_KEY", "value": "32 random bytes, base64; shared by the platform's services", "secret": "Yes"},
+        {"name": "EVENT_ROUTES", "value": "JSON: reference prefix → app's event address, for example `{\"docflow\": \"https://01scale.com/api/docflow/v1/webhooks\"}`", "secret": "No"},
+        {"name": "<SERVICE>_CLIENT_SECRET", "value": "The service's client secret for Identity's `POST /token` (Service access)", "secret": "Yes"},
     ],
     "openQuestions": [
         "One signing key for all events is simplest; a key per sender would limit what one leaked key can forge. I chose one key for MVP1.",
+        "Decided: events go only to the app that started the work, by `reference` prefix, and the app is the orchestrator (#13). Calls between services go through the gateway (#21). Services act for users with delegated tokens (#24).",
         "How the outbox delivery job runs on Vercel: a cron every minute plus an immediate attempt after the transaction commits.",
     ],
     "errorSample": problem("idempotency_key_reused", "Idempotency key reused", 422, "This Idempotency-Key was used with a different request body."),

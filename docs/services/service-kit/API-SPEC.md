@@ -25,7 +25,7 @@ Every error uses `application/problem+json` with a stable `code`. Branch on `cod
 
 **Is the service up.** Liveness for the gateway's platform health check.
 
-Access: **Public** · Story: `MVP1-E0-05`
+Access: **Public** · Scope: None · Story: `MVP1-E0-05`
 
 **Inputs:** none.
 
@@ -59,7 +59,7 @@ GET /api/upload/v1/health HTTP/1.1
 
 **The service's contract.** OpenAPI 3.1, generated from the zod schemas the handlers validate with.
 
-Access: **Public** · Story: `MVP1-E0-05`
+Access: **Public** · Scope: None · Story: `MVP1-E0-05`
 
 **Inputs:** none.
 
@@ -106,7 +106,7 @@ GET /api/upload/v1/openapi.json HTTP/1.1
 
 **My audit events in this service.** What happened to the caller's things in this service; admins see everyone's.
 
-Access: **Signed in** · Story: `MVP1-E0-02`
+Access: **Signed in** · Scope: `{service}:read` · Story: `MVP1-E0-02`
 
 **Inputs**
 
@@ -167,7 +167,7 @@ Authorization: Bearer <access token>
 
 **Receive platform events.** Where a service receives another service's signed events, such as `identity.user.deleted`. Apps use their own webhook instead.
 
-Access: **Service** · Story: `MVP1-E0-07`
+Access: **Service** · Scope: None: HMAC signature · Story: `MVP1-E0-07`
 
 **Inputs**
 
@@ -220,7 +220,7 @@ HTTP/1.1 200 OK
 
 **The service's MCP server.** The service's `agent` operations as tools for AI agents, over Streamable HTTP.
 
-Access: **Signed in** · Story: `MVP1-E0-06`
+Access: **Signed in** · Scope: Per tool: each tool needs the scope of the endpoint it mirrors · Story: `MVP1-E0-06`
 
 **Inputs**
 
@@ -290,12 +290,14 @@ Content-Type: application/json
 | Topic | How it works |
 |---|---|
 | Errors (E0-05 AC2) | RFC 9457 `application/problem+json`: `type`, `title`, `status`, `detail`, `code`, `request_id`, and `errors[]` (`field`, `code`, `message`) for validation. Codes shared by every service: `not_authenticated`, `insufficient_scope`, `validation_failed`, `idempotency_key_reused`, `rate_limited`, `dependency_unavailable`, `not_found`. |
-| Access tokens (E1-06) | `requireUser(scope)` verifies the ES256 token against Identity's `GET /jwks` (cached, refreshed on an unknown `kid`), checks `aud`, `exp` and the scope, and gives the handler `{userId, isAdmin, auth, akid}`. Queries on user-owned tables always filter by `owner_id` in the data-access layer. |
+| Access tokens (E1-06, decision on #24) | `requireUser(scope)` verifies the ES256 token against Identity's `GET /jwks` (cached, refreshed on an unknown `kid`), checks `aud`, `exp` and the scope, and gives the handler `{userId, isAdmin, auth, akid, act, app}`. It accepts `session`, `api_key` and `delegated` tokens: a delegated token is the user's token, so ownership checks are unchanged. `requireService(scope)` accepts only `auth: service`. Queries on user-owned tables always filter by `owner_id` in the data-access layer. |
+| Scopes (review finding M3) | Every endpoint states its scope: `<service>:read` for GET and `<service>:write` otherwise, unless its spec says otherwise (session only, admin, per tool, signature). A browser session has `*`; API keys and service clients have only what they were given. |
 | Idempotency (E0-05 AC4) | `withIdempotency()` on create endpoints: the same key and body returns the stored response; the same key with another body answers `422 idempotency_key_reused`. Keys expire after 24 hours. |
 | Pagination (E0-05 AC3) | Opaque cursor (base64url of the last row's `created_at` and `id`); `limit` 1 to 100; answers `{data, next_cursor}`. |
 | Request IDs and logs (E0-05 AC6) | Takes `X-Request-Id` from the gateway (or makes one), returns it, and passes it on every outgoing call. Logs are JSON lines with the request ID, never document contents, tokens or personal data. |
-| Outbound events (E0-07 AC5) | `emit(type, data, subscribers)` writes one `outbound_events` row per subscriber in the caller's transaction. A delivery job sends them with an HMAC signature; retries back off 1 minute, 5, 30, 2 hours, 12 hours, then `failed`. |
-| Calls to other services (E0-07 AC7) | `callService()`: 5-second timeout, one retry for safe or idempotent calls, and a `503 dependency_unavailable` problem when the other service cannot answer. |
+| Outbound events (E0-07 AC5, decision on #13) | `emit(type, data)` writes one `outbound_events` row in the caller's transaction, addressed to the app that started the work: the `reference` prefix (`docflow:` …) is looked up in `EVENT_ROUTES`. An event with no route is stored as `failed` and never sent. Platform-wide events (`identity.user.deleted`) get one row per service and app. A delivery job sends them with an HMAC signature; retries back off 1 minute, 5, 30, 2 hours, 12 hours, then `failed`. The app stays the orchestrator; a broker replaces this routing when a second app arrives. |
+| Calls to other services (E0-07 AC7, decision on #21) | `callService()` always calls `https://01scale.com/api/{service}/v1/…` through the gateway, never a deployment address. It sends the caller's own token, or a service token, or a delegated token for a user (cached until 30 seconds before expiry), with a 5-second timeout, one retry for safe or idempotent calls, and a `503 dependency_unavailable` problem when the other service cannot answer. |
+| Audit of delegated calls | A call made with a delegated token is audited with the user as `actor_id`, `actor_type: service`, and `act` (for example `service:docflow`) in `metadata`, so the record shows both who it was for and who did it. |
 | Audit (E0-02) | `audit(actor, action, target, metadata)` checks the action against the fixed list and the metadata against an allow-list of keys, then inserts. The role cannot update or delete audit rows. |
 | Migrations (E0-01) | Drizzle migrations per service, run before a new version serves traffic. Each service's role can reach only its own schema; a test proves it cannot read another's. |
 | Boundaries (E0-07 AC3) | A lint rule fails if a service imports another service's folder or names another schema in SQL. Services share only `packages/` and published contracts. |
