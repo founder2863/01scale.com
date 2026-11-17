@@ -1,6 +1,6 @@
 # Service template service — user journeys
 
-> **Version 1 · `packages/service-kit` and `services/_template`.** Status: in design. Stories: `MVP1-E0-01`, `MVP1-E0-02`, `MVP1-E0-03`, `MVP1-E0-05`, `MVP1-E0-07`.
+> **Version 1 · `packages/service-kit` and `services/_template`.** Status: designed, not built. Stories: `MVP1-E0-01`, `MVP1-E0-02`, `MVP1-E0-03`, `MVP1-E0-05`, `MVP1-E0-07`.
 
 Developer and agent journeys: the template has no screens.
 
