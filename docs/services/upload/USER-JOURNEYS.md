@@ -14,7 +14,7 @@ What a person sees and what the system does, for uploading a file in version 1.
 | 2 | Sees the file name and a progress bar starting at 0%. | Upload records the file as `pending_upload` and returns a link valid for 5 minutes. |
 | 3 | Watches the bar fill. | The browser sends the file straight to private storage with that link. Upload never handles the bytes. |
 | 4 | Sees 'Checking your file…' for a moment. | Upload confirms the file arrived at the declared size, checks its first bytes match its type, and counts its pages. |
-| 5 | Sees 'Uploaded' and is taken to the next step. | The file is `ready`. The app that uses Upload moves on; in DocFlow, the extraction page opens. |
+| 5 | Sees 'Uploaded' and a preview of the file, then continues. | The file is `ready`. The app shows Upload's `FilePreview` for it and moves on when the person continues; in DocFlow, to the extraction page. |
 
 **Result:** The file is stored privately, checked and ready to use. Only its owner can read it, through links that last 5 minutes.
 

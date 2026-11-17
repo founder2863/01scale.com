@@ -829,7 +829,7 @@ export const docflow = {
     },
     {
       "topic": "Pages",
-      "how": "`/documents`, `/documents/{id}` (extraction), `/documents/{id}/review`, `/documents/{id}/results`, `/documents/{id}/pay`, `/documents/{id}/success`. Each composes the services' components."
+      "how": "`/documents`, `/documents/new` (upload, with the file's preview once checked), `/documents/{id}` (extraction, with the preview beside the fields), `/documents/{id}/review`, `/documents/{id}/results`, `/documents/{id}/pay`, `/documents/{id}/success`. Each composes the services' components."
     }
   ],
   "tables": [
@@ -1183,8 +1183,8 @@ export const docflow = {
           "system": "DocFlow lists the person's documents with status and next action."
         },
         {
-          "person": "Uploads; is taken to the extraction page.",
-          "system": "DocFlow starts the document, Upload stores and checks the file, and DocFlow starts Extraction."
+          "person": "Uploads, sees a preview of the file, and taps Continue to the extraction page.",
+          "system": "DocFlow starts the document, Upload stores and checks the file, DocFlow starts Extraction, and the upload screen shows Upload's `FilePreview`."
         },
         {
           "person": "Watches the steps, then sees 'Review 3 flagged fields'.",

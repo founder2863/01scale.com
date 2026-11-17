@@ -1013,8 +1013,8 @@ export const upload = {
           "system": "Upload confirms the file arrived at the declared size, checks its first bytes match its type, and counts its pages."
         },
         {
-          "person": "Sees 'Uploaded' and is taken to the next step.",
-          "system": "The file is `ready`. The app that uses Upload moves on; in DocFlow, the extraction page opens."
+          "person": "Sees 'Uploaded' and a preview of the file, then continues.",
+          "system": "The file is `ready`. The app shows Upload's `FilePreview` for it and moves on when the person continues; in DocFlow, to the extraction page."
         }
       ],
       "outcome": "The file is stored privately, checked and ready to use. Only its owner can read it, through links that last 5 minutes."
@@ -1351,7 +1351,7 @@ export const upload = {
     {
       "name": "FilePreview",
       "kind": "Component",
-      "purpose": "Shows a stored PDF page by page, or an image, inside the page, so a person can read the document beside other information. New: decided on #36, for the extraction page (`MVP1-E3-04`) and any other app.",
+      "purpose": "Shows a stored PDF page by page, or an image, inside the page, so a person can read the document beside other information. New: decided on #36 and confirmed on PR #65, used on DocFlow's upload screen (`MVP1-E2-04`) and extraction page (`MVP1-E3-04`), and by any other app.",
       "props": [
         {
           "name": "fileId",
