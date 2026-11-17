@@ -721,7 +721,7 @@ MODULE = {
     ],
     "openQuestions": [
         "Rate limits are starting values to be tuned once there is real traffic.",
-        "A photo has no text layer, so the quote check cannot confirm a quote against the document's own text. Version 1 skips that one check for images (the other checks still run). Should photo values be capped below the threshold so a person always sees them?",
+        "Decided by Nikhil on 17 Nov 2026 (#65): photo values are not capped. A person can always see every value, flagged or not, through 'Show all fields' in review, so the minimal implementation is kept. (Later, #80 adds OCR, which lets the quote check run on photos as well.)",
         "The extraction page shows the document beside the fields (`MVP1-E3-04`). Upload ships no inline preview component, only a link that opens the file. Either Upload gains a preview component, or the app renders one from the download link.",
         "Which model is the default is a cost and accuracy choice to settle with the eval set (targets: at most $0.10 and 60 seconds per document).",
     ],
