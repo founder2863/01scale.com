@@ -18,7 +18,7 @@ Keeps a running ledger of what each story cost to build with Claude Code, and sp
 ## Steps
 
 1. Find the session transcript: `~/.claude/projects/<project folder>/<session id>.jsonl`. Cloud sessions are deleted when they end, so record before the session closes.
-2. Run `python3 scripts/costs/extract_session.py <transcript> > /tmp/requests.json` (use your scratchpad).
+2. Run `python3 scripts/costs/extract_session.py <transcript> [split-time ...] > /tmp/requests.json` (use your scratchpad). Pass the session's existing `splits` from the ledger, plus a new split time wherever one request covered more than one story: use the time of the commit that finished each story, so each gets its own cost.
 3. Add the new requests to the ledger. For a session already in the ledger, update the rows it has and append the new ones; match rows by session and timestamp, never by position alone. Add the session's `by_kind_usd` and rates to `sessions`.
 4. For each new row, set:
    - `area`: a story key from `stories` (add a new key with its name if needed), or a scaffolding area name;
@@ -36,7 +36,8 @@ Keeps a running ledger of what each story cost to build with Claude Code, and sp
 
 ## Rules that are easy to get wrong
 
-- Never enter a cost by hand. If the extractor reports `null`, the tool had not priced it yet: leave it `null` and it shows as pending.
+- Never enter a cost by hand. If the extractor reports `null`, the tool had not priced it yet: leave it `null` and it shows as pending. Re-run at the next update; earlier rows are refreshed by timestamp, so pending rows fill in.
+- Record the session's `overhead_usd` (what the tool charged beyond the recorded responses). It is shown once, under scaffolding, never spread over stories.
 - Do not change past classifications without saying so in the pull request.
 - Tokens include context re-read from the cache. They are most of the volume but the cheapest part; the cost column is what matters for money.
 - A request sent after a break of more than an hour carries the cost of reloading the whole conversation. That is real cost and stays with that request.
