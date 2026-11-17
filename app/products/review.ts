@@ -661,9 +661,35 @@ export const review = {
           "meaning": "Who finished it. The owner in version 1; kept separate for later shared reviews."
         }
       ],
-      "constraints": [],
-      "sampleCols": [],
-      "sampleRows": []
+      "constraints": [
+        "`tasks_pkey`: primary key (`id`)",
+        "`tasks_status_check`: `open` or `completed`",
+        "`tasks_completed_check`: `completed_at` and `completed_by` are set exactly when completed",
+        "`tasks_reference_check`: `reference` 1 to 200 characters",
+        "`tasks_owner_id_idx`: index on (`owner_id`, `created_at` desc), for a user's tasks"
+      ],
+      "sampleCols": [
+        "id",
+        "owner_id",
+        "reference",
+        "status",
+        "checks_overridden",
+        "created_at",
+        "completed_at",
+        "completed_by"
+      ],
+      "sampleRows": [
+        [
+          "0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a2b",
+          "0193a5b2-7c1e-7a3f-9b2d-4e6f8a1c2d3e",
+          "docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c",
+          "completed",
+          "false",
+          "2026-11-17 09:14:43+00",
+          "2026-11-17 09:16:02+00",
+          "0193a5b2-7c1e-7a3f-9b2d-4e6f8a1c2d3e"
+        ]
+      ]
     },
     {
       "name": "review.fields",
@@ -790,9 +816,87 @@ export const review = {
           "meaning": "When."
         }
       ],
-      "constraints": [],
-      "sampleCols": [],
-      "sampleRows": []
+      "constraints": [
+        "`fields_pkey`: primary key (`id`)",
+        "`fields_task_id_fkey`: foreign key (`task_id`) references `review.tasks` on delete cascade",
+        "`fields_task_name_line_key`: unique (`task_id`, `name`, `line_index`) nulls not distinct",
+        "`fields_type_check`, `fields_status_check`: only the listed values",
+        "`fields_flagged_check`: `flagged` exactly when `flag_reasons` is not empty",
+        "`fields_decided_check`: `updated_by` and `updated_at` are set exactly when `status` is not `pending`",
+        "`fields_not_present_check`: a `not_present` field has no `value`; an `accepted` one keeps `original_value`",
+        "`fields_confidence_check`, `fields_quote_check`: confidence 0 to 1; quote 1 to 500 characters",
+        "`fields_queue_idx`: index on (`task_id`, `flagged` desc, `confidence`), for the queue order"
+      ],
+      "sampleCols": [
+        "id",
+        "task_id",
+        "name",
+        "line_index",
+        "type",
+        "original_value",
+        "value",
+        "confidence",
+        "source_page",
+        "source_quote",
+        "flagged",
+        "flag_reasons",
+        "status",
+        "updated_by",
+        "updated_at"
+      ],
+      "sampleRows": [
+        [
+          "0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a30",
+          "0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a2b",
+          "total",
+          "(empty)",
+          "decimal",
+          "\"1240.00\"",
+          "\"1230.00\"",
+          "0.30",
+          "2",
+          "TOTAL DUE  $1,240.00",
+          "true",
+          "{\"Total ≠ subtotal + tax (1,150.00 + 80.00 = 1,230.00)\"}",
+          "edited",
+          "0193a5b2-7c1e-7a3f-9b2d-4e6f8a1c2d3e",
+          "2026-11-17 09:15:30+00"
+        ],
+        [
+          "0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a31",
+          "0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a2b",
+          "vendor_tax_id",
+          "(empty)",
+          "text",
+          "(empty)",
+          "(empty)",
+          "0.62",
+          "(empty)",
+          "(empty)",
+          "true",
+          "{\"Low confidence (0.62)\"}",
+          "not_present",
+          "0193a5b2-7c1e-7a3f-9b2d-4e6f8a1c2d3e",
+          "2026-11-17 09:15:41+00"
+        ],
+        [
+          "0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a32",
+          "0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a2b",
+          "vendor_name",
+          "(empty)",
+          "text",
+          "\"Acme Supplies Ltd\"",
+          "\"Acme Supplies Ltd\"",
+          "0.97",
+          "1",
+          "Acme Supplies Ltd",
+          "false",
+          "{}",
+          "pending",
+          "(empty)",
+          "(empty)"
+        ]
+      ]
     },
     {
       "name": "review.field_changes",
@@ -863,9 +967,34 @@ export const review = {
           "meaning": "When."
         }
       ],
-      "constraints": [],
-      "sampleCols": [],
-      "sampleRows": []
+      "constraints": [
+        "`field_changes_pkey`: primary key (`id`)",
+        "`field_changes_field_id_fkey`: foreign key (`field_id`) references `review.fields` on delete cascade",
+        "`field_changes_action_check`, `field_changes_source_check`: only the listed values",
+        "`field_changes_field_id_idx`: index on (`field_id`, `created_at`), for a field's history in order"
+      ],
+      "sampleCols": [
+        "id",
+        "field_id",
+        "action",
+        "old_value",
+        "new_value",
+        "source",
+        "changed_by",
+        "created_at"
+      ],
+      "sampleRows": [
+        [
+          "0193b0f9-0000-7a00-8b00-0c00d00e00f1",
+          "0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a30",
+          "edit",
+          "\"1240.00\"",
+          "\"1230.00\"",
+          "review",
+          "0193a5b2-7c1e-7a3f-9b2d-4e6f8a1c2d3e",
+          "2026-11-17 09:15:30+00"
+        ]
+      ]
     },
     {
       "name": "review.eval_candidates",
@@ -960,9 +1089,42 @@ export const review = {
           "meaning": "When the correction was made."
         }
       ],
-      "constraints": [],
-      "sampleCols": [],
-      "sampleRows": []
+      "constraints": [
+        "`eval_candidates_pkey`: primary key (`id`)",
+        "`eval_candidates_status_check`: only the listed values",
+        "`eval_candidates_changed_check`: `human_value` is different from `model_value`",
+        "`eval_candidates_decided_check`: `decided_by` and `decided_at` are set exactly when not `candidate`",
+        "`eval_candidates_task_field_idx`: unique (`task_id`, `field_name`, `line_index`) nulls not distinct where `task_id` is set, one candidate per corrected field",
+        "`eval_candidates_status_idx`: index on (`status`, `created_at`), for the admin list"
+      ],
+      "sampleCols": [
+        "id",
+        "task_id",
+        "reference",
+        "field_name",
+        "line_index",
+        "model_value",
+        "human_value",
+        "status",
+        "decided_by",
+        "decided_at",
+        "created_at"
+      ],
+      "sampleRows": [
+        [
+          "0193b101-aa00-7b01-8c02-0d03e04f05a6",
+          "0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a2b",
+          "docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c",
+          "total",
+          "(empty)",
+          "\"1240.00\"",
+          "\"1230.00\"",
+          "candidate",
+          "(empty)",
+          "(empty)",
+          "2026-11-17 09:15:30+00"
+        ]
+      ]
     },
     {
       "name": "review.inbound_events",
@@ -993,9 +1155,22 @@ export const review = {
           "meaning": "When Review processed it."
         }
       ],
-      "constraints": [],
-      "sampleCols": [],
-      "sampleRows": []
+      "constraints": [
+        "`inbound_events_pkey`: primary key (`event_id`)",
+        "`inbound_events_type_check`: 1 to 100 characters"
+      ],
+      "sampleCols": [
+        "event_id",
+        "type",
+        "created_at"
+      ],
+      "sampleRows": [
+        [
+          "0193b2aa-6f01-7c2d-9e3f-4a5b6c7d8e9f",
+          "identity.user.deleted",
+          "2026-11-17 10:00:01+00"
+        ]
+      ]
     }
   ],
   "otherTables": "The service template also gives Review `audit_events`, `idempotency_keys` and `outbound_events`. Review writes `review.task_created`, `review.field_updated` and `review.task_completed` to `audit_events`, uses `idempotency_keys` for `POST /tasks`, and announces `review.task.completed`.",
@@ -1014,7 +1189,14 @@ export const review = {
     },
     {
       "level": "Schema level: enforced by the database, whatever the code does",
-      "items": []
+      "items": [
+        "A field appears once per task and line item (nulls not distinct).",
+        "A decided field always records who and when; an accepted field keeps its original value; a not-present field has none.",
+        "A completed task always records who completed it and when.",
+        "A candidate always differs from what the model said, and records who decided on it.",
+        "One candidate per corrected field of a task.",
+        "History rows are inserted and read, never updated. Review's database login can reach only the `review` schema."
+      ]
     },
     {
       "level": "Data model level: business rules the service guarantees",
@@ -1083,6 +1265,19 @@ export const review = {
       "text": "`candidate` when a correction is made → `approved` or `rejected` by an admin → `exported` when written to a ground-truth file."
     }
   ],
-  "ddl": "",
-  "queries": []
+  "ddl": "-- Human Review service, version 1. Schema: review.\n-- IDs are UUIDv7 values generated by the service.\n-- Checked with `npm run schema:check`: runs on PGlite, and every sample row passes every constraint.\n\ncreate schema if not exists review;\n\ncreate table review.tasks (\n  id                uuid        primary key,\n  owner_id          uuid        not null,\n  reference         text        not null,\n  status            text        not null default 'open',\n  checks_overridden boolean     not null default false,\n  created_at        timestamptz not null default now(),\n  completed_at      timestamptz,\n  completed_by      uuid,\n\n  constraint tasks_reference_check check (length(reference) between 1 and 200),\n  constraint tasks_status_check check (status in ('open', 'completed')),\n  constraint tasks_completed_check check (\n    (status = 'completed') = (completed_at is not null)\n    and (completed_at is null) = (completed_by is null)\n    and (completed_at is null or completed_at >= created_at)\n  )\n);\n\ncreate index tasks_owner_id_idx on review.tasks (owner_id, created_at desc);\n\ncreate table review.fields (\n  id             uuid         primary key,\n  task_id        uuid         not null,\n  name           text         not null,\n  line_index     smallint,\n  type           text         not null,\n  original_value jsonb,\n  value          jsonb,\n  confidence     numeric(3,2) not null,\n  source_page    smallint,\n  source_quote   text,\n  flagged        boolean      not null,\n  flag_reasons   text[]       not null default '{}',\n  status         text         not null default 'pending',\n  updated_by     uuid,\n  updated_at     timestamptz,\n\n  constraint fields_task_id_fkey foreign key (task_id)\n    references review.tasks (id) on delete cascade,\n  constraint fields_task_name_line_key unique nulls not distinct (task_id, name, line_index),\n  constraint fields_name_check check (length(name) between 1 and 64 and (line_index is null or line_index >= 0)),\n  constraint fields_type_check check (type in ('text', 'date', 'decimal', 'currency')),\n  constraint fields_status_check check (status in ('pending', 'accepted', 'edited', 'not_present')),\n  constraint fields_flagged_check check (flagged = (cardinality(flag_reasons) > 0)),\n  constraint fields_decided_check check (\n    (status <> 'pending') = (updated_by is not null)\n    and (updated_by is null) = (updated_at is null)\n  ),\n  constraint fields_not_present_check check (\n    (status <> 'not_present' or value is null)\n    and (status <> 'accepted' or value is not distinct from original_value)\n  ),\n  constraint fields_confidence_check check (confidence between 0 and 1 and (source_page is null or source_page >= 1)),\n  constraint fields_quote_check check (length(source_quote) between 1 and 500)\n);\n\n-- The queue: flagged first, then lowest confidence.\ncreate index fields_queue_idx on review.fields (task_id, flagged desc, confidence);\n\ncreate table review.field_changes (\n  id         uuid        primary key,\n  field_id   uuid        not null,\n  action     text        not null,\n  old_value  jsonb,\n  new_value  jsonb,\n  source     text        not null default 'review',\n  changed_by uuid        not null,\n  created_at timestamptz not null default now(),\n\n  constraint field_changes_field_id_fkey foreign key (field_id)\n    references review.fields (id) on delete cascade,\n  constraint field_changes_action_check check (action in ('accept', 'edit', 'not_present')),\n  constraint field_changes_source_check check (source in ('review'))\n);\n\ncreate index field_changes_field_id_idx on review.field_changes (field_id, created_at);\n\ncreate table review.eval_candidates (\n  id          uuid        primary key,\n  task_id     uuid,\n  reference   text        not null,\n  field_name  text        not null,\n  line_index  smallint,\n  model_value jsonb,\n  human_value jsonb,\n  status      text        not null default 'candidate',\n  decided_by  uuid,\n  decided_at  timestamptz,\n  created_at  timestamptz not null default now(),\n\n  constraint eval_candidates_reference_check check (length(reference) between 1 and 200 and length(field_name) between 1 and 64),\n  constraint eval_candidates_status_check check (status in ('candidate', 'approved', 'rejected', 'exported')),\n  constraint eval_candidates_changed_check check (human_value is distinct from model_value),\n  constraint eval_candidates_decided_check check (\n    (status <> 'candidate') = (decided_at is not null)\n    and (decided_at is null) = (decided_by is null)\n  )\n);\n\n-- One candidate per corrected field of a task; the admin list by status.\ncreate unique index eval_candidates_task_field_idx\n  on review.eval_candidates (task_id, field_name, line_index) nulls not distinct\n  where task_id is not null;\ncreate index eval_candidates_status_idx on review.eval_candidates (status, created_at);\n\ncreate table review.inbound_events (\n  event_id   uuid        primary key,\n  type       text        not null,\n  created_at timestamptz not null default now(),\n\n  constraint inbound_events_type_check check (length(type) between 1 and 100)\n);\n\n-- The service's database login reaches only this schema. History is never edited.\ngrant usage on schema review to review_service;\ngrant select, insert, update, delete on review.tasks, review.fields to review_service;\ngrant select, insert, delete on review.field_changes to review_service;\ngrant select, insert, update, delete on review.eval_candidates to review_service;\ngrant select, insert on review.inbound_events to review_service;\ngrant select, insert on review.audit_events to review_service;\n",
+  "queries": [
+    {
+      "title": "The review queue (`GET /tasks/{taskId}`)",
+      "sql": "select f.*\nfrom review.fields f\njoin review.tasks t on t.id = f.task_id\nwhere f.task_id = $1 and t.owner_id = $2\n  and (f.flagged or $3)          -- $3: all=true\norder by f.flagged desc, f.confidence;"
+    },
+    {
+      "title": "Can the task be completed?",
+      "sql": "select count(*) filter (where flagged and status = 'pending') as unresolved\nfrom review.fields\nwhere task_id = $1;"
+    },
+    {
+      "title": "Record a correction as a candidate (in the same transaction as the edit)",
+      "sql": "insert into review.eval_candidates (id, task_id, reference, field_name, line_index, model_value, human_value)\nvalues ($1, $2, $3, $4, $5, $6, $7)\non conflict (task_id, field_name, line_index) where task_id is not null\ndo update set human_value = excluded.human_value;"
+    }
+  ]
 };
