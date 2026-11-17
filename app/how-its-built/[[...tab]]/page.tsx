@@ -155,26 +155,29 @@ export default async function HowItsBuilt({ params }: { params: Promise<Params> 
 
           <div className="card cost-baseline">
             <p className="card-title">Cost baselines</p>
-            <ul className="plain-list">
-              {costs.baselines.map((rate) => (
-                <li key={rate.model}>
-                  <strong>{rate.model}:</strong> {perMillion(rate.input)} per million
-                  input tokens, {perMillion(rate.output)} per million output,{" "}
-                  {perMillion(rate.cache_read)} per million read from the cache,{" "}
-                  {perMillion(rate.cache_write)} per million written to the cache.
-                </li>
-              ))}
-              <li>
-                The rates are fitted from Claude Code&apos;s own cost snapshots
-                and match every one of them to within a cent, so no price is
-                written by hand. Each response is priced from its recorded tokens
-                at its model&apos;s rates. The difference between those
-                responses and the tool&apos;s own figure ({usd(costs.overhead)})
-                is shown once, as overhead under scaffolding, so the rows plus
-                overhead add up to exactly {usd(costs.toolTotal)}, the
-                tool&apos;s own latest figure.
-              </li>
-            </ul>
+            {costs.baselines.map((rate) => (
+              <div className="rate-model" key={rate.model}>
+                {costs.baselines.length > 1 && <p className="rate-model-name">{rate.model}</p>}
+                <ul className="rate-tiles">
+                  <li>
+                    <span className="rate-value">{perMillion(rate.input)}</span>
+                    <span className="rate-label">per million input tokens</span>
+                  </li>
+                  <li>
+                    <span className="rate-value">{perMillion(rate.output)}</span>
+                    <span className="rate-label">per million output</span>
+                  </li>
+                  <li>
+                    <span className="rate-value">{perMillion(rate.cache_read)}</span>
+                    <span className="rate-label">per million read from the cache</span>
+                  </li>
+                  <li>
+                    <span className="rate-value">{perMillion(rate.cache_write)}</span>
+                    <span className="rate-label">per million written to the cache</span>
+                  </li>
+                </ul>
+              </div>
+            ))}
           </div>
 
           <div className="stat-row">
