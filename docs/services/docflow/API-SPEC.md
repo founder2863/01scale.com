@@ -350,7 +350,8 @@ Access: **Signed in** · Scope: `docflow:write` · Story: `MVP1-E4-03`
 
 - Reads the review task, then calls Extraction `POST /validations` with its values.
 - If a check fails and `confirm_failed_checks` is false, answers `409` with the failed checks; nothing changes.
-- Otherwise calls Review `POST /tasks/{taskId}/complete` (with `checks_overridden`), builds `result.json` and `result.csv`, stores each through Upload with a service token, records the output version, and sets the document `reviewed`.
+- Otherwise calls Review `POST /tasks/{taskId}/complete` (with `checks_overridden`), builds `result.json` and `result.csv`, stores each through Upload `POST /files` with the person's own token (Idempotency-Key `docflow:{documentId}:v{version}:{format}`), records the output version, and sets the document `reviewed`.
+- Safe to retry after a failure halfway: if Review answers `409 task_completed`, the review is already done, so DocFlow continues from building the outputs. The document stays `needs_review` until the outputs are stored, and repeated uploads return the same files.
 
 **Responses**
 
@@ -609,7 +610,7 @@ Access: **Signed in** · Scope: `docflow:write` · Story: `MVP1-E6-01`
 **Behaviour**
 
 - Requires status `reviewed`.
-- Calls Payment `POST /orders` from DocFlow's server with the price, $5.00 (500 cents, from configuration), `reference: docflow:{documentId}`, and success and cancel addresses; stores the order's ID.
+- Calls Payment `POST /orders` from DocFlow's server with a delegated token for the person (Payment accepts no other kind), the price, $5.00 (500 cents, from configuration), `reference: docflow:{documentId}`, and success and cancel addresses; stores the order's ID.
 
 **Responses**
 
@@ -700,9 +701,11 @@ Access: **Service** · Scope: None: HMAC signature · Story: `MVP1-E0-09`
 
 **Behaviour**
 
-- `extraction.job.completed`: reads the fields, creates a Review task with them (`POST /tasks`) and sets the document `needs_review`; with nothing flagged it still creates the task, so every document is reviewed the same way.
+- No person is present, so each step uses a delegated token for the document's owner from Identity (`act: service:docflow`; decision on #24).
+- Acts only on events about the document's current work: an extraction event whose `job_id` is not the document's `job_id`, or a payment event whose `order_id` is not its `order_id`, is acknowledged and ignored. A late failure from a retried job, or the expiry of an earlier order, changes nothing.
+- `extraction.job.completed`: reads the fields with Extraction `GET /jobs/{jobId}/fields`, creates a Review task with Review `POST /tasks` (Idempotency-Key `docflow:{documentId}:{jobId}`) and sets the document `needs_review`; with nothing flagged it still creates the task, so every document is reviewed the same way.
 - `extraction.job.failed`: sets `extraction_failed`.
-- `payment.order.paid`: sets `paid` and asks Delivery for the `order_paid` email, keyed by the event's ID.
+- `payment.order.paid`: sets `paid` and asks Delivery `POST /messages` for the `order_paid` email, keyed by the event's ID.
 - `payment.order.expired` or `failed`: clears the order so Pay starts a new one.
 - `identity.user.deleted`: deletes that user's documents and outputs records.
 - Other types are acknowledged and ignored.
@@ -749,11 +752,12 @@ HTTP/1.1 200 OK
 | Building the JSON (MVP1-E5-01) | `data` holds the final values in the invoice v1 shape; `metadata` holds document_id, file_name, pages, model, prompt_version, extracted_at, reviewed_at, reviewed_by, fields_flagged, fields_corrected, and per field `confidence` and `corrected`. Validated against `schemas/invoice-v1.json` before it is stored. |
 | Building the CSV (MVP1-E5-02) | Columns in this order: `document_id`, `vendor_name`, `vendor_address`, `vendor_tax_id`, `invoice_number`, `invoice_date`, `due_date`, `bill_to_name`, `bill_to_address`, `currency`, `subtotal`, `tax_total`, `total`, `payment_terms`, `line_number`, `line_description`, `line_quantity`, `line_unit_price`, `line_amount`. RFC 4180 quoting, UTF-8 with a byte-order mark, CRLF line ends; cells starting with `=`, `+`, `-`, `@`, tab or carriage return are prefixed with `'`. |
 | Success page (MVP1-E7-01) | Polls Payment `GET /orders/{orderId}` every 2 seconds for up to 30 seconds, then says 'We'll email you when it's ready'; shows the email's status from Delivery. |
+| Which token each step uses (decisions on #24 and #21) | Steps the person starts (upload, retry, complete review, checkout, preview, download) use their own token, except Payment and Delivery, which take only a delegated token. Steps after an event (create the review task, send the email) use a delegated token for the document's owner. Every call goes through `https://01scale.com/api/…`. |
 | Pages | `/documents`, `/documents/{id}` (extraction), `/documents/{id}/review`, `/documents/{id}/results`, `/documents/{id}/pay`, `/documents/{id}/success`. Each composes the services' components. |
 
 ## Constraints at the API level
 
 - Every download checks on the server that the order is paid.
 - The price is set by DocFlow's server, from configuration.
-- DocFlow passes the user's own token to services, so their ownership checks apply.
+- DocFlow passes the person's own token to services when they are present, and a delegated token for them when not, so every service's ownership checks apply.
 - Service events are verified and processed once.
