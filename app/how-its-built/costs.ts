@@ -212,11 +212,23 @@ export const costs = {
       "name": "Architect skill and MVP1 architecture review",
       "requests": 3,
       "buildTokens": 5803435,
-      "reworkTokens": 13212869,
+      "reworkTokens": 13887191,
       "buildCost": 3.08,
-      "reworkCost": 4.28,
-      "totalCost": 7.36,
-      "yield": 31,
+      "reworkCost": 4.49,
+      "totalCost": 7.57,
+      "yield": 29,
+      "pending": false
+    },
+    {
+      "key": "DESIGN-DECISIONS",
+      "name": "MVP1 design changes from founder decisions (17 Nov)",
+      "requests": 1,
+      "buildTokens": 0,
+      "reworkTokens": 14562688,
+      "buildCost": 0,
+      "reworkCost": 4.55,
+      "totalCost": 4.55,
+      "yield": 0,
       "pending": false
     }
   ],
@@ -247,33 +259,33 @@ export const costs = {
     },
     {
       "name": "Process",
-      "requests": 5,
-      "tokens": 4174070,
-      "cost": 1.2
+      "requests": 10,
+      "tokens": 12979944,
+      "cost": 6.09
     },
     {
       "name": "Tool overhead (background calls)",
       "requests": 0,
       "tokens": 0,
-      "cost": -2.46
+      "cost": -1.43
     }
   ],
   "totals": {
-    "requests": 63,
-    "tokens": 159290763,
-    "cost": 116.42,
+    "requests": 69,
+    "tokens": 183333647,
+    "cost": 127.1,
     "buildCost": 76.51,
-    "reworkCost": 23.3,
-    "scaffoldingCost": 16.61,
-    "storyYield": 77,
-    "overallYield": 71,
+    "reworkCost": 28.06,
+    "scaffoldingCost": 22.54,
+    "storyYield": 70,
+    "overallYield": 61,
     "pendingRequests": 0
   },
   "byKind": {
-    "input": 0.08,
-    "output": 22.0,
-    "cache_read": 29.67,
-    "cache_write": 64.67
+    "input": 0.1,
+    "output": 23.85,
+    "cache_read": 35.07,
+    "cache_write": 68.09
   },
   "mostExpensive": [
     {

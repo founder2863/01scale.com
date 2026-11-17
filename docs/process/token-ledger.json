@@ -18,12 +18,13 @@
   "MVP1-E7": "MVP1-E7 · Delivery design",
   "MVP1-E1-05": "MVP1-E1-05, E0-06 · Account management design",
   "MVP1-E0-07": "MVP1-E0-07, E0-08 · Service template and gateway design",
-  "ARCH-REVIEW": "Architect skill and MVP1 architecture review"
+  "ARCH-REVIEW": "Architect skill and MVP1 architecture review",
+  "DESIGN-DECISIONS": "MVP1 design changes from founder decisions (17 Nov)"
  },
  "sessions": [
   {
    "id": "fdd431bb-4425-5e24-8859-562bd3231470",
-   "tool_total_usd": 116.4155,
+   "tool_total_usd": 127.1034,
    "rates_usd_per_million": {
     "claude-fable-5-2": {
      "input": 8.0,
@@ -39,12 +40,12 @@
     }
    },
    "by_kind_usd": {
-    "input": 0.08,
-    "output": 22.0,
-    "cache_read": 29.67,
-    "cache_write": 64.67
+    "input": 0.1,
+    "output": 23.85,
+    "cache_read": 35.07,
+    "cache_write": 68.09
    },
-   "overhead_usd": -2.4614,
+   "overhead_usd": -1.4253,
    "splits": [
     "2026-11-17T01:12:49Z",
     "2026-11-17T01:22:25Z",
@@ -939,9 +940,93 @@
    "models": [
     "claude-opus-5-5"
    ],
-   "tokens": 13212869,
-   "output_tokens": 49116,
-   "cost_usd": 4.2765
+   "tokens": 13887191,
+   "output_tokens": 51661,
+   "cost_usd": 4.4859
+  },
+  {
+   "session": "fdd431bb",
+   "n": 64,
+   "ts": "2026-11-17T04:34:26.238Z",
+   "area": "Process",
+   "kind": "scaffolding",
+   "summary": "List what is still pending",
+   "models": [
+    "claude-opus-5-5"
+   ],
+   "tokens": 339878,
+   "output_tokens": 1437,
+   "cost_usd": 0.1011
+  },
+  {
+   "session": "fdd431bb",
+   "n": 65,
+   "ts": "2026-11-17T11:06:36.192Z",
+   "area": "Process",
+   "kind": "scaffolding",
+   "summary": "Record founder decisions on the open design questions; two MVP2 stories",
+   "models": [
+    "claude-opus-5-5"
+   ],
+   "tokens": 2832978,
+   "output_tokens": 14115,
+   "cost_usd": 3.1822
+  },
+  {
+   "session": "fdd431bb",
+   "n": 66,
+   "ts": "2026-11-17T11:48:12.860Z",
+   "area": "Process",
+   "kind": "scaffolding",
+   "summary": "Discuss where each stage of a document is stored",
+   "models": [
+    "claude-opus-5-5"
+   ],
+   "tokens": 365607,
+   "output_tokens": 2607,
+   "cost_usd": 0.1265
+  },
+  {
+   "session": "fdd431bb",
+   "n": 67,
+   "ts": "2026-11-17T11:57:42.428Z",
+   "area": "Process",
+   "kind": "scaffolding",
+   "summary": "Record the data-per-stage decision in the architecture and on tickets; MVP2 story",
+   "models": [
+    "claude-opus-5-5"
+   ],
+   "tokens": 2595487,
+   "output_tokens": 6818,
+   "cost_usd": 0.7152
+  },
+  {
+   "session": "fdd431bb",
+   "n": 68,
+   "ts": "2026-11-17T12:03:31.555Z",
+   "area": "Process",
+   "kind": "scaffolding",
+   "summary": "Record the user-data privacy rule across the docs",
+   "models": [
+    "claude-opus-5-5"
+   ],
+   "tokens": 2671924,
+   "output_tokens": 7624,
+   "cost_usd": 0.7673
+  },
+  {
+   "session": "fdd431bb",
+   "n": 69,
+   "ts": "2026-11-17T12:09:44.882Z",
+   "area": "DESIGN-DECISIONS",
+   "kind": "rework",
+   "summary": "Apply founder decisions to the designs: Upload preview, Extraction OCR and model, Review final document, DocFlow results on demand, sign-up consent line",
+   "models": [
+    "claude-opus-5-5"
+   ],
+   "tokens": 14562688,
+   "output_tokens": 42983,
+   "cost_usd": 4.55
   }
  ]
 }
