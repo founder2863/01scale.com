@@ -583,9 +583,42 @@ export const delivery = {
       "code": "`service_only`"
     }
   ],
-  "components": [],
+  "components": [
+    {
+      "name": "MessageStatus",
+      "kind": "Component",
+      "purpose": "One line about the email for a reference: on its way, sent, or couldn't be sent.",
+      "props": [
+        {
+          "name": "reference",
+          "type": "string",
+          "meaning": "The app's reference, for example the document."
+        },
+        {
+          "name": "pendingText",
+          "type": "string, optional",
+          "meaning": "Shown while queued. Default 'We'll email you a copy.'"
+        }
+      ],
+      "states": [
+        "Loading: nothing shown, so the page does not jump",
+        "Queued: 'We'll email you a copy.'",
+        "Sent: 'A copy is in your email.'",
+        "Failed: 'Email couldn't be sent.'",
+        "None found: nothing shown"
+      ],
+      "calls": [
+        "`GET /messages?reference=…`"
+      ]
+    }
+  ],
   "hostedPages": [],
-  "uiRules": [],
+  "uiRules": [
+    "Components only read message status; sending is an app's server's job.",
+    "They ship as the package `packages/ui-delivery` and show any app's messages by reference.",
+    "No email address or message content is ever shown or sent to the browser.",
+    "Keyboard reachable, WCAG AA contrast, usable at 320 pixels wide, in light and dark mode."
+  ],
   "entities": [
     {
       "name": "Message",
