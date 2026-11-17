@@ -59,7 +59,8 @@ What a person sees and what the system does while a document is read, in version
 |---|---|---|
 | The model is overloaded or rate-limited after both retries | 'Reading this document is taking longer than usual. Try again in a few minutes.' with Retry. | `model_unavailable` |
 | The model's answer does not fit the schema, even after one repair | 'We couldn't read this document reliably. Try again, or upload a clearer copy.' | `output_invalid` |
-| The document cannot be read, for example a blank or very blurred photo | 'We couldn't read this document. Upload a clearer copy.' | `document_unreadable` |
+| The file cannot be opened, for example a damaged or password-protected PDF | 'We couldn't open this document. Upload another copy.' | `document_unreadable` |
+| No text is found, even by OCR: a blank page, or a photo too blurred or dark to read | 'No text found' and Choose another file. No Retry: the same file would give the same result. | `no_text_found` |
 | The job takes longer than its limit | 'Reading took too long. Try again.' with Retry. | `timed_out` |
 | The file was deleted or expired before it could be read | 'This file is no longer available. Upload it again.' | `file_unavailable` |
 | Starts extraction on a file still uploading | 'This file is still uploading.' | `file_not_ready` |

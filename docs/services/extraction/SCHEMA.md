@@ -39,11 +39,11 @@ create table extraction.jobs (
   constraint jobs_reference_check check (length(reference) between 1 and 200),
   constraint jobs_status_check check (status in ('queued', 'processing', 'extracted', 'failed')),
   constraint jobs_step_check
-    check (step in ('fetching_file', 'reading_document', 'checking_rules', 'saving')),
+    check (step in ('fetching_file', 'reading_text', 'reading_document', 'checking_rules', 'saving')),
   constraint jobs_attempt_check check (attempt between 1 and 3),
   constraint jobs_model_check check (length(model) between 1 and 100 and length(prompt_version) between 1 and 100),
   constraint jobs_error_code_check check (error_code in
-    ('file_unavailable', 'document_unreadable', 'model_unavailable', 'output_invalid', 'timed_out')),
+    ('file_unavailable', 'document_unreadable', 'no_text_found', 'model_unavailable', 'output_invalid', 'timed_out')),
   constraint jobs_failed_check check (
     (status = 'failed') = (error_code is not null)
     and (error_code is null) = (error_message is null)
@@ -113,6 +113,22 @@ create table extraction.fields (
 -- The fields a person must check, for the review queue.
 create index fields_flagged_idx on extraction.fields (job_id) where flagged;
 
+-- The text of each page, for the quote check. Deleted with the job.
+create table extraction.page_texts (
+  job_id     uuid        not null,
+  page       smallint    not null,
+  source     text        not null,
+  text       text        not null,
+  created_at timestamptz not null default now(),
+
+  constraint page_texts_pkey primary key (job_id, page),
+  constraint page_texts_job_id_fkey foreign key (job_id)
+    references extraction.jobs (id) on delete cascade,
+  constraint page_texts_page_check check (page between 1 and 10),
+  constraint page_texts_source_check check (source in ('text_layer', 'ocr')),
+  constraint page_texts_text_check check (length(text) <= 100000)
+);
+
 create table extraction.inbound_events (
   event_id   uuid        primary key,
   type       text        not null,
@@ -125,7 +141,7 @@ create table extraction.inbound_events (
 -- with their owner's account; audit events can be added and read, never changed.
 grant usage on schema extraction to extraction_service;
 grant select, insert, update on extraction.jobs to extraction_service;
-grant select, insert, delete on extraction.fields to extraction_service;
+grant select, insert, delete on extraction.fields, extraction.page_texts to extraction_service;
 grant select, insert on extraction.inbound_events to extraction_service;
 grant select, insert on extraction.audit_events to extraction_service;
 ```
@@ -161,8 +177,8 @@ grant select, insert on extraction.audit_events to extraction_service;
 
 | `id` | `owner_id` | `file_id` | `schema` | `reference` | `status` | `step` | `attempt` | `model` | `prompt_version` | `pages` | `fields_total` | `fields_flagged` | `tokens_in` | `tokens_out` | `cost_usd` | `duration_ms` | `error_code` | `error_message` | `created_at` | `started_at` | `finished_at` |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| `0193b0d1-4b2c-7d10-9a8b-1c2d3e4f5a6b` | `0193a5b2-7c1e-7a3f-9b2d-4e6f8a1c2d3e` | `0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b` | `invoice-v1` | `docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c` | `extracted` | (empty) | `1` | `claude-sonnet-5-5` | `extract-invoice/v1` | `2` | `19` | `3` | `6210` | `1480` | `0.040830` | `28900` | (empty) | (empty) | `2026-11-17 09:14:12+00` | `2026-11-17 09:14:12+00` | `2026-11-17 09:14:41+00` |
-| `0193b0e7-0a1b-7c2d-8e3f-4a5b6c7d8e9f` | `0193a5b2-7c1e-7a3f-9b2d-4e6f8a1c2d3e` | `0193b0e6-77aa-7b11-9c22-3d4e5f6a7b8c` | `invoice-v1` | (empty) | `failed` | `reading_document` | `3` | `claude-sonnet-5-5` | `extract-invoice/v1` | `1` | (empty) | (empty) | (empty) | (empty) | (empty) | (empty) | `model_unavailable` | `Reading this document is taking longer than usual. Try again in a few minutes.` | `2026-11-17 09:30:00+00` | `2026-11-17 09:30:01+00` | `2026-11-17 09:30:22+00` |
+| `0193b0d1-4b2c-7d10-9a8b-1c2d3e4f5a6b` | `0193a5b2-7c1e-7a3f-9b2d-4e6f8a1c2d3e` | `0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b` | `invoice-v1` | `docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c` | `extracted` | (empty) | `1` | `claude-opus-5-5` | `extract-invoice/v1` | `2` | `19` | `3` | `6210` | `1480` | `0.040830` | `28900` | (empty) | (empty) | `2026-11-17 09:14:12+00` | `2026-11-17 09:14:12+00` | `2026-11-17 09:14:41+00` |
+| `0193b0e7-0a1b-7c2d-8e3f-4a5b6c7d8e9f` | `0193a5b2-7c1e-7a3f-9b2d-4e6f8a1c2d3e` | `0193b0e6-77aa-7b11-9c22-3d4e5f6a7b8c` | `invoice-v1` | (empty) | `failed` | `reading_document` | `3` | `claude-opus-5-5` | `extract-invoice/v1` | `1` | (empty) | (empty) | (empty) | (empty) | (empty) | (empty) | `model_unavailable` | `Reading this document is taking longer than usual. Try again in a few minutes.` | `2026-11-17 09:30:00+00` | `2026-11-17 09:30:01+00` | `2026-11-17 09:30:22+00` |
 
 ## `extraction.fields`
 
@@ -187,6 +203,20 @@ grant select, insert on extraction.audit_events to extraction_service;
 | `0193b0d2-1f00-7a01-8b02-0c03d04e05f6` | `0193b0d1-4b2c-7d10-9a8b-1c2d3e4f5a6b` | `total` | (empty) | `"1240.00"` | `0.92` | `0.30` | `2` | `TOTAL DUE  $1,240.00` | `true` | `{"Total ≠ subtotal + tax (1,150.00 + 80.00 = 1,230.00)"}` | `2026-11-17 09:14:41+00` |
 | `0193b0d2-1f00-7a01-8b02-0c03d04e05f8` | `0193b0d1-4b2c-7d10-9a8b-1c2d3e4f5a6b` | `amount` | `0` | `"1150.00"` | `0.95` | `0.95` | `1` | `Paper, A4   10   115.00   1,150.00` | `false` | `{}` | `2026-11-17 09:14:41+00` |
 | `0193b0d2-1f00-7a01-8b02-0c03d04e05f9` | `0193b0d1-4b2c-7d10-9a8b-1c2d3e4f5a6b` | `vendor_tax_id` | (empty) | (empty) | `0.80` | `0.62` | (empty) | (empty) | `true` | `{"Low confidence (0.62)"}` | `2026-11-17 09:14:41+00` |
+
+## `extraction.page_texts`
+
+**Constraints and indexes**
+
+- `page_texts_pkey`: primary key (`job_id`, `page`)
+- `page_texts_job_id_fkey`: foreign key to `extraction.jobs`, delete cascades
+- `page_texts_page_check`, `page_texts_source_check`, `page_texts_text_check`
+
+**Sample data**
+
+| `job_id` | `page` | `source` | `text` | `created_at` |
+|---|---|---|---|---|
+| `0193b0d1-4b2c-7d10-9a8b-1c2d3e4f5a6b` | `2` | `text_layer` | `Subtotal 1,150.00  Tax 80.00  TOTAL DUE  $1,240.00` | `2026-11-17 09:14:15+00` |
 
 ## `extraction.inbound_events`
 

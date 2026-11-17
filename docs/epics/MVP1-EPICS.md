@@ -340,11 +340,13 @@ As Priya, I want to drag and drop or pick a file on my phone and see progress.
 - **AC2:** The output is forced into the invoice v1 schema (PRD §9) with a tool/JSON schema. Every field includes `value`, `confidence`, `source_page` and `source_quote`.
 - **AC3:** The model ID and prompt version are read from configuration and saved on the job.
 - **AC4:** The response is validated with zod. A schema failure triggers one repair attempt and then fails the job; invalid JSON is never stored.
+- **AC5:** Scanned PDFs and photos are in scope. Before extraction, the job reads each page's text: the PDF's text layer, or OCR by Claude when there is none or the file is an image. If no text is found, the job fails with `no_text_found` and the person sees "No text found" (Nikhil's decision on #34).
+- **AC6:** The default model is `claude-opus-5-5` (Nikhil's decision on #34).
 - **Evals:** EXT-1 schema validity, EXT-2 header field accuracy, EXT-3 line item F1, EXT-4 hallucination rate, EXT-7 latency, EXT-8 cost (see `EVALS.md`).
 - **Service:** LLM Extraction
 - **API design:**
   - `GET /api/extraction/v1/jobs/{jobId}/fields` (signed in) — The extracted fields with value, confidence and evidence. Query `flagged=true` → `200 {data: [Field]}`; `Field = {id, name, line_index?, value, confidence, model_confidence, source_page, source_quote, flagged, flag_reasons[]}`.
-  - Extraction itself has no endpoint: it runs inside the job started in E3-01. The job reads the file through Upload `GET /files/{fileId}/download-url`, forwarding the user's access token.
+  - Extraction itself has no endpoint: it runs inside the job started in E3-01. The job reads the file through Upload `GET /files/{fileId}/download-url` with a delegated token for the owner (decision on #24).
 - **Database design:** `extraction.jobs` adds model, prompt_version. `extraction.fields` (id, job_id → jobs, name, line_index null, value jsonb, model_confidence numeric(3,2), source_page, source_quote, created_at); unique `(job_id, name, line_index)`. These rows are the model's output and are never edited; human changes live in Review.
 
 ### MVP1-E3-03 · Rule checks and final confidence — M
@@ -352,11 +354,12 @@ As Priya, I want to drag and drop or pick a file on my phone and see progress.
 - **AC2:** Final confidence = the lower of model confidence and rule result (a failed check sets 0.3). Fields under the threshold (default 0.85) or failing a check are marked `flagged`.
 - **AC3:** Each flagged field stores the reason ("Total ≠ subtotal + tax", "Quote not found in document").
 - **AC4:** Unit tests cover every rule check, including rounding and missing-tax cases.
+- **AC5:** The source-quote check runs for scans and photos too, against the OCR text (decision on #35).
 - **Evals:** EXT-5 routing recall, EXT-6 flag rate.
 - **Service:** LLM Extraction
 - **API design:**
-  - `POST /api/extraction/v1/validations` (signed in) — Run the rule checks for a schema on a set of values. Body `{schema, values, file_id?}` → `200 {passed, checks: [{name, passed, fields[], message}]}`. Used after extraction and again on corrected data.
-- **Database design:** `extraction.fields` adds confidence numeric(3,2), flagged boolean, flag_reasons text[]. Index `extraction.fields(job_id) where flagged`.
+  - `POST /api/extraction/v1/validations` (signed in) — Run the rule checks for a schema on a set of values. Body `{schema, values, job_id?}` → `200 {passed, checks: [{name, passed, fields[], message}]}`. Used after extraction and again on corrected data.
+- **Database design:** `extraction.fields` adds confidence numeric(3,2), flagged boolean, flag_reasons text[]. Index `extraction.fields(job_id) where flagged`. `extraction.page_texts` (job_id → jobs, page, source `text_layer|ocr`, text, created_at): each page's text, for the quote check; deleted with the job.
 
 ### MVP1-E3-04 · Extraction page — M
 - **AC1:** While processing, the page shows status steps and polls every 2 seconds, without a full-page reload.

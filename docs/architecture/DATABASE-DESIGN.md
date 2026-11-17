@@ -54,6 +54,7 @@ Neon Postgres, defined in Drizzle and changed only through migrations. **Each se
 | upload | `files` | A stored file with its checks and status. | `MVP1-E2-02` |
 | extraction | `jobs` | One extraction attempt, with model, cost and timing. | `MVP1-E3-01` |
 | extraction | `fields` | The model's output: value, confidence and evidence. Never edited. | `MVP1-E3-02` |
+| extraction | `page_texts` | Each page's text (text layer or OCR), for the quote check. | `MVP1-E3-03` |
 | extraction | `job_groups` | Jobs run together with a concurrency limit. | `MVP2-E9-02` |
 | extraction | `pipeline_runs` | Per-node checkpoints so a retry resumes. | `MVP2-E9-02` |
 | extraction | `field_judgements` | The judge model's verdict on a field. | `MVP2-E10-01` |
