@@ -478,7 +478,7 @@ export const products = [
       {
         "story": "MVP1-E0-06",
         "title": "Agent access: API keys and MCP",
-        "text": "`identity.api_keys` (id, owner_id, name, prefix, key_hash unique, scopes text[], last_used_at, expires_at, revoked_at, created_at). Only the SHA-256 hash of the secret is stored; `prefix` (first 8 characters) is kept for display."
+        "text": "`identity.api_keys` (id, user_id → users, name, prefix, key_hash unique, scopes text[], last_used_at, expires_at, revoked_at, created_at). Only the SHA-256 hash of the secret is stored; `prefix` (first 8 characters) is kept for display."
       }
     ]
   },

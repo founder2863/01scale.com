@@ -74,7 +74,7 @@ As an AI agent acting for a user, I want to authenticate without a browser and d
   - `POST /api/identity/v1/api-keys` (signed in) — Create an API key for an agent or script. The secret is shown once. Body `{name, scopes[], expires_at?}` → `201 {api_key, secret}`. Session only: a key cannot create keys. Errors: `422`.
   - `DELETE /api/identity/v1/api-keys/{keyId}` (signed in) — Revoke an API key immediately. → `204`. Errors: `404`.
   - `POST /api/{service}/mcp` (signed in) — That service's MCP server: its operations exposed as tools for AI agents. Streamable HTTP. Tools map 1:1 to the service's OpenAPI `operationId`s and call the same service functions as the REST handlers.
-- **Database design:** `identity.api_keys` (id, owner_id, name, prefix, key_hash unique, scopes text[], last_used_at, expires_at, revoked_at, created_at). Only the SHA-256 hash of the secret is stored; `prefix` (first 8 characters) is kept for display.
+- **Database design:** `identity.api_keys` (id, user_id → users, name, prefix, key_hash unique, scopes text[], last_used_at, expires_at, revoked_at, created_at). Only the SHA-256 hash of the secret is stored; `prefix` (first 8 characters) is kept for display.
 
 ### MVP1-E0-07 · Service template — L
 As the owner, I want one template every service is built from, so each new service is mostly copying and all of them behave the same way.
@@ -116,7 +116,7 @@ As the owner, I want DocFlow to be a thin app that only connects platform servic
 - **Service:** DocFlow app
 - **API design:**
   - `POST /api/docflow/v1/webhooks/{service}` (service) — Receives signed events from platform services and moves the process forward. HMAC-signed body `{event_id, type, occurred_at, data}` → `200`. Idempotent on `event_id`. Handles `extraction.job.completed|failed`, `payment.order.paid|expired|failed`, `identity.user.deleted`. Errors: `401` bad signature.
-- **Database design:** `docflow.documents` (id, owner_id, file_name, file_id, job_id, review_task_id, order_id, status `pending_upload|uploaded|rejected|extracting|extraction_failed|needs_review|reviewed|paid`, created_at). The process record: it holds only IDs of records owned by other services. `docflow.inbound_events` (event_id primary key, type, received_at) gives idempotency.
+- **Database design:** `docflow.documents` (id, owner_id, file_name, file_id, job_id, review_task_id, order_id, status `pending_upload|uploaded|rejected|extracting|extraction_failed|needs_review|reviewed|paid`, created_at). The process record: it holds only IDs of records owned by other services. `docflow.inbound_events` (event_id primary key, type, created_at) gives idempotency.
 
 ### MVP1-E0-10 · Site navigation and product page template — M
 As a hiring manager, I want every module to have its own page laid out the same way, on any device, so I can judge the product thinking quickly.
