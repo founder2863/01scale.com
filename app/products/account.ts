@@ -640,8 +640,161 @@ export const account = {
   "env": [],
   "openQuestions": [],
   "decisions": [],
-  "journeys": [],
-  "edgeCases": [],
+  "journeys": [
+    {
+      "name": "See my account",
+      "who": "A signed-in user",
+      "trigger": "Opens Account from the user menu.",
+      "stories": [
+        "MVP1-E1-05"
+      ],
+      "steps": [
+        {
+          "person": "Sees their email, the date they joined, how many documents they have processed, and their orders.",
+          "system": "The page reads Identity `GET /me`, DocFlow's totals and Payment's orders."
+        }
+      ],
+      "outcome": "Nothing changes."
+    },
+    {
+      "name": "Change my password",
+      "who": "A signed-in user",
+      "trigger": "Taps Change password on the account page.",
+      "stories": [
+        "MVP1-E1-05"
+      ],
+      "steps": [
+        {
+          "person": "Taps Change password.",
+          "system": "Identity starts a login and returns the address of Cognito's page."
+        },
+        {
+          "person": "On Cognito's page (not ours): receives a code by email, enters it and a new password.",
+          "system": "Cognito changes the password."
+        },
+        {
+          "person": "Signs in with the new password on Cognito's page.",
+          "system": "Identity signs them in, revokes their older sessions and records `auth.password_changed`."
+        },
+        {
+          "person": "Lands on the account page with 'Your password was changed'.",
+          "system": "The page reads `password_changed=1`."
+        }
+      ],
+      "outcome": "Only this browser stays signed in."
+    },
+    {
+      "name": "Delete my account",
+      "who": "A signed-in user",
+      "trigger": "Taps Delete account on the account page.",
+      "stories": [
+        "MVP1-E1-05"
+      ],
+      "steps": [
+        {
+          "person": "Reads what will be deleted (documents, results, keys) and what is kept anonymized (orders, for records).",
+          "system": "Nothing is sent yet."
+        },
+        {
+          "person": "Types DELETE; the button becomes active; taps it.",
+          "system": "Identity deletes the Cognito user, then the account, and tells every service."
+        },
+        {
+          "person": "Lands on the home page, signed out, with 'Your account was deleted'.",
+          "system": "Each service deletes or anonymizes that person's data as the event arrives."
+        }
+      ],
+      "outcome": "The account is gone and cannot sign in. Signing up again with the same email creates a new, empty account."
+    },
+    {
+      "name": "Give an agent access",
+      "who": "A user who uses an AI agent",
+      "trigger": "Opens API keys on the account page.",
+      "stories": [
+        "MVP1-E0-06"
+      ],
+      "steps": [
+        {
+          "person": "Taps New key, names it, picks what it may do and when it expires.",
+          "system": "Nothing is sent until they confirm."
+        },
+        {
+          "person": "Taps Create; sees the secret once, with Copy and 'You won't see this again'.",
+          "system": "Identity stores only the key's hash and records `auth.api_key_created`."
+        },
+        {
+          "person": "Pastes the key into the agent's settings.",
+          "system": "The agent's calls go through the gateway, which exchanges the key for a 5-minute token."
+        },
+        {
+          "person": "Later sees 'Last used 2 minutes ago' beside the key.",
+          "system": "Identity updates the key's last use at most once a minute."
+        }
+      ],
+      "outcome": "The agent can do what the scopes allow and nothing else; paying still needs the person."
+    },
+    {
+      "name": "Revoke a key",
+      "who": "A user",
+      "trigger": "Taps Revoke beside a key.",
+      "stories": [
+        "MVP1-E0-06"
+      ],
+      "steps": [
+        {
+          "person": "Confirms Revoke.",
+          "system": "Identity revokes the key and records `auth.api_key_revoked`."
+        },
+        {
+          "person": "The key leaves the list.",
+          "system": "The agent's next call fails with `invalid_api_key` within 5 minutes."
+        }
+      ],
+      "outcome": "The key never works again."
+    }
+  ],
+  "edgeCases": [
+    {
+      "situation": "Types something other than DELETE",
+      "sees": "The button stays inactive; if sent anyway, 'Type DELETE to confirm.'",
+      "code": "`confirmation_mismatch`"
+    },
+    {
+      "situation": "Cognito is down while deleting",
+      "sees": "'We couldn't delete your account right now. Nothing was deleted. Try again in a moment.'",
+      "code": "`dependency_unavailable`"
+    },
+    {
+      "situation": "An agent tries to create a key, change the password or delete the account",
+      "sees": "The agent is told a person must do this in a browser.",
+      "code": "`session_required`"
+    },
+    {
+      "situation": "Already has 10 keys",
+      "sees": "'You have 10 keys. Revoke one to create another.'",
+      "code": "`too_many_keys`"
+    },
+    {
+      "situation": "Leaves the name empty or picks no scope",
+      "sees": "The field is marked with what to fix.",
+      "code": "`validation_failed`"
+    },
+    {
+      "situation": "Closes the dialog before copying the secret",
+      "sees": "The key is listed, but the secret cannot be shown again: revoke it and create another.",
+      "code": "None"
+    },
+    {
+      "situation": "An agent uses a revoked or expired key",
+      "sees": "The agent is told the key is not valid.",
+      "code": "`invalid_api_key`"
+    },
+    {
+      "situation": "Opens the account page after the session ended",
+      "sees": "Sign-in, then back to the account page.",
+      "code": "`not_authenticated`"
+    }
+  ],
   "components": [],
   "hostedPages": [],
   "uiRules": [],
