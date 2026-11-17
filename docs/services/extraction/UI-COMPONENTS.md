@@ -1,6 +1,6 @@
 # LLM Extraction service — UI components
 
-> **Version 1 · One Claude call per document.** Status: in design. Stories: `MVP1-E3-01`, `MVP1-E3-02`, `MVP1-E3-03`, `MVP1-E3-04`, `MVP1-E3-05`.
+> **Version 1 · One Claude call per document.** Status: designed, not built. Stories: `MVP1-E3-01`, `MVP1-E3-02`, `MVP1-E3-03`, `MVP1-E3-04`, `MVP1-E3-05`.
 
 What the LLM Extraction service ships for apps to use, as the package `packages/ui-extraction`. Designed, not built.
 
