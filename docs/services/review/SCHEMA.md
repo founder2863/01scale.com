@@ -1,6 +1,6 @@
 # Human Review service — schema
 
-> **Version 1 · A person checks flagged fields.** Status: in design. Stories: `MVP1-E4-01`, `MVP1-E4-02`, `MVP1-E4-03`, `MVP1-E4-04`.
+> **Version 1 · A person checks flagged fields.** Status: designed, not built. Stories: `MVP1-E4-01`, `MVP1-E4-02`, `MVP1-E4-03`, `MVP1-E4-04`.
 
 The SQL for the Human Review service's tables, in the `review` schema. No other service can read them. What each field means is in [`DATA-MODEL.md`](DATA-MODEL.md). In the build this is produced by Drizzle migrations; the SQL below is the target.
 

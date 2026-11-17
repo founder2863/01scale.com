@@ -1,6 +1,6 @@
 # Human Review service — UI components
 
-> **Version 1 · A person checks flagged fields.** Status: in design. Stories: `MVP1-E4-01`, `MVP1-E4-02`, `MVP1-E4-03`, `MVP1-E4-04`.
+> **Version 1 · A person checks flagged fields.** Status: designed, not built. Stories: `MVP1-E4-01`, `MVP1-E4-02`, `MVP1-E4-03`, `MVP1-E4-04`.
 
 What the Human Review service ships for apps to use, as the package `packages/ui-review`. Designed, not built.
 

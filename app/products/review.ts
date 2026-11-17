@@ -22,12 +22,46 @@ export const review = {
   "overview": {
     "name": "Human Review",
     "version": "Version 1 · A person checks flagged fields",
-    "status": "In design",
+    "status": "Designed, not built",
     "base": "/api/review/v1",
-    "what": [],
-    "why": [],
-    "scope_in": [],
-    "scope_out": [],
+    "what": [
+      "Human Review is the platform service where a person checks the values the system is unsure about. In DocFlow it is the step between reading an invoice and producing the results.",
+      "An app sends it a set of values with their evidence and the reason each one was flagged. Review shows the uncertain ones first, records the person's decision on each (accept, correct, or not on the document) with a full history, and locks the values when the person finishes.",
+      "Every correction is also kept as a possible test case, so the model's real mistakes can be turned into ground truth for the eval set, after the owner approves them."
+    ],
+    "why": [
+      {
+        "title": "People check only what matters",
+        "text": "Showing the flagged values first, with the evidence beside each, turns a full re-check into a few decisions."
+      },
+      {
+        "title": "Every change is accountable",
+        "text": "Who changed what, from what, and when is recorded for every value, so the final data can always be explained."
+      },
+      {
+        "title": "Mistakes improve the model's measurement",
+        "text": "Corrections become candidate test cases, so quality is measured against the errors people actually find."
+      },
+      {
+        "title": "Reusable for any document",
+        "text": "Review knows field types, not invoices, so the next app can send it purchase orders or contracts unchanged."
+      }
+    ],
+    "scope_in": [
+      "Create a review from any set of values with their evidence and flags",
+      "A queue of flagged values first, least certain first, with 'Show all fields'",
+      "Accept, edit (checked by type) or mark not on the document, with full history",
+      "Complete only when every flagged value is decided; lock the values",
+      "Record when a person confirms values that still fail a rule check",
+      "Keep corrections as eval candidates; admin approval and export as ground truth"
+    ],
+    "scope_out": [
+      "Fixing values by describing the change in a chat: `MVP2-E11-03`",
+      "Reviewing many documents at once in tabs: `MVP2-E12-01`",
+      "Comparing a judge model's verdicts with people's decisions: `MVP2-E10-03`",
+      "Assigning reviews to other people: not planned",
+      "Re-checking values against document rules: the LLM Extraction service does that"
+    ],
     "stories": [
       "MVP1-E4-01",
       "MVP1-E4-02",
@@ -35,9 +69,74 @@ export const review = {
       "MVP1-E4-04"
     ]
   },
-  "flow": [],
-  "concepts": [],
-  "quickstart": [],
+  "flow": [
+    {
+      "who": "App",
+      "what": "Sends the values, their types, evidence and flags to `POST /tasks`. In DocFlow, right after extraction."
+    },
+    {
+      "who": "Human Review",
+      "what": "Keeps its own copy of the values and returns the task."
+    },
+    {
+      "who": "Person",
+      "what": "Works through the queue: accept, edit or not on document. Each decision is checked, saved with its history, and a correction becomes a candidate test case."
+    },
+    {
+      "who": "App",
+      "what": "When every flagged value is decided, re-runs the rule checks through the LLM Extraction service and shows any that still fail."
+    },
+    {
+      "who": "Human Review",
+      "what": "On `POST /tasks/{taskId}/complete`, locks the values, returns them and announces `review.task.completed`."
+    },
+    {
+      "who": "Admin",
+      "what": "Later approves real mistakes and exports them as ground truth for the eval set."
+    }
+  ],
+  "concepts": [
+    {
+      "term": "Task",
+      "meaning": "One set of values a person checks together."
+    },
+    {
+      "term": "Flagged",
+      "meaning": "A value the system was unsure about, or that failed a check. Every flagged value needs a decision."
+    },
+    {
+      "term": "Field type",
+      "meaning": "`text`, `date`, `decimal` or `currency`: how an edit is checked."
+    },
+    {
+      "term": "Eval candidate",
+      "meaning": "A correction that could become a test case once an admin approves it."
+    },
+    {
+      "term": "Checks overridden",
+      "meaning": "The person confirmed values that still fail a rule check are correct as printed."
+    }
+  ],
+  "quickstart": [
+    {
+      "title": "Send values for review",
+      "text": "Include each value's type, evidence and flags. Review fetches nothing itself.",
+      "lang": "ts",
+      "code": "const { task } = await api.post(\"/api/review/v1/tasks\", {\n  reference: `myapp:${recordId}`,\n  fields: extracted.map((f) => ({\n    name: f.name, line_index: f.line_index, type: typeOf(f.name), value: f.value,\n    confidence: f.confidence, source_page: f.source_page, source_quote: f.source_quote,\n    flagged: f.flagged, flag_reasons: f.flag_reasons,\n  })),\n});"
+    },
+    {
+      "title": "Show the queue",
+      "text": "The component handles decisions, checks and the counter.",
+      "lang": "tsx",
+      "code": "import { ReviewQueue, CompleteReviewButton } from \"@01scale/ui-review\";\n\n<ReviewQueue taskId={task.id} />\n<CompleteReviewButton taskId={task.id} onCompleted={({ final_values }) => save(final_values)} />"
+    },
+    {
+      "title": "Record a decision from code",
+      "text": "For an agent or a script.",
+      "lang": "ts",
+      "code": "await api.patch(`/api/review/v1/tasks/${taskId}/fields/${fieldId}`, {\n  action: \"edit\", value: \"1230.00\",\n});"
+    }
+  ],
   "cookies": [],
   "claims": [],
   "errorSample": "{\n  \"type\": \"https://01scale.com/errors/fields_unresolved\",\n  \"title\": \"Fields still to check\",\n  \"status\": 409,\n  \"detail\": \"2 flagged fields are still waiting for a decision.\",\n  \"code\": \"fields_unresolved\",\n  \"request_id\": \"req_0193a61f9c2e\"\n}",
@@ -1211,8 +1310,37 @@ export const review = {
       ]
     }
   ],
-  "env": [],
-  "openQuestions": [],
+  "env": [
+    {
+      "name": "REVIEW_DATABASE_URL",
+      "value": "Neon connection string for the `review_service` role",
+      "secret": "Yes"
+    },
+    {
+      "name": "IDENTITY_JWKS_URL",
+      "value": "`https://01scale.com/api/identity/v1/jwks`",
+      "secret": "No"
+    },
+    {
+      "name": "EVENTS_SIGNING_KEY",
+      "value": "32 random bytes, base64: signs and verifies platform events",
+      "secret": "Yes"
+    },
+    {
+      "name": "EVENT_SUBSCRIBERS",
+      "value": "The webhook addresses that receive Review's events",
+      "secret": "No"
+    },
+    {
+      "name": "EXPORT_BUCKET",
+      "value": "Where ground-truth exports are written, with 5-minute links",
+      "secret": "No"
+    }
+  ],
+  "openQuestions": [
+    "Ground-truth exports need somewhere to write files. Upload is the natural place, but its files belong to users, not to the admin's exports. Use Upload with the service's own owner ID, or a separate bucket?",
+    "Should a person be able to undo a decision after completing, for example within a few minutes? Version 1 locks the values at once."
+  ],
   "decisions": [],
   "journeys": [
     {

@@ -959,7 +959,7 @@ export const products = [
     "group": "MVP1",
     "service": "Human Review",
     "description": "Review only the fields the system is unsure about, with the evidence beside each one.",
-    "status": "In design",
+    "status": "Designed",
     "detailed": true,
     "epic": {
       "id": "E4",
