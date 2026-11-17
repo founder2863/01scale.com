@@ -497,8 +497,92 @@ export const delivery = {
   "env": [],
   "openQuestions": [],
   "decisions": [],
-  "journeys": [],
-  "edgeCases": [],
+  "journeys": [
+    {
+      "name": "Get the receipt email",
+      "who": "Someone who has just paid",
+      "trigger": "Stripe confirms the payment.",
+      "stories": [
+        "MVP1-E7-03"
+      ],
+      "steps": [
+        {
+          "person": "Is on the success page; nothing to do.",
+          "system": "Payment tells DocFlow the order is paid; DocFlow's server asks Delivery to send `order_paid`, using the payment event's ID so it is sent once."
+        },
+        {
+          "person": "Within a minute, receives 'Your DocFlow results are ready' with the document name, the amount paid and a 'View your results' button.",
+          "system": "Delivery looks up the verified address, sends the email through Resend from receipts@01scale.com, signed so it passes SPF and DKIM."
+        },
+        {
+          "person": "Taps 'View your results'.",
+          "system": "The link goes to the success page on 01scale.com, which asks them to sign in if needed. The email never contains a file link."
+        }
+      ],
+      "outcome": "The person has a record of the payment and a way back to the results, without any file being reachable from the email itself."
+    },
+    {
+      "name": "Confirmation is slow",
+      "who": "Someone on the success page",
+      "trigger": "Stripe's confirmation takes longer than 30 seconds.",
+      "stories": [
+        "MVP1-E7-01",
+        "MVP1-E7-03"
+      ],
+      "steps": [
+        {
+          "person": "Sees 'Confirming payment…', then after 30 seconds 'We'll email you when it's ready.'",
+          "system": "DocFlow's success page stops polling the order (its own job, `MVP1-E7-01`)."
+        },
+        {
+          "person": "Receives the email a little later and opens the results from it.",
+          "system": "When the payment is confirmed, the email is sent as usual: it never depended on the page staying open."
+        }
+      ],
+      "outcome": "Closing the page never loses the results."
+    },
+    {
+      "name": "The email cannot be sent",
+      "who": "Someone whose mailbox rejects the email",
+      "trigger": "Resend reports a failure.",
+      "stories": [
+        "MVP1-E7-03"
+      ],
+      "steps": [
+        {
+          "person": "Is on the success page, downloads working.",
+          "system": "Delivery retries 3 times; all fail; the message is `failed`."
+        },
+        {
+          "person": "Sees 'Email couldn't be sent. Your files are here to download.'",
+          "system": "The success page reads the message's status from Delivery."
+        }
+      ],
+      "outcome": "The person still has the files; nothing else depends on the email."
+    }
+  ],
+  "edgeCases": [
+    {
+      "situation": "Resend is down or rejects the email",
+      "sees": "On the success page: 'Email couldn't be sent. Your files are here to download.'",
+      "code": "Message `failed`"
+    },
+    {
+      "situation": "The payment event arrives twice",
+      "sees": "Only one email.",
+      "code": "Same idempotency key"
+    },
+    {
+      "situation": "The account is deleted before the email goes",
+      "sees": "Nothing is sent.",
+      "code": "Message `cancelled`"
+    },
+    {
+      "situation": "Someone tries to send email from a browser",
+      "sees": "Refused.",
+      "code": "`service_only`"
+    }
+  ],
   "components": [],
   "hostedPages": [],
   "uiRules": [],
