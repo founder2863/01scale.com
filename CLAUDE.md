@@ -31,6 +31,7 @@ Nikhil is a platform & AI product leader (17+ years: identity, payments, integra
 | Design rules shared by the design skills | `docs/process/DESIGN-RULES.md` (skills in `.claude/skills/`) |
 | Token cost ledger and table | `docs/process/token-ledger.json`, `docs/process/TOKEN-COSTS.md` |
 | Eval plan (LLM outputs) | `docs/evals/EVALS.md` |
+| Architecture reviews (skill `review-architecture`) | `docs/architecture/reviews/<date>-<phase>.md` |
 | Decision log per epic | `docs/decisions/<EPIC-ID>.md` |
 | Prompts (versioned) | `prompts/<name>/v<N>.md` |
 | Eval datasets & reports | `evals/datasets/`, `evals/reports/` |
