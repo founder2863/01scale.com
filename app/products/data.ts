@@ -87,6 +87,10 @@ export const products = [
           {
             "label": "AC4",
             "text": "`auth.signin` and `auth.signout` are audited."
+          },
+          {
+            "label": "AC5",
+            "text": "A registered service or app can sign in as itself with a client secret, and a service allowed to act for users can exchange its token for a 5-minute token for one user, carrying `act` (decision on #24, `docs/decisions/MVP1-E1.md`). Delegated tokens never carry Identity scopes."
           }
         ],
         "evals": "",
@@ -239,7 +243,7 @@ export const products = [
         "path": "/api/identity/v1/token",
         "access": "Service",
         "summary": "Exchange a session cookie or API key for a short-lived access token (called by the gateway).",
-        "detail": "→ `200 {access_token, expires_in: 300}`. The token is a signed JWT with `sub`, `scopes`, `is_admin` and `aud`. Errors: `401`.",
+        "detail": "→ `200 {access_token, expires_in: 300}`. The token is a signed JWT with `sub`, `scopes`, `is_admin`, `aud` and `auth` (`session`, `api_key`, `service` or `delegated`). Also: `grant_type: client_credentials` (`client_id`, `client_secret`) → a service token with `app`; and `grant_type: urn:ietf:params:oauth:grant-type:token-exchange` with a service token and `on_behalf_of` → a delegated token with `act`. Errors: `401`, `403 delegation_not_allowed`, `404 user_not_found`.",
         "story": "MVP1-E1-03"
       },
       {
@@ -299,7 +303,7 @@ export const products = [
       {
         "story": "MVP1-E1-03",
         "title": "Sign in and sign out",
-        "text": "`identity.sessions` (id, user_id → users, token_hash unique, created_at, expires_at, revoked_at). `identity.signing_keys` (kid, public_jwk, private_key_encrypted, created_at, retired_at) for access tokens. The cookie holds a random token; only its SHA-256 hash is stored. Cognito tokens are not stored."
+        "text": "`identity.sessions` (id, user_id → users, token_hash unique, created_at, expires_at, revoked_at). `identity.signing_keys` (kid, public_jwk, private_key_encrypted, created_at, retired_at) for access tokens. The cookie holds a random token; only its SHA-256 hash is stored. Cognito tokens are not stored. `identity.service_clients` (id, secret_hash unique, scopes, act_scopes, created_at, rotated_at, revoked_at): registered services and apps, added only by migrations."
       },
       {
         "story": "MVP1-E1-04",
