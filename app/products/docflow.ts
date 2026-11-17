@@ -15,7 +15,7 @@ export const docflow = {
     "schema": "The SQL for the DocFlow app's tables, in the `docflow` schema. No service can read them."
   },
   "notStored": [
-    "Field values: they live in Extraction and Review; the results files live in Upload.",
+    "Field values and results: values live in Extraction and Review; the JSON and CSV are built when asked for and never stored (ARCHITECTURE.md §12.8).",
     "Prices: only in configuration and on Payment's order."
   ],
   "overview": {
@@ -45,8 +45,9 @@ export const docflow = {
     "scope_in": [
       "The documents list with status and next action",
       "Starting each service at the right moment, and reacting to their events",
-      "Building `result.json` (with metadata) and `result.csv`, stored through Upload",
+      "Building `result.json` (with metadata) and `result.csv` on demand from Review's latest values, nothing stored",
       "Locked preview; downloads only after payment, checked on the server",
+      "Correcting values on the results page, before or after paying",
       "Checkout at $5.00 and the success page",
       "Asking Delivery to email when paid"
     ],
@@ -81,7 +82,11 @@ export const docflow = {
     },
     {
       "who": "DocFlow",
-      "what": "When the person completes review: re-checks values with Extraction, completes the Review task, builds the JSON and CSV and stores them through Upload."
+      "what": "When the person completes review: re-checks values with Extraction and completes the Review task."
+    },
+    {
+      "who": "DocFlow",
+      "what": "Whenever results are previewed or downloaded: builds the JSON and CSV from Review's latest values and Extraction's metadata. Nothing is stored."
     },
     {
       "who": "DocFlow",
@@ -419,8 +424,8 @@ export const docflow = {
       "path": "/api/docflow/v1/documents/{documentId}/complete-review",
       "access": "Signed in",
       "story": "MVP1-E4-03",
-      "title": "Finish review and build the outputs",
-      "summary": "Re-checks the corrected values, completes the review, and builds the JSON and CSV.",
+      "title": "Finish review",
+      "summary": "Re-checks the corrected values and completes the review. The results are built from Review's values whenever they are looked at; nothing is stored.",
       "params": [
         {
           "name": "documentId",
@@ -440,16 +445,16 @@ export const docflow = {
         }
       ],
       "behaviour": [
-        "Reads the review task, then calls Extraction `POST /validations` with its values.",
+        "Reads the review task, then calls Extraction `POST /validations` with its values and the job's ID.",
         "If a check fails and `confirm_failed_checks` is false, answers `409` with the failed checks; nothing changes.",
-        "Otherwise calls Review `POST /tasks/{taskId}/complete` (with `checks_overridden`), builds `result.json` and `result.csv`, stores each through Upload `POST /files` with the person's own token (Idempotency-Key `docflow:{documentId}:v{version}:{format}`), records the output version, and sets the document `reviewed`.",
-        "Safe to retry after a failure halfway: if Review answers `409 task_completed`, the review is already done, so DocFlow continues from building the outputs. The document stays `needs_review` until the outputs are stored, and repeated uploads return the same files."
+        "Otherwise calls Review `POST /tasks/{taskId}/complete` (with `checks_overridden`) and sets the document `reviewed`.",
+        "Safe to retry: completing an already completed task returns it unchanged, and a document already `reviewed` or `paid` is returned as it is."
       ],
       "responses": [
         {
           "status": "200",
-          "when": "Review completed and outputs built",
-          "body": "`document` (status `reviewed`) and `outputs`."
+          "when": "Review completed",
+          "body": "`document` (status `reviewed`)."
         }
       ],
       "errors": [
@@ -480,7 +485,7 @@ export const docflow = {
         }
       ],
       "request": "POST /api/docflow/v1/documents/0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c/complete-review HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>\nContent-Type: application/json\n\n{\n  \"confirm_failed_checks\": false\n}",
-      "response": "{\n  \"document\": {\n    \"id\": \"0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n    \"file_name\": \"acme-invoice-0042.pdf\",\n    \"status\": \"reviewed\",\n    \"next_action\": \"pay\",\n    \"file_id\": \"0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b\",\n    \"job_id\": \"0193b0d1-4b2c-7d10-9a8b-1c2d3e4f5a6b\",\n    \"review_task_id\": \"0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a2b\",\n    \"order_id\": null,\n    \"created_at\": \"2026-11-17T09:14:07Z\",\n    \"updated_at\": \"2026-11-17T09:17:03Z\"\n  },\n  \"outputs\": {\n    \"version\": 1,\n    \"locked\": true,\n    \"formats\": [\n      \"json\",\n      \"csv\"\n    ]\n  }\n}",
+      "response": "{\n  \"document\": {\n    \"id\": \"0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n    \"file_name\": \"acme-invoice-0042.pdf\",\n    \"status\": \"reviewed\",\n    \"next_action\": \"pay\",\n    \"file_id\": \"0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b\",\n    \"job_id\": \"0193b0d1-4b2c-7d10-9a8b-1c2d3e4f5a6b\",\n    \"review_task_id\": \"0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a2b\",\n    \"order_id\": null,\n    \"created_at\": \"2026-11-17T09:14:07Z\",\n    \"updated_at\": \"2026-11-17T09:17:03Z\"\n  }\n}",
       "scope": "`docflow:write`"
     },
     {
@@ -489,8 +494,8 @@ export const docflow = {
       "path": "/api/docflow/v1/documents/{documentId}/outputs",
       "access": "Signed in",
       "story": "MVP1-E5-01",
-      "title": "Which outputs exist",
-      "summary": "The latest outputs and whether download is unlocked.",
+      "title": "Results status",
+      "summary": "Whether results can be shown, whether download is unlocked, and whether the current values pass every check.",
       "params": [
         {
           "name": "documentId",
@@ -502,13 +507,14 @@ export const docflow = {
         }
       ],
       "behaviour": [
-        "Read only. `locked` is true until the order is paid."
+        "Read only. `locked` is true until the order is paid. `checks` comes from Extraction `POST /validations` on Review's current values, so a later correction that breaks a rule is shown at once.",
+        "`last_changed_at` is the latest correction in Review, after the review or after payment."
       ],
       "responses": [
         {
           "status": "200",
-          "when": "Outputs exist",
-          "body": "`version`, `locked`, `formats`, `generated_at`."
+          "when": "The review is complete",
+          "body": "`locked`, `formats`, `checks` (`passed`, `failed[]`) and `last_changed_at`."
         }
       ],
       "errors": [
@@ -523,13 +529,18 @@ export const docflow = {
           "when": "The review is not complete."
         },
         {
+          "status": "503",
+          "code": "`dependency_unavailable`",
+          "when": "A platform service could not be reached. Nothing was changed; safe to retry."
+        },
+        {
           "status": "401",
           "code": "`not_authenticated`",
           "when": "No valid access token."
         }
       ],
       "request": "GET /api/docflow/v1/documents/0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c/outputs HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>",
-      "response": "{\n  \"version\": 1,\n  \"locked\": false,\n  \"formats\": [\n    \"json\",\n    \"csv\"\n  ],\n  \"generated_at\": \"2026-11-17T09:16:03Z\"\n}",
+      "response": "{\n  \"locked\": false,\n  \"formats\": [\n    \"json\",\n    \"csv\"\n  ],\n  \"checks\": {\n    \"passed\": true,\n    \"failed\": []\n  },\n  \"last_changed_at\": \"2026-11-17T09:21:40Z\"\n}",
       "scope": "`docflow:read`"
     },
     {
@@ -539,7 +550,7 @@ export const docflow = {
       "access": "Signed in",
       "story": "MVP1-E5-01",
       "title": "Preview the JSON or CSV",
-      "summary": "The full output, shown on screen, before or after paying.",
+      "summary": "The full results, shown on screen, before or after paying.",
       "params": [
         {
           "name": "documentId",
@@ -559,12 +570,12 @@ export const docflow = {
         }
       ],
       "behaviour": [
-        "Returns the stored output's content inline, read through Upload."
+        "Builds it on demand: reads the final values from Review `GET /tasks/{taskId}?all=true` and the model, prompt version and page count from Extraction `GET /jobs/{jobId}`, re-runs Extraction `POST /validations` (with `job_id`) on the current values, then builds the format and validates the JSON against `schemas/invoice-v1.json`. Nothing is stored (ARCHITECTURE.md §12.8), so it always reflects the latest corrections."
       ],
       "responses": [
         {
           "status": "200",
-          "when": "Outputs exist",
+          "when": "The review is complete",
           "body": "`application/json` or `text/csv` with `Content-Disposition: inline`."
         }
       ],
@@ -580,13 +591,18 @@ export const docflow = {
           "when": "The review is not complete."
         },
         {
+          "status": "503",
+          "code": "`dependency_unavailable`",
+          "when": "A platform service could not be reached. Nothing was changed; safe to retry."
+        },
+        {
           "status": "401",
           "code": "`not_authenticated`",
           "when": "No valid access token."
         }
       ],
       "request": "GET /api/docflow/v1/documents/0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c/outputs/json/preview HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>",
-      "response": "{\n  \"data\": {\n    \"vendor_name\": \"Acme Supplies Ltd\",\n    \"invoice_number\": \"INV-0042\",\n    \"invoice_date\": \"2026-11-02\",\n    \"currency\": \"USD\",\n    \"subtotal\": \"1150.00\",\n    \"tax_total\": \"80.00\",\n    \"total\": \"1230.00\",\n    \"line_items\": [\n      {\n        \"description\": \"Paper, A4\",\n        \"quantity\": \"10\",\n        \"unit_price\": \"115.00\",\n        \"amount\": \"1150.00\"\n      }\n    ]\n  },\n  \"metadata\": {\n    \"document_id\": \"0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n    \"file_name\": \"acme-invoice-0042.pdf\",\n    \"pages\": 2,\n    \"model\": \"claude-sonnet-5-5\",\n    \"prompt_version\": \"extract-invoice/v1\",\n    \"extracted_at\": \"2026-11-17T09:14:41Z\",\n    \"reviewed_at\": \"2026-11-17T09:16:02Z\",\n    \"reviewed_by\": \"0193a5b2-7c1e-7a3f-9b2d-4e6f8a1c2d3e\",\n    \"fields_flagged\": 3,\n    \"fields_corrected\": 1,\n    \"fields\": {\n      \"total\": {\n        \"confidence\": 0.3,\n        \"corrected\": true\n      },\n      \"vendor_name\": {\n        \"confidence\": 0.97,\n        \"corrected\": false\n      }\n    }\n  }\n}",
+      "response": "{\n  \"data\": {\n    \"vendor_name\": \"Acme Supplies Ltd\",\n    \"invoice_number\": \"INV-0042\",\n    \"invoice_date\": \"2026-11-02\",\n    \"currency\": \"USD\",\n    \"subtotal\": \"1150.00\",\n    \"tax_total\": \"80.00\",\n    \"total\": \"1230.00\",\n    \"line_items\": [\n      {\n        \"description\": \"Paper, A4\",\n        \"quantity\": \"10\",\n        \"unit_price\": \"115.00\",\n        \"amount\": \"1150.00\"\n      }\n    ]\n  },\n  \"metadata\": {\n    \"document_id\": \"0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n    \"file_name\": \"acme-invoice-0042.pdf\",\n    \"pages\": 2,\n    \"model\": \"claude-opus-5-5\",\n    \"prompt_version\": \"extract-invoice/v1\",\n    \"extracted_at\": \"2026-11-17T09:14:41Z\",\n    \"reviewed_at\": \"2026-11-17T09:16:02Z\",\n    \"reviewed_by\": \"0193a5b2-7c1e-7a3f-9b2d-4e6f8a1c2d3e\",\n    \"last_changed_at\": \"2026-11-17T09:21:40Z\",\n    \"fields_flagged\": 3,\n    \"fields_corrected\": 1,\n    \"fields\": {\n      \"total\": {\n        \"confidence\": 0.3,\n        \"corrected\": true\n      },\n      \"vendor_name\": {\n        \"confidence\": 0.97,\n        \"corrected\": false\n      }\n    }\n  }\n}",
       "scope": "`docflow:read`"
     },
     {
@@ -617,13 +633,14 @@ export const docflow = {
       ],
       "behaviour": [
         "Reads the order from Payment; if it is not `paid`, answers `402`.",
-        "Otherwise asks Upload for a 5-minute download link named `{document}-result.{format}`, redirects to it, and records `delivery.downloaded` (`MVP1-E7-02`)."
+        "Builds it on demand: reads the final values from Review `GET /tasks/{taskId}?all=true` and the model, prompt version and page count from Extraction `GET /jobs/{jobId}`, re-runs Extraction `POST /validations` (with `job_id`) on the current values, then builds the format and validates the JSON against `schemas/invoice-v1.json`. Nothing is stored (ARCHITECTURE.md §12.8), so it always reflects the latest corrections.",
+        "Returns the file itself as an attachment named `{document}-result.{format}`, and records `delivery.downloaded` (`MVP1-E7-02`). A generated result is a few kilobytes, so it is returned directly: no stored copy, no storage link. Stored files, like the original upload, still move only by short-lived links."
       ],
       "responses": [
         {
-          "status": "302",
+          "status": "200",
           "when": "Paid",
-          "body": "`Location`: the 5-minute Upload link."
+          "body": "The file, with `Content-Disposition: attachment; filename=\"acme-invoice-0042-result.csv\"` and `Cache-Control: no-store`."
         }
       ],
       "errors": [
@@ -654,7 +671,7 @@ export const docflow = {
         }
       ],
       "request": "GET /api/docflow/v1/documents/0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c/outputs/csv/download HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>",
-      "response": "HTTP/1.1 302 Found\nLocation: https://01scale-uploads.s3.us-east-1.amazonaws.com/users/…/original.csv?response-content-disposition=attachment…&X-Amz-Signature=…",
+      "response": "HTTP/1.1 200 OK\nContent-Type: text/csv; charset=utf-8\nContent-Disposition: attachment; filename=\"acme-invoice-0042-result.csv\"\nCache-Control: no-store\n\n﻿document_id,vendor_name,…",
       "scope": "`docflow:read`"
     },
     {
@@ -788,7 +805,7 @@ export const docflow = {
         "`extraction.job.failed`: sets `extraction_failed`.",
         "`payment.order.paid`: sets `paid` and asks Delivery `POST /messages` for the `order_paid` email, keyed by the event's ID.",
         "`payment.order.expired` or `failed`: clears the order so Pay starts a new one.",
-        "`identity.user.deleted`: deletes that user's documents and outputs records.",
+        "`identity.user.deleted`: deletes that user's documents. There are no stored results to delete: Extraction and Review delete their own data.",
         "Other types are acknowledged and ignored."
       ],
       "responses": [
@@ -813,7 +830,7 @@ export const docflow = {
   "noEndpoint": [
     {
       "topic": "Building the JSON (MVP1-E5-01)",
-      "how": "`data` holds the final values in the invoice v1 shape; `metadata` holds document_id, file_name, pages, model, prompt_version, extracted_at, reviewed_at, reviewed_by, fields_flagged, fields_corrected, and per field `confidence` and `corrected`. Validated against `schemas/invoice-v1.json` before it is stored."
+      "how": "`data` holds the final values in the invoice v1 shape; `metadata` holds document_id, file_name, pages, model, prompt_version, extracted_at, reviewed_at, reviewed_by, fields_flagged, fields_corrected, and per field `confidence` and `corrected`. Built on each request and validated against `schemas/invoice-v1.json` before it is returned; `metadata.last_changed_at` is the latest correction in Review."
     },
     {
       "topic": "Building the CSV (MVP1-E5-02)",
@@ -976,93 +993,6 @@ export const docflow = {
       ]
     },
     {
-      "name": "docflow.outputs",
-      "purpose": "One row per version of a document's results: the IDs of the JSON and CSV files stored in Upload.",
-      "columns": [
-        {
-          "name": "id",
-          "type": "uuid",
-          "nullable": "No",
-          "default": "",
-          "constraints": "Primary key. UUIDv7",
-          "meaning": "The output version's ID."
-        },
-        {
-          "name": "document_id",
-          "type": "uuid",
-          "nullable": "No",
-          "default": "",
-          "constraints": "Foreign key to `docflow.documents`, delete cascades",
-          "meaning": "Whose results."
-        },
-        {
-          "name": "version",
-          "type": "smallint",
-          "nullable": "No",
-          "default": "",
-          "constraints": "1 or more; unique per document",
-          "meaning": "Which version; increases when outputs are rebuilt."
-        },
-        {
-          "name": "json_file_id",
-          "type": "uuid",
-          "nullable": "No",
-          "default": "",
-          "constraints": "",
-          "meaning": "Upload's file holding `result.json`."
-        },
-        {
-          "name": "csv_file_id",
-          "type": "uuid",
-          "nullable": "No",
-          "default": "",
-          "constraints": "",
-          "meaning": "Upload's file holding `result.csv`."
-        },
-        {
-          "name": "schema_version",
-          "type": "text",
-          "nullable": "No",
-          "default": "",
-          "constraints": "`invoice-v1`",
-          "meaning": "The JSON Schema the JSON was validated against."
-        },
-        {
-          "name": "created_at",
-          "type": "timestamptz",
-          "nullable": "No",
-          "default": "now()",
-          "constraints": "",
-          "meaning": "When it was built."
-        }
-      ],
-      "constraints": [
-        "`outputs_pkey`: primary key (`id`)",
-        "`outputs_document_id_fkey`: foreign key to `docflow.documents`, delete cascades",
-        "`outputs_document_version_key`: unique (`document_id`, `version`)"
-      ],
-      "sampleCols": [
-        "id",
-        "document_id",
-        "version",
-        "json_file_id",
-        "csv_file_id",
-        "schema_version",
-        "created_at"
-      ],
-      "sampleRows": [
-        [
-          "0193b0f6-0000-7000-8000-000000000001",
-          "0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c",
-          "1",
-          "0193b0f5-1111-7222-8333-444455556666",
-          "0193b0f5-1111-7222-8333-444455556667",
-          "invoice-v1",
-          "2026-11-17 09:16:03+00"
-        ]
-      ]
-    },
-    {
       "name": "docflow.inbound_events",
       "purpose": "One row per service event DocFlow has acted on.",
       "columns": [
@@ -1122,8 +1052,7 @@ export const docflow = {
     {
       "level": "Schema level: enforced by the database, whatever the code does",
       "items": [
-        "A document's status always has the parts it needs (a job once extracting, a task once in review, an order once paid).",
-        "One output per version per document."
+        "A document's status always has the parts it needs (a job once extracting, a task once in review, an order once paid)."
       ]
     },
     {
@@ -1131,7 +1060,7 @@ export const docflow = {
       "items": [
         "DocFlow stores IDs of other services' records, never their data.",
         "Every document is reviewed, even when nothing is flagged.",
-        "Results are built only from a completed review."
+        "Results are built only from a completed review, always from Review's latest values."
       ]
     }
   ],
@@ -1163,9 +1092,8 @@ export const docflow = {
     }
   ],
   "openQuestions": [
-    "`MVP1-E5-04` stores outputs under `users/{userId}/{docId}/outputs/`. Through Upload, every key is `users/{owner}/{fileId}/original.{ext}`, built from IDs; the story's path cannot be kept without breaking that rule. I propose changing the story.",
-    "`MVP1-E5-04` AC2 rebuilds outputs 'if the user later edits fields', but Human Review locks values when a review completes. Either reviews can be reopened, or AC2 belongs with the chat corrections of MVP2.",
-    "Where the JSON Schema `schemas/invoice-v1.json` is published (a file in the repository, or also served at an address) is not decided."
+    "Decided by Nikhil on 17 Nov 2026 (ARCHITECTURE.md §12.8, #45): results are built on demand from Review's data and never stored; corrections are allowed after review and after payment; the JSON Schema is a file in the repository (`schemas/invoice-v1.json`), and serving it at a public address is nice to have, not required.",
+    "Returning a generated result directly (a few kilobytes) instead of through a storage link is a narrow exception to 'files never pass through the API', which is about stored files. Story `MVP1-E7-02` AC1 is changed to match."
   ],
   "decisions": [],
   "journeys": [
@@ -1192,10 +1120,10 @@ export const docflow = {
         },
         {
           "person": "Checks the flagged fields and taps Complete review.",
-          "system": "DocFlow re-checks the values with Extraction, completes the review, and builds the JSON and CSV."
+          "system": "DocFlow re-checks the values with Extraction and completes the review."
         }
       ],
-      "outcome": "The results exist, previewable but locked until payment."
+      "outcome": "The results can be previewed, built from Review's values; downloads are locked until payment."
     },
     {
       "name": "Preview, pay and download",
@@ -1211,7 +1139,7 @@ export const docflow = {
       "steps": [
         {
           "person": "Reads the full JSON (with folding) and the CSV on screen; download buttons say 'Pay to download'.",
-          "system": "DocFlow returns the stored outputs for preview; downloads answer 402 until paid."
+          "system": "DocFlow builds the results from Review's latest values for preview; downloads answer 402 until paid."
         },
         {
           "person": "Taps Pay $5.00 and pays on Stripe's page.",
@@ -1223,10 +1151,34 @@ export const docflow = {
         },
         {
           "person": "Taps Download CSV; opens it in Excel with correct characters.",
-          "system": "DocFlow checks the order is paid, then redirects to a 5-minute Upload link. The CSV is UTF-8 with a BOM."
+          "system": "DocFlow checks the order is paid, builds the CSV from Review's latest values and returns it. The CSV is UTF-8 with a BOM."
         }
       ],
       "outcome": "The person has their files and an email with a link back."
+    },
+    {
+      "name": "Correct a value on the results page",
+      "who": "Someone with results, before or after paying",
+      "trigger": "Spots a wrong value in the preview.",
+      "stories": [
+        "MVP1-E5-04",
+        "MVP1-E4-02"
+      ],
+      "steps": [
+        {
+          "person": "Taps Edit beside the value, types the right one and saves.",
+          "system": "Review's field component saves the correction in Review, with its history (Review allows corrections after completion)."
+        },
+        {
+          "person": "Sees the preview update, and a warning if the new value breaks a rule, such as the total no longer adding up.",
+          "system": "DocFlow rebuilds the results from Review's latest values and re-runs Extraction's checks."
+        },
+        {
+          "person": "Downloads again.",
+          "system": "The download is built from the corrected values. No new payment is asked for."
+        }
+      ],
+      "outcome": "The corrected values are the final document; every earlier value is in Review's history."
     }
   ],
   "edgeCases": [
@@ -1259,6 +1211,11 @@ export const docflow = {
       "situation": "A service is down",
       "sees": "'Something went wrong. Try again in a moment.' Nothing is lost.",
       "code": "`dependency_unavailable`"
+    },
+    {
+      "situation": "A correction after review breaks a rule, like a total that no longer adds up",
+      "sees": "The preview shows the failed check beside the value, with Fix it. The download still works: the values are the person's.",
+      "code": "`checks.failed[]` in `GET …/outputs`"
     },
     {
       "situation": "A spreadsheet formula in a value, like `=SUM(…)`",
@@ -1331,6 +1288,34 @@ export const docflow = {
       ]
     },
     {
+      "name": "ResultsFieldEditor",
+      "kind": "Page section",
+      "purpose": "The results page's Edit beside each value. It places Review's `FieldDecision` component for that field, then refreshes the previews and checks. DocFlow adds no editing logic of its own.",
+      "props": [
+        {
+          "name": "documentId",
+          "type": "string",
+          "meaning": "The document."
+        },
+        {
+          "name": "taskId",
+          "type": "string",
+          "meaning": "Its Review task."
+        }
+      ],
+      "states": [
+        "Viewing",
+        "Editing (Review's component)",
+        "Saved: previews refreshed",
+        "Check failed after saving: the warning",
+        "Failed: Retry"
+      ],
+      "calls": [
+        "`GET /documents/{documentId}/outputs`",
+        "Review `PATCH /tasks/{taskId}/fields/{fieldId}`, through Review's component"
+      ]
+    },
+    {
       "name": "DownloadButtons",
       "kind": "Component",
       "purpose": "Download JSON and Download CSV; 'Pay to download' while locked.",
@@ -1369,12 +1354,6 @@ export const docflow = {
       "relations": "Points at one file, one latest job, one review task and one order in their services, by ID only."
     },
     {
-      "name": "Output version",
-      "table": "`docflow.outputs`",
-      "what": "One built set of results.",
-      "relations": "Belongs to one document; its files are in Upload."
-    },
-    {
       "name": "Processed event",
       "table": "`docflow.inbound_events`",
       "what": "A service event already acted on.",
@@ -1387,7 +1366,7 @@ export const docflow = {
       "text": "`pending_upload` → `uploaded` → `extracting` → `needs_review` → `reviewed` → `paid`; or `rejected` after upload, or `extraction_failed` (back to `extracting` on retry)."
     }
   ],
-  "ddl": "-- DocFlow app, version 1. Schema: docflow.\n-- Checked with `npm run schema:check`: runs on PGlite, and every sample row passes every constraint.\n\ncreate schema if not exists docflow;\n\ncreate table docflow.documents (\n  id               uuid        primary key,\n  owner_id         uuid        not null,\n  file_name        text        not null,\n  status           text        not null default 'pending_upload',\n  file_id          uuid        not null,\n  job_id           uuid,\n  review_task_id   uuid,\n  order_id         uuid,\n  rejection_reason text,\n  created_at       timestamptz not null default now(),\n  updated_at       timestamptz not null default now(),\n\n  constraint documents_file_name_check check (length(file_name) between 1 and 255),\n  constraint documents_status_check check (status in ('pending_upload', 'uploaded', 'rejected',\n    'extracting', 'extraction_failed', 'needs_review', 'reviewed', 'paid')),\n  constraint documents_parts_check check (\n    (status not in ('extracting', 'extraction_failed', 'needs_review', 'reviewed', 'paid') or job_id is not null)\n    and (status not in ('needs_review', 'reviewed', 'paid') or review_task_id is not null)\n    and (status <> 'paid' or order_id is not null)\n  ),\n  constraint documents_rejected_check check ((status = 'rejected') = (rejection_reason is not null))\n);\n\ncreate index documents_owner_idx on docflow.documents (owner_id, created_at desc);\n\ncreate table docflow.outputs (\n  id             uuid        primary key,\n  document_id    uuid        not null,\n  version        smallint    not null,\n  json_file_id   uuid        not null,\n  csv_file_id    uuid        not null,\n  schema_version text        not null,\n  created_at     timestamptz not null default now(),\n\n  constraint outputs_document_id_fkey foreign key (document_id)\n    references docflow.documents (id) on delete cascade,\n  constraint outputs_document_version_key unique (document_id, version),\n  constraint outputs_version_check check (version >= 1 and schema_version in ('invoice-v1'))\n);\n\ncreate table docflow.inbound_events (\n  event_id   uuid        primary key,\n  type       text        not null,\n  created_at timestamptz not null default now()\n);\n\ngrant usage on schema docflow to docflow_service;\ngrant select, insert, update, delete on docflow.documents, docflow.outputs to docflow_service;\ngrant select, insert on docflow.inbound_events, docflow.audit_events to docflow_service;\n",
+  "ddl": "-- DocFlow app, version 1. Schema: docflow.\n-- Checked with `npm run schema:check`: runs on PGlite, and every sample row passes every constraint.\n\ncreate schema if not exists docflow;\n\ncreate table docflow.documents (\n  id               uuid        primary key,\n  owner_id         uuid        not null,\n  file_name        text        not null,\n  status           text        not null default 'pending_upload',\n  file_id          uuid        not null,\n  job_id           uuid,\n  review_task_id   uuid,\n  order_id         uuid,\n  rejection_reason text,\n  created_at       timestamptz not null default now(),\n  updated_at       timestamptz not null default now(),\n\n  constraint documents_file_name_check check (length(file_name) between 1 and 255),\n  constraint documents_status_check check (status in ('pending_upload', 'uploaded', 'rejected',\n    'extracting', 'extraction_failed', 'needs_review', 'reviewed', 'paid')),\n  constraint documents_parts_check check (\n    (status not in ('extracting', 'extraction_failed', 'needs_review', 'reviewed', 'paid') or job_id is not null)\n    and (status not in ('needs_review', 'reviewed', 'paid') or review_task_id is not null)\n    and (status <> 'paid' or order_id is not null)\n  ),\n  constraint documents_rejected_check check ((status = 'rejected') = (rejection_reason is not null))\n);\n\ncreate index documents_owner_idx on docflow.documents (owner_id, created_at desc);\n\ncreate table docflow.inbound_events (\n  event_id   uuid        primary key,\n  type       text        not null,\n  created_at timestamptz not null default now()\n);\n\ngrant usage on schema docflow to docflow_service;\ngrant select, insert, update, delete on docflow.documents to docflow_service;\ngrant select, insert on docflow.inbound_events, docflow.audit_events to docflow_service;\n",
   "queries": [
     {
       "title": "The documents list",

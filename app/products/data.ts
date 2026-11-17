@@ -1109,7 +1109,7 @@ export const products = [
         "method": "POST",
         "path": "/api/docflow/v1/documents/{documentId}/complete-review",
         "access": "Signed in",
-        "summary": "Finish review for a document: re-checks the corrected data and builds the outputs.",
+        "summary": "Finish review for a document: re-checks the corrected data and completes the Review task; results are built on demand afterwards (ARCHITECTURE.md §12.8).",
         "detail": "Body `{confirm_failed_checks?: boolean}` → `200 {document}`. Calls Extraction `POST /validations`, then Review `complete`. Errors: `409` with `unresolved_fields[]` or `failed_checks[]`.",
         "story": "MVP1-E4-03"
       },
@@ -1240,22 +1240,22 @@ export const products = [
       },
       {
         "id": "MVP1-E5-04",
-        "title": "Store outputs",
+        "title": "Build outputs on demand",
         "size": "S",
         "pending": "",
         "story": "",
         "acs": [
           {
             "label": "AC1",
-            "text": "On review completion, `result.json` and `result.csv` are written to `users/{userId}/{docId}/outputs/`."
+            "text": "`result.json` and `result.csv` are never stored. Every preview and download builds them from Review's latest values and Extraction's metadata, so they always reflect the final document (Nikhil's decision on #45, ARCHITECTURE.md §12.8)."
           },
           {
             "label": "AC2",
-            "text": "If the user later edits fields, the outputs are regenerated and the version increments."
+            "text": "The person can correct values on the results page, before or after paying. Corrections are saved in Review with their history, the checks re-run, and the next preview or download shows them. No new payment is asked for."
           }
         ],
         "evals": "",
-        "service": "DocFlow app (files stored through Upload)"
+        "service": "DocFlow app (values from Human Review, metadata from LLM Extraction)"
       }
     ],
     "endpoints": [
@@ -1263,8 +1263,8 @@ export const products = [
         "method": "GET",
         "path": "/api/docflow/v1/documents/{documentId}/outputs",
         "access": "Signed in",
-        "summary": "The outputs available for a document, and whether download is unlocked.",
-        "detail": "→ `200 {version, locked, formats: [\"json\", \"csv\"], generated_at}`.",
+        "summary": "Results status: whether download is unlocked and whether the current values pass every check.",
+        "detail": "→ `200 {locked, formats: [\"json\", \"csv\"], checks: {passed, failed[]}, last_changed_at}`.",
         "story": "MVP1-E5-01"
       },
       {
@@ -1279,8 +1279,8 @@ export const products = [
         "method": "GET",
         "path": "/api/docflow/v1/documents/{documentId}/outputs/{format}/download",
         "access": "Signed in",
-        "summary": "Download an output.",
-        "detail": "Locked until the order is paid. → `302` to an Upload `download-url` (5 minutes, correct filename). Errors: `402` until the Payment order is `paid`, `404`.",
+        "summary": "Download an output, built from Review's latest values.",
+        "detail": "Locked until the order is paid. → `200` with the file as an attachment (`{document}-result.{format}`, `Cache-Control: no-store`). Errors: `402 payment_required`, `409 outputs_not_ready`.",
         "story": "MVP1-E5-03"
       }
     ],
@@ -1291,7 +1291,7 @@ export const products = [
       },
       {
         "story": "MVP1-E5-04",
-        "text": "No new endpoints. DocFlow builds the files and stores them through Upload `POST /files` with a delegated token for the document's owner (decision on #24); `version` in `GET …/outputs` increments when they are regenerated."
+        "text": "No new endpoints. Uses `GET …/outputs`, `…/preview` and `…/download` (E5-01, E5-03), which read Review `GET /tasks/{taskId}?all=true` and Extraction `GET /jobs/{jobId}`; corrections use Review `PATCH /tasks/{taskId}/fields/{fieldId}` through Review's component."
       }
     ],
     "dbNotes": [
@@ -1312,8 +1312,8 @@ export const products = [
       },
       {
         "story": "MVP1-E5-04",
-        "title": "Store outputs",
-        "text": "`docflow.outputs` (id, document_id → documents, version, json_file_id, csv_file_id, created_at); unique `(document_id, version)`. The files themselves are `upload.files` rows owned by the user."
+        "title": "Build outputs on demand",
+        "text": "No tables: nothing is stored. The final values stay in `review.fields`, kept until the user deletes their account."
       }
     ]
   },
@@ -1519,7 +1519,7 @@ export const products = [
         "acs": [
           {
             "label": "AC1",
-            "text": "Each download checks on the server that the user owns the document and the order is paid, then redirects to a presigned GET URL valid for 5 minutes, with the right filename."
+            "text": "Each download checks on the server that the user owns the document and the order is paid, then returns the file built from Review's latest values, with the right filename and `Cache-Control: no-store`. A generated result is a few kilobytes and never stored, so it is returned directly; stored files such as uploads still move only by short-lived presigned links."
           },
           {
             "label": "AC2",
@@ -1527,7 +1527,7 @@ export const products = [
           }
         ],
         "evals": "",
-        "service": "DocFlow app (links from Upload)"
+        "service": "DocFlow app"
       },
       {
         "id": "MVP1-E7-03",
@@ -1578,7 +1578,7 @@ export const products = [
       },
       {
         "story": "MVP1-E7-02",
-        "text": "Uses DocFlow `GET …/outputs/{format}/download` (E5-03), which checks the Payment order and redirects to an Upload `download-url`."
+        "text": "Uses DocFlow `GET …/outputs/{format}/download` (E5-03), which checks the Payment order and returns the file."
       },
       {
         "story": "MVP1-E7-03",
@@ -2693,7 +2693,7 @@ export const products = [
       {
         "story": "MVP2-E12-02",
         "title": "Batch outputs",
-        "text": "`docflow.outputs` adds batch_id null, zip_file_id; a batch output row has `document_id` null."
+        "text": "No tables: like single documents, batch results (JSON, CSV and the zip) are built on demand from each document's Review values and never stored (ARCHITECTURE.md §12.8)."
       }
     ]
   },
