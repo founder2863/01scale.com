@@ -1151,9 +1151,195 @@ export const extraction = {
       "code": "`rate_limited`"
     }
   ],
-  "components": [],
+  "components": [
+    {
+      "name": "ExtractionProgress",
+      "kind": "Component",
+      "purpose": "The four steps of a running job, ticking off as they finish, with the outcome at the end.",
+      "props": [
+        {
+          "name": "jobId",
+          "type": "string",
+          "meaning": "The job to follow."
+        },
+        {
+          "name": "onFinished",
+          "type": "(job) => void",
+          "meaning": "Called once when the job is `extracted` or `failed`."
+        }
+      ],
+      "states": [
+        "Queued: all steps waiting",
+        "Running: done steps ticked, the current one animated",
+        "Extracted: all ticked",
+        "Failed: the failed step marked, the message, and Retry when `retryable`",
+        "Lost connection: 'Reconnecting…' while polling retries"
+      ],
+      "calls": [
+        "`GET /jobs/{jobId}` every 2 seconds while running"
+      ]
+    },
+    {
+      "name": "useExtractionJob()",
+      "kind": "Hook",
+      "purpose": "Starts a job or follows an existing one, and reports its status, for an app with its own design.",
+      "props": [
+        {
+          "name": "fileId or jobId",
+          "type": "string",
+          "meaning": "Start a job for a file, or follow a job already started."
+        },
+        {
+          "name": "schema",
+          "type": "string, optional",
+          "meaning": "Default `invoice-v1`."
+        }
+      ],
+      "states": [
+        "`starting`",
+        "`queued`",
+        "`processing` with the current step",
+        "`extracted` with counts",
+        "`failed` with code, message and `retryable`"
+      ],
+      "calls": [
+        "`POST /jobs`",
+        "`GET /jobs/{jobId}`"
+      ]
+    },
+    {
+      "name": "FieldList",
+      "kind": "Component",
+      "purpose": "The extracted fields grouped as header and line items, each with its value, a confidence badge and a flag when it needs checking.",
+      "props": [
+        {
+          "name": "jobId",
+          "type": "string",
+          "meaning": "The job whose fields to show."
+        },
+        {
+          "name": "onSelect",
+          "type": "(field) => void, optional",
+          "meaning": "Called when a field is tapped, for example to move the app's preview to its page."
+        },
+        {
+          "name": "flaggedOnly",
+          "type": "boolean, optional",
+          "meaning": "Show only flagged fields. Default false."
+        }
+      ],
+      "states": [
+        "Loading: placeholder rows of the same height",
+        "Loaded: header fields, then a table of line items",
+        "A field not on the document: 'Not found on the document'",
+        "Failed: 'Couldn't load the fields.' and Retry"
+      ],
+      "calls": [
+        "`GET /jobs/{jobId}/fields`"
+      ]
+    },
+    {
+      "name": "ConfidenceBadge",
+      "kind": "Component",
+      "purpose": "A small label showing how sure the system is about one value.",
+      "props": [
+        {
+          "name": "confidence",
+          "type": "number 0 to 1",
+          "meaning": "The field's final confidence."
+        },
+        {
+          "name": "flagged",
+          "type": "boolean",
+          "meaning": "Whether the field needs checking."
+        }
+      ],
+      "states": [
+        "High (green, from 0.85)",
+        "Check (amber, 0.6 to 0.85)",
+        "Low (red, below 0.6)",
+        "Flagged: adds a flag icon whatever the score"
+      ],
+      "calls": [
+        "None: it shows the value it is given."
+      ]
+    },
+    {
+      "name": "FieldEvidence",
+      "kind": "Component",
+      "purpose": "For one field: the exact quote from the document, its page, and why it was flagged.",
+      "props": [
+        {
+          "name": "field",
+          "type": "Field",
+          "meaning": "The field from the fields request."
+        }
+      ],
+      "states": [
+        "With quote and page",
+        "No value: 'Not found on the document'",
+        "With reasons: each reason as a sentence"
+      ],
+      "calls": [
+        "None: the evidence comes with the fields."
+      ]
+    },
+    {
+      "name": "NextStepButton",
+      "kind": "Component",
+      "purpose": "'Review N flagged fields' when anything is flagged, otherwise 'Continue'. The app decides where each goes.",
+      "props": [
+        {
+          "name": "job",
+          "type": "Job",
+          "meaning": "The finished job."
+        },
+        {
+          "name": "onReview, onContinue",
+          "type": "functions",
+          "meaning": "Where to go next."
+        }
+      ],
+      "states": [
+        "Flagged: 'Review 3 flagged fields'",
+        "Nothing flagged: 'Continue to results'",
+        "Disabled while the job runs"
+      ],
+      "calls": [
+        "None: it reads `fields_flagged` from the job."
+      ]
+    },
+    {
+      "name": "JobsTable",
+      "kind": "Component",
+      "purpose": "For an admin: recent jobs with model, prompt version, pages, tokens, cost, time and outcome, with the summary on top.",
+      "props": [
+        {
+          "name": "limit",
+          "type": "number, optional",
+          "meaning": "How many jobs. Default 100."
+        }
+      ],
+      "states": [
+        "Loading",
+        "Loaded, with failure rate, average cost and slowest time",
+        "Not an admin: 'Not found'",
+        "Failed: Retry"
+      ],
+      "calls": [
+        "`GET /admin/jobs`"
+      ]
+    }
+  ],
   "hostedPages": [],
-  "uiRules": [],
+  "uiRules": [
+    "Components call only the LLM Extraction API. The document preview beside them belongs to the app, which gets the file from the Upload service.",
+    "They ship as the package `packages/ui-extraction` and work in any app and for any schema; field labels come from the schema, not from DocFlow.",
+    "Confidence is shown by colour and by words and numbers together, never colour alone: green 'High' from 0.85, amber 'Check' from 0.6, red 'Low' below 0.6.",
+    "Polling stops as soon as a job ends, and pauses while the browser tab is hidden.",
+    "Every request has a loading state that keeps the layout still, and a failure state with a plain-language message and a retry.",
+    "Keyboard reachable, visible focus, labelled controls, step changes announced to screen readers, WCAG AA contrast, usable at 320 pixels wide, in light and dark mode."
+  ],
   "entities": [
     {
       "name": "Job",

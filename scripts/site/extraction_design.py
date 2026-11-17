@@ -519,6 +519,75 @@ EDGE_CASES = [
     {"situation": "Starts more than 10 extractions in a minute", "sees": "'Too many at once. Wait a moment and try again.'", "code": "`rate_limited`"},
 ]
 
+# ------------------------------------------------------------------ UI components
+UI_RULES = [
+    "Components call only the LLM Extraction API. The document preview beside them belongs to the app, which gets the file from the Upload service.",
+    "They ship as the package `packages/ui-extraction` and work in any app and for any schema; field labels come from the schema, not from DocFlow.",
+    "Confidence is shown by colour and by words and numbers together, never colour alone: green 'High' from 0.85, amber 'Check' from 0.6, red 'Low' below 0.6.",
+    "Polling stops as soon as a job ends, and pauses while the browser tab is hidden.",
+    "Every request has a loading state that keeps the layout still, and a failure state with a plain-language message and a retry.",
+    "Keyboard reachable, visible focus, labelled controls, step changes announced to screen readers, WCAG AA contrast, usable at 320 pixels wide, in light and dark mode.",
+]
+
+COMPONENTS = [
+    component(
+        "ExtractionProgress", "Component",
+        "The four steps of a running job, ticking off as they finish, with the outcome at the end.",
+        [
+            ("jobId", "string", "The job to follow."),
+            ("onFinished", "(job) => void", "Called once when the job is `extracted` or `failed`."),
+        ],
+        ["Queued: all steps waiting", "Running: done steps ticked, the current one animated", "Extracted: all ticked", "Failed: the failed step marked, the message, and Retry when `retryable`", "Lost connection: 'Reconnecting…' while polling retries"],
+        ["`GET /jobs/{jobId}` every 2 seconds while running"],
+    ),
+    component(
+        "useExtractionJob()", "Hook",
+        "Starts a job or follows an existing one, and reports its status, for an app with its own design.",
+        [("fileId or jobId", "string", "Start a job for a file, or follow a job already started."), ("schema", "string, optional", "Default `invoice-v1`.")],
+        ["`starting`", "`queued`", "`processing` with the current step", "`extracted` with counts", "`failed` with code, message and `retryable`"],
+        ["`POST /jobs`", "`GET /jobs/{jobId}`"],
+    ),
+    component(
+        "FieldList", "Component",
+        "The extracted fields grouped as header and line items, each with its value, a confidence badge and a flag when it needs checking.",
+        [
+            ("jobId", "string", "The job whose fields to show."),
+            ("onSelect", "(field) => void, optional", "Called when a field is tapped, for example to move the app's preview to its page."),
+            ("flaggedOnly", "boolean, optional", "Show only flagged fields. Default false."),
+        ],
+        ["Loading: placeholder rows of the same height", "Loaded: header fields, then a table of line items", "A field not on the document: 'Not found on the document'", "Failed: 'Couldn't load the fields.' and Retry"],
+        ["`GET /jobs/{jobId}/fields`"],
+    ),
+    component(
+        "ConfidenceBadge", "Component",
+        "A small label showing how sure the system is about one value.",
+        [("confidence", "number 0 to 1", "The field's final confidence."), ("flagged", "boolean", "Whether the field needs checking.")],
+        ["High (green, from 0.85)", "Check (amber, 0.6 to 0.85)", "Low (red, below 0.6)", "Flagged: adds a flag icon whatever the score"],
+        ["None: it shows the value it is given."],
+    ),
+    component(
+        "FieldEvidence", "Component",
+        "For one field: the exact quote from the document, its page, and why it was flagged.",
+        [("field", "Field", "The field from the fields request.")],
+        ["With quote and page", "No value: 'Not found on the document'", "With reasons: each reason as a sentence"],
+        ["None: the evidence comes with the fields."],
+    ),
+    component(
+        "NextStepButton", "Component",
+        "'Review N flagged fields' when anything is flagged, otherwise 'Continue'. The app decides where each goes.",
+        [("job", "Job", "The finished job."), ("onReview, onContinue", "functions", "Where to go next.")],
+        ["Flagged: 'Review 3 flagged fields'", "Nothing flagged: 'Continue to results'", "Disabled while the job runs"],
+        ["None: it reads `fields_flagged` from the job."],
+    ),
+    component(
+        "JobsTable", "Component",
+        "For an admin: recent jobs with model, prompt version, pages, tokens, cost, time and outcome, with the summary on top.",
+        [("limit", "number, optional", "How many jobs. Default 100.")],
+        ["Loading", "Loaded, with failure rate, average cost and slowest time", "Not an admin: 'Not found'", "Failed: Retry"],
+        ["`GET /admin/jobs`"],
+    ),
+]
+
 MODULE = {
     "slug": "extraction-with-claude",
     "docsPath": "docs/services/extraction",
@@ -545,6 +614,8 @@ MODULE = {
     "ddl": DDL,
     "journeys": JOURNEYS,
     "edgeCases": EDGE_CASES,
+    "uiRules": UI_RULES,
+    "components": COMPONENTS,
     "queries": QUERIES,
     "noEndpoint": EVENTS_OUT + [
         {"topic": "The Claude call (MVP1-E3-02)", "how": "Inside the job, not an endpoint. The document goes to Claude as a document or image input with the versioned prompt `prompts/extract-invoice/v1.md`. The answer is forced into the invoice v1 schema with a tool definition, then validated with zod. A failure triggers one repair attempt; if that fails too, the job fails with `output_invalid` and nothing is stored."},
