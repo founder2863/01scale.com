@@ -40,7 +40,7 @@ NO_ENDPOINT = [
     {"topic": "Who is calling (AC2, E1-06)", "how": "A session cookie or `Authorization: Bearer sk_01s_…` is exchanged at Identity's `POST /token` for a 5-minute access token, cached until 30 seconds before expiry, and forwarded as `Authorization: Bearer <access token>`. Cookies and API keys are removed before forwarding. Without either, public endpoints pass through and the rest answer `401`."},
     {"topic": "Pages (E1-06 AC1)", "how": "Middleware sends signed-out visitors of `/documents`, `/review`, `/pay`, `/success` and `/account` to `GET /api/identity/v1/auth/login?return_to=…`."},
     {"topic": "Origin check (AC4)", "how": "Writes made with a cookie need `Origin: https://01scale.com`; otherwise `403 origin_not_allowed`. Calls with an API key are not checked, as they come from no browser."},
-    {"topic": "Rate limits (AC4)", "how": "Per IP: 300 a minute; per user: 600 a minute; tighter limits on login endpoints (set in Identity's spec). Over the limit: `429 rate_limited` with `Retry-After`. Starting values."},
+    {"topic": "Rate limits (AC4)", "how": "Per user: 100 requests a minute across all endpoints, to begin with (Nikhil's decision on #64). Per IP: 300 a minute, so one address cannot exhaust the platform. Tighter limits on sign-in endpoints (set in Identity's spec). Over a limit: `429 rate_limited` with `Retry-After`. In MVP1 these are Vercel firewall rules; higher limits come with paid plans (`MVP2-E13-06`)."},
     {"topic": "Request IDs (AC4)", "how": "Adds `X-Request-Id` (`req_` and a UUIDv7) to every request and response."},
     {"topic": "No logic, no data (AC5)", "how": "The gateway has no database and no business rules; it only routes, authenticates, limits and combines contracts."},
 ]
