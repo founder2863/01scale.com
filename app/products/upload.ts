@@ -196,14 +196,6 @@ export const upload = {
           "meaning": "The calling app's own limits. DocFlow sends PDF, PNG and JPEG, 10 MB and 10 pages."
         },
         {
-          "name": "owner_id",
-          "in": "body",
-          "type": "uuid",
-          "required": "Only with Service access",
-          "constraints": "Rejected unless the caller has the `service` role.",
-          "meaning": "Lets an app's server store a file for a user, for example DocFlow saving the JSON and CSV results (MVP1-E5-04)."
-        },
-        {
           "name": "Idempotency-Key",
           "in": "header",
           "type": "string",
@@ -245,11 +237,6 @@ export const upload = {
           "status": "422",
           "code": "`idempotency_key_reused`",
           "when": "The same `Idempotency-Key` was sent with a different body."
-        },
-        {
-          "status": "403",
-          "code": "`service_only`",
-          "when": "`owner_id` was sent without the `service` role."
         },
         {
           "status": "401",
@@ -674,7 +661,7 @@ export const upload = {
           "nullable": "No",
           "default": "",
           "constraints": "",
-          "meaning": "The user who owns the file: the `sub` of the caller's access token, or `owner_id` sent by an app's server. A plain ID: Identity's tables are not reachable from here."
+          "meaning": "The user who owns the file: the `sub` of the caller's access token. An app storing a file for a user (DocFlow's results) uses a delegated token for that user. A plain ID: Identity's tables are not reachable from here."
         },
         {
           "name": "s3_key",
@@ -919,7 +906,7 @@ export const upload = {
         "`size` must be between 1 byte and 10 MB, and within `accept.max_bytes`.",
         "`accept` can only narrow the service's limits, never widen them.",
         "`file_name` is 1 to 255 characters, with no path separators or control characters; it is never used to build the storage key.",
-        "`owner_id` is accepted only from a caller with the `service` role.",
+        "The owner is always the token's user; an app storing a file for a user uses a delegated token (decision on #24).",
         "Another user's file always answers `404 file_not_found`, never `403`.",
         "Upload and download links last 5 minutes, and fix the type and size (upload) or type and filename (download) in their signature.",
         "`POST /files` accepts `Idempotency-Key`; `complete` and `DELETE` are idempotent by design.",
