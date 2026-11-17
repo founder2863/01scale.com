@@ -17,6 +17,12 @@ function mtok(value: number) {
 
 type Params = { tab?: string[] };
 
+// The per-token rates Claude Code used, one row per model, fitted from its own cost snapshots.
+const RATES = [
+  { model: "Claude Opus 5.5", input: "$4", output: "$20", cacheRead: "$0.20", cacheWrite: "$8" },
+  { model: "Claude Fable 5.2", input: "$8", output: "$40", cacheRead: "$0.20", cacheWrite: "$16" },
+];
+
 // Three addresses: /how-its-built (Skills, the default), /token-costs and /agents.
 export const dynamicParams = false;
 
@@ -149,24 +155,29 @@ export default async function HowItsBuilt({ params }: { params: Promise<Params> 
 
           <div className="card cost-baseline">
             <p className="card-title">Cost baselines</p>
-            <ul className="rate-tiles">
-              <li>
-                <span className="rate-value">$8</span>
-                <span className="rate-label">per million input tokens</span>
-              </li>
-              <li>
-                <span className="rate-value">$40</span>
-                <span className="rate-label">per million output</span>
-              </li>
-              <li>
-                <span className="rate-value">$0.20</span>
-                <span className="rate-label">per million read from the cache</span>
-              </li>
-              <li>
-                <span className="rate-value">$16</span>
-                <span className="rate-label">per million written to the cache</span>
-              </li>
-            </ul>
+            {RATES.map((rate) => (
+              <div className="rate-model" key={rate.model}>
+                <p className="rate-model-name">{rate.model}</p>
+                <ul className="rate-tiles">
+                  <li>
+                    <span className="rate-value">{rate.input}</span>
+                    <span className="rate-label">per million input tokens</span>
+                  </li>
+                  <li>
+                    <span className="rate-value">{rate.output}</span>
+                    <span className="rate-label">per million output</span>
+                  </li>
+                  <li>
+                    <span className="rate-value">{rate.cacheRead}</span>
+                    <span className="rate-label">per million read from the cache</span>
+                  </li>
+                  <li>
+                    <span className="rate-value">{rate.cacheWrite}</span>
+                    <span className="rate-label">per million written to the cache</span>
+                  </li>
+                </ul>
+              </div>
+            ))}
           </div>
 
           <div className="stat-row">
