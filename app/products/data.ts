@@ -2810,6 +2810,37 @@ export const products = [
         ],
         "evals": "",
         "service": "Payment"
+      },
+      {
+        "id": "MVP2-E13-06",
+        "title": "Free plan and upgrade to paid",
+        "size": "M",
+        "pending": "",
+        "story": "Decided by Nikhil on 17 Nov 2026 (PR #64): MVP1 gives every user 100 requests a minute across all endpoints; MVP2 adds a freemium model with paid upgrades. As a user who has outgrown the free plan, I want to upgrade to a paid plan so I get higher limits without a new account.",
+        "acs": [
+          {
+            "label": "AC1",
+            "text": "Every user starts on the Free plan, with the MVP1 limit of 100 requests a minute. The plans and their limits are configuration, not code."
+          },
+          {
+            "label": "AC2",
+            "text": "`/account/plan` shows my plan, my usage against its limits, and the paid plans with their prices. Upgrading goes through Stripe Checkout in subscription mode; downgrading or cancelling takes effect at the end of the paid period."
+          },
+          {
+            "label": "AC3",
+            "text": "When I reach a limit, the answer says which limit and offers the upgrade, instead of only `429`."
+          },
+          {
+            "label": "AC4",
+            "text": "The gateway applies the limits of my plan, read from my access token, so no service needs to know about plans."
+          },
+          {
+            "label": "AC5",
+            "text": "A failed renewal returns me to the Free plan after Stripe's retries, and I am emailed through Delivery."
+          }
+        ],
+        "evals": "",
+        "service": "Payment (subscriptions), Identity (plan in the token), Gateway (limits per plan)"
       }
     ],
     "endpoints": [
@@ -2868,6 +2899,38 @@ export const products = [
         "summary": "Payment history, newest first.",
         "detail": "Query `cursor`, `limit` → `200 {data: [{id, created_at, reference, description, amount, currency, status, receipt_url}], next_cursor}`.",
         "story": "MVP2-E13-05"
+      },
+      {
+        "method": "GET",
+        "path": "/api/payment/v1/plans",
+        "access": "Public",
+        "summary": "The plans with prices and limits.",
+        "detail": "→ `200 {data: [Plan]}`.",
+        "story": "MVP2-E13-06"
+      },
+      {
+        "method": "GET",
+        "path": "/api/payment/v1/subscription",
+        "access": "Signed in",
+        "summary": "My plan, status and period end.",
+        "detail": "→ `200 {subscription}`.",
+        "story": "MVP2-E13-06"
+      },
+      {
+        "method": "POST",
+        "path": "/api/payment/v1/subscription/checkout",
+        "access": "Signed in, session only",
+        "summary": "Start an upgrade.",
+        "detail": "Body `{plan}` → `201 {checkout_url}`. A person always completes payment.",
+        "story": "MVP2-E13-06"
+      },
+      {
+        "method": "POST",
+        "path": "/api/payment/v1/subscription/cancel",
+        "access": "Signed in, session only",
+        "summary": "Cancel at the end of the period.",
+        "detail": "→ `200 {subscription}`.",
+        "story": "MVP2-E13-06"
       }
     ],
     "apiNotes": [
@@ -2878,6 +2941,10 @@ export const products = [
       {
         "story": "MVP2-E13-02",
         "text": "`payment_method.attached` and `detached` arrive on `POST /api/payment/v1/webhooks/stripe` (MVP1-E6-02)."
+      },
+      {
+        "story": "MVP2-E13-06",
+        "text": "Payment announces `payment.subscription.changed`; Identity puts `plan` in the user's access tokens."
       }
     ],
     "dbNotes": [
@@ -2905,6 +2972,11 @@ export const products = [
         "story": "MVP2-E13-05",
         "title": "Payment history",
         "text": "No schema change; index `payment.payments(owner_id, created_at desc)`."
+      },
+      {
+        "story": "MVP2-E13-06",
+        "title": "Free plan and upgrade to paid",
+        "text": "`payment.subscriptions` (id, owner_id unique, plan, status `active|past_due|cancelled`, stripe_subscription_id unique, current_period_end, created_at). `identity.users` adds `plan`, kept in step from the event."
       }
     ]
   },
