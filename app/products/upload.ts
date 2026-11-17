@@ -602,7 +602,7 @@ export const upload = {
         }
       ],
       "behaviour": [
-        "For `identity.user.deleted`: deletes every object under `users/{user_id}/`, marks that user's files `deleted`, and records `file.deleted` for each with `reason: account_deleted`."
+        "For `identity.user.deleted`: deletes the object of each of that user's files, using the keys in `upload.files` (so the service never needs permission to list the bucket), marks the files `deleted`, and records `file.deleted` for each with `reason: account_deleted`."
       ],
       "responses": [
         {

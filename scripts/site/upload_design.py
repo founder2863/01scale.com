@@ -161,7 +161,7 @@ ENDPOINTS = [
             param("type", "body", "string", "Yes", "Version 1 acts on `identity.user.deleted`; other types are acknowledged and ignored.", "What happened."),
             param("data", "body", "object", "Yes", "For `identity.user.deleted`: `{user_id}`.", "The event's details."),
         ],
-        ["For `identity.user.deleted`: deletes every object under `users/{user_id}/`, marks that user's files `deleted`, and records `file.deleted` for each with `reason: account_deleted`."],
+        ["For `identity.user.deleted`: deletes the object of each of that user's files, using the keys in `upload.files` (so the service never needs permission to list the bucket), marks the files `deleted`, and records `file.deleted` for each with `reason: account_deleted`."],
         [response("200", "Accepted, including a repeat or an ignored type", "No body.")],
         [error("401", "invalid_signature", "The signature is missing or wrong.")],
         "POST /api/upload/v1/events HTTP/1.1\nX-01scale-Signature: sha256=8c1f...\nContent-Type: application/json\n\n"
