@@ -121,25 +121,29 @@ Access: **Public** · Story: `MVP1-E1-03`
 
 - Checks `state`, then exchanges `code` with Cognito's token endpoint using the client secret and the PKCE code verifier.
 - Validates the ID token: signature against Cognito's keys, issuer, audience (the client ID), expiry, and `nonce`.
-- Requires `email_verified` to be true.
+- Requires `email_verified` to be true, and an email of at most 254 characters (the longest a mail server accepts). Both are checked before anything is stored.
 - Finds the user by `cognito_sub`. If none exists, creates one and records `auth.signup`.
 - Revokes that user's sessions created before the token's `auth_time` when the password was just reset (story MVP1-E1-04).
 - Creates a session, sets `__Host-01s_session`, deletes `__Host-01s_login`, records `auth.signin` and redirects to `return_to`.
 - Cognito's tokens are used once here and then discarded. They are never stored or sent to the browser.
+- On any failure, a browser (a request that accepts `text/html`) is redirected to the friendly page `/sign-in-error?code=<code>`, which explains the problem in plain language with one button to start again. Any other client, such as an app or an AI agent, gets the `application/problem+json` error below.
+- Every failure is recorded as `auth.signin_failed` with the code as its reason.
 
 **Responses**
 
 | Status | When | Body or headers |
 |---|---|---|
 | `302` | Sign-in succeeded | `Location`: `return_to`. `Set-Cookie`: `__Host-01s_session`, and `__Host-01s_login` cleared. |
+| `302` | Sign-in failed, and the caller is a browser | `Location`: `/sign-in-error?code=<code>`, with `__Host-01s_login` cleared. |
 
 **Errors**
 
 | Status | Code | When |
 |---|---|---|
 | `400` | `login_expired` | The login cookie is missing or older than 10 minutes. The user starts again. |
-| `400` | `login_state_mismatch` | `state` does not match, or the ID token's `nonce` does not match. Recorded as `auth.signin_failed`. |
+| `400` | `login_state_mismatch` | `state` does not match, or the ID token's `nonce` does not match. |
 | `400` | `email_not_verified` | Cognito reports the email as unverified. |
+| `422` | `email_not_supported` | The email is longer than 254 characters, so no user is created. Practically never happens, since Cognito has just sent mail to the address. |
 | `400` | `provider_error` | Cognito returned `error` (for example the user cancelled), or rejected the code. |
 | `502` | `provider_unavailable` | Cognito could not be reached. Safe to start again. |
 
@@ -378,6 +382,7 @@ Host: 01scale.com
 - `mode` must be `signin` or `signup`.
 - `return_to` must be a path on 01scale.com (starts with one `/`, not `//`, at most 512 characters).
 - `state` and `nonce` must match the values in the login cookie, compared in constant time.
+- The email from Cognito must be verified and at most 254 characters.
 - The login cookie must be present and less than 10 minutes old.
 - `session_token` must be exactly 43 base64url characters.
 - `POST /auth/logout` must carry an `Origin` header from 01scale.com.

@@ -175,8 +175,15 @@ Set as environment variables on the Identity service's own Vercel project. Secre
 | `SIGNING_KEY_ENCRYPTION_KEY` | 32 random bytes, base64: encrypts stored private keys | Yes |
 | `GATEWAY_SERVICE_KEY` | 32 random bytes, base64: shared with the gateway only | Yes |
 
+## Decisions
+
+| Question | What I decided |
+|---|---|
+| Failed sign-in in a browser | A browser is sent to a friendly page that explains the problem and offers one button to start again. Apps and AI agents still get the error with its code. |
+| Session length | 7 days from sign-in, not extended by use. |
+| Several ways to sign in for one person | Version 1 keeps one Cognito ID on the user. A separate table of logins arrives with Sign in with Google (`MVP1-E1-08`), which moves the data then. |
+| An email longer than 254 characters | Sign-in checks it before saving and returns the error `email_not_supported`, instead of failing on the database's own check. |
+
 ## Open questions
 
-- When sign-in fails at the callback, a person in a browser sees a JSON error. I propose redirecting browsers to a friendly `/sign-in-error` page and keeping JSON for API clients.
-- Session lifetime is fixed at 7 days. Shorter is safer; longer is more convenient.
 - Rate limit numbers are starting values to be tuned once there is real traffic.

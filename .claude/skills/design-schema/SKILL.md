@@ -35,7 +35,8 @@ Turns a settled data model into SQL. If the data model is not settled, run `desi
 - Tables and columns match the data model one for one: same names, same nullability, same limits.
 - Every sample row passes every constraint. Read each row against each `check`.
 - Every unique rule in the data model has a constraint or index here.
-- State plainly whether the SQL has been run against a database. If not, say "not run".
+- Run `npm run site:data`, then `npm run schema:check`. It loads every service's `schema.sql` and `sample-data.sql` into PGlite (Postgres running in-process) and fails if the SQL does not run or a sample row breaks a constraint. Fix the design, never the generated files.
+- If the check could not be run, say "not run" in the pull request.
 
 ## Output
 

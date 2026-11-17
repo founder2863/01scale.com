@@ -1,5 +1,5 @@
 {
- "about": "One row per request in a Claude Code session. Tokens and cost are measured from the session transcript by scripts/costs/extract_session.py; the story, kind and summary are assigned by hand. A cost of null means the tool had not recorded it yet.",
+ "about": "One row per request (or part of a request, cut at a split time) in a Claude Code session. Tokens and cost are measured from the session transcript by scripts/costs/extract_session.py; the story, kind and summary are assigned by hand. A cost of null means the tool had not priced it yet. Each session's overhead is what the tool charged beyond the responses in the transcript.",
  "stories": {
   "P0-SITE": "Phase 0 \u00b7 Site launch (home page, demos, theme)",
   "DESIGN-ALL": "Design \u00b7 API and database for every story",
@@ -9,12 +9,13 @@
   "MVP1-E0-10": "MVP1-E0-10 \u00b7 Products pages and navigation",
   "MVP1-E0-11": "MVP1-E0-11 \u00b7 Product vision page",
   "MVP1-E0-12": "MVP1-E0-12 \u00b7 Design skills and How It's Built",
-  "MVP1-E0-13": "MVP1-E0-13 \u00b7 Token cost tracking"
+  "MVP1-E0-13": "MVP1-E0-13 \u00b7 Token cost tracking",
+  "MVP1-E2": "MVP1-E2 \u00b7 Upload design"
  },
  "sessions": [
   {
    "id": "fdd431bb-4425-5e24-8859-562bd3231470",
-   "tool_total_usd": 73.4553,
+   "tool_total_usd": 92.9621,
    "rates_usd_per_million": {
     "claude-fable-5-2": {
      "input": 8.0,
@@ -25,10 +26,14 @@
    },
    "by_kind_usd": {
     "input": 0.06,
-    "output": 14.57,
-    "cache_read": 12.8,
-    "cache_write": 46.02
-   }
+    "output": 15.57,
+    "cache_read": 13.59,
+    "cache_write": 55.62
+   },
+   "overhead_usd": 1.6455,
+   "splits": [
+    "2026-11-17T01:12:49Z"
+   ]
   }
  ],
  "requests": [
@@ -44,7 +49,7 @@
    ],
    "tokens": 936298,
    "output_tokens": 2956,
-   "cost_usd": 0.6672
+   "cost_usd": 0.7558
   },
   {
    "session": "fdd431bb",
@@ -58,7 +63,7 @@
    ],
    "tokens": 1030527,
    "output_tokens": 2114,
-   "cost_usd": 0.3822
+   "cost_usd": 0.4329
   },
   {
    "session": "fdd431bb",
@@ -72,7 +77,7 @@
    ],
    "tokens": 197797,
    "output_tokens": 624,
-   "cost_usd": 0.0704
+   "cost_usd": 0.0798
   },
   {
    "session": "fdd431bb",
@@ -86,7 +91,7 @@
    ],
    "tokens": 198891,
    "output_tokens": 397,
-   "cost_usd": 0.0558
+   "cost_usd": 0.0632
   },
   {
    "session": "fdd431bb",
@@ -100,7 +105,7 @@
    ],
    "tokens": 1000934,
    "output_tokens": 3682,
-   "cost_usd": 0.5223
+   "cost_usd": 0.5916
   },
   {
    "session": "fdd431bb",
@@ -114,7 +119,7 @@
    ],
    "tokens": 347562,
    "output_tokens": 961,
-   "cost_usd": 0.1127
+   "cost_usd": 0.1276
   },
   {
    "session": "fdd431bb",
@@ -128,7 +133,7 @@
    ],
    "tokens": 119287,
    "output_tokens": 691,
-   "cost_usd": 0.0791
+   "cost_usd": 0.0896
   },
   {
    "session": "fdd431bb",
@@ -142,7 +147,7 @@
    ],
    "tokens": 119798,
    "output_tokens": 491,
-   "cost_usd": 0.0484
+   "cost_usd": 0.0548
   },
   {
    "session": "fdd431bb",
@@ -156,7 +161,7 @@
    ],
    "tokens": 119983,
    "output_tokens": 172,
-   "cost_usd": 0.0343
+   "cost_usd": 0.0388
   },
   {
    "session": "fdd431bb",
@@ -170,7 +175,7 @@
    ],
    "tokens": 902025,
    "output_tokens": 6859,
-   "cost_usd": 0.5873
+   "cost_usd": 0.6652
   },
   {
    "session": "fdd431bb",
@@ -184,7 +189,7 @@
    ],
    "tokens": 1134215,
    "output_tokens": 6391,
-   "cost_usd": 0.6178
+   "cost_usd": 0.6997
   },
   {
    "session": "fdd431bb",
@@ -199,7 +204,7 @@
    ],
    "tokens": 909442,
    "output_tokens": 2846,
-   "cost_usd": 0.2954
+   "cost_usd": 0.3344
   },
   {
    "session": "fdd431bb",
@@ -213,7 +218,7 @@
    ],
    "tokens": 808099,
    "output_tokens": 7562,
-   "cost_usd": 0.6605
+   "cost_usd": 0.7481
   },
   {
    "session": "fdd431bb",
@@ -227,7 +232,7 @@
    ],
    "tokens": 2172267,
    "output_tokens": 40101,
-   "cost_usd": 2.7188
+   "cost_usd": 3.0794
   },
   {
    "session": "fdd431bb",
@@ -241,7 +246,7 @@
    ],
    "tokens": 483587,
    "output_tokens": 3090,
-   "cost_usd": 5.1277
+   "cost_usd": 5.8079
   },
   {
    "session": "fdd431bb",
@@ -255,7 +260,7 @@
    ],
    "tokens": 244767,
    "output_tokens": 1034,
-   "cost_usd": 0.1168
+   "cost_usd": 0.1322
   },
   {
    "session": "fdd431bb",
@@ -269,7 +274,7 @@
    ],
    "tokens": 245740,
    "output_tokens": 927,
-   "cost_usd": 0.091
+   "cost_usd": 0.1031
   },
   {
    "session": "fdd431bb",
@@ -283,7 +288,7 @@
    ],
    "tokens": 495927,
    "output_tokens": 2513,
-   "cost_usd": 0.2144
+   "cost_usd": 0.2428
   },
   {
    "session": "fdd431bb",
@@ -297,7 +302,7 @@
    ],
    "tokens": 250182,
    "output_tokens": 1094,
-   "cost_usd": 2.6314
+   "cost_usd": 2.9804
   },
   {
    "session": "fdd431bb",
@@ -311,7 +316,7 @@
    ],
    "tokens": 251149,
    "output_tokens": 860,
-   "cost_usd": 0.0913
+   "cost_usd": 0.1034
   },
   {
    "session": "fdd431bb",
@@ -325,7 +330,7 @@
    ],
    "tokens": 251987,
    "output_tokens": 782,
-   "cost_usd": 0.0848
+   "cost_usd": 0.096
   },
   {
    "session": "fdd431bb",
@@ -339,7 +344,7 @@
    ],
    "tokens": 776642,
    "output_tokens": 9262,
-   "cost_usd": 0.6008
+   "cost_usd": 0.6805
   },
   {
    "session": "fdd431bb",
@@ -353,7 +358,7 @@
    ],
    "tokens": 7630461,
    "output_tokens": 104918,
-   "cost_usd": 7.1403
+   "cost_usd": 8.0874
   },
   {
    "session": "fdd431bb",
@@ -367,7 +372,7 @@
    ],
    "tokens": 414588,
    "output_tokens": 1419,
-   "cost_usd": 0.1252
+   "cost_usd": 0.1418
   },
   {
    "session": "fdd431bb",
@@ -381,7 +386,7 @@
    ],
    "tokens": 1253068,
    "output_tokens": 4274,
-   "cost_usd": 0.431
+   "cost_usd": 0.4882
   },
   {
    "session": "fdd431bb",
@@ -395,7 +400,7 @@
    ],
    "tokens": 420085,
    "output_tokens": 666,
-   "cost_usd": 0.098
+   "cost_usd": 0.111
   },
   {
    "session": "fdd431bb",
@@ -409,7 +414,7 @@
    ],
    "tokens": 4757231,
    "output_tokens": 16347,
-   "cost_usd": 1.6803
+   "cost_usd": 1.9031
   },
   {
    "session": "fdd431bb",
@@ -423,7 +428,7 @@
    ],
    "tokens": 1322072,
    "output_tokens": 1089,
-   "cost_usd": 5.5806
+   "cost_usd": 6.3209
   },
   {
    "session": "fdd431bb",
@@ -437,7 +442,7 @@
    ],
    "tokens": 886146,
    "output_tokens": 1838,
-   "cost_usd": 5.5529
+   "cost_usd": 6.2895
   },
   {
    "session": "fdd431bb",
@@ -451,7 +456,7 @@
    ],
    "tokens": 4311270,
    "output_tokens": 46886,
-   "cost_usd": 3.1872
+   "cost_usd": 3.61
   },
   {
    "session": "fdd431bb",
@@ -465,7 +470,7 @@
    ],
    "tokens": 504562,
    "output_tokens": 752,
-   "cost_usd": 6.3004
+   "cost_usd": 7.1361
   },
   {
    "session": "fdd431bb",
@@ -479,7 +484,7 @@
    ],
    "tokens": 1520033,
    "output_tokens": 1424,
-   "cost_usd": 0.3672
+   "cost_usd": 0.4159
   },
   {
    "session": "fdd431bb",
@@ -493,7 +498,7 @@
    ],
    "tokens": 1016695,
    "output_tokens": 778,
-   "cost_usd": 0.2194
+   "cost_usd": 0.2485
   },
   {
    "session": "fdd431bb",
@@ -507,7 +512,7 @@
    ],
    "tokens": 7750409,
    "output_tokens": 55294,
-   "cost_usd": 4.2957
+   "cost_usd": 4.8655
   },
   {
    "session": "fdd431bb",
@@ -521,7 +526,7 @@
    ],
    "tokens": 6000124,
    "output_tokens": 19678,
-   "cost_usd": 2.1634
+   "cost_usd": 2.4504
   },
   {
    "session": "fdd431bb",
@@ -535,7 +540,7 @@
    ],
    "tokens": 611483,
    "output_tokens": 446,
-   "cost_usd": 0.1239
+   "cost_usd": 0.1403
   },
   {
    "session": "fdd431bb",
@@ -549,7 +554,7 @@
    ],
    "tokens": 2466253,
    "output_tokens": 4890,
-   "cost_usd": 0.7137
+   "cost_usd": 0.8083
   },
   {
    "session": "fdd431bb",
@@ -563,7 +568,7 @@
    ],
    "tokens": 1241913,
    "output_tokens": 892,
-   "cost_usd": 0.2791
+   "cost_usd": 0.3161
   },
   {
    "session": "fdd431bb",
@@ -577,7 +582,7 @@
    ],
    "tokens": 1245300,
    "output_tokens": 942,
-   "cost_usd": 0.257
+   "cost_usd": 0.2911
   },
   {
    "session": "fdd431bb",
@@ -591,7 +596,7 @@
    ],
    "tokens": 629609,
    "output_tokens": 1425,
-   "cost_usd": 0.2431
+   "cost_usd": 0.2754
   },
   {
    "session": "fdd431bb",
@@ -605,7 +610,7 @@
    ],
    "tokens": 630294,
    "output_tokens": 665,
-   "cost_usd": 0.1548
+   "cost_usd": 0.1754
   },
   {
    "session": "fdd431bb",
@@ -619,7 +624,7 @@
    ],
    "tokens": 631271,
    "output_tokens": 959,
-   "cost_usd": 0.1547
+   "cost_usd": 0.1752
   },
   {
    "session": "fdd431bb",
@@ -634,7 +639,7 @@
    ],
    "tokens": 1278893,
    "output_tokens": 3004,
-   "cost_usd": 0.3339
+   "cost_usd": 0.3781
   },
   {
    "session": "fdd431bb",
@@ -648,7 +653,7 @@
    ],
    "tokens": 636497,
    "output_tokens": 1878,
-   "cost_usd": 8.188
+   "cost_usd": 9.2741
   },
   {
    "session": "fdd431bb",
@@ -662,7 +667,7 @@
    ],
    "tokens": 638856,
    "output_tokens": 1092,
-   "cost_usd": 8.2047
+   "cost_usd": 9.293
   },
   {
    "session": "fdd431bb",
@@ -676,7 +681,7 @@
    ],
    "tokens": 3911878,
    "output_tokens": 23944,
-   "cost_usd": 1.8501
+   "cost_usd": 2.0955
   },
   {
    "session": "fdd431bb",
@@ -688,8 +693,50 @@
    "models": [
     "claude-opus-5-5"
    ],
-   "tokens": 3665656,
-   "output_tokens": 13358,
+   "tokens": 9488541,
+   "output_tokens": 38191,
+   "cost_usd": 7.7346
+  },
+  {
+   "session": "fdd431bb",
+   "n": 48,
+   "ts": "2026-11-17T00:34:42.729Z",
+   "area": "Process",
+   "kind": "scaffolding",
+   "summary": "List what is still pending",
+   "models": [
+    "claude-opus-5-5"
+   ],
+   "tokens": 1320221,
+   "output_tokens": 1588,
+   "cost_usd": 0.2017
+  },
+  {
+   "session": "fdd431bb",
+   "n": 49,
+   "ts": "2026-11-17T00:51:11.113Z",
+   "area": "MVP1-E1",
+   "kind": "rework",
+   "summary": "Settle the four open Login design questions (and plan the remaining designs)",
+   "models": [
+    "claude-opus-5-5"
+   ],
+   "tokens": 5404666,
+   "output_tokens": 10549,
+   "cost_usd": null
+  },
+  {
+   "session": "fdd431bb",
+   "n": 50,
+   "ts": "2026-11-17T01:12:49Z",
+   "area": "MVP1-E2",
+   "kind": "build",
+   "summary": "Upload design: renderer, API spec, data model, schema with PGlite check, journeys, components, read me, S3 guide",
+   "models": [
+    "claude-opus-5-5"
+   ],
+   "tokens": 26957294,
+   "output_tokens": 70215,
    "cost_usd": null
   }
  ]

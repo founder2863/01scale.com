@@ -45,7 +45,7 @@ function Method({ method }: { method: string }) {
 
 function ReadMe({ product }: { product: Product }) {
   const detail = details[product.slug];
-  if (!detail) {
+  if (!detail || detail.overview.what.length === 0) {
     return (
       <>
         <h2>Read Me</h2>
@@ -112,6 +112,8 @@ function ReadMe({ product }: { product: Product }) {
         </div>
       </div>
 
+      {detail.flow.length > 0 && (
+        <>
       <h3>{detail.labels.flow}</h3>
       <ol className="flow">
         {detail.flow.map((step) => (
@@ -120,7 +122,11 @@ function ReadMe({ product }: { product: Product }) {
           </li>
         ))}
       </ol>
+        </>
+      )}
 
+      {detail.concepts.length > 0 && (
+        <>
       <h3>Words used here</h3>
       <dl className="decisions">
         {detail.concepts.map((concept) => (
@@ -130,7 +136,11 @@ function ReadMe({ product }: { product: Product }) {
           </div>
         ))}
       </dl>
+        </>
+      )}
 
+      {detail.quickstart.length > 0 && (
+        <>
       <h3>Quick start</h3>
       <p className="note">These examples work once the service is built and deployed.</p>
       {detail.quickstart.map((step, index) => (
@@ -142,7 +152,11 @@ function ReadMe({ product }: { product: Product }) {
           <Code>{step.code}</Code>
         </div>
       ))}
+        </>
+      )}
 
+      {detail.env.length > 0 && (
+        <>
       <h3>Configuration</h3>
       <p>
         Environment variables on the service&apos;s own deployment. Secrets are never committed.
@@ -158,13 +172,33 @@ function ReadMe({ product }: { product: Product }) {
           </div>
         ))}
       </dl>
+        </>
+      )}
 
+      {detail.decisions.length > 0 && (
+        <>
+      <h3>Decisions</h3>
+      <dl className="decisions">
+        {detail.decisions.map((item) => (
+          <div key={item.question}>
+            <dt>{item.question}</dt>
+            <dd>{rich(item.decision)}</dd>
+          </div>
+        ))}
+      </dl>
+        </>
+      )}
+
+      {detail.openQuestions.length > 0 && (
+        <>
       <h3>Open questions</h3>
       <ul className="plain-list">
         {detail.openQuestions.map((question) => (
           <li key={question}>{rich(question)}</li>
         ))}
       </ul>
+        </>
+      )}
 
       <DocLink path={`${detail.docsPath}/README.md`} label="Developer guide on GitHub" />
       {detail.extraDocs.map((doc) => (
@@ -239,7 +273,7 @@ function Requirements({ product }: { product: Product }) {
 
 function UserJourney({ product }: { product: Product }) {
   const detail = details[product.slug];
-  if (!detail) {
+  if (!detail || detail.journeys.length === 0) {
     return (
       <>
         <h2>User Journey</h2>
@@ -287,6 +321,8 @@ function UserJourney({ product }: { product: Product }) {
         </article>
       ))}
 
+      {detail.edgeCases.length > 0 && (
+        <>
       <h3>When something goes wrong</h3>
       <dl className="fields">
         {detail.edgeCases.map((edge) => (
@@ -299,6 +335,8 @@ function UserJourney({ product }: { product: Product }) {
           </div>
         ))}
       </dl>
+        </>
+      )}
 
       <DocLink path={`${detail.docsPath}/USER-JOURNEYS.md`} label="User journeys on GitHub" />
     </>
@@ -309,7 +347,7 @@ function UserJourney({ product }: { product: Product }) {
 
 function UiComponents({ product }: { product: Product }) {
   const detail = details[product.slug];
-  if (!detail) {
+  if (!detail || detail.components.length === 0) {
     return (
       <>
         <h2>UI Components</h2>
@@ -366,6 +404,8 @@ function UiComponents({ product }: { product: Product }) {
         ))}
       </div>
 
+      {detail.hostedPages.length > 0 && (
+        <>
       <h3>{detail.labels.hosted}</h3>
       <p className="note">{detail.notes.hosted}</p>
       <dl className="decisions">
@@ -376,6 +416,8 @@ function UiComponents({ product }: { product: Product }) {
           </div>
         ))}
       </dl>
+        </>
+      )}
 
       <DocLink path={`${detail.docsPath}/UI-COMPONENTS.md`} label="UI components on GitHub" />
     </>
@@ -386,7 +428,7 @@ function UiComponents({ product }: { product: Product }) {
 
 function ApiSpec({ product }: { product: Product }) {
   const detail = details[product.slug];
-  if (!detail) {
+  if (!detail || detail.endpoints.length === 0) {
     return (
       <>
         <h2>
@@ -519,12 +561,18 @@ function ApiSpec({ product }: { product: Product }) {
         </details>
       ))}
 
+      {detail.errorSample !== "" && (
+        <>
       <h3>Errors</h3>
       <p>
         Every error has the same shape and a stable <code>code</code> to branch on.
       </p>
       <Code>{detail.errorSample}</Code>
+        </>
+      )}
 
+      {detail.cookies.length > 0 && (
+        <>
       <h3>Cookies</h3>
       <dl className="fields">
         {detail.cookies.map((cookie) => (
@@ -538,7 +586,11 @@ function ApiSpec({ product }: { product: Product }) {
           </div>
         ))}
       </dl>
+        </>
+      )}
 
+      {detail.claims.length > 0 && (
+        <>
       <h3>Access token</h3>
       <p>{detail.notes.token}</p>
       <dl className="fields">
@@ -550,7 +602,11 @@ function ApiSpec({ product }: { product: Product }) {
           </div>
         ))}
       </dl>
+        </>
+      )}
 
+      {detail.noEndpoint.length > 0 && (
+        <>
       <h3>Handled without an endpoint</h3>
       <dl className="decisions">
         {detail.noEndpoint.map((item) => (
@@ -560,13 +616,19 @@ function ApiSpec({ product }: { product: Product }) {
           </div>
         ))}
       </dl>
+        </>
+      )}
 
+      {detail.rules[0].items.length > 0 && (
+        <>
       <h3>Constraints at the API level</h3>
       <ul className="plain-list">
         {detail.rules[0].items.map((item) => (
           <li key={item}>{rich(item)}</li>
         ))}
       </ul>
+        </>
+      )}
 
       <DocLink path={`${detail.docsPath}/API-SPEC.md`} label="API specification on GitHub" />
     </>
@@ -577,7 +639,7 @@ function ApiSpec({ product }: { product: Product }) {
 
 function DataModel({ product }: { product: Product }) {
   const detail = details[product.slug];
-  if (!detail) {
+  if (!detail || detail.tables.length === 0) {
     return (
       <>
         <h2>Data Model</h2>
@@ -611,6 +673,8 @@ function DataModel({ product }: { product: Product }) {
         the Schema tab.
       </p>
 
+      {detail.entities.length > 0 && (
+        <>
       <h3>Entities</h3>
       <div className="cards">
         {detail.entities.map((entity) => (
@@ -622,7 +686,11 @@ function DataModel({ product }: { product: Product }) {
           </div>
         ))}
       </div>
+        </>
+      )}
 
+      {detail.lifecycles.length > 0 && (
+        <>
       <h3>Life of each record</h3>
       <dl className="decisions">
         {detail.lifecycles.map((item) => (
@@ -632,6 +700,8 @@ function DataModel({ product }: { product: Product }) {
           </div>
         ))}
       </dl>
+        </>
+      )}
 
       <h3>Fields</h3>
       {detail.tables.map((table) => (
@@ -658,21 +728,33 @@ function DataModel({ product }: { product: Product }) {
           </div>
         </details>
       ))}
+      {detail.otherTables !== "" && (
+        <>
       <p className="note">{rich(detail.otherTables)}</p>
+        </>
+      )}
 
+      {detail.rules[2].items.length > 0 && (
+        <>
       <h3>{detail.rules[2].level}</h3>
       <ul className="plain-list">
         {detail.rules[2].items.map((item) => (
           <li key={item}>{rich(item)}</li>
         ))}
       </ul>
+        </>
+      )}
 
+      {detail.notStored.length > 0 && (
+        <>
       <h3>What is deliberately not stored</h3>
       <ul className="plain-list">
         {detail.notStored.map((item) => (
           <li key={item}>{item}</li>
         ))}
       </ul>
+        </>
+      )}
 
       <DocLink path={`${detail.docsPath}/DATA-MODEL.md`} label="Data model on GitHub" />
     </>
@@ -683,7 +765,7 @@ function DataModel({ product }: { product: Product }) {
 
 function Schema({ product }: { product: Product }) {
   const detail = details[product.slug];
-  if (!detail) {
+  if (!detail || !detail.ddl) {
     return (
       <>
         <h2>Schema</h2>
@@ -700,12 +782,16 @@ function Schema({ product }: { product: Product }) {
       <p className="note">{rich(detail.notes.schema)}</p>
       <Code>{detail.ddl}</Code>
 
+      {detail.rules[1].items.length > 0 && (
+        <>
       <h3>{detail.rules[1].level}</h3>
       <ul className="plain-list">
         {detail.rules[1].items.map((item) => (
           <li key={item}>{rich(item)}</li>
         ))}
       </ul>
+        </>
+      )}
 
       <h3>Constraints and indexes by table</h3>
       {detail.tables.map((table) => (
@@ -748,6 +834,8 @@ function Schema({ product }: { product: Product }) {
         </div>
       ))}
 
+      {detail.queries.length > 0 && (
+        <>
       <h3>Common queries</h3>
       {detail.queries.map((query) => (
         <div key={query.title}>
@@ -755,6 +843,8 @@ function Schema({ product }: { product: Product }) {
           <Code>{query.sql}</Code>
         </div>
       ))}
+        </>
+      )}
 
       <DocLink path={`${detail.docsPath}/SCHEMA.md`} label="Schema on GitHub" />
     </>

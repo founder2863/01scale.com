@@ -63,6 +63,10 @@ def main():
             "cost": money(sum(r["cost_usd"] or 0 for r in mine)),
         })
 
+    overhead = round(sum(sess.get("overhead_usd", 0) for sess in ledger["sessions"]), 2)
+    if overhead:
+        areas.append({"name": "Tool overhead (background calls)", "requests": 0, "tokens": 0, "cost": overhead})
+
     def total(kind=None):
         sel = [r for r in rows if kind is None or r["kind"] == kind]
         return sum(r["tokens"] for r in sel), sum(r["cost_usd"] or 0 for r in sel)
@@ -74,10 +78,10 @@ def main():
     totals = {
         "requests": len(rows),
         "tokens": all_t,
-        "cost": money(all_c),
+        "cost": money(all_c + overhead),
         "buildCost": money(b_c),
         "reworkCost": money(r_c),
-        "scaffoldingCost": money(s_c),
+        "scaffoldingCost": money(s_c + overhead),
         "storyYield": round(100 * b_t / (b_t + r_t)) if b_t + r_t else None,
         "overallYield": round(100 * b_t / all_t) if all_t else None,
         "pendingRequests": sum(1 for r in rows if r["cost_usd"] is None),
@@ -137,10 +141,12 @@ def main():
         "- **Scaffolding**: work tied to no story: questions, discovery, tooling, process.",
         "- **Token yield**: a story's build tokens divided by its build plus rework tokens.",
         "- **Tokens** include context re-read from the cache, which is most of the volume but the cheapest part.",
+        "- **Tool overhead** is what Claude Code charged beyond the responses recorded for requests, such as its own background checks. It is counted under scaffolding.",
+        "- **Pending** means Claude Code had not yet priced those responses when the table was updated. Nothing is estimated.",
         "",
         "## How it is measured",
         "",
-        "`scripts/costs/extract_session.py` reads a session transcript. Claude Code records its own running cost there; the script recovers the per-token rates it used, prices each response, and scales each model's total to the tool's own figure. The story, kind and summary of each request are assigned by hand in the ledger.",
+        "`scripts/costs/extract_session.py` reads a session transcript. Claude Code records its own running cost there; the script recovers the exact per-token rates it used and prices each response from its recorded tokens. A long request can be cut at split times (for example the commit that finished a story) so each story gets its own cost. The story, kind and summary of each request are assigned by hand in the ledger.",
         "",
     ]
     open("docs/process/TOKEN-COSTS.md", "w").write("\n".join(lines))
