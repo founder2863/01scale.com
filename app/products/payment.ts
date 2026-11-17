@@ -14,7 +14,11 @@ export const payment = {
     "token": "",
     "schema": "The SQL for the Payment service's tables, in the `payment` schema. No other service can read them."
   },
-  "notStored": [],
+  "notStored": [
+    "Card numbers, expiry dates and CVCs: they go to Stripe only.",
+    "Stripe's full event bodies: only the event ID and type.",
+    "Prices: each app's server sets its own, per order."
+  ],
   "overview": {
     "name": "Payment",
     "version": "Version 1 · Stripe Checkout, test mode",
@@ -361,8 +365,196 @@ export const payment = {
       "how": "`GET /health` and `GET /openapi.json` from the service template (`MVP1-E0-05`)."
     }
   ],
-  "tables": [],
-  "otherTables": "",
+  "tables": [
+    {
+      "name": "payment.orders",
+      "purpose": "One row per request for payment. The order, not Stripe, is the record an app checks before unlocking anything.",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": "No",
+          "default": "",
+          "constraints": "Primary key. UUIDv7",
+          "meaning": "The order's ID; also Stripe's `client_reference_id` and idempotency key."
+        },
+        {
+          "name": "owner_id",
+          "type": "uuid",
+          "nullable": "Yes",
+          "default": "",
+          "constraints": "Empty only after the owner's account is deleted",
+          "meaning": "Who pays. A plain ID."
+        },
+        {
+          "name": "app",
+          "type": "text",
+          "nullable": "No",
+          "default": "",
+          "constraints": "1 to 50 characters, from the calling app's service token",
+          "meaning": "Which app asked for payment, for example `docflow`."
+        },
+        {
+          "name": "reference",
+          "type": "text",
+          "nullable": "No",
+          "default": "",
+          "constraints": "1 to 200 characters",
+          "meaning": "What is paid for, in the app's terms."
+        },
+        {
+          "name": "description",
+          "type": "text",
+          "nullable": "No",
+          "default": "",
+          "constraints": "1 to 200 characters",
+          "meaning": "Shown on the checkout page and the receipt."
+        },
+        {
+          "name": "amount",
+          "type": "integer",
+          "nullable": "No",
+          "default": "",
+          "constraints": "50 to 100,000",
+          "meaning": "The price in minor units (cents). Never a decimal."
+        },
+        {
+          "name": "currency",
+          "type": "text",
+          "nullable": "No",
+          "default": "",
+          "constraints": "`USD` in version 1",
+          "meaning": "ISO 4217 code."
+        },
+        {
+          "name": "status",
+          "type": "text",
+          "nullable": "No",
+          "default": "'pending'",
+          "constraints": "`pending`, `paid`, `expired` or `failed`",
+          "meaning": "Where the payment is."
+        },
+        {
+          "name": "stripe_session_id",
+          "type": "text",
+          "nullable": "Yes",
+          "default": "",
+          "constraints": "Unique. Starts `cs_`",
+          "meaning": "Stripe's checkout session, to match its events to this order."
+        },
+        {
+          "name": "checkout_url",
+          "type": "text",
+          "nullable": "Yes",
+          "default": "",
+          "constraints": "Stripe's address; kept only while pending",
+          "meaning": "Where the person pays; returned again if they click Pay twice."
+        },
+        {
+          "name": "checkout_expires_at",
+          "type": "timestamptz",
+          "nullable": "Yes",
+          "default": "",
+          "constraints": "1 hour after creation",
+          "meaning": "When Stripe closes the checkout page."
+        },
+        {
+          "name": "paid_at",
+          "type": "timestamptz",
+          "nullable": "Yes",
+          "default": "",
+          "constraints": "Set exactly when paid",
+          "meaning": "When Stripe confirmed payment."
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": "No",
+          "default": "now()",
+          "constraints": "",
+          "meaning": "When the order was created."
+        }
+      ],
+      "constraints": [],
+      "sampleCols": [],
+      "sampleRows": []
+    },
+    {
+      "name": "payment.stripe_events",
+      "purpose": "One row per Stripe event received, written before the event is acted on, so a repeat changes nothing.",
+      "columns": [
+        {
+          "name": "event_id",
+          "type": "text",
+          "nullable": "No",
+          "default": "",
+          "constraints": "Primary key. Starts `evt_`",
+          "meaning": "Stripe's event ID."
+        },
+        {
+          "name": "type",
+          "type": "text",
+          "nullable": "No",
+          "default": "",
+          "constraints": "1 to 100 characters",
+          "meaning": "Stripe's event type."
+        },
+        {
+          "name": "order_id",
+          "type": "uuid",
+          "nullable": "Yes",
+          "default": "",
+          "constraints": "",
+          "meaning": "The order it concerned, when there was one."
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": "No",
+          "default": "now()",
+          "constraints": "",
+          "meaning": "When Payment processed it."
+        }
+      ],
+      "constraints": [],
+      "sampleCols": [],
+      "sampleRows": []
+    },
+    {
+      "name": "payment.inbound_events",
+      "purpose": "One row per platform event Payment has acted on, so a repeat has no effect.",
+      "columns": [
+        {
+          "name": "event_id",
+          "type": "uuid",
+          "nullable": "No",
+          "default": "",
+          "constraints": "Primary key",
+          "meaning": "The event's ID."
+        },
+        {
+          "name": "type",
+          "type": "text",
+          "nullable": "No",
+          "default": "",
+          "constraints": "1 to 100 characters",
+          "meaning": "What happened."
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": "No",
+          "default": "now()",
+          "constraints": "",
+          "meaning": "When Payment processed it."
+        }
+      ],
+      "constraints": [],
+      "sampleCols": [],
+      "sampleRows": []
+    }
+  ],
+  "otherTables": "The service template also gives Payment `audit_events`, `idempotency_keys` and `outbound_events`. Payment writes `order.created`, `order.paid`, `order.expired` and `order.failed` to `audit_events` and announces the same through `outbound_events`.",
   "rules": [
     {
       "level": "API level: checked on every request before anything is stored",
@@ -381,7 +573,13 @@ export const payment = {
     },
     {
       "level": "Data model level: business rules the service guarantees",
-      "items": []
+      "items": [
+        "An order becomes paid only from a verified Stripe event, never from the browser's return.",
+        "A paid order never changes status again.",
+        "Charging twice for the same reference is impossible, even when requests or events repeat.",
+        "An app learns of every change through a signed event, and can always confirm by reading the order.",
+        "Deleting an account keeps its orders as payment records without the link to the person."
+      ]
     }
   ],
   "env": [],
@@ -392,8 +590,36 @@ export const payment = {
   "components": [],
   "hostedPages": [],
   "uiRules": [],
-  "entities": [],
-  "lifecycles": [],
+  "entities": [
+    {
+      "name": "Order",
+      "table": "`payment.orders`",
+      "what": "One request for payment.",
+      "relations": "Belongs to one user and one app, by ID and name. Matches one Stripe checkout session."
+    },
+    {
+      "name": "Stripe event",
+      "table": "`payment.stripe_events`",
+      "what": "A message from Stripe already processed.",
+      "relations": "Refers to an order by ID."
+    },
+    {
+      "name": "Processed event",
+      "table": "`payment.inbound_events`",
+      "what": "A platform event already acted on.",
+      "relations": "Stands alone."
+    }
+  ],
+  "lifecycles": [
+    {
+      "name": "Order",
+      "text": "`pending` when created → `paid` when Stripe confirms, `expired` when Stripe closes the page unpaid, or `failed` when a delayed payment fails. A paid order never changes again; an expired or failed one is replaced by a new order if the person pays later."
+    },
+    {
+      "name": "Checkout address",
+      "text": "Kept while the order is pending, so Pay can reuse it; cleared when the order settles."
+    }
+  ],
   "ddl": "",
   "queries": []
 };
