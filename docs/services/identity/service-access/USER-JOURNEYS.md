@@ -1,6 +1,6 @@
 # Service access service — user journeys
 
-> **Version 1 · Identity, third part.** Status: in design. Stories: `MVP1-E1-03`, `MVP1-E0-07`, `MVP1-E0-09`.
+> **Version 1 · Identity, third part.** Status: designed, not built. Stories: `MVP1-E1-03`, `MVP1-E0-07`, `MVP1-E0-09`.
 
 Service journeys: no person is on a screen.
 

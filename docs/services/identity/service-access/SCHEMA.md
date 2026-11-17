@@ -1,6 +1,6 @@
 # Service access service — schema
 
-> **Version 1 · Identity, third part.** Status: in design. Stories: `MVP1-E1-03`, `MVP1-E0-07`, `MVP1-E0-09`.
+> **Version 1 · Identity, third part.** Status: designed, not built. Stories: `MVP1-E1-03`, `MVP1-E0-07`, `MVP1-E0-09`.
 
 One table, added to the `identity` schema after Login's tables. What each field means is in [`DATA-MODEL.md`](DATA-MODEL.md). In the build this is produced by Drizzle migrations; the SQL below is the target.
 
