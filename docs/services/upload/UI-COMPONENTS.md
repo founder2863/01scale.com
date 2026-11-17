@@ -85,7 +85,7 @@ What the Upload service ships for apps to use, as the package `packages/ui-uploa
 
 ## FilePreview
 
-*Component.* Shows a stored PDF page by page, or an image, inside the page, so a person can read the document beside other information. New: decided on #36, for the extraction page (`MVP1-E3-04`) and any other app.
+*Component.* Shows a stored PDF page by page, or an image, inside the page, so a person can read the document beside other information. New: decided on #36 and confirmed on PR #65, used on DocFlow's upload screen (`MVP1-E2-04`) and extraction page (`MVP1-E3-04`), and by any other app.
 
 | Input | Type | Meaning |
 |---|---|---|

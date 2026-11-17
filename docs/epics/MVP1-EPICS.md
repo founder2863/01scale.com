@@ -305,7 +305,7 @@ As a user, I want to sign in with my Google account so I don't need another pass
 As Priya, I want to drag and drop or pick a file on my phone and see progress.
 - **AC1:** Drag and drop on desktop and the file picker on mobile both work, including the camera option on phones.
 - **AC2:** A progress bar shows upload percentage. On failure I see a retry button and a plain-language error.
-- **AC3:** After upload, I'm taken to the document's extraction page automatically.
+- **AC3:** Once the file is uploaded and checked, the upload screen shows its preview (Upload's `FilePreview` component) while extraction starts in the background; "Continue" takes me to the document's extraction page, which shows the same preview beside the fields (Nikhil's decision on PR #65).
 - **Note:** Uploaded files are deleted after 30 days. The person is not told beforehand (Nikhil's decision on #64).
 - **Note:** Each upload is its own file. Pages of one invoice uploaded separately, for example several photos, are separate files and separate documents (Nikhil's decision on #64).
 - **Service:** Upload (UI component), used by the DocFlow app
