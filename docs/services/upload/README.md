@@ -142,7 +142,7 @@ Environment variables on the service's own deployment. Secrets are never committ
 
 ## Open questions
 
-- Rate limits are starting values to be tuned once there is real traffic.
-- Files are removed after 30 days. Should a person be told before that happens? No story asks for it, so nothing is sent today.
-- A photo of a paper invoice is accepted as one page. Several photos of a multi-page invoice would be several files; joining them into one document is not designed.
+- Decided by Nikhil on 17 Nov 2026 (#64): the rate limit is 100 requests a minute per user for every endpoint to begin with; higher limits come with paid plans (`MVP2-E13-06`).
+- Decided (#64): files are deleted after 30 days with no notice beforehand. The upload story says so, and each file's `expires_at` is returned with it.
+- Decided (#64): each uploaded file is its own file. Several photos of the pages of one invoice are several files, and several documents; joining them into one is not in this version.
 - `FilePreview` renders PDFs in the browser (for example with PDF.js) from the 5-minute inline link; the file never passes through Upload's API. Which library is chosen when the component is built.

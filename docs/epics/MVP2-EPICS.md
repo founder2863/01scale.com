@@ -304,6 +304,23 @@ As Priya, I want to type "line 3 quantity should be 12" and have it fixed.
   - `GET /api/payment/v1/payments` (signed in) — Payment history, newest first. Query `cursor`, `limit` → `200 {data: [{id, created_at, reference, description, amount, currency, status, receipt_url}], next_cursor}`.
 - **Database design:** No schema change; index `payment.payments(owner_id, created_at desc)`.
 
+### MVP2-E13-06 · Free plan and upgrade to paid — M
+Decided by Nikhil on 17 Nov 2026 (PR #64): MVP1 gives every user 100 requests a minute across all endpoints; MVP2 adds a freemium model with paid upgrades.
+As a user who has outgrown the free plan, I want to upgrade to a paid plan so I get higher limits without a new account.
+- **AC1:** Every user starts on the Free plan, with the MVP1 limit of 100 requests a minute. The plans and their limits are configuration, not code.
+- **AC2:** `/account/plan` shows my plan, my usage against its limits, and the paid plans with their prices. Upgrading goes through Stripe Checkout in subscription mode; downgrading or cancelling takes effect at the end of the paid period.
+- **AC3:** When I reach a limit, the answer says which limit and offers the upgrade, instead of only `429`.
+- **AC4:** The gateway applies the limits of my plan, read from my access token, so no service needs to know about plans.
+- **AC5:** A failed renewal returns me to the Free plan after Stripe's retries, and I am emailed through Delivery.
+- **Service:** Payment (subscriptions), Identity (plan in the token), Gateway (limits per plan)
+- **API design:**
+  - `GET /api/payment/v1/plans` (public) — The plans with prices and limits. → `200 {data: [Plan]}`.
+  - `GET /api/payment/v1/subscription` (signed in) — My plan, status and period end. → `200 {subscription}`.
+  - `POST /api/payment/v1/subscription/checkout` (signed in, session only) — Start an upgrade. Body `{plan}` → `201 {checkout_url}`. A person always completes payment.
+  - `POST /api/payment/v1/subscription/cancel` (signed in, session only) — Cancel at the end of the period. → `200 {subscription}`.
+  - Payment announces `payment.subscription.changed`; Identity puts `plan` in the user's access tokens.
+- **Database design:** `payment.subscriptions` (id, owner_id unique, plan, status `active|past_due|cancelled`, stripe_subscription_id unique, current_period_end, created_at). `identity.users` adds `plan`, kept in step from the event.
+
 ---
 
 ## E14 · Notifications: email, SMS, push (MVP2 "g")
@@ -357,7 +374,7 @@ As Priya, I want to type "line 3 quantity should be 12" and have it fixed.
 ### MVP2-E15-01 · Rate limiting built into the gateway — M
 Decided by Nikhil on 17 Nov 2026 (issue #21): MVP1 uses Vercel firewall rules; MVP2 builds rate limiting into the gateway service.
 As the owner, I want rate limits that are part of the platform's own code, so they are versioned, tested and the same wherever the gateway runs.
-- **AC1:** The gateway limits requests per IP (300 a minute), per user (600 a minute) and per API key, with tighter limits on Identity's sign-in endpoints. Values are configuration, not code.
+- **AC1:** The gateway limits requests per IP (300 a minute), per user (100 a minute to begin with, decided on #64, and higher on paid plans, `MVP2-E13-06`) and per API key, with tighter limits on Identity's sign-in endpoints. Values are configuration, not code.
 - **AC2:** Over a limit, the answer is `429 rate_limited` with `Retry-After`, and every response carries `RateLimit-Limit`, `RateLimit-Remaining` and `RateLimit-Reset`.
 - **AC3:** Counters are shared by every running copy of the gateway, so a limit holds across instances.
 - **AC4:** The Vercel firewall rules from MVP1 are removed once the gateway's limits are live, and `docs/infra/` says so.
