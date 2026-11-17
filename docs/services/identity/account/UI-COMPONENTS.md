@@ -1,6 +1,6 @@
 # Account management service — UI components
 
-> **Version 1 · Identity, second part.** Status: in design. Stories: `MVP1-E1-05`, `MVP1-E0-06`.
+> **Version 1 · Identity, second part.** Status: designed, not built. Stories: `MVP1-E1-05`, `MVP1-E0-06`.
 
 Identity's account components, in the package `packages/ui-identity` with Login's. Any app can place them on its account page. Designed, not built.
 

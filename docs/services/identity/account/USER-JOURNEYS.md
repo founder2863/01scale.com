@@ -1,6 +1,6 @@
 # Account management service — user journeys
 
-> **Version 1 · Identity, second part.** Status: in design. Stories: `MVP1-E1-05`, `MVP1-E0-06`.
+> **Version 1 · Identity, second part.** Status: designed, not built. Stories: `MVP1-E1-05`, `MVP1-E0-06`.
 
 What a person sees on the account page, and how they let an agent act for them.
 

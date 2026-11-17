@@ -330,7 +330,7 @@ export const products = [
     "group": "MVP1",
     "service": "Identity",
     "description": "An account page to view and update your details, delete your account, and create API keys for AI agents.",
-    "status": "In design",
+    "status": "Designed",
     "detailed": true,
     "epic": {
       "id": "E1",

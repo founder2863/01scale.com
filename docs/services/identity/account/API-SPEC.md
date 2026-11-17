@@ -1,6 +1,6 @@
 # Account management service — API specification
 
-> **Version 1 · Identity, second part.** Status: in design. Stories: `MVP1-E1-05`, `MVP1-E0-06`.
+> **Version 1 · Identity, second part.** Status: designed, not built. Stories: `MVP1-E1-05`, `MVP1-E0-06`.
 
 Base address: `https://01scale.com/api/identity/v1`. Shared rules for every 01scale API (errors, versioning, tracing) are in [`docs/architecture/API-DESIGN.md`](../../architecture/API-DESIGN.md).
 
