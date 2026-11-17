@@ -187,6 +187,7 @@ As a new user, I want to sign up with my email and password so I can use DocFlow
 - **AC2:** Given I submit a valid email and password, when Cognito sends a verification code and I enter it, then I land on `/documents` signed in.
 - **AC3:** Given I haven't verified my email, then I can't reach any protected page.
 - **AC4:** On the first sign-in, a `users` row is created with `cognito_sub` and email, and `auth.signup` is audited.
+- **AC5:** Before sign-up, the person sees one line: their corrections help measure how accurately documents are read, only the 01scale admin can see them (never other users), and they are deleted with the account (Nikhil's decision on #41).
 - **Service:** Identity
 - **API design:**
   - `GET /api/identity/v1/auth/login` (public) — Start sign-in or sign-up: redirects to the identity provider (OIDC + PKCE). Query `mode=signin|signup`, `return_to` (same-origin path only) → `302` to Cognito managed login. Stores `state`, `nonce` and the PKCE verifier in a short-lived HttpOnly cookie.

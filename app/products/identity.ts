@@ -1074,7 +1074,7 @@ export const identity = {
       "outcome": "A verified user exists and is signed in for 7 days on this browser.",
       "steps": [
         {
-          "person": "Taps Create account.",
+          "person": "Reads the line under the button: their corrections help measure accuracy, only the admin sees them, and they are deleted with the account. Taps Create account.",
           "system": "Identity starts a login and sends the browser to the sign-up page hosted by AWS Cognito."
         },
         {
@@ -1245,7 +1245,7 @@ export const identity = {
     {
       "name": "CreateAccountButton",
       "kind": "Component",
-      "purpose": "A link that starts sign-up.",
+      "purpose": "A link that starts sign-up, with the consent line under it: 'Your corrections help us measure how accurately documents are read. Only the 01scale admin can see them, never other users, and they are deleted with your account.' (Nikhil's decision on #41)",
       "states": [
         "Default",
         "Focus"
@@ -1263,6 +1263,11 @@ export const identity = {
           "name": "label",
           "type": "string, optional",
           "meaning": "Button text. Default 'Create account'."
+        },
+        {
+          "name": "notice",
+          "type": "boolean, optional",
+          "meaning": "Show the consent line. Default true; an app may turn it off only if it shows the same line itself."
         }
       ]
     },

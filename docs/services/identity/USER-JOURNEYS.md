@@ -10,7 +10,7 @@ What a person sees and what the system does, for login in version 1.
 
 | Step | The person | The system |
 |---|---|---|
-| 1 | Taps Create account. | Identity starts a login and sends the browser to the sign-up page hosted by AWS Cognito. |
+| 1 | Reads the line under the button: their corrections help measure accuracy, only the admin sees them, and they are deleted with the account. Taps Create account. | Identity starts a login and sends the browser to the sign-up page hosted by AWS Cognito. |
 | 2 | Enters an email and a password of 12 or more characters. | Cognito checks the password rules and emails a 6-digit code. |
 | 3 | Enters the code from the email. | Cognito marks the email as verified and sends the browser back to 01scale. |
 | 4 | Lands on the page they wanted, signed in, with their email shown in the header. | Identity creates the user and a session, sets the session cookie, and records `auth.signup` and `auth.signin`. |

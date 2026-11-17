@@ -60,6 +60,10 @@ export const products = [
           {
             "label": "AC4",
             "text": "On the first sign-in, a `users` row is created with `cognito_sub` and email, and `auth.signup` is audited."
+          },
+          {
+            "label": "AC5",
+            "text": "Before sign-up, the person sees one line: their corrections help measure how accurately documents are read, only the 01scale admin can see them (never other users), and they are deleted with the account (Nikhil's decision on #41)."
           }
         ],
         "evals": "",

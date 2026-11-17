@@ -33,7 +33,7 @@ JOURNEYS = [
         "name": "Create an account", "who": "A new visitor", "trigger": "Taps Create account on any 01scale page.",
         "stories": ["MVP1-E1-02", "MVP1-E1-03"],
         "steps": [
-            ("Taps Create account.", "Identity starts a login and sends the browser to the sign-up page hosted by AWS Cognito."),
+            ("Reads the line under the button: their corrections help measure accuracy, only the admin sees them, and they are deleted with the account. Taps Create account.", "Identity starts a login and sends the browser to the sign-up page hosted by AWS Cognito."),
             ("Enters an email and a password of 12 or more characters.", "Cognito checks the password rules and emails a 6-digit code."),
             ("Enters the code from the email.", "Cognito marks the email as verified and sends the browser back to 01scale."),
             ("Lands on the page they wanted, signed in, with their email shown in the header.", "Identity creates the user and a session, sets the session cookie, and records `auth.signup` and `auth.signin`."),
@@ -100,8 +100,8 @@ COMPONENTS = [
         "calls": ["`GET /auth/login?mode=signin`"],
     },
     {
-        "name": "CreateAccountButton", "kind": "Component", "purpose": "A link that starts sign-up.",
-        "props": [("returnTo", "string, optional", "Page to land on afterwards."), ("label", "string, optional", "Button text. Default 'Create account'.")],
+        "name": "CreateAccountButton", "kind": "Component", "purpose": "A link that starts sign-up, with the consent line under it: 'Your corrections help us measure how accurately documents are read. Only the 01scale admin can see them, never other users, and they are deleted with your account.' (Nikhil's decision on #41)",
+        "props": [("returnTo", "string, optional", "Page to land on afterwards."), ("label", "string, optional", "Button text. Default 'Create account'."), ("notice", "boolean, optional", "Show the consent line. Default true; an app may turn it off only if it shows the same line itself.")],
         "states": ["Default", "Focus"],
         "calls": ["`GET /auth/login?mode=signup`"],
     },

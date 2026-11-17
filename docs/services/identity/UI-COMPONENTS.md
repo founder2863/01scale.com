@@ -27,12 +27,13 @@ The components the Identity service ships for apps to use, as the package `packa
 
 ## CreateAccountButton
 
-*Component.* A link that starts sign-up.
+*Component.* A link that starts sign-up, with the consent line under it: 'Your corrections help us measure how accurately documents are read. Only the 01scale admin can see them, never other users, and they are deleted with your account.' (Nikhil's decision on #41)
 
 | Input | Type | Meaning |
 |---|---|---|
 | `returnTo` | string, optional | Page to land on afterwards. |
 | `label` | string, optional | Button text. Default 'Create account'. |
+| `notice` | boolean, optional | Show the consent line. Default true; an app may turn it off only if it shows the same line itself. |
 
 **States:** Default; Focus.
 
