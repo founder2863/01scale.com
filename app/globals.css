@@ -1793,6 +1793,48 @@ section[id] {
   margin: 1rem 0 1.5rem;
 }
 
+/* The four rates as tiles: two by two on phones, one row from tablet width. */
+.rate-tiles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 768px) {
+  .rate-tiles {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+  }
+}
+
+.rate-tiles li {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg);
+}
+
+.rate-value {
+  color: var(--link);
+  font-size: 1.6rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.rate-label {
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1.35;
+}
+
 /* How It's Built: its header menu is a short list, and the page has three tabs
    (Skills, Token Costs, Agents) in a bar that stays in view. */
 
