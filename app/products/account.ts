@@ -14,7 +14,11 @@ export const account = {
     "token": "Claims added to Login's access token when the caller used an API key.",
     "schema": "The SQL for Account management, added to the `identity` schema after Login's tables."
   },
-  "notStored": [],
+  "notStored": [
+    "The API key secret: only its hash.",
+    "The new password: it stays in Cognito.",
+    "Anything about the person after deletion except audit events by ID."
+  ],
   "overview": {
     "name": "Account management",
     "version": "Version 1 · Identity, second part",
@@ -469,8 +473,98 @@ export const account = {
       "how": "Sent through the outbox to Upload, Extraction, Review, Payment, Delivery and DocFlow: `{event_id, type, occurred_at, data: {user_id}}`, HMAC-signed, retried with backoff."
     }
   ],
-  "tables": [],
-  "otherTables": "",
+  "tables": [
+    {
+      "name": "identity.api_keys",
+      "purpose": "One row per API key a person created for an agent or script.",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": "No",
+          "default": "",
+          "constraints": "Primary key. UUIDv7",
+          "meaning": "The key's ID; appears in access tokens as `akid` and in audit events."
+        },
+        {
+          "name": "user_id",
+          "type": "uuid",
+          "nullable": "No",
+          "default": "",
+          "constraints": "Foreign key to `identity.users`, delete cascades",
+          "meaning": "Whose key it is."
+        },
+        {
+          "name": "name",
+          "type": "text",
+          "nullable": "No",
+          "default": "",
+          "constraints": "1 to 100 characters",
+          "meaning": "What the key is for, chosen by the person."
+        },
+        {
+          "name": "prefix",
+          "type": "text",
+          "nullable": "No",
+          "default": "",
+          "constraints": "8 base64url characters",
+          "meaning": "The first 8 characters after `sk_01s_`, so the person can recognise the key in the list."
+        },
+        {
+          "name": "key_hash",
+          "type": "text",
+          "nullable": "No",
+          "default": "",
+          "constraints": "64 hex characters; unique",
+          "meaning": "SHA-256 of the whole secret. A 256-bit random secret needs no slow hash: it cannot be guessed."
+        },
+        {
+          "name": "scopes",
+          "type": "text[]",
+          "nullable": "No",
+          "default": "",
+          "constraints": "1 or more, each from the allowed list",
+          "meaning": "What the key may do."
+        },
+        {
+          "name": "last_used_at",
+          "type": "timestamptz",
+          "nullable": "Yes",
+          "default": "",
+          "constraints": "",
+          "meaning": "Last exchange, updated at most once a minute."
+        },
+        {
+          "name": "expires_at",
+          "type": "timestamptz",
+          "nullable": "No",
+          "default": "",
+          "constraints": "After `created_at`, at most 1 year later",
+          "meaning": "When it stops working."
+        },
+        {
+          "name": "revoked_at",
+          "type": "timestamptz",
+          "nullable": "Yes",
+          "default": "",
+          "constraints": "Not before `created_at`",
+          "meaning": "When the person revoked it."
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": "No",
+          "default": "now()",
+          "constraints": "",
+          "meaning": "When it was created."
+        }
+      ],
+      "constraints": [],
+      "sampleCols": [],
+      "sampleRows": []
+    }
+  ],
+  "otherTables": "Account management also writes to Login's `identity.audit_events` and to the template's `identity.outbound_events`.",
   "rules": [
     {
       "level": "API level: checked on every request before anything is stored",
@@ -487,7 +581,12 @@ export const account = {
     },
     {
       "level": "Data model level: business rules the service guarantees",
-      "items": []
+      "items": [
+        "A key works only if not revoked and not expired.",
+        "A key's access token never has more than the key's scopes.",
+        "Deleting an account deletes the Cognito user first, so a failure leaves everything as it was.",
+        "Every service learns of a deletion through the outbox, never by being called in turn."
+      ]
     }
   ],
   "env": [],
@@ -498,8 +597,30 @@ export const account = {
   "components": [],
   "hostedPages": [],
   "uiRules": [],
-  "entities": [],
-  "lifecycles": [],
+  "entities": [
+    {
+      "name": "API key",
+      "table": "`identity.api_keys`",
+      "what": "A secret an agent uses to act for a person, within its scopes.",
+      "relations": "Belongs to one user; deleted with the user."
+    },
+    {
+      "name": "User (from Login)",
+      "table": "`identity.users`",
+      "what": "Deleted by `DELETE /me`.",
+      "relations": "Its sessions and API keys are deleted with it; its audit events stay, with no foreign key."
+    }
+  ],
+  "lifecycles": [
+    {
+      "name": "API key",
+      "text": "Created by the person → used (last use recorded) → ends when revoked, when it expires, or when the account is deleted. Revoked and expired keys stay until the account is deleted, so audit events can name them."
+    },
+    {
+      "name": "Account deletion",
+      "text": "Cognito user deleted → user row deleted with its sessions and keys → `auth.account_deleted` kept without the email → `identity.user.deleted` sent to every service."
+    }
+  ],
   "ddl": "",
   "queries": []
 };
