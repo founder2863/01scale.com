@@ -151,6 +151,7 @@ As a hiring manager, I want to see how the work is done with AI, not only what w
 - **AC4:** The product page template works for any module with a design, not only Identity.
 - **AC5:** The site has a How It's Built page in the navigation, with a Skills section listing each skill, its job, what it reads and produces, and a link to its file; and an Agents section marked "Coming Soon...".
 - **AC6:** The skills are proven by designing a second module with them (Upload is next). Until then the page says their first run is pending.
+- **AC7:** How It's Built has three sections, each its own tab and address: Skills (`/how-its-built`, the default), Token Costs (`/how-its-built/token-costs`) and Agents (`/how-its-built/agents`). The header's How It's Built item opens a menu with the same three; choosing How It's Built lands on the tabbed page with Skills open. The tab bar stays in view and works from 320 to 1920 pixels wide, in light and dark mode. (Added from Nikhil's review of PR #62.)
 - **Service:** Site (`apps/web`) and repository tooling
 - **API design:** No endpoints.
 - **Database design:** No tables.
