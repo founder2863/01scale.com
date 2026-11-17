@@ -798,9 +798,118 @@ export const payment = {
       "code": "`invalid_signature`"
     }
   ],
-  "components": [],
-  "hostedPages": [],
-  "uiRules": [],
+  "components": [
+    {
+      "name": "PaymentSummary",
+      "kind": "Component",
+      "purpose": "What is being bought, the price, the test-mode banner and the Pay button.",
+      "props": [
+        {
+          "name": "description",
+          "type": "string",
+          "meaning": "What the person pays for."
+        },
+        {
+          "name": "amount, currency",
+          "type": "number, string",
+          "meaning": "The price in minor units."
+        },
+        {
+          "name": "onPay",
+          "type": "() => Promise<string>",
+          "meaning": "Called on Pay; the app's server creates the order and returns the checkout address to go to."
+        }
+      ],
+      "states": [
+        "Ready",
+        "Working: the button disabled while the app creates the order",
+        "Cancelled: 'Payment cancelled — you haven't been charged'",
+        "Failed: the message and Pay again"
+      ],
+      "calls": [
+        "None directly: the app's `onPay` calls its server, which calls `POST /orders`."
+      ]
+    },
+    {
+      "name": "TestModeBanner",
+      "kind": "Component",
+      "purpose": "'Test mode — use card 4242 4242 4242 4242, any future date, any CVC'.",
+      "props": [],
+      "states": [
+        "Shown"
+      ],
+      "calls": [
+        "None."
+      ]
+    },
+    {
+      "name": "OrderStatus",
+      "kind": "Component",
+      "purpose": "Follows an order until it is paid, expired or failed, for a success page.",
+      "props": [
+        {
+          "name": "orderId",
+          "type": "string",
+          "meaning": "The order."
+        },
+        {
+          "name": "timeoutSeconds",
+          "type": "number, optional",
+          "meaning": "How long to keep checking. Default 30."
+        },
+        {
+          "name": "onSettled",
+          "type": "(order) => void",
+          "meaning": "Called when the order is no longer pending, or on timeout."
+        }
+      ],
+      "states": [
+        "Confirming: 'Confirming payment…'",
+        "Paid",
+        "Expired",
+        "Failed",
+        "Timed out: still pending after the limit"
+      ],
+      "calls": [
+        "`GET /orders/{orderId}` every 2 seconds"
+      ]
+    },
+    {
+      "name": "OrderList",
+      "kind": "Component",
+      "purpose": "The person's orders with date, description, amount and status, for an account page.",
+      "props": [
+        {
+          "name": "pageSize",
+          "type": "number, optional",
+          "meaning": "Default 20."
+        }
+      ],
+      "states": [
+        "Loading",
+        "Empty: 'No payments yet.'",
+        "Loaded, with Load more",
+        "Failed: Retry"
+      ],
+      "calls": [
+        "`GET /orders`"
+      ]
+    }
+  ],
+  "hostedPages": [
+    {
+      "page": "Stripe Checkout",
+      "what": "Where the person enters a card and pays. Stripe's page, at checkout.stripe.com: card details never reach 01scale."
+    }
+  ],
+  "uiRules": [
+    "Components call only the Payment API, and only to read: creating an order is an app's server's job, so no browser code can set a price.",
+    "They ship as the package `packages/ui-payment` and show any order an app describes.",
+    "In version 1 a test-mode banner is always shown next to any Pay button.",
+    "Amounts are formatted from minor units with the order's currency, never computed in the browser.",
+    "Every request has a loading state that keeps the layout still, and a failure state with a plain-language message and a retry.",
+    "Keyboard reachable, visible focus, labelled controls, status changes announced to screen readers, WCAG AA contrast, usable at 320 pixels wide, in light and dark mode."
+  ],
   "entities": [
     {
       "name": "Order",
