@@ -93,8 +93,24 @@ def main():
             by_kind[k] = round(by_kind.get(k, 0) + v, 2)
     expensive = sorted((r for r in rows if r["cost_usd"]), key=lambda r: r["cost_usd"], reverse=True)[:5]
 
+    # The per-token rates fitted from Claude Code's own cost snapshots, one entry per model.
+    rates = {}
+    for session in ledger["sessions"]:
+        rates.update(session.get("rates_usd_per_million", {}))
+
+    def model_name(model_id):
+        words = model_id.split("-")  # claude-fable-5-2 becomes Claude Fable 5.2
+        return " ".join(w.capitalize() for w in words[:-2]) + " " + ".".join(words[-2:])
+
+    baselines = [{"model": model_name(m), **{k: r[k] for k in ("input", "output", "cache_read", "cache_write")}}
+                 for m, r in sorted(rates.items())]
+    tool_total = money(sum(sess.get("tool_total_usd", 0) for sess in ledger["sessions"]))
+
     data = {
         "updated": max(r["ts"] for r in rows)[:10],
+        "baselines": baselines,
+        "toolTotal": tool_total,
+        "overhead": overhead,
         "sessions": len(ledger["sessions"]),
         "stories": stories,
         "scaffolding": areas,

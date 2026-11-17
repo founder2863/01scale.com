@@ -6,7 +6,8 @@ import { designSkillCount, rulesHref, skillOrder, skills } from "./skills";
 const REPO = "https://github.com/founder2863/01scale.com/blob/main";
 
 function usd(value: number | null) {
-  return value === null ? "pending" : `$${value.toFixed(2)}`;
+  if (value === null) return "pending";
+  return value < 0 ? `−$${Math.abs(value).toFixed(2)}` : `$${value.toFixed(2)}`;
 }
 
 function mtok(value: number) {
@@ -18,6 +19,11 @@ export const metadata: Metadata = {
   description:
     "The skills and agents I use to build 01scale with Claude Code: repeatable work written down, kept in the repository and run the same way every time.",
 };
+
+// A per-million-token price: whole dollars without cents, otherwise two decimals.
+function perMillion(value: number) {
+  return Number.isInteger(value) ? `$${value}` : `$${value.toFixed(2)}`;
+}
 
 export default function HowItsBuilt() {
   return (
@@ -113,13 +119,23 @@ export default function HowItsBuilt() {
           <div className="card cost-baseline">
             <p className="card-title">Cost baselines</p>
             <ul className="plain-list">
+              {costs.baselines.map((rate) => (
+                <li key={rate.model}>
+                  <strong>{rate.model}:</strong> {perMillion(rate.input)} per million
+                  input tokens, {perMillion(rate.output)} per million output,{" "}
+                  {perMillion(rate.cache_read)} per million read from the cache,{" "}
+                  {perMillion(rate.cache_write)} per million written to the cache.
+                </li>
+              ))}
               <li>
-                $8 per million input tokens, $40 per million output, $0.20 per
-                million read from the cache, $16 per million written to the
-                cache, with zero error against all 21 snapshots. Each response is
-                priced from its recorded tokens, then each model&apos;s total is
-                scaled to the tool&apos;s own latest figure, so the rows add up to
-                exactly $73.45.
+                The rates are fitted from Claude Code&apos;s own cost snapshots
+                and match every one of them to within a cent, so no price is
+                written by hand. Each response is priced from its recorded tokens
+                at its model&apos;s rates. The difference between those
+                responses and the tool&apos;s own figure ({usd(costs.overhead)})
+                is shown once, as overhead under scaffolding, so the rows plus
+                overhead add up to exactly {usd(costs.toolTotal)}, the
+                tool&apos;s own latest figure.
               </li>
             </ul>
           </div>
