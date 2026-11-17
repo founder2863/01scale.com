@@ -14,7 +14,10 @@ export const docflow = {
     "token": "",
     "schema": "The SQL for the DocFlow app's tables, in the `docflow` schema. No service can read them."
   },
-  "notStored": [],
+  "notStored": [
+    "Field values: they live in Extraction and Review; the results files live in Upload.",
+    "Prices: only in configuration and on Payment's order."
+  ],
   "overview": {
     "name": "DocFlow",
     "version": "Version 1 · The app that connects the services",
@@ -727,8 +730,204 @@ export const docflow = {
       "how": "`/documents`, `/documents/{id}` (extraction), `/documents/{id}/review`, `/documents/{id}/results`, `/documents/{id}/pay`, `/documents/{id}/success`. Each composes the services' components."
     }
   ],
-  "tables": [],
-  "otherTables": "",
+  "tables": [
+    {
+      "name": "docflow.documents",
+      "purpose": "The process record: one row per invoice, holding only the IDs of its parts in each service and where the process is.",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": "No",
+          "default": "",
+          "constraints": "Primary key. UUIDv7",
+          "meaning": "The document's ID; `docflow:{id}` is the reference sent to services."
+        },
+        {
+          "name": "owner_id",
+          "type": "uuid",
+          "nullable": "No",
+          "default": "",
+          "constraints": "",
+          "meaning": "The user."
+        },
+        {
+          "name": "file_name",
+          "type": "text",
+          "nullable": "No",
+          "default": "",
+          "constraints": "1 to 255 characters",
+          "meaning": "Shown in lists, copied from the upload request."
+        },
+        {
+          "name": "status",
+          "type": "text",
+          "nullable": "No",
+          "default": "'pending_upload'",
+          "constraints": "`pending_upload`, `uploaded`, `rejected`, `extracting`, `extraction_failed`, `needs_review`, `reviewed`, `paid`",
+          "meaning": "Where the process is."
+        },
+        {
+          "name": "file_id",
+          "type": "uuid",
+          "nullable": "No",
+          "default": "",
+          "constraints": "",
+          "meaning": "Upload's file."
+        },
+        {
+          "name": "job_id",
+          "type": "uuid",
+          "nullable": "Yes",
+          "default": "",
+          "constraints": "",
+          "meaning": "Extraction's latest job."
+        },
+        {
+          "name": "review_task_id",
+          "type": "uuid",
+          "nullable": "Yes",
+          "default": "",
+          "constraints": "",
+          "meaning": "Review's task."
+        },
+        {
+          "name": "order_id",
+          "type": "uuid",
+          "nullable": "Yes",
+          "default": "",
+          "constraints": "",
+          "meaning": "Payment's open or paid order."
+        },
+        {
+          "name": "rejection_reason",
+          "type": "text",
+          "nullable": "Yes",
+          "default": "",
+          "constraints": "Set exactly when rejected",
+          "meaning": "Upload's reason."
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": "No",
+          "default": "now()",
+          "constraints": "",
+          "meaning": "When the document was started."
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "nullable": "No",
+          "default": "now()",
+          "constraints": "",
+          "meaning": "When its status last changed."
+        }
+      ],
+      "constraints": [],
+      "sampleCols": [],
+      "sampleRows": []
+    },
+    {
+      "name": "docflow.outputs",
+      "purpose": "One row per version of a document's results: the IDs of the JSON and CSV files stored in Upload.",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": "No",
+          "default": "",
+          "constraints": "Primary key. UUIDv7",
+          "meaning": "The output version's ID."
+        },
+        {
+          "name": "document_id",
+          "type": "uuid",
+          "nullable": "No",
+          "default": "",
+          "constraints": "Foreign key to `docflow.documents`, delete cascades",
+          "meaning": "Whose results."
+        },
+        {
+          "name": "version",
+          "type": "smallint",
+          "nullable": "No",
+          "default": "",
+          "constraints": "1 or more; unique per document",
+          "meaning": "Which version; increases when outputs are rebuilt."
+        },
+        {
+          "name": "json_file_id",
+          "type": "uuid",
+          "nullable": "No",
+          "default": "",
+          "constraints": "",
+          "meaning": "Upload's file holding `result.json`."
+        },
+        {
+          "name": "csv_file_id",
+          "type": "uuid",
+          "nullable": "No",
+          "default": "",
+          "constraints": "",
+          "meaning": "Upload's file holding `result.csv`."
+        },
+        {
+          "name": "schema_version",
+          "type": "text",
+          "nullable": "No",
+          "default": "",
+          "constraints": "`invoice-v1`",
+          "meaning": "The JSON Schema the JSON was validated against."
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": "No",
+          "default": "now()",
+          "constraints": "",
+          "meaning": "When it was built."
+        }
+      ],
+      "constraints": [],
+      "sampleCols": [],
+      "sampleRows": []
+    },
+    {
+      "name": "docflow.inbound_events",
+      "purpose": "One row per service event DocFlow has acted on.",
+      "columns": [
+        {
+          "name": "event_id",
+          "type": "uuid",
+          "nullable": "No",
+          "default": "",
+          "constraints": "Primary key",
+          "meaning": "The event's ID."
+        },
+        {
+          "name": "type",
+          "type": "text",
+          "nullable": "No",
+          "default": "",
+          "constraints": "1 to 100 characters",
+          "meaning": "What happened."
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": "No",
+          "default": "now()",
+          "constraints": "",
+          "meaning": "When."
+        }
+      ],
+      "constraints": [],
+      "sampleCols": [],
+      "sampleRows": []
+    }
+  ],
+  "otherTables": "The service template also gives DocFlow `audit_events`, `idempotency_keys` and `outbound_events`.",
   "rules": [
     {
       "level": "API level: checked on every request before anything is stored",
@@ -745,7 +944,11 @@ export const docflow = {
     },
     {
       "level": "Data model level: business rules the service guarantees",
-      "items": []
+      "items": [
+        "DocFlow stores IDs of other services' records, never their data.",
+        "Every document is reviewed, even when nothing is flagged.",
+        "Results are built only from a completed review."
+      ]
     }
   ],
   "env": [],
@@ -756,8 +959,32 @@ export const docflow = {
   "components": [],
   "hostedPages": [],
   "uiRules": [],
-  "entities": [],
-  "lifecycles": [],
+  "entities": [
+    {
+      "name": "Document",
+      "table": "`docflow.documents`",
+      "what": "One invoice going through the process.",
+      "relations": "Points at one file, one latest job, one review task and one order in their services, by ID only."
+    },
+    {
+      "name": "Output version",
+      "table": "`docflow.outputs`",
+      "what": "One built set of results.",
+      "relations": "Belongs to one document; its files are in Upload."
+    },
+    {
+      "name": "Processed event",
+      "table": "`docflow.inbound_events`",
+      "what": "A service event already acted on.",
+      "relations": "Stands alone."
+    }
+  ],
+  "lifecycles": [
+    {
+      "name": "Document",
+      "text": "`pending_upload` → `uploaded` → `extracting` → `needs_review` → `reviewed` → `paid`; or `rejected` after upload, or `extraction_failed` (back to `extracting` on retry)."
+    }
+  ],
   "ddl": "",
   "queries": []
 };
