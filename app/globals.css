@@ -1792,3 +1792,51 @@ section[id] {
 .cost-baseline {
   margin: 1rem 0 1.5rem;
 }
+
+/* How It's Built: its header menu is a short list, and the page has three tabs
+   (Skills, Token Costs, Agents) in a bar that stays in view. */
+
+@media (min-width: 768px) {
+  .menu-panel-narrow {
+    width: min(260px, calc(100vw - 2 * var(--gutter)));
+  }
+}
+
+.page-tabs {
+  position: sticky;
+  top: var(--header-height);
+  z-index: 5;
+  display: flex;
+  gap: 8px;
+  margin: 0 calc(-1 * var(--gutter));
+  padding: 12px var(--gutter);
+  overflow-x: auto;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+  white-space: nowrap;
+  scrollbar-width: none;
+}
+
+.page-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.page-tabs a {
+  flex: 0 0 auto;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: var(--chip-bg);
+  color: var(--chip-text);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.page-tabs a:hover {
+  color: var(--link);
+}
+
+.page-tabs a[aria-current="page"] {
+  background: var(--brand);
+  color: #ffffff;
+}
