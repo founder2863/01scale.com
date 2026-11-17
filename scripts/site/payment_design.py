@@ -33,9 +33,9 @@ ENDPOINTS = [
     endpoint(
         "create-order", "POST", f"{BASE}/orders", "Service", "MVP1-E6-01",
         "Create an order and a checkout page",
-        "An app's server asks for payment for something it sells. Payment records an order and returns the address of Stripe's checkout page. Never callable from a browser, so a browser can never set a price.",
+        "An app's server asks for payment for something it sells, acting for the user who will pay. Payment records an order and returns the address of Stripe's checkout page. Only a delegated token is accepted (an app acting for a user, with `act`), so a browser session can never set a price.",
         [
-            param("user_id", "body", "uuid", "Yes", "The user who will pay.", "Who the order is for. The app's service token proves the app may act for its users."),
+            param("Authorization", "header", "string", "Yes", "`Bearer <delegated token>` with `payment:write` and `act`.", "The user who will pay is the token's `sub`; the app is its `app` claim."),
             param("reference", "body", "string", "Yes", "1 to 200 characters; unique per app while an order is open or paid.", "What is being paid for, in the app's own terms. DocFlow sends `docflow:{document_id}`."),
             param("description", "body", "string", "Yes", "1 to 200 characters.", "What the person sees on the checkout page and the receipt."),
             param("amount", "body", "integer", "Yes", "50 to 100,000 minor units (cents), so $0.50 to $1,000.", "The price, set by the app's server. $0.50 is Stripe's smallest charge in USD."),
@@ -53,11 +53,11 @@ ENDPOINTS = [
         [
             error("409", "already_paid", "This reference is already paid; `order_id` names the paid order."),
             error("422", "validation_failed", "An input is missing or out of range; `errors[]` lists each."),
-            error("403", "service_only", "The caller is not an app's server."),
+            error("403", "service_only", "The token is not a delegated token: a browser session, an API key or a service acting as itself."),
             STRIPE_DOWN,
         ],
-        "POST /api/payment/v1/orders HTTP/1.1\nAuthorization: Bearer <DocFlow service token>\nContent-Type: application/json\n\n"
-        + json.dumps({"user_id": U1, "reference": f"docflow:{D1}", "description": "Invoice extraction: acme-invoice-0042.pdf", "amount": 500, "currency": "USD",
+        "POST /api/payment/v1/orders HTTP/1.1\nAuthorization: Bearer <delegated token: the user, act service:docflow>\nContent-Type: application/json\n\n"
+        + json.dumps({"reference": f"docflow:{D1}", "description": "Invoice extraction: acme-invoice-0042.pdf", "amount": 500, "currency": "USD",
                       "success_url": f"https://01scale.com/documents/{D1}/success?order={{ORDER_ID}}", "cancel_url": f"https://01scale.com/documents/{D1}/pay?cancelled=1"}, indent=2),
         json.dumps({"order": ORDER_PENDING, "checkout_url": CHECKOUT}, indent=2),
     ),
@@ -78,7 +78,7 @@ ENDPOINTS = [
             "An order that is already `paid` never goes back to another status.",
         ],
         [response("200", "Accepted, including a repeat or an ignored type", "No body.")],
-        [error("400", "invalid_signature", "The signature is missing, wrong or too old.")],
+        [error("400", "invalid_stripe_signature", "Stripe's signature is missing, wrong or too old.")],
         "POST /api/payment/v1/webhooks/stripe HTTP/1.1\nStripe-Signature: t=1794826622,v1=5257a869e7ec...\nContent-Type: application/json\n\n"
         + json.dumps({"id": "evt_test_1Q2w3E4r5T6y", "type": "checkout.session.completed", "data": {"object": {"id": CS1, "client_reference_id": O1, "payment_status": "paid", "metadata": {"order_id": O1}}}}, indent=2),
         "HTTP/1.1 200 OK",
@@ -130,7 +130,7 @@ ENDPOINTS = [
 ORDERS = {"name": "payment.orders", "purpose": "One row per request for payment. The order, not Stripe, is the record an app checks before unlocking anything.", "columns": [
     column("id", "uuid", "No", "", "Primary key. UUIDv7", "The order's ID; also Stripe's `client_reference_id` and idempotency key."),
     column("owner_id", "uuid", "Yes", "", "Empty only after the owner's account is deleted", "Who pays. A plain ID."),
-    column("app", "text", "No", "", "1 to 50 characters, from the calling app's service token", "Which app asked for payment, for example `docflow`."),
+    column("app", "text", "No", "", "1 to 50 characters, from the `app` claim of the delegated token", "Which app asked for payment, for example `docflow`."),
     column("reference", "text", "No", "", "1 to 200 characters", "What is paid for, in the app's terms."),
     column("description", "text", "No", "", "1 to 200 characters", "Shown on the checkout page and the receipt."),
     column("amount", "integer", "No", "", "50 to 100,000", "The price in minor units (cents). Never a decimal."),
@@ -262,7 +262,7 @@ EDGE_CASES = [
     {"situation": "Stripe is unavailable when starting", "sees": "'Payments are unavailable for a moment. You haven't been charged.'", "code": "`stripe_unavailable`"},
     {"situation": "Stripe's confirmation is slow to arrive", "sees": "'Confirming payment…' for a few seconds (the success page's job, `MVP1-E7-01`).", "code": "Order still `pending`"},
     {"situation": "Follows a link to someone else's order", "sees": "'Not found.'", "code": "`order_not_found`"},
-    {"situation": "A forged or replayed Stripe event", "sees": "Nothing: it is rejected and changes no order.", "code": "`invalid_signature`"},
+    {"situation": "A forged or replayed Stripe event", "sees": "Nothing: it is rejected and changes no order.", "code": "`invalid_stripe_signature`"},
 ]
 
 UI_RULES = [
@@ -295,6 +295,12 @@ HOSTED_PAGES = [
 ]
 
 # ------------------------------------------------------------------ read me
+for _e in ENDPOINTS:
+    if _e["id"] == "stripe-webhook":
+        _e["scope"] = "None: Stripe signature"
+    if _e["id"] == "create-order":
+        _e["scope"] = "`payment:write`, on a delegated token only"
+
 MODULE = {
     "slug": "payment",
     "docsPath": "docs/services/payment",
@@ -341,7 +347,7 @@ MODULE = {
     ],
     "quickstart": [
         {"title": "Ask for payment (app server)", "text": "Set the price on the server and send the person to the returned address.",
-         "lang": "ts", "code": 'const { order, checkout_url } = await serviceApi.post("/api/payment/v1/orders", {\n  user_id: userId, reference: `myapp:${itemId}`, description: "Report export",\n  amount: 500, currency: "USD",\n  success_url: `https://01scale.com/items/${itemId}/paid?order={ORDER_ID}`,\n  cancel_url: `https://01scale.com/items/${itemId}`,\n});\nreturn redirect(checkout_url);'},
+         "lang": "ts", "code": 'const { order, checkout_url } = await callService("/api/payment/v1/orders", { onBehalfOf: userId }, {\n  reference: `myapp:${itemId}`, description: "Report export",\n  amount: 500, currency: "USD",\n  success_url: `https://01scale.com/items/${itemId}/paid?order={ORDER_ID}`,\n  cancel_url: `https://01scale.com/items/${itemId}`,\n});\nreturn redirect(checkout_url);'},
         {"title": "Confirm before unlocking", "text": "Trust the order's status, never the browser arriving at the success page.",
          "lang": "ts", "code": 'const { order } = await api.get(`/api/payment/v1/orders/${orderId}`);\nif (order.status !== "paid") return status(402);'},
         {"title": "Show progress on a success page", "text": "The component polls until the order settles.",
@@ -353,7 +359,7 @@ MODULE = {
         {"name": "STRIPE_WEBHOOK_SECRET", "value": "The signing secret of the webhook endpoint (`whsec_…`)", "secret": "Yes"},
         {"name": "IDENTITY_JWKS_URL", "value": "`https://01scale.com/api/identity/v1/jwks`", "secret": "No"},
         {"name": "EVENTS_SIGNING_KEY", "value": "32 random bytes, base64: signs and verifies platform events", "secret": "Yes"},
-        {"name": "EVENT_SUBSCRIBERS", "value": "The webhook addresses that receive Payment's events, for example DocFlow's", "secret": "No"},
+        {"name": "EVENT_ROUTES", "value": "From the service template: reference prefix → the app's event address (decision on #13)", "secret": "No"},
     ],
     "openQuestions": [
         "Stripe Checkout pages are kept open for 1 hour here (Stripe allows 30 minutes to 24 hours). Is an hour right?",

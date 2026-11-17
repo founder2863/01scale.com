@@ -23,15 +23,15 @@ Every error uses `application/problem+json` with a stable `code`. Branch on `cod
 
 ### POST /orders
 
-**Create an order and a checkout page.** An app's server asks for payment for something it sells. Payment records an order and returns the address of Stripe's checkout page. Never callable from a browser, so a browser can never set a price.
+**Create an order and a checkout page.** An app's server asks for payment for something it sells, acting for the user who will pay. Payment records an order and returns the address of Stripe's checkout page. Only a delegated token is accepted (an app acting for a user, with `act`), so a browser session can never set a price.
 
-Access: **Service** · Scope: `payment:write` · Story: `MVP1-E6-01`
+Access: **Service** · Scope: `payment:write`, on a delegated token only · Story: `MVP1-E6-01`
 
 **Inputs**
 
 | Name | In | Type | Required | Constraints | Meaning |
 |---|---|---|---|---|---|
-| `user_id` | body | uuid | Yes | The user who will pay. | Who the order is for. The app's service token proves the app may act for its users. |
+| `Authorization` | header | string | Yes | `Bearer <delegated token>` with `payment:write` and `act`. | The user who will pay is the token's `sub`; the app is its `app` claim. |
 | `reference` | body | string | Yes | 1 to 200 characters; unique per app while an order is open or paid. | What is being paid for, in the app's own terms. DocFlow sends `docflow:{document_id}`. |
 | `description` | body | string | Yes | 1 to 200 characters. | What the person sees on the checkout page and the receipt. |
 | `amount` | body | integer | Yes | 50 to 100,000 minor units (cents), so $0.50 to $1,000. | The price, set by the app's server. $0.50 is Stripe's smallest charge in USD. |
@@ -59,18 +59,17 @@ Access: **Service** · Scope: `payment:write` · Story: `MVP1-E6-01`
 |---|---|---|
 | `409` | `already_paid` | This reference is already paid; `order_id` names the paid order. |
 | `422` | `validation_failed` | An input is missing or out of range; `errors[]` lists each. |
-| `403` | `service_only` | The caller is not an app's server. |
+| `403` | `service_only` | The token is not a delegated token: a browser session, an API key or a service acting as itself. |
 | `503` | `stripe_unavailable` | Stripe could not be reached. Nothing was charged; safe to retry. |
 
 **Sample request**
 
 ```http
 POST /api/payment/v1/orders HTTP/1.1
-Authorization: Bearer <DocFlow service token>
+Authorization: Bearer <delegated token: the user, act service:docflow>
 Content-Type: application/json
 
 {
-  "user_id": "0193a5b2-7c1e-7a3f-9b2d-4e6f8a1c2d3e",
   "reference": "docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c",
   "description": "Invoice extraction: acme-invoice-0042.pdf",
   "amount": 500,
@@ -105,7 +104,7 @@ Content-Type: application/json
 
 **Receive Stripe's events.** Stripe tells Payment what happened on its checkout page. This, not the browser, is what marks an order paid.
 
-Access: **Service** · Scope: None: HMAC signature · Story: `MVP1-E6-02`
+Access: **Service** · Scope: None: Stripe signature · Story: `MVP1-E6-02`
 
 **Inputs**
 
@@ -133,7 +132,7 @@ Access: **Service** · Scope: None: HMAC signature · Story: `MVP1-E6-02`
 
 | Status | Code | When |
 |---|---|---|
-| `400` | `invalid_signature` | The signature is missing, wrong or too old. |
+| `400` | `invalid_stripe_signature` | Stripe's signature is missing, wrong or too old. |
 
 **Sample request**
 

@@ -120,7 +120,7 @@ export const payment = {
       "title": "Ask for payment (app server)",
       "text": "Set the price on the server and send the person to the returned address.",
       "lang": "ts",
-      "code": "const { order, checkout_url } = await serviceApi.post(\"/api/payment/v1/orders\", {\n  user_id: userId, reference: `myapp:${itemId}`, description: \"Report export\",\n  amount: 500, currency: \"USD\",\n  success_url: `https://01scale.com/items/${itemId}/paid?order={ORDER_ID}`,\n  cancel_url: `https://01scale.com/items/${itemId}`,\n});\nreturn redirect(checkout_url);"
+      "code": "const { order, checkout_url } = await callService(\"/api/payment/v1/orders\", { onBehalfOf: userId }, {\n  reference: `myapp:${itemId}`, description: \"Report export\",\n  amount: 500, currency: \"USD\",\n  success_url: `https://01scale.com/items/${itemId}/paid?order={ORDER_ID}`,\n  cancel_url: `https://01scale.com/items/${itemId}`,\n});\nreturn redirect(checkout_url);"
     },
     {
       "title": "Confirm before unlocking",
@@ -146,15 +146,15 @@ export const payment = {
       "access": "Service",
       "story": "MVP1-E6-01",
       "title": "Create an order and a checkout page",
-      "summary": "An app's server asks for payment for something it sells. Payment records an order and returns the address of Stripe's checkout page. Never callable from a browser, so a browser can never set a price.",
+      "summary": "An app's server asks for payment for something it sells, acting for the user who will pay. Payment records an order and returns the address of Stripe's checkout page. Only a delegated token is accepted (an app acting for a user, with `act`), so a browser session can never set a price.",
       "params": [
         {
-          "name": "user_id",
-          "in": "body",
-          "type": "uuid",
+          "name": "Authorization",
+          "in": "header",
+          "type": "string",
           "required": "Yes",
-          "constraints": "The user who will pay.",
-          "meaning": "Who the order is for. The app's service token proves the app may act for its users."
+          "constraints": "`Bearer <delegated token>` with `payment:write` and `act`.",
+          "meaning": "The user who will pay is the token's `sub`; the app is its `app` claim."
         },
         {
           "name": "reference",
@@ -230,7 +230,7 @@ export const payment = {
         {
           "status": "403",
           "code": "`service_only`",
-          "when": "The caller is not an app's server."
+          "when": "The token is not a delegated token: a browser session, an API key or a service acting as itself."
         },
         {
           "status": "503",
@@ -238,9 +238,9 @@ export const payment = {
           "when": "Stripe could not be reached. Nothing was charged; safe to retry."
         }
       ],
-      "request": "POST /api/payment/v1/orders HTTP/1.1\nAuthorization: Bearer <DocFlow service token>\nContent-Type: application/json\n\n{\n  \"user_id\": \"0193a5b2-7c1e-7a3f-9b2d-4e6f8a1c2d3e\",\n  \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n  \"description\": \"Invoice extraction: acme-invoice-0042.pdf\",\n  \"amount\": 500,\n  \"currency\": \"USD\",\n  \"success_url\": \"https://01scale.com/documents/0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c/success?order={ORDER_ID}\",\n  \"cancel_url\": \"https://01scale.com/documents/0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c/pay?cancelled=1\"\n}",
+      "request": "POST /api/payment/v1/orders HTTP/1.1\nAuthorization: Bearer <delegated token: the user, act service:docflow>\nContent-Type: application/json\n\n{\n  \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n  \"description\": \"Invoice extraction: acme-invoice-0042.pdf\",\n  \"amount\": 500,\n  \"currency\": \"USD\",\n  \"success_url\": \"https://01scale.com/documents/0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c/success?order={ORDER_ID}\",\n  \"cancel_url\": \"https://01scale.com/documents/0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c/pay?cancelled=1\"\n}",
       "response": "{\n  \"order\": {\n    \"id\": \"0193b120-5a6b-7c7d-8e8f-9a0b1c2d3e4f\",\n    \"app\": \"docflow\",\n    \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n    \"description\": \"Invoice extraction: acme-invoice-0042.pdf\",\n    \"amount\": 500,\n    \"currency\": \"USD\",\n    \"status\": \"pending\",\n    \"checkout_url\": \"https://checkout.stripe.com/c/pay/cs_test_a1B2c3D4e5F6g7H8i9J0exampleSession#fidkdWxOYHwnPyd1blpxYHZxWjA0example\",\n    \"checkout_expires_at\": \"2026-11-17T10:16:10Z\",\n    \"paid_at\": null,\n    \"created_at\": \"2026-11-17T09:16:10Z\"\n  },\n  \"checkout_url\": \"https://checkout.stripe.com/c/pay/cs_test_a1B2c3D4e5F6g7H8i9J0exampleSession#fidkdWxOYHwnPyd1blpxYHZxWjA0example\"\n}",
-      "scope": "`payment:write`"
+      "scope": "`payment:write`, on a delegated token only"
     },
     {
       "id": "stripe-webhook",
@@ -286,13 +286,13 @@ export const payment = {
       "errors": [
         {
           "status": "400",
-          "code": "`invalid_signature`",
-          "when": "The signature is missing, wrong or too old."
+          "code": "`invalid_stripe_signature`",
+          "when": "Stripe's signature is missing, wrong or too old."
         }
       ],
       "request": "POST /api/payment/v1/webhooks/stripe HTTP/1.1\nStripe-Signature: t=1794826622,v1=5257a869e7ec...\nContent-Type: application/json\n\n{\n  \"id\": \"evt_test_1Q2w3E4r5T6y\",\n  \"type\": \"checkout.session.completed\",\n  \"data\": {\n    \"object\": {\n      \"id\": \"cs_test_a1B2c3D4e5F6g7H8i9J0exampleSession\",\n      \"client_reference_id\": \"0193b120-5a6b-7c7d-8e8f-9a0b1c2d3e4f\",\n      \"payment_status\": \"paid\",\n      \"metadata\": {\n        \"order_id\": \"0193b120-5a6b-7c7d-8e8f-9a0b1c2d3e4f\"\n      }\n    }\n  }\n}",
       "response": "HTTP/1.1 200 OK",
-      "scope": "None: HMAC signature"
+      "scope": "None: Stripe signature"
     },
     {
       "id": "get-order",
@@ -494,7 +494,7 @@ export const payment = {
           "type": "text",
           "nullable": "No",
           "default": "",
-          "constraints": "1 to 50 characters, from the calling app's service token",
+          "constraints": "1 to 50 characters, from the `app` claim of the delegated token",
           "meaning": "Which app asked for payment, for example `docflow`."
         },
         {
@@ -799,8 +799,8 @@ export const payment = {
       "secret": "Yes"
     },
     {
-      "name": "EVENT_SUBSCRIBERS",
-      "value": "The webhook addresses that receive Payment's events, for example DocFlow's",
+      "name": "EVENT_ROUTES",
+      "value": "From the service template: reference prefix → the app's event address (decision on #13)",
       "secret": "No"
     }
   ],
@@ -933,7 +933,7 @@ export const payment = {
     {
       "situation": "A forged or replayed Stripe event",
       "sees": "Nothing: it is rejected and changes no order.",
-      "code": "`invalid_signature`"
+      "code": "`invalid_stripe_signature`"
     }
   ],
   "components": [
