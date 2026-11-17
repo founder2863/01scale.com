@@ -94,7 +94,7 @@ As a user or an agent, I want one address for the whole platform.
 - **AC1:** `01scale.com/api/{service}/…` is routed to the service that owns it. Services are not reachable by browsers at any other public address.
 - **AC2:** The gateway turns a session cookie or API key into a short-lived access token and forwards it; services never see cookies or API keys.
 - **AC3:** `GET /api/openapi.json` returns one combined contract and `POST /api/mcp` one combined MCP server with tools namespaced by service.
-- **AC4:** The gateway applies rate limits per user and per IP, checks `Origin` on cookie-authenticated writes, and adds `X-Request-Id`.
+- **AC4:** The gateway applies rate limits per user and per IP, checks `Origin` on cookie-authenticated writes, and adds `X-Request-Id`. To begin with, every user has 100 requests a minute across all endpoints (Nikhil's decision on #64); sign-in endpoints keep their tighter limits per IP. Over a limit: `429 rate_limited` with `Retry-After`.
 - **AC5:** The gateway contains no business logic and no data.
 - **Service:** Gateway
 - **API design:**
@@ -302,6 +302,8 @@ As Priya, I want to drag and drop or pick a file on my phone and see progress.
 - **AC1:** Drag and drop on desktop and the file picker on mobile both work, including the camera option on phones.
 - **AC2:** A progress bar shows upload percentage. On failure I see a retry button and a plain-language error.
 - **AC3:** After upload, I'm taken to the document's extraction page automatically.
+- **Note:** Uploaded files are deleted after 30 days. The person is not told beforehand (Nikhil's decision on #64).
+- **Note:** Each upload is its own file. Pages of one invoice uploaded separately, for example several photos, are separate files and separate documents (Nikhil's decision on #64).
 - **Service:** Upload (UI component), used by the DocFlow app
 - **API design:** No new endpoints. The Upload UI component calls `POST /files`, PUTs the file to S3 and calls `complete`. Inside DocFlow it is pointed at DocFlow's `POST /documents` and `upload-complete` instead.
 - **Database design:** No schema change.
