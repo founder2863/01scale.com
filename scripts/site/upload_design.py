@@ -381,7 +381,7 @@ JOURNEYS = [
             ("Sees the file name and a progress bar starting at 0%.", "Upload records the file as `pending_upload` and returns a link valid for 5 minutes."),
             ("Watches the bar fill.", "The browser sends the file straight to private storage with that link. Upload never handles the bytes."),
             ("Sees 'Checking your file…' for a moment.", "Upload confirms the file arrived at the declared size, checks its first bytes match its type, and counts its pages."),
-            ("Sees 'Uploaded' and is taken to the next step.", "The file is `ready`. The app that uses Upload moves on; in DocFlow, the extraction page opens."),
+            ("Sees 'Uploaded' and a preview of the file, then continues.", "The file is `ready`. The app shows Upload's `FilePreview` for it and moves on when the person continues; in DocFlow, to the extraction page."),
         ],
         "The file is stored privately, checked and ready to use. Only its owner can read it, through links that last 5 minutes.",
     ),
@@ -533,7 +533,7 @@ COMPONENTS = [
     ),
     component(
         "FilePreview", "Component",
-        "Shows a stored PDF page by page, or an image, inside the page, so a person can read the document beside other information. New: decided on #36, for the extraction page (`MVP1-E3-04`) and any other app.",
+        "Shows a stored PDF page by page, or an image, inside the page, so a person can read the document beside other information. New: decided on #36 and confirmed on PR #65, used on DocFlow's upload screen (`MVP1-E2-04`) and extraction page (`MVP1-E3-04`), and by any other app.",
         [
             ("fileId", "string", "The file."),
             ("page", "number, optional", "The page to show; changing it scrolls to that page. Default 1."),

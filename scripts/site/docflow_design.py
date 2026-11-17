@@ -198,7 +198,7 @@ CSV_COLUMNS = "`document_id`, `vendor_name`, `vendor_address`, `vendor_tax_id`, 
 JOURNEYS = [
     journey("Upload to results", "Someone with an invoice", "Starts on My documents.", ["MVP1-E0-09", "MVP1-E2-05"], [
         ("Sees My documents, or 'Upload your first invoice' with a sample invoice to try.", "DocFlow lists the person's documents with status and next action."),
-        ("Uploads; is taken to the extraction page.", "DocFlow starts the document, Upload stores and checks the file, and DocFlow starts Extraction."),
+        ("Uploads, sees a preview of the file, and taps Continue to the extraction page.", "DocFlow starts the document, Upload stores and checks the file, DocFlow starts Extraction, and the upload screen shows Upload's `FilePreview`."),
         ("Watches the steps, then sees 'Review 3 flagged fields'.", "Extraction tells DocFlow it finished; DocFlow sends the fields to Review."),
         ("Checks the flagged fields and taps Complete review.", "DocFlow re-checks the values with Extraction and completes the review."),
     ], "The results can be previewed, built from Review's values; downloads are locked until payment."),
@@ -299,7 +299,7 @@ MODULE = {
         {"topic": "Building the CSV (MVP1-E5-02)", "how": f"Columns in this order: {CSV_COLUMNS}. RFC 4180 quoting, UTF-8 with a byte-order mark, CRLF line ends; cells starting with `=`, `+`, `-`, `@`, tab or carriage return are prefixed with `'`."},
         {"topic": "Success page (MVP1-E7-01)", "how": "Polls Payment `GET /orders/{orderId}` every 2 seconds for up to 30 seconds, then says 'We'll email you when it's ready'; shows the email's status from Delivery."},
         {"topic": "Which token each step uses (decisions on #24 and #21)", "how": "Steps the person starts (upload, retry, complete review, checkout, preview, download) use their own token, except Payment and Delivery, which take only a delegated token. Steps after an event (create the review task, send the email) use a delegated token for the document's owner. Every call goes through `https://01scale.com/api/…`."},
-    {"topic": "Pages", "how": "`/documents`, `/documents/{id}` (extraction), `/documents/{id}/review`, `/documents/{id}/results`, `/documents/{id}/pay`, `/documents/{id}/success`. Each composes the services' components."},
+    {"topic": "Pages", "how": "`/documents`, `/documents/new` (upload, with the file's preview once checked), `/documents/{id}` (extraction, with the preview beside the fields), `/documents/{id}/review`, `/documents/{id}/results`, `/documents/{id}/pay`, `/documents/{id}/success`. Each composes the services' components."},
     ],
     "tables": [DOCS, INBOUND],
     "entities": [
