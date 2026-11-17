@@ -1459,8 +1459,8 @@ export const products = [
     "group": "MVP1",
     "service": "Delivery",
     "description": "Get the files immediately by secure download, with a copy by email.",
-    "status": "Planned",
-    "detailed": false,
+    "status": "In design",
+    "detailed": true,
     "epic": {
       "id": "E7",
       "title": "Success, download and email",
