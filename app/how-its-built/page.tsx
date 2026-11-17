@@ -110,6 +110,20 @@ export default function HowItsBuilt() {
             itself; only the assignment of each request to a story is mine.
           </p>
 
+          <div className="card cost-baseline">
+            <p className="card-title">Cost baselines</p>
+            <ul className="plain-list">
+              <li>
+                $8 per million input tokens, $40 per million output, $0.20 per
+                million read from the cache, $16 per million written to the
+                cache, with zero error against all 21 snapshots. Each response is
+                priced from its recorded tokens, then each model&apos;s total is
+                scaled to the tool&apos;s own latest figure, so the rows add up to
+                exactly $73.45.
+              </li>
+            </ul>
+          </div>
+
           <div className="stat-row">
             <div className="stat">
               <span className="stat-value">{usd(costs.totals.cost)}</span>
