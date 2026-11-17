@@ -452,7 +452,7 @@ As Priya, I want to drag and drop or pick a file on my phone and see progress.
 - **AC1:** On review completion, `result.json` and `result.csv` are written to `users/{userId}/{docId}/outputs/`.
 - **AC2:** If the user later edits fields, the outputs are regenerated and the version increments.
 - **Service:** DocFlow app (files stored through Upload)
-- **API design:** No new endpoints. DocFlow builds the files and stores them through Upload `POST /files` with a service token; `version` in `GET …/outputs` increments when they are regenerated.
+- **API design:** No new endpoints. DocFlow builds the files and stores them through Upload `POST /files` with a delegated token for the document's owner (decision on #24); `version` in `GET …/outputs` increments when they are regenerated.
 - **Database design:** `docflow.outputs` (id, document_id → documents, version, json_file_id, csv_file_id, created_at); unique `(document_id, version)`. The files themselves are `upload.files` rows owned by the user.
 
 ---
@@ -466,7 +466,7 @@ As Priya, I want to drag and drop or pick a file on my phone and see progress.
 - **AC3:** A banner says "Test mode — use card 4242 4242 4242 4242, any future date, any CVC".
 - **Service:** Payment; composed by the DocFlow app
 - **API design:**
-  - `POST /api/payment/v1/orders` (service) — Create an order and a Stripe Checkout session. Called by an app's server, never the browser. Body `{user_id, reference, description, amount, currency, success_url, cancel_url}` → `201 {order, checkout_url}`; `200` with the open order for the same `reference`. Emits `payment.order.paid|expired|failed`.
+  - `POST /api/payment/v1/orders` (service) — Create an order and a Stripe Checkout session. Called by an app's server with a delegated token for the user who pays, never by the browser (decision on #24). Body `{reference, description, amount, currency, success_url, cancel_url}` → `201 {order, checkout_url}`; `200` with the open order for the same `reference`. Emits `payment.order.paid|expired|failed`.
   - `POST /api/docflow/v1/documents/{documentId}/checkout` (signed in) — Start payment for a document. → `201 {order_id, checkout_url}`. DocFlow sets the price and calls Payment `POST /orders`. Errors: `409` if already paid or not reviewed.
 - **Database design:** `payment.orders` (id, owner_id null, app, reference, description, stripe_session_id unique, amount, currency, status `pending|paid|expired|failed`, paid_at, created_at). Partial unique index on `(app, reference)` where status = `pending` prevents duplicate open orders. DocFlow stores the returned ID in `docflow.documents.order_id`.
 
@@ -477,7 +477,7 @@ As Priya, I want to drag and drop or pick a file on my phone and see progress.
 - **AC4:** Also handles `checkout.session.expired` (order becomes `expired`) and async payment failure (order becomes `failed`).
 - **Service:** Payment
 - **API design:**
-  - `POST /api/payment/v1/webhooks/stripe` (service) — Stripe webhook: marks orders paid, expired or failed. Verifies `Stripe-Signature` → `200`. Already-processed event IDs return `200` with no change. Errors: `400` bad signature.
+  - `POST /api/payment/v1/webhooks/stripe` (service) — Stripe webhook: marks orders paid, expired or failed. Verifies `Stripe-Signature` → `200`. Already-processed event IDs return `200` with no change. Errors: `400 invalid_stripe_signature`.
 - **Database design:** `payment.stripe_events` (event_id primary key, type, processed_at) gives idempotency: insert first, skip if it already exists.
 
 ### MVP1-E6-03 · Payment page and states — S
@@ -517,7 +517,7 @@ As Priya, I want to drag and drop or pick a file on my phone and see progress.
 - **AC3:** The email passes SPF/DKIM for the sending domain (Resend domain verification for 01scale.com), with plain-text and HTML versions.
 - **Service:** Delivery; triggered by the DocFlow app
 - **API design:**
-  - `POST /api/delivery/v1/messages` (service) — Send a templated email to a user. Called by an app's server. Body `{user_id, template, data, reference}` + `Idempotency-Key` → `202 {message}`. Retries 3 times with backoff. Emits `delivery.message.failed` on permanent failure.
+  - `POST /api/delivery/v1/messages` (service) — Send a templated email to a user. Called by an app's server with a delegated token for the recipient (decision on #24). Body `{template, data, reference}` + `Idempotency-Key` → `202 {message}`. Retries 3 times with backoff. Emits `delivery.message.failed` on permanent failure.
   - `GET /api/delivery/v1/messages` (signed in) — My messages and their delivery status. Query `reference`, `cursor` → `200 {data: [{id, channel, template, status: queued|sent|failed, attempts, sent_at}], next_cursor}`.
   - DocFlow calls `POST /messages` when it receives `payment.order.paid` on its webhook (E0-09), so the email is triggered by the server, not the browser.
 - **Database design:** `delivery.messages` (id, owner_id, app, reference, channel `email`, template, status `queued|sent|failed`, attempts, provider_message_id, last_error, sent_at, created_at). The recipient address is read from Identity at send time, not stored.

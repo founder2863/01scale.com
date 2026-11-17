@@ -111,7 +111,7 @@ Environment variables on the service's own deployment. Secrets are never committ
 |---|---|---|
 | `COGNITO_USER_POOL_ID` | From the Cognito setup, for `AdminDeleteUser` | No |
 | `AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY` | An IAM user allowed only `cognito-idp:AdminDeleteUser` on the pool | Yes |
-| `IDENTITY_EVENT_SUBSCRIBERS` | The services' event addresses, comma-separated | No |
+| `EVENT_ROUTES` | From the service template; `identity.user.deleted` is platform-wide, so it goes to every service and app | No |
 | `EVENTS_SIGNING_KEY` | 32 random bytes, base64 | Yes |
 
 ## Open questions

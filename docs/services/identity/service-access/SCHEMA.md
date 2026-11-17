@@ -50,7 +50,7 @@ grant select, update on identity.service_clients to identity_service;
 
 | `id` | `secret_hash` | `scopes` | `act_scopes` | `created_at` | `rotated_at` | `revoked_at` |
 |---|---|---|---|---|---|---|
-| `docflow` | `1f4e7a0c3d6b9e2f5a8c1d4e7b0a3f6c9e2d5b8a1c4f7e0d3a6b9c2e5f8a1d4b` | `{payment:write,delivery:write}` | `{upload:read,upload:write,extraction:read,extraction:write,review:read,review:write,payment:read,payment:write,delivery:read}` | `2026-11-17 12:00:00+00` | (empty) | (empty) |
+| `docflow` | `1f4e7a0c3d6b9e2f5a8c1d4e7b0a3f6c9e2d5b8a1c4f7e0d3a6b9c2e5f8a1d4b` | `{}` | `{upload:read,upload:write,extraction:read,extraction:write,review:read,review:write,payment:read,payment:write,delivery:read,delivery:write}` | `2026-11-17 12:00:00+00` | (empty) | (empty) |
 | `extraction` | `2a5d8b1e4c7f0a3d6b9e2c5f8a1d4b7e0c3f6a9d2b5e8c1f4a7d0b3e6c9f2a5d` | `{}` | `{upload:read}` | `2026-11-17 12:00:00+00` | (empty) | (empty) |
 | `delivery` | `3b6e9c2f5a8d1b4e7c0f3a6d9b2e5c8f1a4d7b0e3c6f9a2d5b8e1c4f7a0d3b6e` | `{identity:users.read}` | `{}` | `2026-11-17 12:00:00+00` | (empty) | (empty) |
 

@@ -1275,7 +1275,7 @@ export const products = [
       },
       {
         "story": "MVP1-E5-04",
-        "text": "No new endpoints. DocFlow builds the files and stores them through Upload `POST /files` with a service token; `version` in `GET …/outputs` increments when they are regenerated."
+        "text": "No new endpoints. DocFlow builds the files and stores them through Upload `POST /files` with a delegated token for the document's owner (decision on #24); `version` in `GET …/outputs` increments when they are regenerated."
       }
     ],
     "dbNotes": [
@@ -1396,7 +1396,7 @@ export const products = [
         "path": "/api/payment/v1/orders",
         "access": "Service",
         "summary": "Create an order and a Stripe Checkout session.",
-        "detail": "Called by an app's server, never the browser. Body `{user_id, reference, description, amount, currency, success_url, cancel_url}` → `201 {order, checkout_url}`; `200` with the open order for the same `reference`. Emits `payment.order.paid|expired|failed`.",
+        "detail": "Called by an app's server with a delegated token for the user who pays, never by the browser (decision on #24). Body `{reference, description, amount, currency, success_url, cancel_url}` → `201 {order, checkout_url}`; `200` with the open order for the same `reference`. Emits `payment.order.paid|expired|failed`.",
         "story": "MVP1-E6-01"
       },
       {
@@ -1412,7 +1412,7 @@ export const products = [
         "path": "/api/payment/v1/webhooks/stripe",
         "access": "Service",
         "summary": "Stripe webhook: marks orders paid, expired or failed.",
-        "detail": "Verifies `Stripe-Signature` → `200`. Already-processed event IDs return `200` with no change. Errors: `400` bad signature.",
+        "detail": "Verifies `Stripe-Signature` → `200`. Already-processed event IDs return `200` with no change. Errors: `400 invalid_stripe_signature`.",
         "story": "MVP1-E6-02"
       },
       {
@@ -1543,7 +1543,7 @@ export const products = [
         "path": "/api/delivery/v1/messages",
         "access": "Service",
         "summary": "Send a templated email to a user.",
-        "detail": "Called by an app's server. Body `{user_id, template, data, reference}` + `Idempotency-Key` → `202 {message}`. Retries 3 times with backoff. Emits `delivery.message.failed` on permanent failure.",
+        "detail": "Called by an app's server with a delegated token for the recipient (decision on #24). Body `{template, data, reference}` + `Idempotency-Key` → `202 {message}`. Retries 3 times with backoff. Emits `delivery.message.failed` on permanent failure.",
         "story": "MVP1-E7-03"
       },
       {
