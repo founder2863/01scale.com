@@ -317,7 +317,7 @@ flowchart TB
     N[("identity · upload · extraction · review · payment · delivery · docflow")]
   end
   W --> DFA & I & U & X & R & P & D
-  DFA --> U & X & R & P & D
+  DFA -- "every call via the gateway" --> W
   I --> C
   U --> S3
   X --> L
@@ -364,23 +364,59 @@ There are two ways to run a process that spans services.
 ```mermaid
 sequenceDiagram
   participant D as DocFlow (orchestrator)
+  participant I as Identity
   participant U as Upload
   participant X as Extraction
   participant R as Review
   participant P as Payment
   participant L as Delivery
-  D->>U: create file, confirm upload
-  D->>X: start job
+  Note over D,L: Every arrow goes through the gateway at 01scale.com/api
+  D->>U: create file, confirm upload [person]
+  D->>X: start job [person]
+  X->>I: token for the owner
+  X->>U: fetch the file [delegated]
   X-->>D: event: job completed
-  D->>R: create review task
-  D->>X: re-check corrected values
-  D->>R: complete task
-  D->>P: create order
+  D->>I: token for the owner
+  D->>X: read fields [delegated]
+  D->>R: create review task [delegated]
+  D->>X: re-check corrected values [person]
+  D->>R: complete task [person]
+  D->>U: store result.json and result.csv [person]
+  D->>P: create order at $5.00 [delegated]
   P-->>D: event: order paid
-  D->>L: send email
+  D->>L: send email [delegated]
+  L->>I: look up email [service]
+  D->>P: is it paid? (on every download) [person]
+  D->>U: 5-minute download link [person]
 ```
 
-Solid arrows are synchronous API calls. Dashed arrows are signed events delivered over HTTP from the sending service's outbox.
+Solid arrows are synchronous API calls, each through the gateway. Dashed arrows are signed events, delivered from the sender's outbox only to the app that started the work. The label on each call is the token it carries:
+
+- **[person]**: the signed-in person's own token, for steps they start.
+- **[delegated]**: a 5-minute token for that person, issued by Identity to the acting service, which is named in its `act` claim. It is used when no person is present (after an event), and always for Payment and Delivery, so only an app's server can set a price or send an email.
+- **[service]**: the service acting as itself, never for a user's data.
+
+DocFlow ignores an event that is not about the document's current job or order, so a late or repeated event changes nothing.
+
+Deleting an account is the one flow that fans out to every service:
+
+```mermaid
+sequenceDiagram
+  participant B as Browser
+  participant I as Identity
+  participant C as Cognito
+  participant S as Every service and app
+  B->>I: DELETE /me {confirm: DELETE} [session]
+  I->>C: delete the user
+  Note over I: one transaction: delete the user, its sessions and keys,<br/>audit, one outbox row per service
+  I-->>S: event: identity.user.deleted
+  Note over S: each deletes its own rows<br/>(Payment anonymizes orders)
+```
+
+I took three decisions on 17 November 2026, after the MVP1 architecture review (`docs/architecture/reviews/2026-11-17-mvp1.md`):
+- **Services act for a person with delegated tokens** (issue #24). Every service keeps one ownership rule, and audit shows both the person and the acting service.
+- **Every call between services goes through the gateway** (#21). The platform is API first, and each service's UI components are designed on their own, so a service's public API is its only interface.
+- **Events go only to the app that started the work** (#13). The app is the orchestrator. When I build a second app on the platform, I will move to an event-driven architecture (§12.6, §12.7).
 
 ### 12.3 Why orchestration is the better choice today
 
@@ -429,7 +465,7 @@ I will move from orchestration towards event-driven communication when one of th
 
 | Trigger | Why it changes the answer |
 |---|---|
-| A second app, or a second consumer of the same event | Point-to-point webhooks mean the sender must know every receiver. A broker lets a new consumer subscribe without the sender changing. |
+| A second app, or a second consumer of the same event | Point-to-point webhooks mean the sender must know every receiver. A broker lets a new consumer subscribe without the sender changing. This is the trigger I expect first: I decided that when I build the next app on the platform, I build the event-driven architecture with it. Until then, events go only to the app that started the work, routed by its `reference` prefix. |
 | Batches and long-running work (Extraction on AWS Lambda, 10 documents at once) | Work must queue, fan out and survive restarts. That is what a queue is for. |
 | A service that should react without being told | Example: Delivery sending a notification for any "order paid", whichever app caused it. The app should not have to remember to call it. |
 | Volume where synchronous chains hurt | Each synchronous hop adds latency and a failure point; a slow service would slow the whole process. |
