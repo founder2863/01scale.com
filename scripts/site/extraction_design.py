@@ -176,6 +176,104 @@ EVENTS_OUT = [
     {"topic": "Events Extraction announces", "how": "`extraction.job.completed` with `{job_id, file_id, reference, fields_total, fields_flagged}`, and `extraction.job.failed` with `{job_id, file_id, reference, error_code, retryable}`. Signed and delivered with retries from the outbox to each subscribed app (DocFlow's webhook, `MVP1-E0-09`)."},
 ]
 
+# ------------------------------------------------------------------ data model
+JOB_STATUSES = "`queued`, `processing`, `extracted`, `failed`"
+ERROR_CODES = "`file_unavailable`, `document_unreadable`, `model_unavailable`, `output_invalid`, `timed_out`"
+
+JOBS = {
+    "name": "extraction.jobs",
+    "purpose": "One row per attempt to read one file. A retry is a new job, so the history of attempts is kept.",
+    "columns": [
+        column("id", "uuid", "No", "", "Primary key. UUIDv7", "The job's ID. Other services store it as `job_id`."),
+        column("owner_id", "uuid", "No", "", "", "The user whose file it is, from the access token. A plain ID."),
+        column("file_id", "uuid", "No", "", "", "The file in the Upload service. A plain ID: Upload's tables are not reachable from here."),
+        column("schema", "text", "No", "", "`invoice-v1` in version 1", "Which fields were extracted, and so which prompt and rules applied."),
+        column("reference", "text", "Yes", "", "1 to 200 characters", "The caller's own label, returned in events. Opaque to Extraction."),
+        column("status", "text", "No", "'queued'", f"One of {JOB_STATUSES}", "Where the job is."),
+        column("step", "text", "Yes", "", "One of `fetching_file`, `reading_document`, `checking_rules`, `saving`", "The step running now, or the step that failed. Empty while queued and after success."),
+        column("attempt", "smallint", "No", "1", "1 to 3", "Which try this is within the job: the first, or one of the 2 retries after a temporary failure."),
+        column("model", "text", "No", "", "1 to 100 characters", "The Claude model used, from configuration at the time (`MVP1-E3-02` AC3)."),
+        column("prompt_version", "text", "No", "", "Like `extract-invoice/v1`", "The versioned prompt used, so a result can always be traced to its prompt."),
+        column("pages", "smallint", "Yes", "", "1 to 10", "Pages sent to the model, from Upload."),
+        column("fields_total", "smallint", "Yes", "", "0 or more; set when extracted", "How many fields were saved."),
+        column("fields_flagged", "smallint", "Yes", "", "0 to `fields_total`", "How many need a person's check."),
+        column("tokens_in", "integer", "Yes", "", "0 or more", "Tokens sent to the model, across the attempt and any repair (`MVP1-E3-05`)."),
+        column("tokens_out", "integer", "Yes", "", "0 or more", "Tokens the model returned."),
+        column("cost_usd", "numeric(10,6)", "Yes", "", "0 or more", "Estimated model cost of this job, from the tokens and the model's price per token in configuration. Six decimals because one job costs fractions of a cent."),
+        column("duration_ms", "integer", "Yes", "", "0 or more", "Time from start of processing to the end, in milliseconds."),
+        column("error_code", "text", "Yes", "", f"One of {ERROR_CODES}; set exactly when failed", "Why the job failed, as a stable code."),
+        column("error_message", "text", "Yes", "", "Set exactly when failed", "The plain-language message a person sees."),
+        column("created_at", "timestamptz", "No", "now()", "", "When the job was asked for."),
+        column("started_at", "timestamptz", "Yes", "", "Not before `created_at`", "When processing began."),
+        column("finished_at", "timestamptz", "Yes", "", "Set exactly when extracted or failed; not before `started_at`", "When the job ended."),
+    ],
+    "constraints": [], "sampleCols": [], "sampleRows": [],
+}
+
+FIELDS = {
+    "name": "extraction.fields",
+    "purpose": "One row per value read from a document: a header field, or one field of one line item. Never edited after it is saved: this is what the model said, and corrections live in the Human Review service.",
+    "columns": [
+        column("id", "uuid", "No", "", "Primary key. UUIDv7", "The field's ID."),
+        column("job_id", "uuid", "No", "", "Foreign key to `extraction.jobs`, delete cascades", "The job that read it."),
+        column("name", "text", "No", "", "A field of the job's schema, for example `total` or `amount`", "Which field this is."),
+        column("line_index", "smallint", "Yes", "", "0 or more for line-item fields (`description`, `quantity`, `unit_price`, `amount`); empty for header fields", "Which line item, counting from 0."),
+        column("value", "jsonb", "Yes", "", "A JSON string, or empty when the document does not contain the field", "The value read. Amounts and quantities are decimal strings, dates `YYYY-MM-DD`, currency a 3-letter code."),
+        column("model_confidence", "numeric(3,2)", "No", "", "0 to 1", "How sure the model said it was."),
+        column("confidence", "numeric(3,2)", "No", "", "0 to 1, never above `model_confidence`", "The final confidence after rule checks: the lower of the two."),
+        column("source_page", "smallint", "Yes", "", "1 to the job's page count; empty when there is no value", "The page the value was read from."),
+        column("source_quote", "text", "Yes", "", "1 to 500 characters; empty when there is no value", "The exact text on the page the value came from: the evidence a person checks."),
+        column("flagged", "boolean", "No", "false", "True exactly when there is at least one reason", "Whether a person needs to check it."),
+        column("flag_reasons", "text[]", "No", "'{}'", "Plain-language reasons", "Why it was flagged, for example 'Total ≠ subtotal + tax' or 'Low confidence (0.62)'."),
+        column("created_at", "timestamptz", "No", "now()", "", "When it was saved."),
+    ],
+    "constraints": [], "sampleCols": [], "sampleRows": [],
+}
+
+INBOUND = {
+    "name": "extraction.inbound_events",
+    "purpose": "One row per platform event Extraction has acted on, so a repeated delivery has no effect.",
+    "columns": [
+        column("event_id", "uuid", "No", "", "Primary key", "The event's ID, from the sender."),
+        column("type", "text", "No", "", "1 to 100 characters", "What happened."),
+        column("created_at", "timestamptz", "No", "now()", "", "When Extraction processed it."),
+    ],
+    "constraints": [], "sampleCols": [], "sampleRows": [],
+}
+
+DATA_MODEL_RULES = [
+    "A job only ever reads a file its owner can read: the file is fetched through Upload with the owner's own access token.",
+    "At most one job per file and schema is `queued` or `processing` at a time, so the same document is never read or billed twice at once.",
+    "A job only moves forward: `queued` → `processing` → `extracted` or `failed`. A failed job is never restarted; a retry is a new job.",
+    "Fields are written once, all together, when a job succeeds, and never changed. A failed job has no fields.",
+    "A field's final confidence is never higher than the model's own, and a field is flagged exactly when it has a reason.",
+    "Every value that is present has a page and a quote, so a person can always see where it came from.",
+    "Amounts are kept as decimal strings, never floating-point numbers.",
+    "Deleting a user's account deletes their fields, which hold document content. Their jobs are kept with IDs, counts, tokens and cost only, for the cost records.",
+    "Each job records the model and prompt version it used, so any result can be traced and re-run.",
+]
+
+DATA_MODEL = {
+    "entities": [
+        {"name": "Job", "table": "`extraction.jobs`", "what": "One attempt to read one file into fields.", "relations": "Belongs to one user and one file, both by ID only. Has many fields."},
+        {"name": "Field", "table": "`extraction.fields`", "what": "One value read from the document, with its confidence and evidence.", "relations": "Belongs to one job; deleted with it."},
+        {"name": "Processed event", "table": "`extraction.inbound_events`", "what": "A platform event already acted on.", "relations": "Stands alone."},
+        {"name": "Prompt", "table": "(file `prompts/extract-invoice/v1.md`)", "what": "The versioned instructions sent to the model.", "relations": "Named on each job by `prompt_version`. A changed prompt is a new version with its own eval report."},
+    ],
+    "lifecycles": [
+        {"name": "Job", "text": "`queued` when asked for → `processing` when the background work starts → `extracted` when its fields are saved, or `failed` after the last retry. A job left `queued` for a minute is picked up by the sweep."},
+        {"name": "Field", "text": "Created with all its job's fields in one step → never changed → deleted only with its job or its owner's account."},
+        {"name": "The document's content", "text": "Fetched through a 5-minute Upload link into memory for the model call, then dropped. Never written to disk or to the database."},
+    ],
+    "notStored": [
+        "The document itself: it stays in the Upload service.",
+        "The model's raw answer: only the validated fields are saved, so invalid output is never kept.",
+        "The prompt text on each job: only its version; the text lives in `prompts/`.",
+        "Document content in logs: logs carry IDs, counts and timings only.",
+    ],
+    "otherTables": "The service template also gives Extraction `audit_events`, `idempotency_keys` and `outbound_events`. Extraction writes `job.created`, `job.completed` and `job.failed` to `audit_events`, and announces `extraction.job.completed` and `extraction.job.failed` through `outbound_events`. `POST /jobs` needs no idempotency key: a second call for the same file returns the running job.",
+}
+
 MODULE = {
     "slug": "extraction-with-claude",
     "docsPath": "docs/services/extraction",
@@ -194,6 +292,11 @@ MODULE = {
     },
     "errorSample": problem("file_not_ready", "File not ready", 409, "This file is still uploading. Try again when the upload has finished."),
     "endpoints": ENDPOINTS,
+    "tables": [JOBS, FIELDS, INBOUND],
+    "entities": DATA_MODEL["entities"],
+    "lifecycles": DATA_MODEL["lifecycles"],
+    "otherTables": DATA_MODEL["otherTables"],
+    "notStored": DATA_MODEL["notStored"],
     "noEndpoint": EVENTS_OUT + [
         {"topic": "The Claude call (MVP1-E3-02)", "how": "Inside the job, not an endpoint. The document goes to Claude as a document or image input with the versioned prompt `prompts/extract-invoice/v1.md`. The answer is forced into the invoice v1 schema with a tool definition, then validated with zod. A failure triggers one repair attempt; if that fails too, the job fails with `output_invalid` and nothing is stored."},
         {"topic": "Final confidence (MVP1-E3-03)", "how": "Each field's final confidence is the lower of the model's own confidence and its rule result: a failed check sets 0.3. A field under the threshold (0.85 by default, set in configuration) or failing a check is `flagged`, with each reason stored."},
@@ -214,7 +317,7 @@ MODULE = {
             "Starting rate limit at the gateway: 10 jobs a minute per user.",
         ]},
         {"level": "Schema level: enforced by the database, whatever the code does", "items": []},
-        {"level": "Data model level: business rules the service guarantees", "items": []},
+        {"level": "Data model level: business rules the service guarantees", "items": DATA_MODEL_RULES},
     ],
     "openQuestions": [
         "Rate limits are starting values to be tuned once there is real traffic.",

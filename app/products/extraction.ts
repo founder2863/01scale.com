@@ -19,7 +19,12 @@ export const extraction = {
     "token": "",
     "schema": "The SQL for the LLM Extraction service's tables, in the `extraction` schema. No other service can read them."
   },
-  "notStored": [],
+  "notStored": [
+    "The document itself: it stays in the Upload service.",
+    "The model's raw answer: only the validated fields are saved, so invalid output is never kept.",
+    "The prompt text on each job: only its version; the text lives in `prompts/`.",
+    "Document content in logs: logs carry IDs, counts and timings only."
+  ],
   "overview": {
     "name": "LLM Extraction",
     "version": "Version 1 · One Claude call per document",
@@ -443,8 +448,332 @@ export const extraction = {
       "how": "Like every service, Extraction also serves `GET /health` and `GET /openapi.json` from the service template (`MVP1-E0-05`)."
     }
   ],
-  "tables": [],
-  "otherTables": "",
+  "tables": [
+    {
+      "name": "extraction.jobs",
+      "purpose": "One row per attempt to read one file. A retry is a new job, so the history of attempts is kept.",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": "No",
+          "default": "",
+          "constraints": "Primary key. UUIDv7",
+          "meaning": "The job's ID. Other services store it as `job_id`."
+        },
+        {
+          "name": "owner_id",
+          "type": "uuid",
+          "nullable": "No",
+          "default": "",
+          "constraints": "",
+          "meaning": "The user whose file it is, from the access token. A plain ID."
+        },
+        {
+          "name": "file_id",
+          "type": "uuid",
+          "nullable": "No",
+          "default": "",
+          "constraints": "",
+          "meaning": "The file in the Upload service. A plain ID: Upload's tables are not reachable from here."
+        },
+        {
+          "name": "schema",
+          "type": "text",
+          "nullable": "No",
+          "default": "",
+          "constraints": "`invoice-v1` in version 1",
+          "meaning": "Which fields were extracted, and so which prompt and rules applied."
+        },
+        {
+          "name": "reference",
+          "type": "text",
+          "nullable": "Yes",
+          "default": "",
+          "constraints": "1 to 200 characters",
+          "meaning": "The caller's own label, returned in events. Opaque to Extraction."
+        },
+        {
+          "name": "status",
+          "type": "text",
+          "nullable": "No",
+          "default": "'queued'",
+          "constraints": "One of `queued`, `processing`, `extracted`, `failed`",
+          "meaning": "Where the job is."
+        },
+        {
+          "name": "step",
+          "type": "text",
+          "nullable": "Yes",
+          "default": "",
+          "constraints": "One of `fetching_file`, `reading_document`, `checking_rules`, `saving`",
+          "meaning": "The step running now, or the step that failed. Empty while queued and after success."
+        },
+        {
+          "name": "attempt",
+          "type": "smallint",
+          "nullable": "No",
+          "default": "1",
+          "constraints": "1 to 3",
+          "meaning": "Which try this is within the job: the first, or one of the 2 retries after a temporary failure."
+        },
+        {
+          "name": "model",
+          "type": "text",
+          "nullable": "No",
+          "default": "",
+          "constraints": "1 to 100 characters",
+          "meaning": "The Claude model used, from configuration at the time (`MVP1-E3-02` AC3)."
+        },
+        {
+          "name": "prompt_version",
+          "type": "text",
+          "nullable": "No",
+          "default": "",
+          "constraints": "Like `extract-invoice/v1`",
+          "meaning": "The versioned prompt used, so a result can always be traced to its prompt."
+        },
+        {
+          "name": "pages",
+          "type": "smallint",
+          "nullable": "Yes",
+          "default": "",
+          "constraints": "1 to 10",
+          "meaning": "Pages sent to the model, from Upload."
+        },
+        {
+          "name": "fields_total",
+          "type": "smallint",
+          "nullable": "Yes",
+          "default": "",
+          "constraints": "0 or more; set when extracted",
+          "meaning": "How many fields were saved."
+        },
+        {
+          "name": "fields_flagged",
+          "type": "smallint",
+          "nullable": "Yes",
+          "default": "",
+          "constraints": "0 to `fields_total`",
+          "meaning": "How many need a person's check."
+        },
+        {
+          "name": "tokens_in",
+          "type": "integer",
+          "nullable": "Yes",
+          "default": "",
+          "constraints": "0 or more",
+          "meaning": "Tokens sent to the model, across the attempt and any repair (`MVP1-E3-05`)."
+        },
+        {
+          "name": "tokens_out",
+          "type": "integer",
+          "nullable": "Yes",
+          "default": "",
+          "constraints": "0 or more",
+          "meaning": "Tokens the model returned."
+        },
+        {
+          "name": "cost_usd",
+          "type": "numeric(10,6)",
+          "nullable": "Yes",
+          "default": "",
+          "constraints": "0 or more",
+          "meaning": "Estimated model cost of this job, from the tokens and the model's price per token in configuration. Six decimals because one job costs fractions of a cent."
+        },
+        {
+          "name": "duration_ms",
+          "type": "integer",
+          "nullable": "Yes",
+          "default": "",
+          "constraints": "0 or more",
+          "meaning": "Time from start of processing to the end, in milliseconds."
+        },
+        {
+          "name": "error_code",
+          "type": "text",
+          "nullable": "Yes",
+          "default": "",
+          "constraints": "One of `file_unavailable`, `document_unreadable`, `model_unavailable`, `output_invalid`, `timed_out`; set exactly when failed",
+          "meaning": "Why the job failed, as a stable code."
+        },
+        {
+          "name": "error_message",
+          "type": "text",
+          "nullable": "Yes",
+          "default": "",
+          "constraints": "Set exactly when failed",
+          "meaning": "The plain-language message a person sees."
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": "No",
+          "default": "now()",
+          "constraints": "",
+          "meaning": "When the job was asked for."
+        },
+        {
+          "name": "started_at",
+          "type": "timestamptz",
+          "nullable": "Yes",
+          "default": "",
+          "constraints": "Not before `created_at`",
+          "meaning": "When processing began."
+        },
+        {
+          "name": "finished_at",
+          "type": "timestamptz",
+          "nullable": "Yes",
+          "default": "",
+          "constraints": "Set exactly when extracted or failed; not before `started_at`",
+          "meaning": "When the job ended."
+        }
+      ],
+      "constraints": [],
+      "sampleCols": [],
+      "sampleRows": []
+    },
+    {
+      "name": "extraction.fields",
+      "purpose": "One row per value read from a document: a header field, or one field of one line item. Never edited after it is saved: this is what the model said, and corrections live in the Human Review service.",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": "No",
+          "default": "",
+          "constraints": "Primary key. UUIDv7",
+          "meaning": "The field's ID."
+        },
+        {
+          "name": "job_id",
+          "type": "uuid",
+          "nullable": "No",
+          "default": "",
+          "constraints": "Foreign key to `extraction.jobs`, delete cascades",
+          "meaning": "The job that read it."
+        },
+        {
+          "name": "name",
+          "type": "text",
+          "nullable": "No",
+          "default": "",
+          "constraints": "A field of the job's schema, for example `total` or `amount`",
+          "meaning": "Which field this is."
+        },
+        {
+          "name": "line_index",
+          "type": "smallint",
+          "nullable": "Yes",
+          "default": "",
+          "constraints": "0 or more for line-item fields (`description`, `quantity`, `unit_price`, `amount`); empty for header fields",
+          "meaning": "Which line item, counting from 0."
+        },
+        {
+          "name": "value",
+          "type": "jsonb",
+          "nullable": "Yes",
+          "default": "",
+          "constraints": "A JSON string, or empty when the document does not contain the field",
+          "meaning": "The value read. Amounts and quantities are decimal strings, dates `YYYY-MM-DD`, currency a 3-letter code."
+        },
+        {
+          "name": "model_confidence",
+          "type": "numeric(3,2)",
+          "nullable": "No",
+          "default": "",
+          "constraints": "0 to 1",
+          "meaning": "How sure the model said it was."
+        },
+        {
+          "name": "confidence",
+          "type": "numeric(3,2)",
+          "nullable": "No",
+          "default": "",
+          "constraints": "0 to 1, never above `model_confidence`",
+          "meaning": "The final confidence after rule checks: the lower of the two."
+        },
+        {
+          "name": "source_page",
+          "type": "smallint",
+          "nullable": "Yes",
+          "default": "",
+          "constraints": "1 to the job's page count; empty when there is no value",
+          "meaning": "The page the value was read from."
+        },
+        {
+          "name": "source_quote",
+          "type": "text",
+          "nullable": "Yes",
+          "default": "",
+          "constraints": "1 to 500 characters; empty when there is no value",
+          "meaning": "The exact text on the page the value came from: the evidence a person checks."
+        },
+        {
+          "name": "flagged",
+          "type": "boolean",
+          "nullable": "No",
+          "default": "false",
+          "constraints": "True exactly when there is at least one reason",
+          "meaning": "Whether a person needs to check it."
+        },
+        {
+          "name": "flag_reasons",
+          "type": "text[]",
+          "nullable": "No",
+          "default": "'{}'",
+          "constraints": "Plain-language reasons",
+          "meaning": "Why it was flagged, for example 'Total ≠ subtotal + tax' or 'Low confidence (0.62)'."
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": "No",
+          "default": "now()",
+          "constraints": "",
+          "meaning": "When it was saved."
+        }
+      ],
+      "constraints": [],
+      "sampleCols": [],
+      "sampleRows": []
+    },
+    {
+      "name": "extraction.inbound_events",
+      "purpose": "One row per platform event Extraction has acted on, so a repeated delivery has no effect.",
+      "columns": [
+        {
+          "name": "event_id",
+          "type": "uuid",
+          "nullable": "No",
+          "default": "",
+          "constraints": "Primary key",
+          "meaning": "The event's ID, from the sender."
+        },
+        {
+          "name": "type",
+          "type": "text",
+          "nullable": "No",
+          "default": "",
+          "constraints": "1 to 100 characters",
+          "meaning": "What happened."
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": "No",
+          "default": "now()",
+          "constraints": "",
+          "meaning": "When Extraction processed it."
+        }
+      ],
+      "constraints": [],
+      "sampleCols": [],
+      "sampleRows": []
+    }
+  ],
+  "otherTables": "The service template also gives Extraction `audit_events`, `idempotency_keys` and `outbound_events`. Extraction writes `job.created`, `job.completed` and `job.failed` to `audit_events`, and announces `extraction.job.completed` and `extraction.job.failed` through `outbound_events`. `POST /jobs` needs no idempotency key: a second call for the same file returns the running job.",
   "rules": [
     {
       "level": "API level: checked on every request before anything is stored",
@@ -465,7 +794,17 @@ export const extraction = {
     },
     {
       "level": "Data model level: business rules the service guarantees",
-      "items": []
+      "items": [
+        "A job only ever reads a file its owner can read: the file is fetched through Upload with the owner's own access token.",
+        "At most one job per file and schema is `queued` or `processing` at a time, so the same document is never read or billed twice at once.",
+        "A job only moves forward: `queued` → `processing` → `extracted` or `failed`. A failed job is never restarted; a retry is a new job.",
+        "Fields are written once, all together, when a job succeeds, and never changed. A failed job has no fields.",
+        "A field's final confidence is never higher than the model's own, and a field is flagged exactly when it has a reason.",
+        "Every value that is present has a page and a quote, so a person can always see where it came from.",
+        "Amounts are kept as decimal strings, never floating-point numbers.",
+        "Deleting a user's account deletes their fields, which hold document content. Their jobs are kept with IDs, counts, tokens and cost only, for the cost records.",
+        "Each job records the model and prompt version it used, so any result can be traced and re-run."
+      ]
     }
   ],
   "env": [],
@@ -478,8 +817,46 @@ export const extraction = {
   "components": [],
   "hostedPages": [],
   "uiRules": [],
-  "entities": [],
-  "lifecycles": [],
+  "entities": [
+    {
+      "name": "Job",
+      "table": "`extraction.jobs`",
+      "what": "One attempt to read one file into fields.",
+      "relations": "Belongs to one user and one file, both by ID only. Has many fields."
+    },
+    {
+      "name": "Field",
+      "table": "`extraction.fields`",
+      "what": "One value read from the document, with its confidence and evidence.",
+      "relations": "Belongs to one job; deleted with it."
+    },
+    {
+      "name": "Processed event",
+      "table": "`extraction.inbound_events`",
+      "what": "A platform event already acted on.",
+      "relations": "Stands alone."
+    },
+    {
+      "name": "Prompt",
+      "table": "(file `prompts/extract-invoice/v1.md`)",
+      "what": "The versioned instructions sent to the model.",
+      "relations": "Named on each job by `prompt_version`. A changed prompt is a new version with its own eval report."
+    }
+  ],
+  "lifecycles": [
+    {
+      "name": "Job",
+      "text": "`queued` when asked for → `processing` when the background work starts → `extracted` when its fields are saved, or `failed` after the last retry. A job left `queued` for a minute is picked up by the sweep."
+    },
+    {
+      "name": "Field",
+      "text": "Created with all its job's fields in one step → never changed → deleted only with its job or its owner's account."
+    },
+    {
+      "name": "The document's content",
+      "text": "Fetched through a 5-minute Upload link into memory for the model call, then dropped. Never written to disk or to the database."
+    }
+  ],
   "ddl": "",
   "queries": []
 };
