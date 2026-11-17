@@ -1787,3 +1787,8 @@ section[id] {
     font-size: 0.85rem;
   }
 }
+
+/* Cost baselines box at the top of Token Costs (How It's Built). */
+.cost-baseline {
+  margin: 1rem 0 1.5rem;
+}
