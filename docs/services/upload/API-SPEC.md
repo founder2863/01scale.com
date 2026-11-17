@@ -475,4 +475,4 @@ HTTP/1.1 200 OK
 - Upload and download links last 5 minutes, and fix the type and size (upload) or type and filename (download) in their signature.
 - `POST /files` accepts `Idempotency-Key`; `complete` and `DELETE` are idempotent by design.
 - Events must carry a valid signature and are processed once per `event_id`.
-- Starting rate limits at the gateway: 30 file creations a minute per user; 120 reads a minute per user.
+- Rate limit at the gateway: 100 requests a minute per user, across every endpoint of every service (Nikhil's decision on #64). Over it, `429 rate_limited` with `Retry-After`.
