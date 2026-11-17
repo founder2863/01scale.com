@@ -330,8 +330,8 @@ export const products = [
     "group": "MVP1",
     "service": "Identity",
     "description": "An account page to view and update your details, delete your account, and create API keys for AI agents.",
-    "status": "Planned",
-    "detailed": false,
+    "status": "In design",
+    "detailed": true,
     "epic": {
       "id": "E1",
       "title": "Accounts with AWS Cognito",
