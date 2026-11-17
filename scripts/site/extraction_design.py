@@ -464,6 +464,61 @@ SCHEMA_RULES = [
     "Extraction's database login can reach only the `extraction` schema, and cannot delete jobs.",
 ]
 
+# ------------------------------------------------------------------ user journeys
+JOURNEYS = [
+    journey(
+        "Watch a document being read", "Someone who has just uploaded an invoice",
+        "The app starts extraction after the upload.", ["MVP1-E3-01", "MVP1-E3-02", "MVP1-E3-04"],
+        [
+            ("Sees 'Reading your document' with four steps: getting the file, reading it, checking the numbers, saving.", "Extraction records the job as `queued` and starts it in the background."),
+            ("Watches each step tick off, without the page reloading.", "The page asks for the job's status every 2 seconds; each step is marked `done` as it ends."),
+            ("Sees the document on the left and the fields on the right, each with a coloured confidence badge.", "Claude has read the document; the answer passed its schema check; the rule checks ran and the fields were saved. The job is `extracted`."),
+            ("Sees 'Review 3 flagged fields' or, if none, 'Continue to results'.", "The app reads the flagged count from the job and offers the next step."),
+        ],
+        "Every value on the invoice is on screen, with how sure the system is and where it came from. Typically under a minute for a short invoice.",
+    ),
+    journey(
+        "Check where a value came from", "Someone looking at an extracted value", "Taps a field.", ["MVP1-E3-04"],
+        [
+            ("Taps the Total field, marked red.", "The field's page, quote and reasons are already on the page from the fields request."),
+            ("Sees 'TOTAL DUE $1,240.00, page 2' and the reason 'Total ≠ subtotal + tax (1,150.00 + 80.00 = 1,230.00)'.", "Nothing new is fetched."),
+            ("On a computer, sees the document jump to page 2.", "The app moves its document preview to the field's page."),
+        ],
+        "The person can judge the value themselves, with the evidence in front of them.",
+    ),
+    journey(
+        "Extraction fails, then a retry works", "Someone whose extraction hit a problem", "The model is overloaded.", ["MVP1-E3-01"],
+        [
+            ("Sees the reading step take a little longer than usual.", "Claude reported overload. Extraction waits 2 seconds and tries again, then 8 seconds and tries once more."),
+            ("Sees 'Reading this document is taking longer than usual. Try again in a few minutes.' and a Retry button.", "Both retries failed. The job is `failed` with `model_unavailable`, marked retryable. Nothing was charged twice."),
+            ("Taps Retry a few minutes later.", "The app starts a new job for the same file. The failed job stays in the history."),
+            ("Sees the steps run again and the fields appear.", "The new job succeeds."),
+        ],
+        "The person recovers with one tap. Each attempt is recorded with its cost.",
+    ),
+    journey(
+        "Look at cost and speed", "The owner (admin)", "Opens the jobs page.", ["MVP1-E3-05"],
+        [
+            ("Opens `/admin/jobs`.", "Extraction checks the caller is an admin; anyone else gets 'not found'."),
+            ("Sees the last 100 jobs with model, prompt version, pages, tokens, cost and time, and the failure rate, average cost and slowest times at the top.", "The figures come from each job's record. No document content or file names are shown."),
+        ],
+        "The owner can see whether extraction stays under its targets: 60 seconds and $0.10 per document.",
+    ),
+]
+
+EDGE_CASES = [
+    {"situation": "The model is overloaded or rate-limited after both retries", "sees": "'Reading this document is taking longer than usual. Try again in a few minutes.' with Retry.", "code": "`model_unavailable`"},
+    {"situation": "The model's answer does not fit the schema, even after one repair", "sees": "'We couldn't read this document reliably. Try again, or upload a clearer copy.'", "code": "`output_invalid`"},
+    {"situation": "The document cannot be read, for example a blank or very blurred photo", "sees": "'We couldn't read this document. Upload a clearer copy.'", "code": "`document_unreadable`"},
+    {"situation": "The job takes longer than its limit", "sees": "'Reading took too long. Try again.' with Retry.", "code": "`timed_out`"},
+    {"situation": "The file was deleted or expired before it could be read", "sees": "'This file is no longer available. Upload it again.'", "code": "`file_unavailable`"},
+    {"situation": "Starts extraction on a file still uploading", "sees": "'This file is still uploading.'", "code": "`file_not_ready`"},
+    {"situation": "Asks for fields while the job is still running", "sees": "The steps continue; the fields appear when ready.", "code": "`job_not_finished`"},
+    {"situation": "Follows a link to someone else's job", "sees": "'Not found.'", "code": "`job_not_found`"},
+    {"situation": "Upload cannot be reached when starting", "sees": "'Something went wrong starting. Try again.'", "code": "`dependency_unavailable`"},
+    {"situation": "Starts more than 10 extractions in a minute", "sees": "'Too many at once. Wait a moment and try again.'", "code": "`rate_limited`"},
+]
+
 MODULE = {
     "slug": "extraction-with-claude",
     "docsPath": "docs/services/extraction",
@@ -488,6 +543,8 @@ MODULE = {
     "otherTables": DATA_MODEL["otherTables"],
     "notStored": DATA_MODEL["notStored"],
     "ddl": DDL,
+    "journeys": JOURNEYS,
+    "edgeCases": EDGE_CASES,
     "queries": QUERIES,
     "noEndpoint": EVENTS_OUT + [
         {"topic": "The Claude call (MVP1-E3-02)", "how": "Inside the job, not an endpoint. The document goes to Claude as a document or image input with the versioned prompt `prompts/extract-invoice/v1.md`. The answer is forced into the invoice v1 schema with a tool definition, then validated with zod. A failure triggers one repair attempt; if that fails too, the job fails with `output_invalid` and nothing is stored."},

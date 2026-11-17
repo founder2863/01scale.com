@@ -999,8 +999,158 @@ export const extraction = {
     "Rate limits are starting values to be tuned once there is real traffic."
   ],
   "decisions": [],
-  "journeys": [],
-  "edgeCases": [],
+  "journeys": [
+    {
+      "name": "Watch a document being read",
+      "who": "Someone who has just uploaded an invoice",
+      "trigger": "The app starts extraction after the upload.",
+      "stories": [
+        "MVP1-E3-01",
+        "MVP1-E3-02",
+        "MVP1-E3-04"
+      ],
+      "steps": [
+        {
+          "person": "Sees 'Reading your document' with four steps: getting the file, reading it, checking the numbers, saving.",
+          "system": "Extraction records the job as `queued` and starts it in the background."
+        },
+        {
+          "person": "Watches each step tick off, without the page reloading.",
+          "system": "The page asks for the job's status every 2 seconds; each step is marked `done` as it ends."
+        },
+        {
+          "person": "Sees the document on the left and the fields on the right, each with a coloured confidence badge.",
+          "system": "Claude has read the document; the answer passed its schema check; the rule checks ran and the fields were saved. The job is `extracted`."
+        },
+        {
+          "person": "Sees 'Review 3 flagged fields' or, if none, 'Continue to results'.",
+          "system": "The app reads the flagged count from the job and offers the next step."
+        }
+      ],
+      "outcome": "Every value on the invoice is on screen, with how sure the system is and where it came from. Typically under a minute for a short invoice."
+    },
+    {
+      "name": "Check where a value came from",
+      "who": "Someone looking at an extracted value",
+      "trigger": "Taps a field.",
+      "stories": [
+        "MVP1-E3-04"
+      ],
+      "steps": [
+        {
+          "person": "Taps the Total field, marked red.",
+          "system": "The field's page, quote and reasons are already on the page from the fields request."
+        },
+        {
+          "person": "Sees 'TOTAL DUE $1,240.00, page 2' and the reason 'Total ≠ subtotal + tax (1,150.00 + 80.00 = 1,230.00)'.",
+          "system": "Nothing new is fetched."
+        },
+        {
+          "person": "On a computer, sees the document jump to page 2.",
+          "system": "The app moves its document preview to the field's page."
+        }
+      ],
+      "outcome": "The person can judge the value themselves, with the evidence in front of them."
+    },
+    {
+      "name": "Extraction fails, then a retry works",
+      "who": "Someone whose extraction hit a problem",
+      "trigger": "The model is overloaded.",
+      "stories": [
+        "MVP1-E3-01"
+      ],
+      "steps": [
+        {
+          "person": "Sees the reading step take a little longer than usual.",
+          "system": "Claude reported overload. Extraction waits 2 seconds and tries again, then 8 seconds and tries once more."
+        },
+        {
+          "person": "Sees 'Reading this document is taking longer than usual. Try again in a few minutes.' and a Retry button.",
+          "system": "Both retries failed. The job is `failed` with `model_unavailable`, marked retryable. Nothing was charged twice."
+        },
+        {
+          "person": "Taps Retry a few minutes later.",
+          "system": "The app starts a new job for the same file. The failed job stays in the history."
+        },
+        {
+          "person": "Sees the steps run again and the fields appear.",
+          "system": "The new job succeeds."
+        }
+      ],
+      "outcome": "The person recovers with one tap. Each attempt is recorded with its cost."
+    },
+    {
+      "name": "Look at cost and speed",
+      "who": "The owner (admin)",
+      "trigger": "Opens the jobs page.",
+      "stories": [
+        "MVP1-E3-05"
+      ],
+      "steps": [
+        {
+          "person": "Opens `/admin/jobs`.",
+          "system": "Extraction checks the caller is an admin; anyone else gets 'not found'."
+        },
+        {
+          "person": "Sees the last 100 jobs with model, prompt version, pages, tokens, cost and time, and the failure rate, average cost and slowest times at the top.",
+          "system": "The figures come from each job's record. No document content or file names are shown."
+        }
+      ],
+      "outcome": "The owner can see whether extraction stays under its targets: 60 seconds and $0.10 per document."
+    }
+  ],
+  "edgeCases": [
+    {
+      "situation": "The model is overloaded or rate-limited after both retries",
+      "sees": "'Reading this document is taking longer than usual. Try again in a few minutes.' with Retry.",
+      "code": "`model_unavailable`"
+    },
+    {
+      "situation": "The model's answer does not fit the schema, even after one repair",
+      "sees": "'We couldn't read this document reliably. Try again, or upload a clearer copy.'",
+      "code": "`output_invalid`"
+    },
+    {
+      "situation": "The document cannot be read, for example a blank or very blurred photo",
+      "sees": "'We couldn't read this document. Upload a clearer copy.'",
+      "code": "`document_unreadable`"
+    },
+    {
+      "situation": "The job takes longer than its limit",
+      "sees": "'Reading took too long. Try again.' with Retry.",
+      "code": "`timed_out`"
+    },
+    {
+      "situation": "The file was deleted or expired before it could be read",
+      "sees": "'This file is no longer available. Upload it again.'",
+      "code": "`file_unavailable`"
+    },
+    {
+      "situation": "Starts extraction on a file still uploading",
+      "sees": "'This file is still uploading.'",
+      "code": "`file_not_ready`"
+    },
+    {
+      "situation": "Asks for fields while the job is still running",
+      "sees": "The steps continue; the fields appear when ready.",
+      "code": "`job_not_finished`"
+    },
+    {
+      "situation": "Follows a link to someone else's job",
+      "sees": "'Not found.'",
+      "code": "`job_not_found`"
+    },
+    {
+      "situation": "Upload cannot be reached when starting",
+      "sees": "'Something went wrong starting. Try again.'",
+      "code": "`dependency_unavailable`"
+    },
+    {
+      "situation": "Starts more than 10 extractions in a minute",
+      "sees": "'Too many at once. Wait a moment and try again.'",
+      "code": "`rate_limited`"
+    }
+  ],
   "components": [],
   "hostedPages": [],
   "uiRules": [],
