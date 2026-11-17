@@ -1036,8 +1036,104 @@ export const docflow = {
   "env": [],
   "openQuestions": [],
   "decisions": [],
-  "journeys": [],
-  "edgeCases": [],
+  "journeys": [
+    {
+      "name": "Upload to results",
+      "who": "Someone with an invoice",
+      "trigger": "Starts on My documents.",
+      "stories": [
+        "MVP1-E0-09",
+        "MVP1-E2-05"
+      ],
+      "steps": [
+        {
+          "person": "Sees My documents, or 'Upload your first invoice' with a sample invoice to try.",
+          "system": "DocFlow lists the person's documents with status and next action."
+        },
+        {
+          "person": "Uploads; is taken to the extraction page.",
+          "system": "DocFlow starts the document, Upload stores and checks the file, and DocFlow starts Extraction."
+        },
+        {
+          "person": "Watches the steps, then sees 'Review 3 flagged fields'.",
+          "system": "Extraction tells DocFlow it finished; DocFlow sends the fields to Review."
+        },
+        {
+          "person": "Checks the flagged fields and taps Complete review.",
+          "system": "DocFlow re-checks the values with Extraction, completes the review, and builds the JSON and CSV."
+        }
+      ],
+      "outcome": "The results exist, previewable but locked until payment."
+    },
+    {
+      "name": "Preview, pay and download",
+      "who": "Someone with reviewed results",
+      "trigger": "Opens the results.",
+      "stories": [
+        "MVP1-E5-01",
+        "MVP1-E5-03",
+        "MVP1-E6-01",
+        "MVP1-E7-01",
+        "MVP1-E7-02"
+      ],
+      "steps": [
+        {
+          "person": "Reads the full JSON (with folding) and the CSV on screen; download buttons say 'Pay to download'.",
+          "system": "DocFlow returns the stored outputs for preview; downloads answer 402 until paid."
+        },
+        {
+          "person": "Taps Pay $5.00 and pays on Stripe's page.",
+          "system": "DocFlow's server asks Payment for an order at $5.00."
+        },
+        {
+          "person": "Lands on the success page: 'Confirming payment…', then the buttons work.",
+          "system": "The success page polls the order; Payment's event tells DocFlow it is paid; DocFlow asks Delivery to email."
+        },
+        {
+          "person": "Taps Download CSV; opens it in Excel with correct characters.",
+          "system": "DocFlow checks the order is paid, then redirects to a 5-minute Upload link. The CSV is UTF-8 with a BOM."
+        }
+      ],
+      "outcome": "The person has their files and an email with a link back."
+    }
+  ],
+  "edgeCases": [
+    {
+      "situation": "Tries to download before paying (for example by URL)",
+      "sees": "'Pay to download.'",
+      "code": "`payment_required`"
+    },
+    {
+      "situation": "A check still fails at Complete review",
+      "sees": "Which check, with Fix it or 'Values are correct as on the document'.",
+      "code": "`checks_failed`"
+    },
+    {
+      "situation": "Extraction failed",
+      "sees": "The failure message and Retry.",
+      "code": "Document `extraction_failed`"
+    },
+    {
+      "situation": "Upload rejected the file",
+      "sees": "The reason and 'Choose another file'.",
+      "code": "Document `rejected`"
+    },
+    {
+      "situation": "Pays for a document already paid",
+      "sees": "Goes straight to the success page.",
+      "code": "`already_paid`"
+    },
+    {
+      "situation": "A service is down",
+      "sees": "'Something went wrong. Try again in a moment.' Nothing is lost.",
+      "code": "`dependency_unavailable`"
+    },
+    {
+      "situation": "A spreadsheet formula in a value, like `=SUM(…)`",
+      "sees": "The text as written, not a formula, when the CSV is opened.",
+      "code": "Prefixed with `'`"
+    }
+  ],
   "components": [],
   "hostedPages": [],
   "uiRules": [],
