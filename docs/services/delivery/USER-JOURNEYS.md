@@ -1,6 +1,6 @@
 # Delivery service — user journeys
 
-> **Version 1 · Email through Resend.** Status: in design. Stories: `MVP1-E7-01`, `MVP1-E7-02`, `MVP1-E7-03`.
+> **Version 1 · Email through Resend.** Status: designed, not built. Stories: `MVP1-E7-01`, `MVP1-E7-02`, `MVP1-E7-03`.
 
 What a person sees and what the system does when results are delivered, in version 1.
 

@@ -1,6 +1,6 @@
 # Delivery service — API specification
 
-> **Version 1 · Email through Resend.** Status: in design. Stories: `MVP1-E7-01`, `MVP1-E7-02`, `MVP1-E7-03`.
+> **Version 1 · Email through Resend.** Status: designed, not built. Stories: `MVP1-E7-01`, `MVP1-E7-02`, `MVP1-E7-03`.
 
 Base address: `https://01scale.com/api/delivery/v1`. Shared rules for every 01scale API (errors, versioning, tracing) are in [`docs/architecture/API-DESIGN.md`](../../architecture/API-DESIGN.md).
 

@@ -1,6 +1,6 @@
 # Delivery service — schema
 
-> **Version 1 · Email through Resend.** Status: in design. Stories: `MVP1-E7-01`, `MVP1-E7-02`, `MVP1-E7-03`.
+> **Version 1 · Email through Resend.** Status: designed, not built. Stories: `MVP1-E7-01`, `MVP1-E7-02`, `MVP1-E7-03`.
 
 The SQL for the Delivery service's tables, in the `delivery` schema. No other service can read them. What each field means is in [`DATA-MODEL.md`](DATA-MODEL.md). In the build this is produced by Drizzle migrations; the SQL below is the target.
 

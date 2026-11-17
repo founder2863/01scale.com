@@ -1,6 +1,6 @@
 # Delivery service — UI components
 
-> **Version 1 · Email through Resend.** Status: in design. Stories: `MVP1-E7-01`, `MVP1-E7-02`, `MVP1-E7-03`.
+> **Version 1 · Email through Resend.** Status: designed, not built. Stories: `MVP1-E7-01`, `MVP1-E7-02`, `MVP1-E7-03`.
 
 What the Delivery service ships for apps to use, as the package `packages/ui-delivery`. Designed, not built.
 

@@ -22,21 +22,103 @@ export const delivery = {
   "overview": {
     "name": "Delivery",
     "version": "Version 1 · Email through Resend",
-    "status": "In design",
+    "status": "Designed, not built",
     "base": "/api/delivery/v1",
-    "what": [],
-    "why": [],
-    "scope_in": [],
-    "scope_out": [],
+    "what": [
+      "Delivery is the platform service that sends messages to users on an app's behalf. In DocFlow it sends the email that confirms a payment and links back to the results.",
+      "An app's server names the user, a template and the template's values; Delivery looks up the user's verified address, fills the template, sends it through Resend and retries if sending fails. Apps never handle email addresses.",
+      "In this module the downloads themselves and the success page belong to the DocFlow app: it checks that the order is paid and hands out a 5-minute link to the file. Delivery's part is the email."
+    ],
+    "why": [
+      {
+        "title": "One way to reach a person",
+        "text": "Every app sends through the same service, with the same templates, retries and records, and MVP2 adds SMS and push behind the same request."
+      },
+      {
+        "title": "Addresses stay in Identity",
+        "text": "Apps pass a user ID, never an email address, so personal data is not copied around the platform."
+      },
+      {
+        "title": "Sent once, by the server",
+        "text": "Emails are triggered by verified server events and an idempotency key, so a repeated event or a closed browser never duplicates or loses one."
+      },
+      {
+        "title": "Trustworthy mail",
+        "text": "Fixed templates, links that can only point at 01scale.com, and a verified sending domain keep the email out of spam and out of phishing."
+      }
+    ],
+    "scope_in": [
+      "Send the `order_paid` email, in plain text and HTML, through Resend",
+      "Look up the verified address at send time",
+      "Retry 3 times with backoff, then record the failure and announce it",
+      "Show a person the status of their messages",
+      "Cancel and delete a deleted account's messages"
+    ],
+    "scope_out": [
+      "The success page and secure downloads: the DocFlow app (`MVP1-E7-01`, `MVP1-E7-02`), designed with the DocFlow app shell",
+      "SMS, push and notification preferences: `MVP2-E14`",
+      "Marketing email: not planned"
+    ],
     "stories": [
       "MVP1-E7-01",
       "MVP1-E7-02",
       "MVP1-E7-03"
     ]
   },
-  "flow": [],
-  "concepts": [],
-  "quickstart": [],
+  "flow": [
+    {
+      "who": "Payment",
+      "what": "Marks the order paid from Stripe's verified event and tells DocFlow."
+    },
+    {
+      "who": "DocFlow's server",
+      "what": "Calls `POST /messages` with the user, `order_paid`, the document name, amount and the success page's path, keyed by the payment event's ID."
+    },
+    {
+      "who": "Delivery",
+      "what": "Records the message `queued` and answers at once."
+    },
+    {
+      "who": "Delivery",
+      "what": "Looks up the user's verified address through Identity, renders the template and sends it through Resend from receipts@01scale.com."
+    },
+    {
+      "who": "Resend",
+      "what": "Accepts the email for delivery, signed for SPF and DKIM."
+    },
+    {
+      "who": "Delivery",
+      "what": "Marks it `sent`; or after 3 failed retries `failed`, and announces `delivery.message.failed`."
+    }
+  ],
+  "concepts": [
+    {
+      "term": "Template",
+      "meaning": "A fixed email with named blanks. Version 1 has one: `order_paid`."
+    },
+    {
+      "term": "Idempotency key",
+      "meaning": "A value that makes the same request send only one email, however often it is repeated."
+    },
+    {
+      "term": "SPF and DKIM",
+      "meaning": "DNS records that let mailboxes verify an email really came from 01scale.com."
+    }
+  ],
+  "quickstart": [
+    {
+      "title": "Send an email from an app's server",
+      "text": "Name the user and the template; never an address.",
+      "lang": "ts",
+      "code": "await serviceApi.post(\"/api/delivery/v1/messages\", {\n  user_id: userId, template: \"order_paid\", reference: `docflow:${documentId}`,\n  data: { document_name: \"invoice.pdf\", amount: 500, currency: \"USD\", link_path: `/documents/${documentId}/success` },\n}, { headers: { \"Idempotency-Key\": paymentEventId } });"
+    },
+    {
+      "title": "Show the email's status",
+      "text": "On a page the person is looking at.",
+      "lang": "tsx",
+      "code": "import { MessageStatus } from \"@01scale/ui-delivery\";\n\n<MessageStatus reference={`docflow:${documentId}`} />"
+    }
+  ],
   "cookies": [],
   "claims": [],
   "errorSample": "{\n  \"type\": \"https://01scale.com/errors/unknown_template\",\n  \"title\": \"Unknown template\",\n  \"status\": 422,\n  \"detail\": \"There is no template called order_shipped.\",\n  \"code\": \"unknown_template\",\n  \"request_id\": \"req_0193a61f9c2e\"\n}",
@@ -494,8 +576,42 @@ export const delivery = {
       ]
     }
   ],
-  "env": [],
-  "openQuestions": [],
+  "env": [
+    {
+      "name": "DELIVERY_DATABASE_URL",
+      "value": "Neon connection string for the `delivery_service` role",
+      "secret": "Yes"
+    },
+    {
+      "name": "RESEND_API_KEY",
+      "value": "The Resend API key",
+      "secret": "Yes"
+    },
+    {
+      "name": "EMAIL_FROM",
+      "value": "`DocFlow <receipts@01scale.com>`, on a domain verified in Resend",
+      "secret": "No"
+    },
+    {
+      "name": "IDENTITY_API_URL",
+      "value": "Where Delivery looks up a user's verified email",
+      "secret": "No"
+    },
+    {
+      "name": "IDENTITY_JWKS_URL",
+      "value": "`https://01scale.com/api/identity/v1/jwks`",
+      "secret": "No"
+    },
+    {
+      "name": "EVENTS_SIGNING_KEY",
+      "value": "32 random bytes, base64",
+      "secret": "Yes"
+    }
+  ],
+  "openQuestions": [
+    "Delivery looks up a user's email from Identity, but Identity has no endpoint for a service to read another user's email. Identity needs `GET /api/identity/v1/users/{userId}` (service access only), or the event that triggers the email must carry the address.",
+    "Resend can report bounces and complaints by webhook. Version 1 records only whether Resend accepted the email; should a later bounce mark it failed?"
+  ],
   "decisions": [],
   "journeys": [
     {
