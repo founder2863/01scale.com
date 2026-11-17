@@ -14,7 +14,11 @@ export const delivery = {
     "token": "",
     "schema": "The SQL for the Delivery service's tables, in the `delivery` schema. No other service can read them."
   },
-  "notStored": [],
+  "notStored": [
+    "Email addresses: looked up at send time.",
+    "The email's content: rebuilt from the template if ever needed.",
+    "File links: emails link to pages on 01scale.com, never to files."
+  ],
   "overview": {
     "name": "Delivery",
     "version": "Version 1 · Email through Resend",
@@ -249,8 +253,155 @@ export const delivery = {
       "how": "`GET /health` and `GET /openapi.json` from the service template (`MVP1-E0-05`)."
     }
   ],
-  "tables": [],
-  "otherTables": "",
+  "tables": [
+    {
+      "name": "delivery.messages",
+      "purpose": "One row per email asked for. It records what was sent and whether it arrived at Resend; never the address or the content.",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": "No",
+          "default": "",
+          "constraints": "Primary key. UUIDv7",
+          "meaning": "The message's ID."
+        },
+        {
+          "name": "owner_id",
+          "type": "uuid",
+          "nullable": "No",
+          "default": "",
+          "constraints": "",
+          "meaning": "The user it is for. A plain ID; the address is looked up at send time, never stored."
+        },
+        {
+          "name": "app",
+          "type": "text",
+          "nullable": "No",
+          "default": "",
+          "constraints": "1 to 50 characters, from the app's service token",
+          "meaning": "Which app asked."
+        },
+        {
+          "name": "reference",
+          "type": "text",
+          "nullable": "No",
+          "default": "",
+          "constraints": "1 to 200 characters",
+          "meaning": "The app's label."
+        },
+        {
+          "name": "idempotency_key",
+          "type": "text",
+          "nullable": "No",
+          "default": "",
+          "constraints": "1 to 255 characters; unique per app",
+          "meaning": "The key that stops a second send."
+        },
+        {
+          "name": "channel",
+          "type": "text",
+          "nullable": "No",
+          "default": "'email'",
+          "constraints": "`email` in version 1",
+          "meaning": "How it is sent. SMS and push arrive in MVP2."
+        },
+        {
+          "name": "template",
+          "type": "text",
+          "nullable": "No",
+          "default": "",
+          "constraints": "`order_paid` in version 1",
+          "meaning": "Which email."
+        },
+        {
+          "name": "status",
+          "type": "text",
+          "nullable": "No",
+          "default": "'queued'",
+          "constraints": "`queued`, `sent`, `failed` or `cancelled`",
+          "meaning": "Where the message is."
+        },
+        {
+          "name": "attempts",
+          "type": "smallint",
+          "nullable": "No",
+          "default": "0",
+          "constraints": "0 to 4",
+          "meaning": "Sends tried: the first and up to 3 retries."
+        },
+        {
+          "name": "provider_message_id",
+          "type": "text",
+          "nullable": "Yes",
+          "default": "",
+          "constraints": "Set exactly when sent",
+          "meaning": "Resend's ID, to trace a message with Resend."
+        },
+        {
+          "name": "last_error",
+          "type": "text",
+          "nullable": "Yes",
+          "default": "",
+          "constraints": "Set when failed",
+          "meaning": "The provider's reason, without any personal data."
+        },
+        {
+          "name": "sent_at",
+          "type": "timestamptz",
+          "nullable": "Yes",
+          "default": "",
+          "constraints": "Set exactly when sent",
+          "meaning": "When Resend accepted it."
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": "No",
+          "default": "now()",
+          "constraints": "",
+          "meaning": "When it was asked for."
+        }
+      ],
+      "constraints": [],
+      "sampleCols": [],
+      "sampleRows": []
+    },
+    {
+      "name": "delivery.inbound_events",
+      "purpose": "One row per platform event Delivery has acted on.",
+      "columns": [
+        {
+          "name": "event_id",
+          "type": "uuid",
+          "nullable": "No",
+          "default": "",
+          "constraints": "Primary key",
+          "meaning": "The event's ID."
+        },
+        {
+          "name": "type",
+          "type": "text",
+          "nullable": "No",
+          "default": "",
+          "constraints": "1 to 100 characters",
+          "meaning": "What happened."
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": "No",
+          "default": "now()",
+          "constraints": "",
+          "meaning": "When Delivery processed it."
+        }
+      ],
+      "constraints": [],
+      "sampleCols": [],
+      "sampleRows": []
+    }
+  ],
+  "otherTables": "The service template also gives Delivery `audit_events`, `idempotency_keys` and `outbound_events`.",
   "rules": [
     {
       "level": "API level: checked on every request before anything is stored",
@@ -266,7 +417,12 @@ export const delivery = {
     },
     {
       "level": "Data model level: business rules the service guarantees",
-      "items": []
+      "items": [
+        "An email is triggered only by a server-side event, never by a browser.",
+        "The same event never sends two emails.",
+        "No email ever contains a link straight to a file.",
+        "Addresses are never stored in Delivery."
+      ]
     }
   ],
   "env": [],
@@ -277,8 +433,26 @@ export const delivery = {
   "components": [],
   "hostedPages": [],
   "uiRules": [],
-  "entities": [],
-  "lifecycles": [],
+  "entities": [
+    {
+      "name": "Message",
+      "table": "`delivery.messages`",
+      "what": "One email asked for, and whether it was sent.",
+      "relations": "Belongs to one user and one app, by ID and name."
+    },
+    {
+      "name": "Processed event",
+      "table": "`delivery.inbound_events`",
+      "what": "A platform event already acted on.",
+      "relations": "Stands alone."
+    }
+  ],
+  "lifecycles": [
+    {
+      "name": "Message",
+      "text": "`queued` → `sent`, or `failed` after the last retry, or `cancelled` if the account is deleted first."
+    }
+  ],
   "ddl": "",
   "queries": []
 };
