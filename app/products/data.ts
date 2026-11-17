@@ -1304,8 +1304,8 @@ export const products = [
     "group": "MVP1",
     "service": "Payment",
     "description": "A one-time payment with Stripe Checkout in test mode.",
-    "status": "Planned",
-    "detailed": false,
+    "status": "In design",
+    "detailed": true,
     "epic": {
       "id": "E6",
       "title": "Payment",
