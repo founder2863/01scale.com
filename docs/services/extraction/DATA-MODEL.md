@@ -85,7 +85,7 @@ The service template also gives Extraction `audit_events`, `idempotency_keys` an
 
 ## Business rules
 
-- A job only ever reads a file its owner can read: the file is fetched through Upload with the owner's own access token.
+- A job only ever reads a file its owner can read: the background job fetches it through Upload with a delegated token for the owner (`upload:read`, `act: service:extraction`), so Upload's ownership check applies and no user token is stored.
 - At most one job per file and schema is `queued` or `processing` at a time, so the same document is never read or billed twice at once.
 - A job only moves forward: `queued` → `processing` → `extracted` or `failed`. A failed job is never restarted; a retry is a new job.
 - Fields are written once, all together, when a job succeeds, and never changed. A failed job has no fields.

@@ -142,7 +142,7 @@ Environment variables on the service's own deployment. Secrets are never committ
 | `UPLOAD_API_URL` | Where the Upload service is reached | No |
 | `IDENTITY_JWKS_URL` | `https://01scale.com/api/identity/v1/jwks` | No |
 | `EVENTS_SIGNING_KEY` | 32 random bytes, base64: signs and verifies platform events | Yes |
-| `EVENT_SUBSCRIBERS` | The webhook addresses that receive Extraction's events, for example DocFlow's | No |
+| `EVENT_ROUTES` | From the service template: reference prefix → the app's event address (decision on #13) | No |
 
 ## Open questions
 

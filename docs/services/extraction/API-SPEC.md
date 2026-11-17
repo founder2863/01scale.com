@@ -40,7 +40,7 @@ Access: **Signed in** · Scope: `extraction:write` · Story: `MVP1-E3-01`
 - Checks the file through Upload, forwarding the caller's access token, so only the caller's own ready files can be read.
 - If a job for this file and schema is `queued` or `processing`, returns it with `200`. Nothing new is started or charged.
 - Otherwise records a job as `queued`, with the model ID and prompt version from configuration, and returns `202`.
-- The job then runs in the background: fetch the file through a 5-minute Upload link, send it to Claude, check the answer, apply the rule checks, and save the fields.
+- The job then runs in the background: with a delegated token for the owner, fetch the file through a 5-minute Upload link, send it to Claude, check the answer, apply the rule checks, and save the fields.
 - Temporary failures (rate limit, timeout, overload) are retried up to 2 times, after 2 and then 8 seconds. After that the job is `failed`.
 - When the job ends, announces `extraction.job.completed` or `extraction.job.failed` to subscribed apps, and records `job.completed` or `job.failed` in the audit log.
 

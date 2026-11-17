@@ -598,7 +598,7 @@ HTTP/1.1 200 OK
 
 | Topic | How it works |
 |---|---|
-| Re-checking corrected values (MVP1-E4-03) | The rule checks belong to the LLM Extraction service. The app calls its `POST /validations` with the corrected values before completing the task here, and passes `checks_overridden` if the person confirms values that still fail. Review itself knows no document rules. |
+| Re-checking corrected values (MVP1-E4-03) | The rule checks belong to the LLM Extraction service. The app calls LLM Extraction `POST /validations` with the corrected values before completing the task here, and passes `checks_overridden` if the person confirms values that still fail. Review itself knows no document rules. |
 | Keyboard and touch (MVP1-E4-02 AC3) | A design rule of the components: Enter accepts, E edits, ↓ moves to the next field; on phones every action is a large button. |
 | Events Review announces | `review.task.completed` with `{task_id, reference}`, signed and delivered with retries from the outbox. |
 | DocFlow's endpoint | `POST /api/docflow/v1/documents/{documentId}/complete-review` belongs to the DocFlow app, which calls Extraction's checks and then this service. It is designed with the DocFlow app shell (`MVP1-E0-09`). |

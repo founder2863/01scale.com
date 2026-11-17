@@ -205,7 +205,7 @@ export const extraction = {
         "Checks the file through Upload, forwarding the caller's access token, so only the caller's own ready files can be read.",
         "If a job for this file and schema is `queued` or `processing`, returns it with `200`. Nothing new is started or charged.",
         "Otherwise records a job as `queued`, with the model ID and prompt version from configuration, and returns `202`.",
-        "The job then runs in the background: fetch the file through a 5-minute Upload link, send it to Claude, check the answer, apply the rule checks, and save the fields.",
+        "The job then runs in the background: with a delegated token for the owner, fetch the file through a 5-minute Upload link, send it to Claude, check the answer, apply the rule checks, and save the fields.",
         "Temporary failures (rate limit, timeout, overload) are retried up to 2 times, after 2 and then 8 seconds. After that the job is `failed`.",
         "When the job ends, announces `extraction.job.completed` or `extraction.job.failed` to subscribed apps, and records `job.completed` or `job.failed` in the audit log."
       ],
@@ -1106,7 +1106,7 @@ export const extraction = {
     {
       "level": "Data model level: business rules the service guarantees",
       "items": [
-        "A job only ever reads a file its owner can read: the file is fetched through Upload with the owner's own access token.",
+        "A job only ever reads a file its owner can read: the background job fetches it through Upload with a delegated token for the owner (`upload:read`, `act: service:extraction`), so Upload's ownership check applies and no user token is stored.",
         "At most one job per file and schema is `queued` or `processing` at a time, so the same document is never read or billed twice at once.",
         "A job only moves forward: `queued` → `processing` → `extracted` or `failed`. A failed job is never restarted; a retry is a new job.",
         "Fields are written once, all together, when a job succeeds, and never changed. A failed job has no fields.",
@@ -1165,8 +1165,8 @@ export const extraction = {
       "secret": "Yes"
     },
     {
-      "name": "EVENT_SUBSCRIBERS",
-      "value": "The webhook addresses that receive Extraction's events, for example DocFlow's",
+      "name": "EVENT_ROUTES",
+      "value": "From the service template: reference prefix → the app's event address (decision on #13)",
       "secret": "No"
     }
   ],

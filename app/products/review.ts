@@ -675,7 +675,7 @@ export const review = {
   "noEndpoint": [
     {
       "topic": "Re-checking corrected values (MVP1-E4-03)",
-      "how": "The rule checks belong to the LLM Extraction service. The app calls its `POST /validations` with the corrected values before completing the task here, and passes `checks_overridden` if the person confirms values that still fail. Review itself knows no document rules."
+      "how": "The rule checks belong to the LLM Extraction service. The app calls LLM Extraction `POST /validations` with the corrected values before completing the task here, and passes `checks_overridden` if the person confirms values that still fail. Review itself knows no document rules."
     },
     {
       "topic": "Keyboard and touch (MVP1-E4-02 AC3)",
@@ -1335,8 +1335,8 @@ export const review = {
       "secret": "Yes"
     },
     {
-      "name": "EVENT_SUBSCRIBERS",
-      "value": "The webhook addresses that receive Review's events",
+      "name": "EVENT_ROUTES",
+      "value": "From the service template: reference prefix → the app's event address (decision on #13)",
       "secret": "No"
     },
     {
