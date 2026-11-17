@@ -11,16 +11,25 @@ entries), broken down by model. Those snapshots are cumulative and only written
 now and then, so they cannot be split by request directly. This script works out
 the per-token rates Claude Code used for each model by fitting those snapshots
 (the fit must be exact), then prices each response from its recorded tokens.
-Finally every model's total is scaled to match Claude Code's own latest figure,
-so the sum of the rows equals the tool's number. Nothing here uses a price
-written by hand.
+Rows plus overhead add up to Claude Code's own latest figure;
+anything the tool charged beyond the responses in the transcript (its own
+background calls) is reported once, as overhead, instead of being spread over
+the requests. Nothing here uses a price written by hand.
 
 A model with too few snapshots to fit is priced in proportion to its tokens and
 scaled to its recorded total. Responses after a model's last snapshot, for a
 model that cannot be fitted, are reported as pending.
 
+Splitting a long request
+------------------------
+One request can cover several stories (for example "design every module").
+Pass split times and the request is cut into segments at those moments, each
+priced separately, so each story gets its own cost. A good split time is the
+commit that finished a story. The ledger keeps the split times, so the result
+can be reproduced.
+
 Usage (from the repo root):
-    python3 scripts/costs/extract_session.py <session.jsonl> > requests.json
+    python3 scripts/costs/extract_session.py <session.jsonl> [split-time ...] > requests.json
 """
 import glob
 import json
@@ -75,7 +84,7 @@ def solve(rows):
     return rates, err
 
 
-def main(path):
+def main(path, splits=()):
     folder = os.path.splitext(path)[0]
     entries = list(load(path))
 
@@ -92,24 +101,36 @@ def main(path):
         if text.strip():
             requests.append({"ts": e.get("timestamp"), "text": text.strip()})
 
+    # Cut requests at the split times. Times are compared as UTC ISO strings.
+    for split in sorted(splits):
+        split = split.replace("+00:00", "Z")
+        before = [r for r in requests if r["ts"] < split]
+        if before and split not in {r["ts"] for r in requests}:
+            parent = before[-1]
+            requests.append({"ts": split, "text": "(continued) " + parent["text"].lstrip("(continued) ")})
+            requests.sort(key=lambda r: r["ts"])
+
     # Every model response, from the session and its subagents, de-duplicated.
     responses, seen = [], set()
     sources = [entries] + [list(load(f)) for f in sorted(glob.glob(os.path.join(folder, "subagents", "*.jsonl")))]
-    for source in sources:
-        for e in source:
+    for n, source in enumerate(sources):
+        for pos, e in enumerate(source):
             if e.get("type") != "assistant":
                 continue
             msg = e.get("message", {})
             if not msg.get("usage") or msg.get("model") in (None, "<synthetic>") or msg.get("id") in seen:
                 continue
             seen.add(msg.get("id"))
-            responses.append({"ts": e.get("timestamp"), "model": msg["model"], **usage_of(e)})
+            # Position in the main transcript; subagents' responses count as early.
+            responses.append({"ts": e.get("timestamp"), "model": msg["model"], "pos": pos if n == 0 else -1, **usage_of(e)})
 
     # Claude Code's own cumulative cost, per model.
-    snapshots, latest = {}, {}
-    for e in entries:
+    snapshots, latest, last_pos = {}, {}, {}
+    for pos, e in enumerate(entries):
         if e.get("type") != "cost-state":
             continue
+        for model in e.get("modelUsage", {}):
+            last_pos[model] = pos
         for model, u in e.get("modelUsage", {}).items():
             row = ([u.get("inputTokens", 0), u.get("outputTokens", 0), u.get("cacheReadInputTokens", 0), u.get("cacheCreationInputTokens", 0)], u.get("costUSD", 0.0))
             snapshots.setdefault(model, []).append(row)
@@ -126,16 +147,32 @@ def main(path):
     for r in responses:
         model_rates = rates.get(r["model"], weight_rates)
         r["raw"] = sum(model_rates[i] * r[f] for i, f in enumerate(FIELDS))
+    overhead = {}
     for model in {r["model"] for r in responses}:
         mine = [r for r in responses if r["model"] == model]
         if model not in latest:
             for r in mine:
                 r["cost"] = None
             continue
-        raw = sum(r["raw"] for r in mine) or 1
-        scale = latest[model][1] / raw
-        for r in mine:
-            r["cost"] = r["raw"] * scale
+        if model not in rates:
+            # Without exact rates, only responses the tool has already priced can
+            # share its total. Later ones stay pending until the next snapshot.
+            later = [r for r in mine if r["pos"] > last_pos[model]]
+            for r in later:
+                r["cost"] = None
+            mine = [r for r in mine if r["pos"] <= last_pos[model]]
+        raw = sum(r["raw"] for r in mine)
+        if model in rates:
+            # Priced exactly from the tool's own rates. Anything the tool charged
+            # beyond the responses in the transcript (its own background calls)
+            # is reported separately as overhead, not spread over requests.
+            for r in mine:
+                r["cost"] = r["raw"]
+            overhead[model] = latest[model][1] - raw
+        else:
+            scale = latest[model][1] / (raw or 1)
+            for r in mine:
+                r["cost"] = r["raw"] * scale
 
     # Assign each response to the request that was being answered.
     out = []
@@ -164,6 +201,7 @@ def main(path):
     json.dump({
         "session": os.path.basename(folder),
         "by_kind_usd": {k: round(v, 2) for k, v in by_kind.items()},
+        "overhead_usd": round(sum(overhead.values()), 4),
         "tool_total_usd": round(sum(v[1] for v in latest.values()), 4),
         "rates_usd_per_million": {m: dict(zip(FIELDS, [round(x * 1e6, 4) for x in v])) for m, v in rates.items()},
         "requests": out,
@@ -171,4 +209,4 @@ def main(path):
 
 
 if __name__ == "__main__":
-    main(sys.argv[1])
+    main(sys.argv[1], sys.argv[2:])

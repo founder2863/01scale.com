@@ -30,7 +30,7 @@ Every skill in `.claude/skills/design-*` and `publish-product-page` reads this f
 1. **The stories are the source.** Read the module's stories in `docs/epics/` first. Design exactly what their acceptance criteria require. If a story is silent, make the smallest reasonable choice and list it under "Open questions" or "Refinements beyond the stories"; never present a guess as settled.
 2. **Scope is the current version only.** Do not describe a later version's behaviour except in one "Not in this version" list.
 3. **Never invent to fill a gap.** If something is not decided, the document says so. On the site, an undecided section shows "Coming Soon...".
-4. **One source per module.** A module's design content lives in one file, `scripts/site/<service>_design.py`. The documents and the site data are both generated from it with `npm run site:data`. Never edit a generated file by hand: `docs/services/<service>/*.md`, `app/products/<service>.ts`, `app/products/data.ts`.
+4. **One source per module.** A module's design content lives in one file, `scripts/site/<key>_design.py`, which holds data only; `scripts/site/render.py` turns it into the documents and the site data with `npm run site:data`. Never edit a generated file by hand: `docs/services/<service>/*.md`, `app/products/<key>.ts`, `app/products/data.ts`, `app/products/details.generated.ts`.
 5. **Follow the platform rules.** `docs/architecture/ARCHITECTURE.md`, `API-DESIGN.md` and `DATABASE-DESIGN.md` win over anything here. A service owns its data, publishes a contract, and never reaches into another service.
 6. **Services are app-agnostic.** No DocFlow-specific wording or logic in a platform service's design.
 7. **Plain language.** A reader who is not a developer should follow the first paragraph of every section. Define a term the first time it is used.
@@ -49,4 +49,4 @@ Every skill in `.claude/skills/design-*` and `publish-product-page` reads this f
 
 ## Reference example
 
-Identity, version 1 (login with AWS Cognito): `scripts/site/identity_design.py`, `docs/services/identity/`, `/products/login-using-aws`.
+Identity, version 1 (login with AWS Cognito): `docs/services/identity/` and `/products/login-using-aws`. Its source, `scripts/site/identity_design.py`, predates the shared renderer and also holds its own rendering code; new modules hold data only. Upload (`scripts/site/upload_design.py`) is the first module written the new way.
