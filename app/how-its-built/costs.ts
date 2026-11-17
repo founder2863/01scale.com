@@ -3,18 +3,18 @@ export const costs = {
   "updated": "2026-11-17",
   "baselines": [
     {
-      "model": "Claude Fable 5.2",
-      "input": 8.0,
-      "output": 40.0,
-      "cache_read": 0.2,
-      "cache_write": 16.0
-    },
-    {
       "model": "Claude Opus 5.5",
       "input": 4.0,
       "output": 20.0,
       "cache_read": 0.2,
       "cache_write": 8.0
+    },
+    {
+      "model": "Claude Fable 5.2",
+      "input": 8.0,
+      "output": 40.0,
+      "cache_read": 0.2,
+      "cache_write": 16.0
     }
   ],
   "toolTotal": 127.1,

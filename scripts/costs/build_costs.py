@@ -103,7 +103,7 @@ def main():
         return " ".join(w.capitalize() for w in words[:-2]) + " " + ".".join(words[-2:])
 
     baselines = [{"model": model_name(m), **{k: r[k] for k in ("input", "output", "cache_read", "cache_write")}}
-                 for m, r in sorted(rates.items())]
+                 for m, r in sorted(rates.items(), reverse=True)]
     tool_total = money(sum(sess.get("tool_total_usd", 0) for sess in ledger["sessions"]))
 
     data = {

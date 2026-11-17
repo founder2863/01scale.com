@@ -157,7 +157,7 @@ export default async function HowItsBuilt({ params }: { params: Promise<Params> 
             <p className="card-title">Cost baselines</p>
             {costs.baselines.map((rate) => (
               <div className="rate-model" key={rate.model}>
-                {costs.baselines.length > 1 && <p className="rate-model-name">{rate.model}</p>}
+                <p className="rate-model-name">{rate.model}</p>
                 <ul className="rate-tiles">
                   <li>
                     <span className="rate-value">{perMillion(rate.input)}</span>
