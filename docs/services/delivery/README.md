@@ -85,11 +85,11 @@ import { MessageStatus } from "@01scale/ui-delivery";
 
 Base address: `https://01scale.com/api/delivery/v1`
 
-| Method | Path | Access | Purpose |
-|---|---|---|---|
-| `POST` | `/messages` | Service | Send a templated email to a user |
-| `GET` | `/messages` | Signed in | My messages and their status |
-| `POST` | `/events` | Service | Receive platform events |
+| Method | Path | Access | Scope | Purpose |
+|---|---|---|---|---|
+| `POST` | `/messages` | Service | `delivery:write` | Send a templated email to a user |
+| `GET` | `/messages` | Signed in | `delivery:read` | My messages and their status |
+| `POST` | `/events` | Service | None: HMAC signature | Receive platform events |
 
 ## Configuration
 

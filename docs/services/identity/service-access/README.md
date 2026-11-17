@@ -72,10 +72,10 @@ await review.post("/tasks", body, user.access_token);
 
 Base address: `https://01scale.com/api/identity/v1`
 
-| Method | Path | Access | Purpose |
-|---|---|---|---|
-| `POST` | `/token` | Public (client credentials) | Sign in as a service |
-| `POST` | `/token` | Service | Act for a user |
+| Method | Path | Access | Scope | Purpose |
+|---|---|---|---|---|
+| `POST` | `/token` | Public (client credentials) | None: the client secret | Sign in as a service |
+| `POST` | `/token` | Service | A service token from a client with `act_scopes`; grants a subset of them | Act for a user |
 
 ## Configuration
 

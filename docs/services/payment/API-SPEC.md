@@ -25,7 +25,7 @@ Every error uses `application/problem+json` with a stable `code`. Branch on `cod
 
 **Create an order and a checkout page.** An app's server asks for payment for something it sells. Payment records an order and returns the address of Stripe's checkout page. Never callable from a browser, so a browser can never set a price.
 
-Access: **Service** · Story: `MVP1-E6-01`
+Access: **Service** · Scope: `payment:write` · Story: `MVP1-E6-01`
 
 **Inputs**
 
@@ -105,7 +105,7 @@ Content-Type: application/json
 
 **Receive Stripe's events.** Stripe tells Payment what happened on its checkout page. This, not the browser, is what marks an order paid.
 
-Access: **Service** · Story: `MVP1-E6-02`
+Access: **Service** · Scope: None: HMAC signature · Story: `MVP1-E6-02`
 
 **Inputs**
 
@@ -168,7 +168,7 @@ HTTP/1.1 200 OK
 
 **Get one order.** An order and its status. The success page polls it until the payment is confirmed.
 
-Access: **Signed in** · Story: `MVP1-E6-03`
+Access: **Signed in** · Scope: `payment:read` · Story: `MVP1-E6-03`
 
 **Inputs**
 
@@ -225,7 +225,7 @@ Authorization: Bearer <access token>
 
 **List my orders.** The caller's orders, newest first. Used on the account page and to find an order by its reference.
 
-Access: **Signed in** · Story: `MVP1-E6-03`
+Access: **Signed in** · Scope: `payment:read` · Story: `MVP1-E6-03`
 
 **Inputs**
 
@@ -287,7 +287,7 @@ Authorization: Bearer <access token>
 
 **Receive platform events.** Where other services' signed events arrive. In version 1 Payment acts on one: a user's account was deleted.
 
-Access: **Service** · Story: `MVP1-E1-05`
+Access: **Service** · Scope: None: HMAC signature · Story: `MVP1-E1-05`
 
 **Inputs**
 

@@ -99,6 +99,20 @@ ENDPOINTS = [
        json.dumps({"id": U1, "email": "priya@example.com"}, indent=2)),
 ]
 
+SCOPE_OVERRIDES = {
+    "get-me": "Any: a session, an API key or a delegated token",
+    "start-password-change": "Session only: refused for API keys and service tokens",
+    "delete-me": "Session only: refused for API keys and service tokens",
+    "list-api-keys": "Session only: refused for API keys and service tokens",
+    "create-api-key": "Session only: refused for API keys and service tokens",
+    "revoke-api-key": "Session only: refused for API keys and service tokens",
+    "exchange-api-key": "None: the gateway's service credential",
+    "get-user": "`identity:users.read`, on a service token",
+}
+for _e in ENDPOINTS:
+    if _e["id"] in SCOPE_OVERRIDES:
+        _e["scope"] = SCOPE_OVERRIDES[_e["id"]]
+
 NO_ENDPOINT = [
     {"topic": "The account page (MVP1-E1-05)", "how": "Composed by the DocFlow app at `/account`: Identity's `AccountDetails`, `PasswordChangeButton`, `DeleteAccountDialog` and `ApiKeysManager`, DocFlow's documents count (`GET /api/docflow/v1/stats`) and Payment's orders (`GET /api/payment/v1/orders`)."},
     {"topic": "Using a key (MVP1-E0-06 AC2)", "how": "The agent sends `Authorization: Bearer sk_01s_…` to the gateway, which exchanges it at `POST /token` and forwards the access token. Each service checks the token's `scopes` against the operation."},

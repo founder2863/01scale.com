@@ -19,6 +19,7 @@ Helpers at the bottom (param, endpoint, column, ...) keep the design files short
 """
 import json
 import os
+import re
 
 DEFAULTS = {
     "slug": "",
@@ -71,7 +72,27 @@ def complete(module):
             out[key] = value
     for i, rule in enumerate(module.get("rules", [])):
         out["rules"][i] = rule
+    for e in out["endpoints"]:
+        e.setdefault("scope", default_scope(e))
     return out
+
+
+def default_scope(e):
+    """The scope an endpoint needs, by the platform rule (review finding M3):
+    `<service>:read` for GET and `<service>:write` otherwise. A design sets
+    `scope` itself for the exceptions (session-only, per-tool, client secret)."""
+    access = e["access"].lower()
+    path = e["path"]
+    if access.startswith("public"):
+        return "None"
+    if re.search(r"/(events|webhooks)(/|$)", path):
+        return "None: HMAC signature"
+    if access.startswith("admin"):
+        return "`is_admin`"
+    found = re.match(r"/api/([a-z{}]+)/", path)
+    service = found.group(1) if found else "?"
+    right = "read" if e["method"] == "GET" else "write"
+    return f"`{service}:{right}`"
 
 
 def table(headers, rows):
@@ -112,7 +133,7 @@ def render_readme(m):
             parts.append(f"### {i + 1}. {q['title']}\n\n{q['text']}\n\n```{q['lang']}\n{q['code']}\n```\n")
     if m["endpoints"]:
         parts += ["## Endpoints at a glance\n", f"Base address: `https://01scale.com{o['base']}`\n",
-                  table(["Method", "Path", "Access", "Purpose"], [(f"`{e['method']}`", f"`{e['path'].replace(o['base'], '')}`", e["access"], e["title"]) for e in m["endpoints"]]) + "\n"]
+                  table(["Method", "Path", "Access", "Scope", "Purpose"], [(f"`{e['method']}`", f"`{e['path'].replace(o['base'], '')}`", e["access"], e["scope"], e["title"]) for e in m["endpoints"]]) + "\n"]
     if m["env"]:
         parts += ["## Configuration\n", "Environment variables on the service's own deployment. Secrets are never committed.\n",
                   table(["Variable", "Value", "Secret"], [(f"`{v['name']}`", v["value"], v["secret"]) for v in m["env"]]) + "\n"]
@@ -135,7 +156,7 @@ def render_api(m):
         parts.append(f"## Token\n\n{m['notes']['token']}\n\n" + table(["Claim", "Example", "Meaning"], [(c["claim"], c["example"], c["meaning"]) for c in m["claims"]]) + "\n")
     parts.append("## Endpoints\n")
     for e in m["endpoints"]:
-        s = [f"### {e['method']} {e['path'].replace(o['base'], '')}\n", f"**{e['title']}.** {e['summary']}\n", f"Access: **{e['access']}** · Story: `{e['story']}`\n"]
+        s = [f"### {e['method']} {e['path'].replace(o['base'], '')}\n", f"**{e['title']}.** {e['summary']}\n", f"Access: **{e['access']}** · Scope: {e['scope']} · Story: `{e['story']}`\n"]
         if e["params"]:
             s.append("**Inputs**\n\n" + table(["Name", "In", "Type", "Required", "Constraints", "Meaning"], [(f"`{p['name']}`", p["in"], p["type"], p["required"], p["constraints"], p["meaning"]) for p in e["params"]]) + "\n")
         else:

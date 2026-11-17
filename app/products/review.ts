@@ -264,7 +264,8 @@ export const review = {
         }
       ],
       "request": "POST /api/review/v1/tasks HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>\nIdempotency-Key: 4d2a-review-1\nContent-Type: application/json\n\n{\n  \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n  \"fields\": [\n    {\n      \"name\": \"vendor_name\",\n      \"type\": \"text\",\n      \"value\": \"Acme Supplies Ltd\",\n      \"confidence\": 0.97,\n      \"source_page\": 1,\n      \"source_quote\": \"Acme Supplies Ltd\",\n      \"flagged\": false,\n      \"flag_reasons\": []\n    },\n    {\n      \"name\": \"total\",\n      \"type\": \"decimal\",\n      \"value\": \"1240.00\",\n      \"confidence\": 0.3,\n      \"source_page\": 2,\n      \"source_quote\": \"TOTAL DUE  $1,240.00\",\n      \"flagged\": true,\n      \"flag_reasons\": [\n        \"Total \\u2260 subtotal + tax (1,150.00 + 80.00 = 1,230.00)\"\n      ]\n    }\n  ]\n}",
-      "response": "{\n  \"task\": {\n    \"id\": \"0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a2b\",\n    \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n    \"status\": \"open\",\n    \"resolved\": 0,\n    \"total\": 2,\n    \"flagged\": 1,\n    \"can_complete\": false,\n    \"checks_overridden\": false,\n    \"created_at\": \"2026-11-17T09:14:43Z\",\n    \"completed_at\": null\n  }\n}"
+      "response": "{\n  \"task\": {\n    \"id\": \"0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a2b\",\n    \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n    \"status\": \"open\",\n    \"resolved\": 0,\n    \"total\": 2,\n    \"flagged\": 1,\n    \"can_complete\": false,\n    \"checks_overridden\": false,\n    \"created_at\": \"2026-11-17T09:14:43Z\",\n    \"completed_at\": null\n  }\n}",
+      "scope": "`review:write`"
     },
     {
       "id": "get-task",
@@ -315,7 +316,8 @@ export const review = {
         }
       ],
       "request": "GET /api/review/v1/tasks/0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a2b HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>",
-      "response": "{\n  \"task\": {\n    \"id\": \"0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a2b\",\n    \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n    \"status\": \"open\",\n    \"resolved\": 1,\n    \"total\": 3,\n    \"flagged\": 2,\n    \"can_complete\": false,\n    \"checks_overridden\": false,\n    \"created_at\": \"2026-11-17T09:14:43Z\",\n    \"completed_at\": null\n  },\n  \"fields\": [\n    {\n      \"id\": \"0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a30\",\n      \"name\": \"total\",\n      \"line_index\": null,\n      \"type\": \"decimal\",\n      \"original_value\": \"1240.00\",\n      \"value\": \"1240.00\",\n      \"confidence\": 0.3,\n      \"source_page\": 2,\n      \"source_quote\": \"TOTAL DUE  $1,240.00\",\n      \"flagged\": true,\n      \"flag_reasons\": [\n        \"Total \\u2260 subtotal + tax (1,150.00 + 80.00 = 1,230.00)\"\n      ],\n      \"status\": \"pending\"\n    },\n    {\n      \"id\": \"0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a31\",\n      \"name\": \"vendor_tax_id\",\n      \"line_index\": null,\n      \"type\": \"text\",\n      \"original_value\": null,\n      \"value\": null,\n      \"confidence\": 0.62,\n      \"source_page\": null,\n      \"source_quote\": null,\n      \"flagged\": true,\n      \"flag_reasons\": [\n        \"Low confidence (0.62)\"\n      ],\n      \"status\": \"not_present\"\n    }\n  ]\n}"
+      "response": "{\n  \"task\": {\n    \"id\": \"0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a2b\",\n    \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n    \"status\": \"open\",\n    \"resolved\": 1,\n    \"total\": 3,\n    \"flagged\": 2,\n    \"can_complete\": false,\n    \"checks_overridden\": false,\n    \"created_at\": \"2026-11-17T09:14:43Z\",\n    \"completed_at\": null\n  },\n  \"fields\": [\n    {\n      \"id\": \"0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a30\",\n      \"name\": \"total\",\n      \"line_index\": null,\n      \"type\": \"decimal\",\n      \"original_value\": \"1240.00\",\n      \"value\": \"1240.00\",\n      \"confidence\": 0.3,\n      \"source_page\": 2,\n      \"source_quote\": \"TOTAL DUE  $1,240.00\",\n      \"flagged\": true,\n      \"flag_reasons\": [\n        \"Total \\u2260 subtotal + tax (1,150.00 + 80.00 = 1,230.00)\"\n      ],\n      \"status\": \"pending\"\n    },\n    {\n      \"id\": \"0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a31\",\n      \"name\": \"vendor_tax_id\",\n      \"line_index\": null,\n      \"type\": \"text\",\n      \"original_value\": null,\n      \"value\": null,\n      \"confidence\": 0.62,\n      \"source_page\": null,\n      \"source_quote\": null,\n      \"flagged\": true,\n      \"flag_reasons\": [\n        \"Low confidence (0.62)\"\n      ],\n      \"status\": \"not_present\"\n    }\n  ]\n}",
+      "scope": "`review:read`"
     },
     {
       "id": "update-field",
@@ -401,7 +403,8 @@ export const review = {
         }
       ],
       "request": "PATCH /api/review/v1/tasks/0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a2b/fields/0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a30 HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>\nContent-Type: application/json\n\n{\n  \"action\": \"edit\",\n  \"value\": \"1230.00\"\n}",
-      "response": "{\n  \"field\": {\n    \"id\": \"0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a30\",\n    \"name\": \"total\",\n    \"line_index\": null,\n    \"type\": \"decimal\",\n    \"original_value\": \"1240.00\",\n    \"value\": \"1230.00\",\n    \"confidence\": 0.3,\n    \"source_page\": 2,\n    \"source_quote\": \"TOTAL DUE  $1,240.00\",\n    \"flagged\": true,\n    \"flag_reasons\": [\n      \"Total \\u2260 subtotal + tax (1,150.00 + 80.00 = 1,230.00)\"\n    ],\n    \"status\": \"edited\"\n  },\n  \"task\": {\n    \"resolved\": 2,\n    \"can_complete\": true\n  }\n}"
+      "response": "{\n  \"field\": {\n    \"id\": \"0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a30\",\n    \"name\": \"total\",\n    \"line_index\": null,\n    \"type\": \"decimal\",\n    \"original_value\": \"1240.00\",\n    \"value\": \"1230.00\",\n    \"confidence\": 0.3,\n    \"source_page\": 2,\n    \"source_quote\": \"TOTAL DUE  $1,240.00\",\n    \"flagged\": true,\n    \"flag_reasons\": [\n      \"Total \\u2260 subtotal + tax (1,150.00 + 80.00 = 1,230.00)\"\n    ],\n    \"status\": \"edited\"\n  },\n  \"task\": {\n    \"resolved\": 2,\n    \"can_complete\": true\n  }\n}",
+      "scope": "`review:write`"
     },
     {
       "id": "complete-task",
@@ -459,7 +462,8 @@ export const review = {
         }
       ],
       "request": "POST /api/review/v1/tasks/0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a2b/complete HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>\nContent-Type: application/json\n\n{\n  \"checks_overridden\": false\n}",
-      "response": "{\n  \"task\": {\n    \"id\": \"0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a2b\",\n    \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n    \"status\": \"completed\",\n    \"resolved\": 2,\n    \"total\": 3,\n    \"flagged\": 2,\n    \"can_complete\": true,\n    \"checks_overridden\": false,\n    \"created_at\": \"2026-11-17T09:14:43Z\",\n    \"completed_at\": \"2026-11-17T09:16:02Z\"\n  },\n  \"final_values\": [\n    {\n      \"name\": \"vendor_name\",\n      \"line_index\": null,\n      \"value\": \"Acme Supplies Ltd\"\n    },\n    {\n      \"name\": \"total\",\n      \"line_index\": null,\n      \"value\": \"1230.00\"\n    },\n    {\n      \"name\": \"vendor_tax_id\",\n      \"line_index\": null,\n      \"value\": null\n    }\n  ]\n}"
+      "response": "{\n  \"task\": {\n    \"id\": \"0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a2b\",\n    \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n    \"status\": \"completed\",\n    \"resolved\": 2,\n    \"total\": 3,\n    \"flagged\": 2,\n    \"can_complete\": true,\n    \"checks_overridden\": false,\n    \"created_at\": \"2026-11-17T09:14:43Z\",\n    \"completed_at\": \"2026-11-17T09:16:02Z\"\n  },\n  \"final_values\": [\n    {\n      \"name\": \"vendor_name\",\n      \"line_index\": null,\n      \"value\": \"Acme Supplies Ltd\"\n    },\n    {\n      \"name\": \"total\",\n      \"line_index\": null,\n      \"value\": \"1230.00\"\n    },\n    {\n      \"name\": \"vendor_tax_id\",\n      \"line_index\": null,\n      \"value\": null\n    }\n  ]\n}",
+      "scope": "`review:write`"
     },
     {
       "id": "list-candidates",
@@ -510,7 +514,8 @@ export const review = {
         }
       ],
       "request": "GET /api/review/v1/admin/eval-candidates?status=candidate HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>",
-      "response": "{\n  \"data\": [\n    {\n      \"id\": \"0193b101-aa00-7b01-8c02-0d03e04f05a6\",\n      \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n      \"field_name\": \"total\",\n      \"line_index\": null,\n      \"model_value\": \"1240.00\",\n      \"human_value\": \"1230.00\",\n      \"status\": \"candidate\",\n      \"created_at\": \"2026-11-17T09:15:30Z\"\n    }\n  ],\n  \"next_cursor\": null\n}"
+      "response": "{\n  \"data\": [\n    {\n      \"id\": \"0193b101-aa00-7b01-8c02-0d03e04f05a6\",\n      \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n      \"field_name\": \"total\",\n      \"line_index\": null,\n      \"model_value\": \"1240.00\",\n      \"human_value\": \"1230.00\",\n      \"status\": \"candidate\",\n      \"created_at\": \"2026-11-17T09:15:30Z\"\n    }\n  ],\n  \"next_cursor\": null\n}",
+      "scope": "`is_admin`"
     },
     {
       "id": "decide-candidate",
@@ -566,7 +571,8 @@ export const review = {
         }
       ],
       "request": "PATCH /api/review/v1/admin/eval-candidates/0193b101-aa00-7b01-8c02-0d03e04f05a6 HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>\nContent-Type: application/json\n\n{\n  \"status\": \"approved\"\n}",
-      "response": "{\n  \"candidate\": {\n    \"id\": \"0193b101-aa00-7b01-8c02-0d03e04f05a6\",\n    \"status\": \"approved\"\n  }\n}"
+      "response": "{\n  \"candidate\": {\n    \"id\": \"0193b101-aa00-7b01-8c02-0d03e04f05a6\",\n    \"status\": \"approved\"\n  }\n}",
+      "scope": "`is_admin`"
     },
     {
       "id": "export-candidates",
@@ -615,7 +621,8 @@ export const review = {
         }
       ],
       "request": "POST /api/review/v1/admin/eval-candidates/export HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>\nContent-Type: application/json\n\n{\n  \"candidate_ids\": [\n    \"0193b101-aa00-7b01-8c02-0d03e04f05a6\"\n  ]\n}",
-      "response": "{\n  \"files\": [\n    {\n      \"name\": \"ground-truth-0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c.json\",\n      \"url\": \"https://01scale-uploads.s3.us-east-1.amazonaws.com/exports/ground-truth-....json?X-Amz-Expires=300&X-Amz-Signature=...\"\n    }\n  ]\n}"
+      "response": "{\n  \"files\": [\n    {\n      \"name\": \"ground-truth-0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c.json\",\n      \"url\": \"https://01scale-uploads.s3.us-east-1.amazonaws.com/exports/ground-truth-....json?X-Amz-Expires=300&X-Amz-Signature=...\"\n    }\n  ]\n}",
+      "scope": "`is_admin`"
     },
     {
       "id": "events",
@@ -661,7 +668,8 @@ export const review = {
         }
       ],
       "request": "POST /api/review/v1/events HTTP/1.1\nX-01scale-Signature: sha256=8c1f...\nContent-Type: application/json\n\n{\n  \"event_id\": \"0193b2aa-6f01-7c2d-9e3f-4a5b6c7d8e9f\",\n  \"type\": \"identity.user.deleted\",\n  \"occurred_at\": \"2026-11-17T10:00:00Z\",\n  \"data\": {\n    \"user_id\": \"0193a5b2-7c1e-7a3f-9b2d-4e6f8a1c2d3e\"\n  }\n}",
-      "response": "HTTP/1.1 200 OK"
+      "response": "HTTP/1.1 200 OK",
+      "scope": "None: HMAC signature"
     }
   ],
   "noEndpoint": [

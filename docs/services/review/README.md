@@ -105,16 +105,16 @@ await api.patch(`/api/review/v1/tasks/${taskId}/fields/${fieldId}`, {
 
 Base address: `https://01scale.com/api/review/v1`
 
-| Method | Path | Access | Purpose |
-|---|---|---|---|
-| `POST` | `/tasks` | Signed in | Create a review task |
-| `GET` | `/tasks/{taskId}` | Signed in | Get the review queue |
-| `PATCH` | `/tasks/{taskId}/fields/{fieldId}` | Signed in | Accept, edit or mark a field as not on the document |
-| `POST` | `/tasks/{taskId}/complete` | Signed in | Complete the review |
-| `GET` | `/admin/eval-candidates` | Admin | Corrections that could become eval cases |
-| `PATCH` | `/admin/eval-candidates/{candidateId}` | Admin | Approve or reject a candidate |
-| `POST` | `/admin/eval-candidates/export` | Admin | Export approved corrections as ground truth |
-| `POST` | `/events` | Service | Receive platform events |
+| Method | Path | Access | Scope | Purpose |
+|---|---|---|---|---|
+| `POST` | `/tasks` | Signed in | `review:write` | Create a review task |
+| `GET` | `/tasks/{taskId}` | Signed in | `review:read` | Get the review queue |
+| `PATCH` | `/tasks/{taskId}/fields/{fieldId}` | Signed in | `review:write` | Accept, edit or mark a field as not on the document |
+| `POST` | `/tasks/{taskId}/complete` | Signed in | `review:write` | Complete the review |
+| `GET` | `/admin/eval-candidates` | Admin | `is_admin` | Corrections that could become eval cases |
+| `PATCH` | `/admin/eval-candidates/{candidateId}` | Admin | `is_admin` | Approve or reject a candidate |
+| `POST` | `/admin/eval-candidates/export` | Admin | `is_admin` | Export approved corrections as ground truth |
+| `POST` | `/events` | Service | None: HMAC signature | Receive platform events |
 
 ## Configuration
 

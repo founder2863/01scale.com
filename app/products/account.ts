@@ -174,7 +174,8 @@ export const account = {
         }
       ],
       "request": "GET /api/identity/v1/me HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>",
-      "response": "{\n  \"id\": \"0193a5b2-7c1e-7a3f-9b2d-4e6f8a1c2d3e\",\n  \"email\": \"priya@example.com\",\n  \"created_at\": \"2026-11-12T08:01:44Z\"\n}"
+      "response": "{\n  \"id\": \"0193a5b2-7c1e-7a3f-9b2d-4e6f8a1c2d3e\",\n  \"email\": \"priya@example.com\",\n  \"created_at\": \"2026-11-12T08:01:44Z\"\n}",
+      "scope": "Any: a session, an API key or a delegated token"
     },
     {
       "id": "start-password-change",
@@ -211,7 +212,8 @@ export const account = {
         }
       ],
       "request": "POST /api/identity/v1/me/password-change HTTP/1.1\nHost: 01scale.com\nCookie: __Host-01s_session=<session token>\nOrigin: https://01scale.com",
-      "response": "{\n  \"redirect_url\": \"https://01scale-prod.auth.us-east-1.amazoncognito.com/forgotPassword?client_id=\\u2026&response_type=code&scope=openid+email&redirect_uri=https%3A%2F%2F01scale.com%2Fapi%2Fidentity%2Fv1%2Fauth%2Fcallback&state=\\u2026\"\n}"
+      "response": "{\n  \"redirect_url\": \"https://01scale-prod.auth.us-east-1.amazoncognito.com/forgotPassword?client_id=\\u2026&response_type=code&scope=openid+email&redirect_uri=https%3A%2F%2F01scale.com%2Fapi%2Fidentity%2Fv1%2Fauth%2Fcallback&state=\\u2026\"\n}",
+      "scope": "Session only: refused for API keys and service tokens"
     },
     {
       "id": "delete-me",
@@ -267,7 +269,8 @@ export const account = {
         }
       ],
       "request": "DELETE /api/identity/v1/me HTTP/1.1\nHost: 01scale.com\nCookie: __Host-01s_session=<session token>\nOrigin: https://01scale.com\nContent-Type: application/json\n\n{\n  \"confirm\": \"DELETE\"\n}",
-      "response": "{\n  \"logout_url\": \"https://01scale-prod.auth.us-east-1.amazoncognito.com/logout?client_id=\\u2026&logout_uri=https%3A%2F%2F01scale.com%2F\"\n}"
+      "response": "{\n  \"logout_url\": \"https://01scale-prod.auth.us-east-1.amazoncognito.com/logout?client_id=\\u2026&logout_uri=https%3A%2F%2F01scale.com%2F\"\n}",
+      "scope": "Session only: refused for API keys and service tokens"
     },
     {
       "id": "list-api-keys",
@@ -301,7 +304,8 @@ export const account = {
         }
       ],
       "request": "GET /api/identity/v1/api-keys HTTP/1.1\nHost: 01scale.com\nCookie: __Host-01s_session=<session token>\nOrigin: https://01scale.com",
-      "response": "{\n  \"data\": [\n    {\n      \"id\": \"0193b200-1a2b-7c3d-8e4f-5a6b7c8d9e0f\",\n      \"name\": \"Claude Desktop\",\n      \"prefix\": \"sk_01s_Hq7vT2mX\",\n      \"scopes\": [\n        \"upload:write\",\n        \"extraction:read\",\n        \"docflow:read\",\n        \"docflow:write\"\n      ],\n      \"last_used_at\": \"2026-11-17T10:02:11Z\",\n      \"expires_at\": \"2027-02-15T00:00:00Z\",\n      \"created_at\": \"2026-11-17T09:40:00Z\"\n    }\n  ]\n}"
+      "response": "{\n  \"data\": [\n    {\n      \"id\": \"0193b200-1a2b-7c3d-8e4f-5a6b7c8d9e0f\",\n      \"name\": \"Claude Desktop\",\n      \"prefix\": \"sk_01s_Hq7vT2mX\",\n      \"scopes\": [\n        \"upload:write\",\n        \"extraction:read\",\n        \"docflow:read\",\n        \"docflow:write\"\n      ],\n      \"last_used_at\": \"2026-11-17T10:02:11Z\",\n      \"expires_at\": \"2027-02-15T00:00:00Z\",\n      \"created_at\": \"2026-11-17T09:40:00Z\"\n    }\n  ]\n}",
+      "scope": "Session only: refused for API keys and service tokens"
     },
     {
       "id": "create-api-key",
@@ -381,7 +385,8 @@ export const account = {
         }
       ],
       "request": "POST /api/identity/v1/api-keys HTTP/1.1\nHost: 01scale.com\nCookie: __Host-01s_session=<session token>\nOrigin: https://01scale.com\nContent-Type: application/json\nIdempotency-Key: 6f1c2a9e-key-create\n\n{\n  \"name\": \"Claude Desktop\",\n  \"scopes\": [\n    \"upload:write\",\n    \"extraction:read\",\n    \"docflow:read\",\n    \"docflow:write\"\n  ],\n  \"expires_at\": \"2027-02-15T00:00:00Z\"\n}",
-      "response": "{\n  \"api_key\": {\n    \"id\": \"0193b200-1a2b-7c3d-8e4f-5a6b7c8d9e0f\",\n    \"name\": \"Claude Desktop\",\n    \"prefix\": \"sk_01s_Hq7vT2mX\",\n    \"scopes\": [\n      \"upload:write\",\n      \"extraction:read\",\n      \"docflow:read\",\n      \"docflow:write\"\n    ],\n    \"last_used_at\": null,\n    \"expires_at\": \"2027-02-15T00:00:00Z\",\n    \"created_at\": \"2026-11-17T09:40:00Z\"\n  },\n  \"secret\": \"sk_01s_Hq7vT2mX\\u2026(43 characters in all after sk_01s_)\"\n}"
+      "response": "{\n  \"api_key\": {\n    \"id\": \"0193b200-1a2b-7c3d-8e4f-5a6b7c8d9e0f\",\n    \"name\": \"Claude Desktop\",\n    \"prefix\": \"sk_01s_Hq7vT2mX\",\n    \"scopes\": [\n      \"upload:write\",\n      \"extraction:read\",\n      \"docflow:read\",\n      \"docflow:write\"\n    ],\n    \"last_used_at\": null,\n    \"expires_at\": \"2027-02-15T00:00:00Z\",\n    \"created_at\": \"2026-11-17T09:40:00Z\"\n  },\n  \"secret\": \"sk_01s_Hq7vT2mX\\u2026(43 characters in all after sk_01s_)\"\n}",
+      "scope": "Session only: refused for API keys and service tokens"
     },
     {
       "id": "revoke-api-key",
@@ -431,7 +436,8 @@ export const account = {
         }
       ],
       "request": "DELETE /api/identity/v1/api-keys/0193b200-1a2b-7c3d-8e4f-5a6b7c8d9e0f HTTP/1.1\nHost: 01scale.com\nCookie: __Host-01s_session=<session token>\nOrigin: https://01scale.com",
-      "response": "HTTP/1.1 204 No Content"
+      "response": "HTTP/1.1 204 No Content",
+      "scope": "Session only: refused for API keys and service tokens"
     },
     {
       "id": "exchange-api-key",
@@ -484,7 +490,8 @@ export const account = {
         }
       ],
       "request": "POST /api/identity/v1/token HTTP/1.1\nAuthorization: Bearer <gateway service key>\nContent-Type: application/json\n\n{\n  \"api_key\": \"sk_01s_\\u2026\"\n}",
-      "response": "{\n  \"access_token\": \"eyJhbGciOiJFUzI1NiIsImtpZCI6ImsyMDI2LTExIn0\\u2026\",\n  \"token_type\": \"Bearer\",\n  \"expires_in\": 300\n}"
+      "response": "{\n  \"access_token\": \"eyJhbGciOiJFUzI1NiIsImtpZCI6ImsyMDI2LTExIn0\\u2026\",\n  \"token_type\": \"Bearer\",\n  \"expires_in\": 300\n}",
+      "scope": "None: the gateway's service credential"
     },
     {
       "id": "get-user",
@@ -536,7 +543,8 @@ export const account = {
         }
       ],
       "request": "GET /api/identity/v1/users/0193a5b2-7c1e-7a3f-9b2d-4e6f8a1c2d3e HTTP/1.1\nAuthorization: Bearer <service access token>",
-      "response": "{\n  \"id\": \"0193a5b2-7c1e-7a3f-9b2d-4e6f8a1c2d3e\",\n  \"email\": \"priya@example.com\"\n}"
+      "response": "{\n  \"id\": \"0193a5b2-7c1e-7a3f-9b2d-4e6f8a1c2d3e\",\n  \"email\": \"priya@example.com\"\n}",
+      "scope": "`identity:users.read`, on a service token"
     }
   ],
   "noEndpoint": [

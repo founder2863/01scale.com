@@ -259,7 +259,8 @@ export const extraction = {
         }
       ],
       "request": "POST /api/extraction/v1/jobs HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>\nContent-Type: application/json\n\n{\n  \"file_id\": \"0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b\",\n  \"schema\": \"invoice-v1\",\n  \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\"\n}",
-      "response": "HTTP/1.1 202 Accepted\nLocation: /api/extraction/v1/jobs/0193b0d1-4b2c-7d10-9a8b-1c2d3e4f5a6b\nRetry-After: 2\nContent-Type: application/json\n\n{\n  \"job\": {\n    \"id\": \"0193b0d1-4b2c-7d10-9a8b-1c2d3e4f5a6b\",\n    \"file_id\": \"0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b\",\n    \"schema\": \"invoice-v1\",\n    \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n    \"status\": \"queued\",\n    \"steps\": [\n      {\n        \"name\": \"fetching_file\",\n        \"state\": \"waiting\"\n      },\n      {\n        \"name\": \"reading_document\",\n        \"state\": \"waiting\"\n      },\n      {\n        \"name\": \"checking_rules\",\n        \"state\": \"waiting\"\n      },\n      {\n        \"name\": \"saving\",\n        \"state\": \"waiting\"\n      }\n    ],\n    \"fields_total\": null,\n    \"fields_flagged\": null,\n    \"error_code\": null,\n    \"error_message\": null,\n    \"retryable\": false,\n    \"created_at\": \"2026-11-17T09:14:12Z\",\n    \"finished_at\": null\n  }\n}"
+      "response": "HTTP/1.1 202 Accepted\nLocation: /api/extraction/v1/jobs/0193b0d1-4b2c-7d10-9a8b-1c2d3e4f5a6b\nRetry-After: 2\nContent-Type: application/json\n\n{\n  \"job\": {\n    \"id\": \"0193b0d1-4b2c-7d10-9a8b-1c2d3e4f5a6b\",\n    \"file_id\": \"0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b\",\n    \"schema\": \"invoice-v1\",\n    \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n    \"status\": \"queued\",\n    \"steps\": [\n      {\n        \"name\": \"fetching_file\",\n        \"state\": \"waiting\"\n      },\n      {\n        \"name\": \"reading_document\",\n        \"state\": \"waiting\"\n      },\n      {\n        \"name\": \"checking_rules\",\n        \"state\": \"waiting\"\n      },\n      {\n        \"name\": \"saving\",\n        \"state\": \"waiting\"\n      }\n    ],\n    \"fields_total\": null,\n    \"fields_flagged\": null,\n    \"error_code\": null,\n    \"error_message\": null,\n    \"retryable\": false,\n    \"created_at\": \"2026-11-17T09:14:12Z\",\n    \"finished_at\": null\n  }\n}",
+      "scope": "`extraction:write`"
     },
     {
       "id": "get-job",
@@ -305,7 +306,8 @@ export const extraction = {
         }
       ],
       "request": "GET /api/extraction/v1/jobs/0193b0d1-4b2c-7d10-9a8b-1c2d3e4f5a6b HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>",
-      "response": "{\n  \"job\": {\n    \"id\": \"0193b0d1-4b2c-7d10-9a8b-1c2d3e4f5a6b\",\n    \"file_id\": \"0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b\",\n    \"schema\": \"invoice-v1\",\n    \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n    \"status\": \"extracted\",\n    \"steps\": [\n      {\n        \"name\": \"fetching_file\",\n        \"state\": \"done\"\n      },\n      {\n        \"name\": \"reading_document\",\n        \"state\": \"done\"\n      },\n      {\n        \"name\": \"checking_rules\",\n        \"state\": \"done\"\n      },\n      {\n        \"name\": \"saving\",\n        \"state\": \"done\"\n      }\n    ],\n    \"fields_total\": 19,\n    \"fields_flagged\": 3,\n    \"error_code\": null,\n    \"error_message\": null,\n    \"retryable\": false,\n    \"created_at\": \"2026-11-17T09:14:12Z\",\n    \"finished_at\": \"2026-11-17T09:14:41Z\"\n  }\n}"
+      "response": "{\n  \"job\": {\n    \"id\": \"0193b0d1-4b2c-7d10-9a8b-1c2d3e4f5a6b\",\n    \"file_id\": \"0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b\",\n    \"schema\": \"invoice-v1\",\n    \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n    \"status\": \"extracted\",\n    \"steps\": [\n      {\n        \"name\": \"fetching_file\",\n        \"state\": \"done\"\n      },\n      {\n        \"name\": \"reading_document\",\n        \"state\": \"done\"\n      },\n      {\n        \"name\": \"checking_rules\",\n        \"state\": \"done\"\n      },\n      {\n        \"name\": \"saving\",\n        \"state\": \"done\"\n      }\n    ],\n    \"fields_total\": 19,\n    \"fields_flagged\": 3,\n    \"error_code\": null,\n    \"error_message\": null,\n    \"retryable\": false,\n    \"created_at\": \"2026-11-17T09:14:12Z\",\n    \"finished_at\": \"2026-11-17T09:14:41Z\"\n  }\n}",
+      "scope": "`extraction:read`"
     },
     {
       "id": "get-fields",
@@ -363,7 +365,8 @@ export const extraction = {
         }
       ],
       "request": "GET /api/extraction/v1/jobs/0193b0d1-4b2c-7d10-9a8b-1c2d3e4f5a6b/fields?flagged=true HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>",
-      "response": "{\n  \"data\": [\n    {\n      \"id\": \"0193b0d2-1f00-7a01-8b02-0c03d04e05f6\",\n      \"name\": \"total\",\n      \"line_index\": null,\n      \"value\": \"1240.00\",\n      \"confidence\": 0.3,\n      \"model_confidence\": 0.92,\n      \"source_page\": 2,\n      \"source_quote\": \"TOTAL DUE  $1,240.00\",\n      \"flagged\": true,\n      \"flag_reasons\": [\n        \"Total \\u2260 subtotal + tax (1,150.00 + 80.00 = 1,230.00)\"\n      ]\n    }\n  ]\n}"
+      "response": "{\n  \"data\": [\n    {\n      \"id\": \"0193b0d2-1f00-7a01-8b02-0c03d04e05f6\",\n      \"name\": \"total\",\n      \"line_index\": null,\n      \"value\": \"1240.00\",\n      \"confidence\": 0.3,\n      \"model_confidence\": 0.92,\n      \"source_page\": 2,\n      \"source_quote\": \"TOTAL DUE  $1,240.00\",\n      \"flagged\": true,\n      \"flag_reasons\": [\n        \"Total \\u2260 subtotal + tax (1,150.00 + 80.00 = 1,230.00)\"\n      ]\n    }\n  ]\n}",
+      "scope": "`extraction:read`"
     },
     {
       "id": "validate",
@@ -428,7 +431,8 @@ export const extraction = {
         }
       ],
       "request": "POST /api/extraction/v1/validations HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>\nContent-Type: application/json\n\n{\n  \"schema\": \"invoice-v1\",\n  \"values\": {\n    \"vendor_name\": \"Acme Supplies Ltd\",\n    \"invoice_number\": \"INV-0042\",\n    \"invoice_date\": \"2026-11-02\",\n    \"due_date\": \"2026-12-02\",\n    \"currency\": \"USD\",\n    \"subtotal\": \"1150.00\",\n    \"tax_total\": \"80.00\",\n    \"total\": \"1230.00\",\n    \"line_items\": [\n      {\n        \"description\": \"Paper, A4\",\n        \"quantity\": \"10\",\n        \"unit_price\": \"115.00\",\n        \"amount\": \"1150.00\"\n      }\n    ]\n  }\n}",
-      "response": "{\n  \"passed\": true,\n  \"checks\": [\n    {\n      \"name\": \"line_amounts_match_subtotal\",\n      \"passed\": true,\n      \"fields\": [\n        \"line_items\",\n        \"subtotal\"\n      ],\n      \"message\": \"Line amounts add up to the subtotal.\"\n    },\n    {\n      \"name\": \"subtotal_plus_tax_is_total\",\n      \"passed\": true,\n      \"fields\": [\n        \"subtotal\",\n        \"tax_total\",\n        \"total\"\n      ],\n      \"message\": \"Subtotal plus tax equals the total.\"\n    },\n    {\n      \"name\": \"dates_valid\",\n      \"passed\": true,\n      \"fields\": [\n        \"invoice_date\",\n        \"due_date\"\n      ],\n      \"message\": \"Dates are valid and the due date is after the invoice date.\"\n    },\n    {\n      \"name\": \"currency_valid\",\n      \"passed\": true,\n      \"fields\": [\n        \"currency\"\n      ],\n      \"message\": \"USD is a valid currency.\"\n    },\n    {\n      \"name\": \"required_present\",\n      \"passed\": true,\n      \"fields\": [\n        \"vendor_name\",\n        \"invoice_number\",\n        \"invoice_date\",\n        \"currency\",\n        \"total\"\n      ],\n      \"message\": \"All required fields are present.\"\n    }\n  ]\n}"
+      "response": "{\n  \"passed\": true,\n  \"checks\": [\n    {\n      \"name\": \"line_amounts_match_subtotal\",\n      \"passed\": true,\n      \"fields\": [\n        \"line_items\",\n        \"subtotal\"\n      ],\n      \"message\": \"Line amounts add up to the subtotal.\"\n    },\n    {\n      \"name\": \"subtotal_plus_tax_is_total\",\n      \"passed\": true,\n      \"fields\": [\n        \"subtotal\",\n        \"tax_total\",\n        \"total\"\n      ],\n      \"message\": \"Subtotal plus tax equals the total.\"\n    },\n    {\n      \"name\": \"dates_valid\",\n      \"passed\": true,\n      \"fields\": [\n        \"invoice_date\",\n        \"due_date\"\n      ],\n      \"message\": \"Dates are valid and the due date is after the invoice date.\"\n    },\n    {\n      \"name\": \"currency_valid\",\n      \"passed\": true,\n      \"fields\": [\n        \"currency\"\n      ],\n      \"message\": \"USD is a valid currency.\"\n    },\n    {\n      \"name\": \"required_present\",\n      \"passed\": true,\n      \"fields\": [\n        \"vendor_name\",\n        \"invoice_number\",\n        \"invoice_date\",\n        \"currency\",\n        \"total\"\n      ],\n      \"message\": \"All required fields are present.\"\n    }\n  ]\n}",
+      "scope": "`extraction:write`"
     },
     {
       "id": "admin-jobs",
@@ -471,7 +475,8 @@ export const extraction = {
         }
       ],
       "request": "GET /api/extraction/v1/admin/jobs?limit=1 HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>",
-      "response": "{\n  \"data\": [\n    {\n      \"id\": \"0193b0d1-4b2c-7d10-9a8b-1c2d3e4f5a6b\",\n      \"status\": \"extracted\",\n      \"model\": \"claude-sonnet-5-5\",\n      \"prompt_version\": \"extract-invoice/v1\",\n      \"pages\": 2,\n      \"tokens_in\": 6210,\n      \"tokens_out\": 1480,\n      \"cost_usd\": \"0.040830\",\n      \"duration_ms\": 28900,\n      \"error_code\": null,\n      \"created_at\": \"2026-11-17T09:14:12Z\"\n    }\n  ],\n  \"summary\": {\n    \"jobs\": 100,\n    \"failure_rate\": 0.02,\n    \"avg_cost_usd\": \"0.0412\",\n    \"p95_duration_ms\": 41200\n  }\n}"
+      "response": "{\n  \"data\": [\n    {\n      \"id\": \"0193b0d1-4b2c-7d10-9a8b-1c2d3e4f5a6b\",\n      \"status\": \"extracted\",\n      \"model\": \"claude-sonnet-5-5\",\n      \"prompt_version\": \"extract-invoice/v1\",\n      \"pages\": 2,\n      \"tokens_in\": 6210,\n      \"tokens_out\": 1480,\n      \"cost_usd\": \"0.040830\",\n      \"duration_ms\": 28900,\n      \"error_code\": null,\n      \"created_at\": \"2026-11-17T09:14:12Z\"\n    }\n  ],\n  \"summary\": {\n    \"jobs\": 100,\n    \"failure_rate\": 0.02,\n    \"avg_cost_usd\": \"0.0412\",\n    \"p95_duration_ms\": 41200\n  }\n}",
+      "scope": "`is_admin`"
     },
     {
       "id": "events",
@@ -533,7 +538,8 @@ export const extraction = {
         }
       ],
       "request": "POST /api/extraction/v1/events HTTP/1.1\nX-01scale-Signature: sha256=8c1f...\nContent-Type: application/json\n\n{\n  \"event_id\": \"0193b2aa-6f01-7c2d-9e3f-4a5b6c7d8e9f\",\n  \"type\": \"identity.user.deleted\",\n  \"occurred_at\": \"2026-11-17T10:00:00Z\",\n  \"data\": {\n    \"user_id\": \"0193a5b2-7c1e-7a3f-9b2d-4e6f8a1c2d3e\"\n  }\n}",
-      "response": "HTTP/1.1 200 OK"
+      "response": "HTTP/1.1 200 OK",
+      "scope": "None: HMAC signature"
     }
   ],
   "noEndpoint": [

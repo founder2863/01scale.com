@@ -116,15 +116,15 @@ const bytes = await (await fetch(url)).arrayBuffer();
 
 Base address: `https://01scale.com/api/upload/v1`
 
-| Method | Path | Access | Purpose |
-|---|---|---|---|
-| `POST` | `/files` | Signed in | Create a file and get an upload link |
-| `POST` | `/files/{fileId}/complete` | Signed in | Confirm the upload and check the file |
-| `GET` | `/files/{fileId}` | Signed in | Get one file |
-| `GET` | `/files` | Signed in | List my files |
-| `GET` | `/files/{fileId}/download-url` | Signed in | Get a link to read the file |
-| `DELETE` | `/files/{fileId}` | Signed in | Delete a file |
-| `POST` | `/events` | Service | Receive platform events |
+| Method | Path | Access | Scope | Purpose |
+|---|---|---|---|---|
+| `POST` | `/files` | Signed in | `upload:write` | Create a file and get an upload link |
+| `POST` | `/files/{fileId}/complete` | Signed in | `upload:write` | Confirm the upload and check the file |
+| `GET` | `/files/{fileId}` | Signed in | `upload:read` | Get one file |
+| `GET` | `/files` | Signed in | `upload:read` | List my files |
+| `GET` | `/files/{fileId}/download-url` | Signed in | `upload:read` | Get a link to read the file |
+| `DELETE` | `/files/{fileId}` | Signed in | `upload:write` | Delete a file |
+| `POST` | `/events` | Service | None: HMAC signature | Receive platform events |
 
 ## Configuration
 

@@ -54,6 +54,9 @@ ENDPOINTS = [
              json.dumps({"access_token": TOKEN, "token_type": "Bearer", "expires_in": 300, "scope": "extraction:read review:write", "issued_token_type": "urn:ietf:params:oauth:token-type:access_token"}, indent=2)),
 ]
 
+ENDPOINTS[0]["scope"] = "None: the client secret"
+ENDPOINTS[1]["scope"] = "A service token from a client with `act_scopes`; grants a subset of them"
+
 CLAIMS = [
     {"claim": "`auth`", "example": "`service` or `delegated`", "meaning": "Adds two values to Login's `session` and `api_key`: a service acting as itself, or acting for a user."},
     {"claim": "`sub`", "example": "`service:delivery`", "meaning": "For `auth: service`, the client. For `delegated`, the user, as in any user token."},

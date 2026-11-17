@@ -92,16 +92,16 @@ curl -X DELETE https://01scale.com/api/identity/v1/me \
 
 Base address: `https://01scale.com/api/identity/v1`
 
-| Method | Path | Access | Purpose |
-|---|---|---|---|
-| `GET` | `/me` | Signed in | My account |
-| `POST` | `/me/password-change` | Signed in | Start a password change |
-| `DELETE` | `/me` | Signed in | Delete my account |
-| `GET` | `/api-keys` | Signed in | List my API keys |
-| `POST` | `/api-keys` | Signed in | Create an API key |
-| `DELETE` | `/api-keys/{keyId}` | Signed in | Revoke an API key |
-| `POST` | `/token` | Service | Exchange an API key for an access token |
-| `GET` | `/users/{userId}` | Service | Look up a user's email |
+| Method | Path | Access | Scope | Purpose |
+|---|---|---|---|---|
+| `GET` | `/me` | Signed in | Any: a session, an API key or a delegated token | My account |
+| `POST` | `/me/password-change` | Signed in | Session only: refused for API keys and service tokens | Start a password change |
+| `DELETE` | `/me` | Signed in | Session only: refused for API keys and service tokens | Delete my account |
+| `GET` | `/api-keys` | Signed in | Session only: refused for API keys and service tokens | List my API keys |
+| `POST` | `/api-keys` | Signed in | Session only: refused for API keys and service tokens | Create an API key |
+| `DELETE` | `/api-keys/{keyId}` | Signed in | Session only: refused for API keys and service tokens | Revoke an API key |
+| `POST` | `/token` | Service | None: the gateway's service credential | Exchange an API key for an access token |
+| `GET` | `/users/{userId}` | Service | `identity:users.read`, on a service token | Look up a user's email |
 
 ## Configuration
 
