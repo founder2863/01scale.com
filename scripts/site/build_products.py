@@ -88,6 +88,7 @@ EDGE_CASES = [
     ("Has not verified their email", "Is asked to enter the code first; no 01scale user is created.", "`email_not_verified`"),
     ("Session reaches 7 days", "Is asked to sign in again and returns to the same page.", "`not_authenticated`"),
     ("AWS Cognito is unavailable", "Sees 'Sign-in is temporarily unavailable. Try again.'", "`provider_unavailable`"),
+    ("Has an email longer than 254 characters", "Sees 'This email address can't be used with 01scale.' No user is created.", "`email_not_supported`"),
 ]
 
 # ------------------------------------------------------------------ Identity: UI components
@@ -129,7 +130,7 @@ COMPONENTS = [
         "calls": ["`GET /session` (through useSession)", "`GET /auth/login`"],
     },
     {
-        "name": "SignInError", "kind": "Page", "purpose": "A plain-language page for a failed sign-in, with one button to start again. Proposed; see open questions.",
+        "name": "SignInError", "kind": "Page", "purpose": "The page at `/sign-in-error` that a browser lands on when sign-in fails: a plain-language message and one button to start again.",
         "props": [("code", "string", "The error code from the callback, mapped to a friendly message.")],
         "states": ["One message per error code", "Unknown code (generic message)"],
         "calls": ["`GET /auth/login`"],
@@ -438,6 +439,7 @@ guide = json.loads(json.dumps({
     "rules": [{"level": k, "items": v} for k, v in G["RULES"].items()],
     "env": [{"name": a, "value": b, "secret": c} for a, b, c in G["ENV"]],
     "openQuestions": G["OPEN_QUESTIONS"],
+    "decisions": [{"question": a, "decision": b} for a, b in G["DECISIONS"]],
     "journeys": [{**{k: j[k] for k in ("name", "who", "trigger", "stories", "outcome")}, "steps": [{"person": a, "system": b} for a, b in j["steps"]]} for j in JOURNEYS],
     "edgeCases": [{"situation": a, "sees": b, "code": c} for a, b, c in EDGE_CASES],
     "components": [{**{k: c[k] for k in ("name", "kind", "purpose", "states", "calls")}, "props": [{"name": a, "type": b, "meaning": d} for a, b, d in c["props"]]} for c in COMPONENTS],

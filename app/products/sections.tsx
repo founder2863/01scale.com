@@ -159,6 +159,16 @@ function ReadMe({ product }: { product: Product }) {
         ))}
       </dl>
 
+      <h3>Decisions</h3>
+      <dl className="decisions">
+        {detail.decisions.map((item) => (
+          <div key={item.question}>
+            <dt>{item.question}</dt>
+            <dd>{rich(item.decision)}</dd>
+          </div>
+        ))}
+      </dl>
+
       <h3>Open questions</h3>
       <ul className="plain-list">
         {detail.openQuestions.map((question) => (
