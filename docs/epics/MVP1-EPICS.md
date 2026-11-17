@@ -360,7 +360,7 @@ As Priya, I want to drag and drop or pick a file on my phone and see progress.
 
 ### MVP1-E3-04 · Extraction page — M
 - **AC1:** While processing, the page shows status steps and polls every 2 seconds, without a full-page reload.
-- **AC2:** When done, the document preview (rendered PDF page or image) is on the left and the fields on the right, with confidence badges (green ≥ 0.85, amber 0.6–0.85, red < 0.6) and flagged fields highlighted.
+- **AC2:** When done, the document preview (rendered PDF page or image, Upload's `FilePreview` component, decided on #36) is on the left and the fields on the right, with confidence badges (green ≥ 0.85, amber 0.6–0.85, red < 0.6) and flagged fields highlighted.
 - **AC3:** Tapping a field shows its source quote and page. On desktop, the preview jumps to that page.
 - **AC4:** A "Review N flagged fields" button goes to E4. If nothing is flagged, "Continue to results" goes to E5.
 - **Service:** LLM Extraction (UI component), used by the DocFlow app

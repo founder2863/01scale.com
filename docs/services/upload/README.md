@@ -145,3 +145,4 @@ Environment variables on the service's own deployment. Secrets are never committ
 - Rate limits are starting values to be tuned once there is real traffic.
 - Files are removed after 30 days. Should a person be told before that happens? No story asks for it, so nothing is sent today.
 - A photo of a paper invoice is accepted as one page. Several photos of a multi-page invoice would be several files; joining them into one document is not designed.
+- `FilePreview` renders PDFs in the browser (for example with PDF.js) from the 5-minute inline link; the file never passes through Upload's API. Which library is chosen when the component is built.

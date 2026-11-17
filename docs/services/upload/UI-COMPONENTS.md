@@ -9,6 +9,7 @@ What the Upload service ships for apps to use, as the package `packages/ui-uploa
 - Components call only the Upload API, plus the storage link that API hands out. They never call another service.
 - An app can supply its own `create` and `complete` functions to wrap Upload in its own process (DocFlow does, to record the document as well). The components still know nothing about the app.
 - They ship as the package `packages/ui-upload` and work in any app.
+- Each component works on its own, given its inputs and a signed-in person. It may depend on Identity's login component and on nothing else from another service (Nikhil's decision on #36). Pages place components side by side and pass values between them.
 - No tokens in browser JavaScript: requests carry the HttpOnly session cookie and the gateway does the rest. Upload and download links are short-lived and fixed to one file.
 - Every action works without dragging: a phone uses the file picker or the camera.
 - Every request has a loading state that keeps the layout still, and a failure state with a plain-language message and a way to retry.
@@ -81,6 +82,21 @@ What the Upload service ships for apps to use, as the package `packages/ui-uploa
 **States:** Default; Working: disabled while the link is fetched; Failed: the message (still uploading, expired, not found) next to the button.
 
 **Calls:** `GET /files/{fileId}/download-url`.
+
+## FilePreview
+
+*Component.* Shows a stored PDF page by page, or an image, inside the page, so a person can read the document beside other information. New: decided on #36, for the extraction page (`MVP1-E3-04`) and any other app.
+
+| Input | Type | Meaning |
+|---|---|---|
+| `fileId` | string | The file. |
+| `page` | number, optional | The page to show; changing it scrolls to that page. Default 1. |
+| `onPageChange` | (page) => void, optional | Called when the person moves to another page. |
+| `highlight` | string, optional | Text to mark on the shown page, for example a field's source quote. Ignored if not found. |
+
+**States:** Loading: a placeholder of the document's shape; Shown: one page at a time with page number, previous and next, and zoom; an image fits the width; Link expired: fetches a new 5-minute link without a reload; Not available: 'This document is no longer available' when the file was deleted or expired after 30 days; Failed: the message and Retry.
+
+**Calls:** `GET /files/{fileId}/download-url?disposition=inline`.
 
 ## DeleteFileButton
 
