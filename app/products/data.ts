@@ -2724,11 +2724,11 @@ export const products = [
         "title": "Free plan and upgrade to paid",
         "size": "M",
         "pending": "",
-        "story": "Decided by Nikhil on 17 Nov 2026 (PR #64): MVP1 gives every user 100 requests a minute across all endpoints; MVP2 adds a freemium model with paid upgrades. As a user who has outgrown the free plan, I want to upgrade to a paid plan so I get higher limits without a new account.",
+        "story": "Decided by Nikhil on 17 Nov 2026 (PR #64): MVP1 limits every user to 10 requests a minute that change something and 60 reads a minute (10 a minute in total with an API key), so the demo cannot be used in batch; MVP2 adds a freemium model with paid upgrades. As a user who has outgrown the free plan, I want to upgrade to a paid plan so I get higher limits without a new account.",
         "acs": [
           {
             "label": "AC1",
-            "text": "Every user starts on the Free plan, with the MVP1 limit of 100 requests a minute. The plans and their limits are configuration, not code."
+            "text": "Every user starts on the Free plan, with the MVP1 limits (10 changes and 60 reads a minute; 10 a minute with an API key). Paid plans raise them and allow batch use. The plans and their limits are configuration, not code."
           },
           {
             "label": "AC2",
