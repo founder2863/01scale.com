@@ -824,9 +824,54 @@ export const docflow = {
           "meaning": "When its status last changed."
         }
       ],
-      "constraints": [],
-      "sampleCols": [],
-      "sampleRows": []
+      "constraints": [
+        "`documents_pkey`: primary key (`id`)",
+        "`documents_status_check`: only the eight statuses",
+        "`documents_parts_check`: a job exists from `extracting` on; a review task from `needs_review` on; an order when `paid`",
+        "`documents_rejected_check`: `rejection_reason` exactly when `rejected`",
+        "`documents_owner_idx`: index on (`owner_id`, `created_at` desc), for the documents list"
+      ],
+      "sampleCols": [
+        "id",
+        "owner_id",
+        "file_name",
+        "status",
+        "file_id",
+        "job_id",
+        "review_task_id",
+        "order_id",
+        "rejection_reason",
+        "created_at",
+        "updated_at"
+      ],
+      "sampleRows": [
+        [
+          "0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c",
+          "0193a5b2-7c1e-7a3f-9b2d-4e6f8a1c2d3e",
+          "acme-invoice-0042.pdf",
+          "paid",
+          "0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b",
+          "0193b0d1-4b2c-7d10-9a8b-1c2d3e4f5a6b",
+          "0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a2b",
+          "0193b120-5a6b-7c7d-8e8f-9a0b1c2d3e4f",
+          "(empty)",
+          "2026-11-17 09:14:07+00",
+          "2026-11-17 09:17:03+00"
+        ],
+        [
+          "0193b160-aaaa-7bbb-8ccc-dddddddddddd",
+          "0193a5b2-7c1e-7a3f-9b2d-4e6f8a1c2d3e",
+          "scan.jpg",
+          "rejected",
+          "0193b0c9-5f22-7a08-9e44-1a2b3c4d5e6f",
+          "(empty)",
+          "(empty)",
+          "(empty)",
+          "type_mismatch",
+          "2026-11-17 09:16:40+00",
+          "2026-11-17 09:16:44+00"
+        ]
+      ]
     },
     {
       "name": "docflow.outputs",
@@ -889,9 +934,31 @@ export const docflow = {
           "meaning": "When it was built."
         }
       ],
-      "constraints": [],
-      "sampleCols": [],
-      "sampleRows": []
+      "constraints": [
+        "`outputs_pkey`: primary key (`id`)",
+        "`outputs_document_id_fkey`: foreign key to `docflow.documents`, delete cascades",
+        "`outputs_document_version_key`: unique (`document_id`, `version`)"
+      ],
+      "sampleCols": [
+        "id",
+        "document_id",
+        "version",
+        "json_file_id",
+        "csv_file_id",
+        "schema_version",
+        "created_at"
+      ],
+      "sampleRows": [
+        [
+          "0193b0f6-0000-7000-8000-000000000001",
+          "0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c",
+          "1",
+          "0193b0f5-1111-7222-8333-444455556666",
+          "0193b0f5-1111-7222-8333-444455556667",
+          "invoice-v1",
+          "2026-11-17 09:16:03+00"
+        ]
+      ]
     },
     {
       "name": "docflow.inbound_events",
@@ -922,9 +989,21 @@ export const docflow = {
           "meaning": "When."
         }
       ],
-      "constraints": [],
-      "sampleCols": [],
-      "sampleRows": []
+      "constraints": [
+        "`inbound_events_pkey`: primary key (`event_id`)"
+      ],
+      "sampleCols": [
+        "event_id",
+        "type",
+        "created_at"
+      ],
+      "sampleRows": [
+        [
+          "0193b121-0000-7000-8000-00000000aaaa",
+          "payment.order.paid",
+          "2026-11-17 09:17:03+00"
+        ]
+      ]
     }
   ],
   "otherTables": "The service template also gives DocFlow `audit_events`, `idempotency_keys` and `outbound_events`.",
@@ -940,7 +1019,10 @@ export const docflow = {
     },
     {
       "level": "Schema level: enforced by the database, whatever the code does",
-      "items": []
+      "items": [
+        "A document's status always has the parts it needs (a job once extracting, a task once in review, an order once paid).",
+        "One output per version per document."
+      ]
     },
     {
       "level": "Data model level: business rules the service guarantees",
@@ -985,6 +1067,11 @@ export const docflow = {
       "text": "`pending_upload` → `uploaded` → `extracting` → `needs_review` → `reviewed` → `paid`; or `rejected` after upload, or `extraction_failed` (back to `extracting` on retry)."
     }
   ],
-  "ddl": "",
-  "queries": []
+  "ddl": "-- DocFlow app, version 1. Schema: docflow.\n-- Checked with `npm run schema:check`: runs on PGlite, and every sample row passes every constraint.\n\ncreate schema if not exists docflow;\n\ncreate table docflow.documents (\n  id               uuid        primary key,\n  owner_id         uuid        not null,\n  file_name        text        not null,\n  status           text        not null default 'pending_upload',\n  file_id          uuid        not null,\n  job_id           uuid,\n  review_task_id   uuid,\n  order_id         uuid,\n  rejection_reason text,\n  created_at       timestamptz not null default now(),\n  updated_at       timestamptz not null default now(),\n\n  constraint documents_file_name_check check (length(file_name) between 1 and 255),\n  constraint documents_status_check check (status in ('pending_upload', 'uploaded', 'rejected',\n    'extracting', 'extraction_failed', 'needs_review', 'reviewed', 'paid')),\n  constraint documents_parts_check check (\n    (status not in ('extracting', 'extraction_failed', 'needs_review', 'reviewed', 'paid') or job_id is not null)\n    and (status not in ('needs_review', 'reviewed', 'paid') or review_task_id is not null)\n    and (status <> 'paid' or order_id is not null)\n  ),\n  constraint documents_rejected_check check ((status = 'rejected') = (rejection_reason is not null))\n);\n\ncreate index documents_owner_idx on docflow.documents (owner_id, created_at desc);\n\ncreate table docflow.outputs (\n  id             uuid        primary key,\n  document_id    uuid        not null,\n  version        smallint    not null,\n  json_file_id   uuid        not null,\n  csv_file_id    uuid        not null,\n  schema_version text        not null,\n  created_at     timestamptz not null default now(),\n\n  constraint outputs_document_id_fkey foreign key (document_id)\n    references docflow.documents (id) on delete cascade,\n  constraint outputs_document_version_key unique (document_id, version),\n  constraint outputs_version_check check (version >= 1 and schema_version in ('invoice-v1'))\n);\n\ncreate table docflow.inbound_events (\n  event_id   uuid        primary key,\n  type       text        not null,\n  created_at timestamptz not null default now()\n);\n\ngrant usage on schema docflow to docflow_service;\ngrant select, insert, update, delete on docflow.documents, docflow.outputs to docflow_service;\ngrant select, insert on docflow.inbound_events, docflow.audit_events to docflow_service;\n",
+  "queries": [
+    {
+      "title": "The documents list",
+      "sql": "select * from docflow.documents\nwhere owner_id = $1\norder by created_at desc\nlimit $2;"
+    }
+  ]
 };
