@@ -1141,7 +1141,7 @@ export const products = [
     "group": "MVP1",
     "service": "DocFlow app",
     "description": "Preview the final JSON, metadata and CSV before paying.",
-    "status": "In design",
+    "status": "Designed",
     "detailed": true,
     "epic": {
       "id": "E5",

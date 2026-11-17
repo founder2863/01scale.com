@@ -21,12 +21,40 @@ export const docflow = {
   "overview": {
     "name": "DocFlow",
     "version": "Version 1 · The app that connects the services",
-    "status": "In design",
+    "status": "Designed, not built",
     "base": "/api/docflow/v1",
-    "what": [],
-    "why": [],
-    "scope_in": [],
-    "scope_out": [],
+    "what": [
+      "DocFlow is the first app built from the 01scale platform services. It turns an uploaded invoice into reviewed JSON and CSV, by calling Upload, LLM Extraction, Human Review, Payment and Delivery in order.",
+      "It is deliberately thin. It keeps one record per invoice (which file, job, review and order belong together, and where the process is) and builds the invoice-specific results. Everything else is a service it calls.",
+      "This page covers DocFlow's own parts: the documents list, the JSON and CSV outputs, checkout, the success page and the downloads."
+    ],
+    "why": [
+      {
+        "title": "The process lives in one place",
+        "text": "The order of steps is written once, in the app, so the services stay unaware of invoices and of each other."
+      },
+      {
+        "title": "The next app is a copy, not a rewrite",
+        "text": "Procure-to-Pay would be another thin app calling the same services in a different order."
+      },
+      {
+        "title": "Results people can trust",
+        "text": "The JSON is validated against a published schema and carries what was corrected and how sure the system was; the CSV opens cleanly in Excel and cannot run formulas."
+      }
+    ],
+    "scope_in": [
+      "The documents list with status and next action",
+      "Starting each service at the right moment, and reacting to their events",
+      "Building `result.json` (with metadata) and `result.csv`, stored through Upload",
+      "Locked preview; downloads only after payment, checked on the server",
+      "Checkout at $5.00 and the success page",
+      "Asking Delivery to email when paid"
+    ],
+    "scope_out": [
+      "Batches of documents: `MVP2-E9`, `MVP2-E12`",
+      "Paying with a saved card: `MVP2-E13`",
+      "Anything a service does: it is designed in that service"
+    ],
     "stories": [
       "MVP1-E0-09",
       "MVP1-E2-05",
@@ -38,9 +66,64 @@ export const docflow = {
       "MVP1-E7-02"
     ]
   },
-  "flow": [],
-  "concepts": [],
-  "quickstart": [],
+  "flow": [
+    {
+      "who": "DocFlow",
+      "what": "Creates the document and Upload's file; after the upload, starts Extraction."
+    },
+    {
+      "who": "Extraction",
+      "what": "Tells DocFlow the job finished (`extraction.job.completed`)."
+    },
+    {
+      "who": "DocFlow",
+      "what": "Sends the fields to Review as a task."
+    },
+    {
+      "who": "DocFlow",
+      "what": "When the person completes review: re-checks values with Extraction, completes the Review task, builds the JSON and CSV and stores them through Upload."
+    },
+    {
+      "who": "DocFlow",
+      "what": "At checkout, asks Payment for an order at $5.00."
+    },
+    {
+      "who": "Payment",
+      "what": "Tells DocFlow the order is paid (`payment.order.paid`)."
+    },
+    {
+      "who": "DocFlow",
+      "what": "Marks the document paid, asks Delivery for the email, and unlocks downloads."
+    }
+  ],
+  "concepts": [
+    {
+      "term": "Process record",
+      "meaning": "DocFlow's one row per invoice: the IDs of its parts in each service, and its status."
+    },
+    {
+      "term": "Reference",
+      "meaning": "`docflow:{document_id}`: how DocFlow labels its jobs, tasks, orders and messages in the services."
+    },
+    {
+      "term": "CSV injection",
+      "meaning": "A cell starting with `=`, `+`, `-` or `@` can run as a formula in a spreadsheet; such cells are prefixed with `'`."
+    }
+  ],
+  "quickstart": [
+    {
+      "title": "The CSV's columns",
+      "text": "One row per line item, invoice columns repeated on each row: `document_id`, `vendor_name`, `vendor_address`, `vendor_tax_id`, `invoice_number`, `invoice_date`, `due_date`, `bill_to_name`, `bill_to_address`, `currency`, `subtotal`, `tax_total`, `total`, `payment_terms`, `line_number`, `line_description`, `line_quantity`, `line_unit_price`, `line_amount`. An invoice with no line items gives one row with the line columns empty.",
+      "lang": "text",
+      "code": "document_id,vendor_name,…,line_number,line_description,line_quantity,line_unit_price,line_amount"
+    },
+    {
+      "title": "Unlock only when paid",
+      "text": "Every download checks the order on the server.",
+      "lang": "ts",
+      "code": "const { order } = await payment.get(`/orders/${doc.order_id}`);\nif (order.status !== \"paid\") return problem(402, \"payment_required\");"
+    }
+  ],
   "cookies": [],
   "claims": [],
   "errorSample": "{\n  \"type\": \"https://01scale.com/errors/payment_required\",\n  \"title\": \"Payment required\",\n  \"status\": 402,\n  \"detail\": \"Pay to download these results.\",\n  \"code\": \"payment_required\",\n  \"request_id\": \"req_0193a61f9c2e\"\n}",
@@ -1033,8 +1116,33 @@ export const docflow = {
       ]
     }
   ],
-  "env": [],
-  "openQuestions": [],
+  "env": [
+    {
+      "name": "DOCFLOW_DATABASE_URL",
+      "value": "Neon connection string for the `docflow_service` role",
+      "secret": "Yes"
+    },
+    {
+      "name": "DOCFLOW_PRICE_CENTS",
+      "value": "`500`",
+      "secret": "No"
+    },
+    {
+      "name": "DOCFLOW_SERVICE_TOKEN",
+      "value": "How DocFlow's server authenticates to services as the app",
+      "secret": "Yes"
+    },
+    {
+      "name": "EVENTS_SIGNING_KEY",
+      "value": "32 random bytes, base64",
+      "secret": "Yes"
+    }
+  ],
+  "openQuestions": [
+    "`MVP1-E5-04` stores outputs under `users/{userId}/{docId}/outputs/`. Through Upload, every key is `users/{owner}/{fileId}/original.{ext}`, built from IDs; the story's path cannot be kept without breaking that rule. I propose changing the story.",
+    "`MVP1-E5-04` AC2 rebuilds outputs 'if the user later edits fields', but Human Review locks values when a review completes. Either reviews can be reopened, or AC2 belongs with the chat corrections of MVP2.",
+    "Where the JSON Schema `schemas/invoice-v1.json` is published (a file in the repository, or also served at an address) is not decided."
+  ],
   "decisions": [],
   "journeys": [
     {

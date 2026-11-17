@@ -1,6 +1,6 @@
 # DocFlow service — UI components
 
-> **Version 1 · The app that connects the services.** Status: in design. Stories: `MVP1-E0-09`, `MVP1-E2-05`, `MVP1-E5-01`, `MVP1-E5-02`, `MVP1-E5-03`, `MVP1-E5-04`, `MVP1-E7-01`, `MVP1-E7-02`.
+> **Version 1 · The app that connects the services.** Status: designed, not built. Stories: `MVP1-E0-09`, `MVP1-E2-05`, `MVP1-E5-01`, `MVP1-E5-02`, `MVP1-E5-03`, `MVP1-E5-04`, `MVP1-E7-01`, `MVP1-E7-02`.
 
 DocFlow's own page sections. Everything else on DocFlow's pages comes from the services' component packages. Designed, not built.
 
