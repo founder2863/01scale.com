@@ -151,6 +151,17 @@ As a user, I want to manage how I sign in on 01scale's own account page, without
   - `GET /api/docflow/v1/batches/{batchId}` (signed in) — Batch status with each document's step and status. → `200 {batch, documents: [{id, file_name, step, status}], summary: {extracted, needs_review, failed}}`.
 - **Database design:** No schema change.
 
+### MVP2-E9-04 · Keep original documents beyond 30 days — S
+Decided by Nikhil on 17 Nov 2026 (ARCHITECTURE.md §12.8): in MVP1, originals are deleted after 30 days; keeping them longer is for MVP2.
+As a user, I want to see the original invoice beside its results months later, so I can check a value against the document.
+- **AC1:** An app can ask Upload to keep a file until the owner deletes it or their account (`retention: until_deleted`), instead of the default 30 days.
+- **AC2:** DocFlow keeps the originals of documents whose review is complete; files never completed still expire after 30 days.
+- **AC3:** The S3 lifecycle rule applies only to files tagged for expiry, so kept files are not removed. Storage cost per user is shown on the admin page.
+- **AC4:** Deleting a document or the account deletes its original at once, as today.
+- **Service:** Upload (provider), then DocFlow
+- **API design:** `PATCH /api/upload/v1/files/{fileId}` (signed in) — change a file's retention. Body `{retention: "30_days"|"until_deleted"}` → `200 {file}`.
+- **Database design:** `upload.files.expires_at` becomes nullable: empty means kept until deleted.
+
 ---
 
 ## E10 · LLM as judge on extraction (MVP2 "c") — `llm`

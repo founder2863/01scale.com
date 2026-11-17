@@ -2157,6 +2157,33 @@ export const products = [
         ],
         "evals": "MD-1 batch completeness, MD-2 batch latency, MD-3 accuracy in batch vs alone.",
         "service": "DocFlow app"
+      },
+      {
+        "id": "MVP2-E9-04",
+        "title": "Keep original documents beyond 30 days",
+        "size": "S",
+        "pending": "",
+        "story": "Decided by Nikhil on 17 Nov 2026 (ARCHITECTURE.md §12.8): in MVP1, originals are deleted after 30 days; keeping them longer is for MVP2. As a user, I want to see the original invoice beside its results months later, so I can check a value against the document.",
+        "acs": [
+          {
+            "label": "AC1",
+            "text": "An app can ask Upload to keep a file until the owner deletes it or their account (`retention: until_deleted`), instead of the default 30 days."
+          },
+          {
+            "label": "AC2",
+            "text": "DocFlow keeps the originals of documents whose review is complete; files never completed still expire after 30 days."
+          },
+          {
+            "label": "AC3",
+            "text": "The S3 lifecycle rule applies only to files tagged for expiry, so kept files are not removed. Storage cost per user is shown on the admin page."
+          },
+          {
+            "label": "AC4",
+            "text": "Deleting a document or the account deletes its original at once, as today."
+          }
+        ],
+        "evals": "",
+        "service": "Upload (provider), then DocFlow"
       }
     ],
     "endpoints": [
@@ -2207,6 +2234,14 @@ export const products = [
         "summary": "Batch status with each document's step and status.",
         "detail": "→ `200 {batch, documents: [{id, file_name, step, status}], summary: {extracted, needs_review, failed}}`.",
         "story": "MVP2-E9-03"
+      },
+      {
+        "method": "PATCH",
+        "path": "/api/upload/v1/files/{fileId}",
+        "access": "Signed in",
+        "summary": "change a file's retention.",
+        "detail": "Body `{retention: \"30_days\"|\"until_deleted\"}` → `200 {file}`.",
+        "story": "MVP2-E9-04"
       }
     ],
     "apiNotes": [
@@ -2230,6 +2265,11 @@ export const products = [
         "story": "MVP2-E9-03",
         "title": "Batch status page",
         "text": "No schema change."
+      },
+      {
+        "story": "MVP2-E9-04",
+        "title": "Keep original documents beyond 30 days",
+        "text": "`upload.files.expires_at` becomes nullable: empty means kept until deleted."
       }
     ]
   },
