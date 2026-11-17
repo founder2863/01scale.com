@@ -46,8 +46,8 @@ export const costs = {
       "buildTokens": 5197416,
       "reworkTokens": 8445956,
       "buildCost": 9.9,
-      "reworkCost": 9.12,
-      "totalCost": 19.02,
+      "reworkCost": 9.28,
+      "totalCost": 19.18,
       "yield": 38,
       "pending": false
     },
@@ -105,9 +105,9 @@ export const costs = {
       "requests": 1,
       "buildTokens": 9488541,
       "reworkTokens": 0,
-      "buildCost": 8.94,
+      "buildCost": 7.32,
       "reworkCost": 0,
-      "totalCost": 8.94,
+      "totalCost": 7.32,
       "yield": 100,
       "pending": false
     },
@@ -117,9 +117,9 @@ export const costs = {
       "requests": 1,
       "buildTokens": 20858627,
       "reworkTokens": 0,
-      "buildCost": 5.3,
+      "buildCost": 5.88,
       "reworkCost": 0,
-      "totalCost": 5.3,
+      "totalCost": 5.88,
       "yield": 100,
       "pending": false
     },
@@ -129,9 +129,9 @@ export const costs = {
       "requests": 1,
       "buildTokens": 15653506,
       "reworkTokens": 0,
-      "buildCost": 4.26,
+      "buildCost": 4.62,
       "reworkCost": 0,
-      "totalCost": 4.26,
+      "totalCost": 4.62,
       "yield": 100,
       "pending": false
     },
@@ -141,9 +141,9 @@ export const costs = {
       "requests": 1,
       "buildTokens": 5810683,
       "reworkTokens": 0,
-      "buildCost": 1.83,
+      "buildCost": 1.89,
       "reworkCost": 0,
-      "totalCost": 1.83,
+      "totalCost": 1.89,
       "yield": 100,
       "pending": false
     },
@@ -153,9 +153,9 @@ export const costs = {
       "requests": 1,
       "buildTokens": 2668470,
       "reworkTokens": 0,
-      "buildCost": 1.0,
+      "buildCost": 0.98,
       "reworkCost": 0,
-      "totalCost": 1.0,
+      "totalCost": 0.98,
       "yield": 100,
       "pending": false
     },
@@ -165,9 +165,9 @@ export const costs = {
       "requests": 1,
       "buildTokens": 5154747,
       "reworkTokens": 0,
-      "buildCost": 1.6,
+      "buildCost": 1.66,
       "reworkCost": 0,
-      "totalCost": 1.6,
+      "totalCost": 1.66,
       "yield": 100,
       "pending": false
     },
@@ -177,9 +177,9 @@ export const costs = {
       "requests": 1,
       "buildTokens": 3491642,
       "reworkTokens": 0,
-      "buildCost": 0.92,
+      "buildCost": 1.01,
       "reworkCost": 0,
-      "totalCost": 0.92,
+      "totalCost": 1.01,
       "yield": 100,
       "pending": false
     },
@@ -189,9 +189,9 @@ export const costs = {
       "requests": 1,
       "buildTokens": 1892303,
       "reworkTokens": 0,
-      "buildCost": 1.88,
+      "buildCost": 1.53,
       "reworkCost": 0,
-      "totalCost": 1.88,
+      "totalCost": 1.53,
       "yield": 100,
       "pending": false
     },
@@ -201,23 +201,23 @@ export const costs = {
       "requests": 1,
       "buildTokens": 1391192,
       "reworkTokens": 0,
-      "buildCost": 1.0,
+      "buildCost": 0.86,
       "reworkCost": 0,
-      "totalCost": 1.0,
+      "totalCost": 0.86,
       "yield": 100,
       "pending": false
     },
     {
       "key": "ARCH-REVIEW",
       "name": "Architect skill and MVP1 architecture review",
-      "requests": 2,
-      "buildTokens": 4886450,
-      "reworkTokens": 0,
-      "buildCost": 0.32,
-      "reworkCost": 0,
-      "totalCost": 0.32,
-      "yield": 100,
-      "pending": true
+      "requests": 3,
+      "buildTokens": 5803435,
+      "reworkTokens": 13212869,
+      "buildCost": 3.08,
+      "reworkCost": 4.28,
+      "totalCost": 7.36,
+      "yield": 31,
+      "pending": false
     }
   ],
   "scaffolding": [
@@ -247,33 +247,33 @@ export const costs = {
     },
     {
       "name": "Process",
-      "requests": 2,
-      "tokens": 1740306,
-      "cost": 0.34
+      "requests": 5,
+      "tokens": 4174070,
+      "cost": 1.2
     },
     {
       "name": "Tool overhead (background calls)",
       "requests": 0,
       "tokens": 0,
-      "cost": 1.65
+      "cost": -2.46
     }
   ],
   "totals": {
-    "requests": 59,
-    "tokens": 142727145,
-    "cost": 113.46,
-    "buildCost": 74.74,
-    "reworkCost": 18.85,
-    "scaffoldingCost": 19.87,
-    "storyYield": 85,
-    "overallYield": 78,
-    "pendingRequests": 1
+    "requests": 63,
+    "tokens": 159290763,
+    "cost": 116.42,
+    "buildCost": 76.51,
+    "reworkCost": 23.3,
+    "scaffoldingCost": 16.61,
+    "storyYield": 77,
+    "overallYield": 71,
+    "pendingRequests": 0
   },
   "byKind": {
-    "input": 0.06,
-    "output": 15.57,
-    "cache_read": 13.59,
-    "cache_write": 55.62
+    "input": 0.08,
+    "output": 22.0,
+    "cache_read": 29.67,
+    "cache_write": 64.67
   },
   "mostExpensive": [
     {
@@ -289,16 +289,16 @@ export const costs = {
       "outputTokens": 1878
     },
     {
-      "summary": "Token cost tracking on How It's Built (and finishing the skills work)",
-      "cost": 8.94,
-      "tokens": 9488541,
-      "outputTokens": 38191
-    },
-    {
       "summary": "Redo every story's API and database for the services architecture; create MVP1 issues",
       "cost": 8.09,
       "tokens": 7630461,
       "outputTokens": 104918
+    },
+    {
+      "summary": "Token cost tracking on How It's Built (and finishing the skills work)",
+      "cost": 7.32,
+      "tokens": 9488541,
+      "outputTokens": 38191
     },
     {
       "summary": "Review question: email length limit",
