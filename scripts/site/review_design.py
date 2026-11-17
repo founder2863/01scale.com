@@ -175,6 +175,98 @@ ENDPOINTS = [
     ),
 ]
 
+# ------------------------------------------------------------------ data model
+TASKS = {"name": "review.tasks", "purpose": "One row per set of values a person checks together, usually one document's fields.", "columns": [
+    column("id", "uuid", "No", "", "Primary key. UUIDv7", "The task's ID."),
+    column("owner_id", "uuid", "No", "", "", "The user who checks it, from the access token. A plain ID."),
+    column("reference", "text", "No", "", "1 to 200 characters", "The caller's own label, returned in events. Opaque to Review."),
+    column("status", "text", "No", "'open'", "`open` or `completed`", "Whether values can still change."),
+    column("checks_overridden", "boolean", "No", "false", "", "True when the person confirmed values that still fail a rule check, as printed on the document."),
+    column("created_at", "timestamptz", "No", "now()", "", "When the task was created."),
+    column("completed_at", "timestamptz", "Yes", "", "Set exactly when completed", "When the person finished."),
+    column("completed_by", "uuid", "Yes", "", "Set exactly when completed", "Who finished it. The owner in version 1; kept separate for later shared reviews."),
+], "constraints": [], "sampleCols": [], "sampleRows": []}
+
+RFIELDS = {"name": "review.fields", "purpose": "Review's own copy of each value under review, with the evidence and the person's decision. The service that extracted it keeps its own original, untouched.", "columns": [
+    column("id", "uuid", "No", "", "Primary key. UUIDv7", "The field's ID within Review."),
+    column("task_id", "uuid", "No", "", "Foreign key to `review.tasks`, delete cascades", "The task it belongs to."),
+    column("name", "text", "No", "", "1 to 64 characters; unique with `line_index` in a task", "The field's name, used as its label."),
+    column("line_index", "smallint", "Yes", "", "0 or more", "Which line item, for repeated fields."),
+    column("type", "text", "No", "", "`text`, `date`, `decimal` or `currency`", "How an edit is checked."),
+    column("original_value", "jsonb", "Yes", "", "A JSON string, or empty", "The value as it arrived. Never changes."),
+    column("value", "jsonb", "Yes", "", "A JSON string, or empty for not present", "The value now, after any decision."),
+    column("confidence", "numeric(3,2)", "No", "", "0 to 1", "How sure the system was; orders the queue."),
+    column("source_page", "smallint", "Yes", "", "1 or more", "The page of the evidence."),
+    column("source_quote", "text", "Yes", "", "1 to 500 characters", "The evidence, shown beside the value."),
+    column("flagged", "boolean", "No", "", "True exactly when there is a reason", "Whether a decision is required."),
+    column("flag_reasons", "text[]", "No", "'{}'", "", "Why it needs checking."),
+    column("status", "text", "No", "'pending'", "`pending`, `accepted`, `edited` or `not_present`", "The person's decision so far."),
+    column("updated_by", "uuid", "Yes", "", "Set once decided", "Who made the last decision."),
+    column("updated_at", "timestamptz", "Yes", "", "Set once decided", "When."),
+], "constraints": [], "sampleCols": [], "sampleRows": []}
+
+CHANGES = {"name": "review.field_changes", "purpose": "The full history of decisions on a field: one row per change, never edited. Any change can be traced, and undone by applying the old value again.", "columns": [
+    column("id", "uuid", "No", "", "Primary key. UUIDv7", "The change's ID."),
+    column("field_id", "uuid", "No", "", "Foreign key to `review.fields`, delete cascades", "The field changed."),
+    column("action", "text", "No", "", "`accept`, `edit` or `not_present`", "What the person decided."),
+    column("old_value", "jsonb", "Yes", "", "", "The value before."),
+    column("new_value", "jsonb", "Yes", "", "", "The value after."),
+    column("source", "text", "No", "'review'", "`review` in version 1 (`chat` arrives in MVP2)", "Where the change came from."),
+    column("changed_by", "uuid", "No", "", "", "Who made it."),
+    column("created_at", "timestamptz", "No", "now()", "", "When."),
+], "constraints": [], "sampleCols": [], "sampleRows": []}
+
+CANDIDATES = {"name": "review.eval_candidates", "purpose": "One row per value a person corrected, kept so the owner can turn real mistakes into test cases. Never added to the eval set without approval.", "columns": [
+    column("id", "uuid", "No", "", "Primary key. UUIDv7", "The candidate's ID."),
+    column("task_id", "uuid", "Yes", "", "Empty after the owner's account is deleted", "The task it came from; no foreign key, so an approved candidate can outlive it."),
+    column("reference", "text", "No", "", "1 to 200 characters", "The task's reference, which ties the ground truth to its document."),
+    column("field_name", "text", "No", "", "1 to 64 characters", "Which field."),
+    column("line_index", "smallint", "Yes", "", "0 or more", "Which line item."),
+    column("model_value", "jsonb", "Yes", "", "", "What the system had."),
+    column("human_value", "jsonb", "Yes", "", "Different from `model_value`", "What the person corrected it to."),
+    column("status", "text", "No", "'candidate'", "`candidate`, `approved`, `rejected` or `exported`", "Where it is in the approval."),
+    column("decided_by", "uuid", "Yes", "", "Set once approved or rejected", "The admin who decided."),
+    column("decided_at", "timestamptz", "Yes", "", "Set once approved or rejected", "When."),
+    column("created_at", "timestamptz", "No", "now()", "", "When the correction was made."),
+], "constraints": [], "sampleCols": [], "sampleRows": []}
+
+INBOUND = {"name": "review.inbound_events", "purpose": "One row per platform event Review has acted on, so a repeat has no effect.", "columns": [
+    column("event_id", "uuid", "No", "", "Primary key", "The event's ID."),
+    column("type", "text", "No", "", "1 to 100 characters", "What happened."),
+    column("created_at", "timestamptz", "No", "now()", "", "When Review processed it."),
+], "constraints": [], "sampleCols": [], "sampleRows": []}
+
+DATA_MODEL_RULES = [
+    "Review owns its copy of every value. It never reads another service's data, and never changes the original it was sent.",
+    "`original_value` never changes; `value` holds the decision. The difference between them is what a person corrected.",
+    "Every decision writes a history row in the same transaction; history rows are never edited.",
+    "A task can be completed only when no flagged field is `pending`, and once completed its values never change.",
+    "A correction (a final value different from the original) creates exactly one eval candidate per field, updated if the person changes it again before completing.",
+    "A candidate becomes ground truth only after an admin approves it; only approved candidates are exported.",
+    "Deleting a user's account deletes their tasks, fields and history. Approved or exported candidates stay, without the task's ID.",
+]
+
+DATA_MODEL = {
+    "entities": [
+        {"name": "Task", "table": "`review.tasks`", "what": "A set of values one person checks together.", "relations": "Belongs to one user by ID. Has many fields."},
+        {"name": "Field", "table": "`review.fields`", "what": "One value under review, with its evidence and decision.", "relations": "Belongs to one task. Has many changes."},
+        {"name": "Change", "table": "`review.field_changes`", "what": "One decision on one field.", "relations": "Belongs to one field."},
+        {"name": "Eval candidate", "table": "`review.eval_candidates`", "what": "A correction that could become a test case.", "relations": "Came from a task, by ID only."},
+        {"name": "Processed event", "table": "`review.inbound_events`", "what": "A platform event already acted on.", "relations": "Stands alone."},
+    ],
+    "lifecycles": [
+        {"name": "Task", "text": "`open` when created → `completed` when the person finishes. Never reopened."},
+        {"name": "Field", "text": "`pending` → `accepted`, `edited` or `not_present`, and can change between those until the task is completed."},
+        {"name": "Eval candidate", "text": "`candidate` when a correction is made → `approved` or `rejected` by an admin → `exported` when written to a ground-truth file."},
+    ],
+    "notStored": [
+        "The document itself: only the quotes sent with each field.",
+        "Document rules: re-checking values is the LLM Extraction service's job.",
+        "Ground-truth files: they are produced on export and handed over, not kept here.",
+    ],
+    "otherTables": "The service template also gives Review `audit_events`, `idempotency_keys` and `outbound_events`. Review writes `review.task_created`, `review.field_updated` and `review.task_completed` to `audit_events`, uses `idempotency_keys` for `POST /tasks`, and announces `review.task.completed`.",
+}
+
 MODULE = {
     "slug": "human-review",
     "docsPath": "docs/services/review",
@@ -193,6 +285,11 @@ MODULE = {
     },
     "errorSample": problem("fields_unresolved", "Fields still to check", 409, "2 flagged fields are still waiting for a decision."),
     "endpoints": ENDPOINTS,
+    "tables": [TASKS, RFIELDS, CHANGES, CANDIDATES, INBOUND],
+    "entities": DATA_MODEL["entities"],
+    "lifecycles": DATA_MODEL["lifecycles"],
+    "otherTables": DATA_MODEL["otherTables"],
+    "notStored": DATA_MODEL["notStored"],
     "noEndpoint": [
         {"topic": "Re-checking corrected values (MVP1-E4-03)", "how": "The rule checks belong to the LLM Extraction service. The app calls its `POST /validations` with the corrected values before completing the task here, and passes `checks_overridden` if the person confirms values that still fail. Review itself knows no document rules."},
         {"topic": "Keyboard and touch (MVP1-E4-02 AC3)", "how": "A design rule of the components: Enter accepts, E edits, ↓ moves to the next field; on phones every action is a large button."},
@@ -212,7 +309,7 @@ MODULE = {
             "`POST /tasks` accepts `Idempotency-Key`; `complete` is idempotent by design.",
         ]},
         {"level": "Schema level: enforced by the database, whatever the code does", "items": []},
-        {"level": "Data model level: business rules the service guarantees", "items": []},
+        {"level": "Data model level: business rules the service guarantees", "items": DATA_MODEL_RULES},
     ],
     "openQuestions": [],
 }

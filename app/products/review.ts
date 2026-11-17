@@ -14,7 +14,11 @@ export const review = {
     "token": "",
     "schema": "The SQL for the Human Review service's tables, in the `review` schema. No other service can read them."
   },
-  "notStored": [],
+  "notStored": [
+    "The document itself: only the quotes sent with each field.",
+    "Document rules: re-checking values is the LLM Extraction service's job.",
+    "Ground-truth files: they are produced on export and handed over, not kept here."
+  ],
   "overview": {
     "name": "Human Review",
     "version": "Version 1 · A person checks flagged fields",
@@ -587,8 +591,414 @@ export const review = {
       "how": "Like every service, Review serves `GET /health` and `GET /openapi.json` from the service template (`MVP1-E0-05`)."
     }
   ],
-  "tables": [],
-  "otherTables": "",
+  "tables": [
+    {
+      "name": "review.tasks",
+      "purpose": "One row per set of values a person checks together, usually one document's fields.",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": "No",
+          "default": "",
+          "constraints": "Primary key. UUIDv7",
+          "meaning": "The task's ID."
+        },
+        {
+          "name": "owner_id",
+          "type": "uuid",
+          "nullable": "No",
+          "default": "",
+          "constraints": "",
+          "meaning": "The user who checks it, from the access token. A plain ID."
+        },
+        {
+          "name": "reference",
+          "type": "text",
+          "nullable": "No",
+          "default": "",
+          "constraints": "1 to 200 characters",
+          "meaning": "The caller's own label, returned in events. Opaque to Review."
+        },
+        {
+          "name": "status",
+          "type": "text",
+          "nullable": "No",
+          "default": "'open'",
+          "constraints": "`open` or `completed`",
+          "meaning": "Whether values can still change."
+        },
+        {
+          "name": "checks_overridden",
+          "type": "boolean",
+          "nullable": "No",
+          "default": "false",
+          "constraints": "",
+          "meaning": "True when the person confirmed values that still fail a rule check, as printed on the document."
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": "No",
+          "default": "now()",
+          "constraints": "",
+          "meaning": "When the task was created."
+        },
+        {
+          "name": "completed_at",
+          "type": "timestamptz",
+          "nullable": "Yes",
+          "default": "",
+          "constraints": "Set exactly when completed",
+          "meaning": "When the person finished."
+        },
+        {
+          "name": "completed_by",
+          "type": "uuid",
+          "nullable": "Yes",
+          "default": "",
+          "constraints": "Set exactly when completed",
+          "meaning": "Who finished it. The owner in version 1; kept separate for later shared reviews."
+        }
+      ],
+      "constraints": [],
+      "sampleCols": [],
+      "sampleRows": []
+    },
+    {
+      "name": "review.fields",
+      "purpose": "Review's own copy of each value under review, with the evidence and the person's decision. The service that extracted it keeps its own original, untouched.",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": "No",
+          "default": "",
+          "constraints": "Primary key. UUIDv7",
+          "meaning": "The field's ID within Review."
+        },
+        {
+          "name": "task_id",
+          "type": "uuid",
+          "nullable": "No",
+          "default": "",
+          "constraints": "Foreign key to `review.tasks`, delete cascades",
+          "meaning": "The task it belongs to."
+        },
+        {
+          "name": "name",
+          "type": "text",
+          "nullable": "No",
+          "default": "",
+          "constraints": "1 to 64 characters; unique with `line_index` in a task",
+          "meaning": "The field's name, used as its label."
+        },
+        {
+          "name": "line_index",
+          "type": "smallint",
+          "nullable": "Yes",
+          "default": "",
+          "constraints": "0 or more",
+          "meaning": "Which line item, for repeated fields."
+        },
+        {
+          "name": "type",
+          "type": "text",
+          "nullable": "No",
+          "default": "",
+          "constraints": "`text`, `date`, `decimal` or `currency`",
+          "meaning": "How an edit is checked."
+        },
+        {
+          "name": "original_value",
+          "type": "jsonb",
+          "nullable": "Yes",
+          "default": "",
+          "constraints": "A JSON string, or empty",
+          "meaning": "The value as it arrived. Never changes."
+        },
+        {
+          "name": "value",
+          "type": "jsonb",
+          "nullable": "Yes",
+          "default": "",
+          "constraints": "A JSON string, or empty for not present",
+          "meaning": "The value now, after any decision."
+        },
+        {
+          "name": "confidence",
+          "type": "numeric(3,2)",
+          "nullable": "No",
+          "default": "",
+          "constraints": "0 to 1",
+          "meaning": "How sure the system was; orders the queue."
+        },
+        {
+          "name": "source_page",
+          "type": "smallint",
+          "nullable": "Yes",
+          "default": "",
+          "constraints": "1 or more",
+          "meaning": "The page of the evidence."
+        },
+        {
+          "name": "source_quote",
+          "type": "text",
+          "nullable": "Yes",
+          "default": "",
+          "constraints": "1 to 500 characters",
+          "meaning": "The evidence, shown beside the value."
+        },
+        {
+          "name": "flagged",
+          "type": "boolean",
+          "nullable": "No",
+          "default": "",
+          "constraints": "True exactly when there is a reason",
+          "meaning": "Whether a decision is required."
+        },
+        {
+          "name": "flag_reasons",
+          "type": "text[]",
+          "nullable": "No",
+          "default": "'{}'",
+          "constraints": "",
+          "meaning": "Why it needs checking."
+        },
+        {
+          "name": "status",
+          "type": "text",
+          "nullable": "No",
+          "default": "'pending'",
+          "constraints": "`pending`, `accepted`, `edited` or `not_present`",
+          "meaning": "The person's decision so far."
+        },
+        {
+          "name": "updated_by",
+          "type": "uuid",
+          "nullable": "Yes",
+          "default": "",
+          "constraints": "Set once decided",
+          "meaning": "Who made the last decision."
+        },
+        {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "nullable": "Yes",
+          "default": "",
+          "constraints": "Set once decided",
+          "meaning": "When."
+        }
+      ],
+      "constraints": [],
+      "sampleCols": [],
+      "sampleRows": []
+    },
+    {
+      "name": "review.field_changes",
+      "purpose": "The full history of decisions on a field: one row per change, never edited. Any change can be traced, and undone by applying the old value again.",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": "No",
+          "default": "",
+          "constraints": "Primary key. UUIDv7",
+          "meaning": "The change's ID."
+        },
+        {
+          "name": "field_id",
+          "type": "uuid",
+          "nullable": "No",
+          "default": "",
+          "constraints": "Foreign key to `review.fields`, delete cascades",
+          "meaning": "The field changed."
+        },
+        {
+          "name": "action",
+          "type": "text",
+          "nullable": "No",
+          "default": "",
+          "constraints": "`accept`, `edit` or `not_present`",
+          "meaning": "What the person decided."
+        },
+        {
+          "name": "old_value",
+          "type": "jsonb",
+          "nullable": "Yes",
+          "default": "",
+          "constraints": "",
+          "meaning": "The value before."
+        },
+        {
+          "name": "new_value",
+          "type": "jsonb",
+          "nullable": "Yes",
+          "default": "",
+          "constraints": "",
+          "meaning": "The value after."
+        },
+        {
+          "name": "source",
+          "type": "text",
+          "nullable": "No",
+          "default": "'review'",
+          "constraints": "`review` in version 1 (`chat` arrives in MVP2)",
+          "meaning": "Where the change came from."
+        },
+        {
+          "name": "changed_by",
+          "type": "uuid",
+          "nullable": "No",
+          "default": "",
+          "constraints": "",
+          "meaning": "Who made it."
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": "No",
+          "default": "now()",
+          "constraints": "",
+          "meaning": "When."
+        }
+      ],
+      "constraints": [],
+      "sampleCols": [],
+      "sampleRows": []
+    },
+    {
+      "name": "review.eval_candidates",
+      "purpose": "One row per value a person corrected, kept so the owner can turn real mistakes into test cases. Never added to the eval set without approval.",
+      "columns": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "nullable": "No",
+          "default": "",
+          "constraints": "Primary key. UUIDv7",
+          "meaning": "The candidate's ID."
+        },
+        {
+          "name": "task_id",
+          "type": "uuid",
+          "nullable": "Yes",
+          "default": "",
+          "constraints": "Empty after the owner's account is deleted",
+          "meaning": "The task it came from; no foreign key, so an approved candidate can outlive it."
+        },
+        {
+          "name": "reference",
+          "type": "text",
+          "nullable": "No",
+          "default": "",
+          "constraints": "1 to 200 characters",
+          "meaning": "The task's reference, which ties the ground truth to its document."
+        },
+        {
+          "name": "field_name",
+          "type": "text",
+          "nullable": "No",
+          "default": "",
+          "constraints": "1 to 64 characters",
+          "meaning": "Which field."
+        },
+        {
+          "name": "line_index",
+          "type": "smallint",
+          "nullable": "Yes",
+          "default": "",
+          "constraints": "0 or more",
+          "meaning": "Which line item."
+        },
+        {
+          "name": "model_value",
+          "type": "jsonb",
+          "nullable": "Yes",
+          "default": "",
+          "constraints": "",
+          "meaning": "What the system had."
+        },
+        {
+          "name": "human_value",
+          "type": "jsonb",
+          "nullable": "Yes",
+          "default": "",
+          "constraints": "Different from `model_value`",
+          "meaning": "What the person corrected it to."
+        },
+        {
+          "name": "status",
+          "type": "text",
+          "nullable": "No",
+          "default": "'candidate'",
+          "constraints": "`candidate`, `approved`, `rejected` or `exported`",
+          "meaning": "Where it is in the approval."
+        },
+        {
+          "name": "decided_by",
+          "type": "uuid",
+          "nullable": "Yes",
+          "default": "",
+          "constraints": "Set once approved or rejected",
+          "meaning": "The admin who decided."
+        },
+        {
+          "name": "decided_at",
+          "type": "timestamptz",
+          "nullable": "Yes",
+          "default": "",
+          "constraints": "Set once approved or rejected",
+          "meaning": "When."
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": "No",
+          "default": "now()",
+          "constraints": "",
+          "meaning": "When the correction was made."
+        }
+      ],
+      "constraints": [],
+      "sampleCols": [],
+      "sampleRows": []
+    },
+    {
+      "name": "review.inbound_events",
+      "purpose": "One row per platform event Review has acted on, so a repeat has no effect.",
+      "columns": [
+        {
+          "name": "event_id",
+          "type": "uuid",
+          "nullable": "No",
+          "default": "",
+          "constraints": "Primary key",
+          "meaning": "The event's ID."
+        },
+        {
+          "name": "type",
+          "type": "text",
+          "nullable": "No",
+          "default": "",
+          "constraints": "1 to 100 characters",
+          "meaning": "What happened."
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": "No",
+          "default": "now()",
+          "constraints": "",
+          "meaning": "When Review processed it."
+        }
+      ],
+      "constraints": [],
+      "sampleCols": [],
+      "sampleRows": []
+    }
+  ],
+  "otherTables": "The service template also gives Review `audit_events`, `idempotency_keys` and `outbound_events`. Review writes `review.task_created`, `review.field_updated` and `review.task_completed` to `audit_events`, uses `idempotency_keys` for `POST /tasks`, and announces `review.task.completed`.",
   "rules": [
     {
       "level": "API level: checked on every request before anything is stored",
@@ -608,7 +1018,15 @@ export const review = {
     },
     {
       "level": "Data model level: business rules the service guarantees",
-      "items": []
+      "items": [
+        "Review owns its copy of every value. It never reads another service's data, and never changes the original it was sent.",
+        "`original_value` never changes; `value` holds the decision. The difference between them is what a person corrected.",
+        "Every decision writes a history row in the same transaction; history rows are never edited.",
+        "A task can be completed only when no flagged field is `pending`, and once completed its values never change.",
+        "A correction (a final value different from the original) creates exactly one eval candidate per field, updated if the person changes it again before completing.",
+        "A candidate becomes ground truth only after an admin approves it; only approved candidates are exported.",
+        "Deleting a user's account deletes their tasks, fields and history. Approved or exported candidates stay, without the task's ID."
+      ]
     }
   ],
   "env": [],
@@ -619,8 +1037,52 @@ export const review = {
   "components": [],
   "hostedPages": [],
   "uiRules": [],
-  "entities": [],
-  "lifecycles": [],
+  "entities": [
+    {
+      "name": "Task",
+      "table": "`review.tasks`",
+      "what": "A set of values one person checks together.",
+      "relations": "Belongs to one user by ID. Has many fields."
+    },
+    {
+      "name": "Field",
+      "table": "`review.fields`",
+      "what": "One value under review, with its evidence and decision.",
+      "relations": "Belongs to one task. Has many changes."
+    },
+    {
+      "name": "Change",
+      "table": "`review.field_changes`",
+      "what": "One decision on one field.",
+      "relations": "Belongs to one field."
+    },
+    {
+      "name": "Eval candidate",
+      "table": "`review.eval_candidates`",
+      "what": "A correction that could become a test case.",
+      "relations": "Came from a task, by ID only."
+    },
+    {
+      "name": "Processed event",
+      "table": "`review.inbound_events`",
+      "what": "A platform event already acted on.",
+      "relations": "Stands alone."
+    }
+  ],
+  "lifecycles": [
+    {
+      "name": "Task",
+      "text": "`open` when created → `completed` when the person finishes. Never reopened."
+    },
+    {
+      "name": "Field",
+      "text": "`pending` → `accepted`, `edited` or `not_present`, and can change between those until the task is completed."
+    },
+    {
+      "name": "Eval candidate",
+      "text": "`candidate` when a correction is made → `approved` or `rejected` by an admin → `exported` when written to a ground-truth file."
+    }
+  ],
   "ddl": "",
   "queries": []
 };
