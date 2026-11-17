@@ -1,6 +1,6 @@
 # Gateway service — API specification
 
-> **Version 1 · `apps/web` at 01scale.com/api.** Status: in design. Stories: `MVP1-E0-08`, `MVP1-E1-06`.
+> **Version 1 · `apps/web` at 01scale.com/api.** Status: designed, not built. Stories: `MVP1-E0-08`, `MVP1-E1-06`.
 
 Base address: `https://01scale.com/api`. Shared rules for every 01scale API (errors, versioning, tracing) are in [`docs/architecture/API-DESIGN.md`](../../architecture/API-DESIGN.md).
 

@@ -1,6 +1,6 @@
 # Gateway service — user journeys
 
-> **Version 1 · `apps/web` at 01scale.com/api.** Status: in design. Stories: `MVP1-E0-08`, `MVP1-E1-06`.
+> **Version 1 · `apps/web` at 01scale.com/api.** Status: designed, not built. Stories: `MVP1-E0-08`, `MVP1-E1-06`.
 
 The gateway has no screens; these are the paths requests take through it.
 
