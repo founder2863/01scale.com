@@ -485,7 +485,7 @@ export const products = [
     "group": "MVP1",
     "service": "Upload",
     "description": "Upload a file from the browser straight to a private AWS S3 bucket.",
-    "status": "In design",
+    "status": "Designed",
     "detailed": true,
     "epic": {
       "id": "E2",

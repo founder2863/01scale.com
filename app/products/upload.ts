@@ -2,7 +2,12 @@
 export const upload = {
   "slug": "document-upload",
   "docsPath": "docs/services/upload",
-  "extraDocs": [],
+  "extraDocs": [
+    {
+      "path": "docs/infra/s3.md",
+      "label": "AWS S3 setup steps"
+    }
+  ],
   "labels": {
     "flow": "How an upload works",
     "hosted": "Pages provided by an outside service"
@@ -23,12 +28,46 @@ export const upload = {
   "overview": {
     "name": "Upload",
     "version": "Version 1 · Files to AWS S3",
-    "status": "In design",
+    "status": "Designed, not built",
     "base": "/api/upload/v1",
-    "what": [],
-    "why": [],
-    "scope_in": [],
-    "scope_out": [],
+    "what": [
+      "Upload is the platform service that takes a file from a person's browser or an app's server and keeps it safely, so other services can use it. In DocFlow it is the step where an invoice comes in.",
+      "The file goes straight from the browser to a private AWS S3 bucket using a link that works for 5 minutes and only for that one file. Upload never handles the bytes on the way in, so large files cost it nothing.",
+      "Before anyone can use the file, Upload checks what actually arrived: the right size, a real PDF, PNG or JPEG rather than something renamed, and no more pages than the app allows. Only then is the file `ready`."
+    ],
+    "why": [
+      {
+        "title": "One safe way in for files",
+        "text": "Every app and service that needs a document gets it the same way, with the same checks, instead of each building its own upload."
+      },
+      {
+        "title": "Files never touch the web servers",
+        "text": "Sending straight to storage keeps uploads fast, avoids server time limits, and means a large file cannot slow anything else down."
+      },
+      {
+        "title": "Trust what is stored",
+        "text": "A file is only usable after its size, type and pages are checked against its real content, so extraction never receives a renamed spreadsheet or a 200-page PDF."
+      },
+      {
+        "title": "Private by design",
+        "text": "The bucket is never public. Each link works for one file, for 5 minutes, for its owner, so a forwarded link is useless."
+      }
+    ],
+    "scope_in": [
+      "Upload a PDF, PNG or JPEG of up to 10 MB and 10 pages from a browser, on a computer or a phone, including the phone's camera",
+      "Store JSON and CSV files for an app's server, such as DocFlow's results",
+      "Check every file's real type, size and page count before it can be used",
+      "View or download a stored file through a short-lived link",
+      "List and delete your files",
+      "Delete all of a person's files when their account is deleted",
+      "Remove files after 30 days, and abandoned uploads after 24 hours"
+    ],
+    "scope_out": [
+      "Several files at once: the batch upload in `MVP2-E9-01` is built by the DocFlow app on top of this service",
+      "Virus scanning, retention rules and resumable uploads for very large files: later versions of Upload",
+      "Sharing a file with another person: not planned",
+      "Reading what a document says: that is the LLM Extraction service"
+    ],
     "stories": [
       "MVP1-E2-01",
       "MVP1-E2-02",
@@ -37,9 +76,80 @@ export const upload = {
       "MVP1-E2-05"
     ]
   },
-  "flow": [],
-  "concepts": [],
-  "quickstart": [],
+  "flow": [
+    {
+      "who": "Browser",
+      "what": "The person drops or picks a file. The upload area checks its type and size first."
+    },
+    {
+      "who": "Upload",
+      "what": "On `POST /files`, records the file as `pending_upload` and signs a 5-minute storage link fixed to that file's type and size."
+    },
+    {
+      "who": "Browser",
+      "what": "Sends the file straight to the private S3 bucket with that link, showing progress."
+    },
+    {
+      "who": "Upload",
+      "what": "On `POST /files/{fileId}/complete`, confirms the size, checks the first bytes match the type, counts PDF pages and fingerprints the content. The file becomes `ready`, or `rejected` and deleted."
+    },
+    {
+      "who": "App",
+      "what": "Moves on with the ready file's ID. In DocFlow, it starts extraction."
+    },
+    {
+      "who": "Any service",
+      "what": "Reads the file later through a 5-minute link from `GET /files/{fileId}/download-url`, forwarding the user's access token so only the owner's files are reachable."
+    }
+  ],
+  "concepts": [
+    {
+      "term": "Presigned link",
+      "meaning": "A storage address with a signature that allows one action on one file for a few minutes. It replaces passing the file through Upload."
+    },
+    {
+      "term": "Object",
+      "meaning": "A file's bytes as S3 stores them, at a key like `users/{owner}/{file}/original.pdf`."
+    },
+    {
+      "term": "First bytes check",
+      "meaning": "Every file type starts with a known signature, for example `%PDF-`. Checking it catches a file renamed to look like something else."
+    },
+    {
+      "term": "`accept`",
+      "meaning": "An app's own limits for an upload, which can only be tighter than Upload's."
+    },
+    {
+      "term": "Fingerprint",
+      "meaning": "The SHA-256 of the content, which changes if a single byte changes."
+    }
+  ],
+  "quickstart": [
+    {
+      "title": "Let a person upload a file",
+      "text": "Drop the component into a page. It handles checking, progress, retries and the result.",
+      "lang": "tsx",
+      "code": "import { UploadArea } from \"@01scale/ui-upload\";\n\n<UploadArea\n  accept={{ mimes: [\"application/pdf\", \"image/png\", \"image/jpeg\"], maxBytes: 10_485_760, maxPages: 10 }}\n  onUploaded={(file) => router.push(`/files/${file.id}`)}\n/>"
+    },
+    {
+      "title": "Upload from code or an agent",
+      "text": "Three calls: create the file, send the bytes to the link, then confirm. The `headers` returned must be sent exactly.",
+      "lang": "ts",
+      "code": "const { file, upload } = await api.post(\"/api/upload/v1/files\", {\n  file_name: \"invoice.pdf\", mime: \"application/pdf\", size: bytes.length,\n});\nawait fetch(upload.url, { method: \"PUT\", headers: upload.headers, body: bytes });\nconst { file: checked } = await api.post(`/api/upload/v1/files/${file.id}/complete`);\nif (checked.status === \"rejected\") console.log(checked.rejection_reason);"
+    },
+    {
+      "title": "Open a stored file",
+      "text": "Ask for a link when you need it; it works for 5 minutes.",
+      "lang": "ts",
+      "code": "const { url } = await api.get(`/api/upload/v1/files/${fileId}/download-url?disposition=inline`);\nwindow.open(url, \"_blank\");"
+    },
+    {
+      "title": "Read a file inside another service",
+      "text": "Forward the user's access token, so Upload applies its own ownership check.",
+      "lang": "ts",
+      "code": "const res = await fetch(`${UPLOAD_URL}/api/upload/v1/files/${fileId}/download-url`, {\n  headers: { Authorization: request.headers.get(\"authorization\")! },\n});\nconst { url } = await res.json();\nconst bytes = await (await fetch(url)).arrayBuffer();"
+    }
+  ],
   "cookies": [],
   "claims": [],
   "errorSample": "{\n  \"type\": \"https://01scale.com/errors/file_too_large\",\n  \"title\": \"File too large\",\n  \"status\": 413,\n  \"detail\": \"This file is 14.2 MB. The limit is 10 MB.\",\n  \"code\": \"file_too_large\",\n  \"request_id\": \"req_0193a61f9c2e\"\n}",
@@ -837,9 +947,47 @@ export const upload = {
       ]
     }
   ],
-  "env": [],
+  "env": [
+    {
+      "name": "UPLOAD_DATABASE_URL",
+      "value": "Neon connection string for the `upload_service` role",
+      "secret": "Yes"
+    },
+    {
+      "name": "UPLOAD_BUCKET",
+      "value": "`01scale-uploads`",
+      "secret": "No"
+    },
+    {
+      "name": "AWS_REGION",
+      "value": "`us-east-1`",
+      "secret": "No"
+    },
+    {
+      "name": "UPLOAD_AWS_ACCESS_KEY_ID",
+      "value": "The access key of the IAM user that may only read, write, check and delete objects in this bucket (`MVP1-E2-01`)",
+      "secret": "Yes"
+    },
+    {
+      "name": "UPLOAD_AWS_SECRET_ACCESS_KEY",
+      "value": "That IAM user's secret key",
+      "secret": "Yes"
+    },
+    {
+      "name": "IDENTITY_JWKS_URL",
+      "value": "`https://01scale.com/api/identity/v1/jwks`: where access tokens are verified",
+      "secret": "No"
+    },
+    {
+      "name": "EVENTS_SIGNING_KEY",
+      "value": "32 random bytes, base64: verifies the signature on platform events",
+      "secret": "Yes"
+    }
+  ],
   "openQuestions": [
-    "Rate limits are starting values to be tuned once there is real traffic."
+    "Rate limits are starting values to be tuned once there is real traffic.",
+    "Files are removed after 30 days. Should a person be told before that happens? No story asks for it, so nothing is sent today.",
+    "A photo of a paper invoice is accepted as one page. Several photos of a multi-page invoice would be several files; joining them into one document is not designed."
   ],
   "decisions": [],
   "journeys": [
