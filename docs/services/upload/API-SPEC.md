@@ -61,6 +61,7 @@ Access: **Signed in** · Story: `MVP1-E2-02`
 | `422` | `idempotency_key_reused` | The same `Idempotency-Key` was sent with a different body. |
 | `403` | `service_only` | `owner_id` was sent without the `service` role. |
 | `401` | `not_authenticated` | No valid access token. |
+| `503` | `storage_unavailable` | AWS S3 could not be reached. Nothing was changed; safe to retry. |
 
 **Sample request**
 
@@ -152,6 +153,7 @@ Access: **Signed in** · Story: `MVP1-E2-03`
 | `409` | `upload_missing` | Nothing has arrived in storage yet, for example the browser has not finished sending. Safe to retry. |
 | `409` | `size_mismatch` | What arrived is not the declared size. The object is deleted; create a new file to try again. |
 | `409` | `file_deleted` | The file was deleted or has expired. |
+| `503` | `storage_unavailable` | AWS S3 could not be reached. Nothing was changed; safe to retry. |
 
 **Sample request**
 
@@ -333,6 +335,7 @@ Access: **Signed in** · Story: `MVP1-E2-03`
 | `404` | `file_not_found` | No such file, or it belongs to another user. The same answer in both cases. |
 | `409` | `file_not_ready` | The file is still uploading, or was rejected. |
 | `410` | `file_expired` | The file was removed after 30 days. |
+| `503` | `storage_unavailable` | AWS S3 could not be reached. Nothing was changed; safe to retry. |
 
 **Sample request**
 
@@ -380,6 +383,7 @@ Access: **Signed in** · Story: `MVP1-E2-02`
 |---|---|---|
 | `401` | `not_authenticated` | No valid access token. The gateway normally answers this before the request arrives. |
 | `404` | `file_not_found` | No such file, or it belongs to another user. The same answer in both cases. |
+| `503` | `storage_unavailable` | AWS S3 could not be reached. Nothing was changed; safe to retry. |
 
 **Sample request**
 

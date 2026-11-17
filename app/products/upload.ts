@@ -145,6 +145,11 @@ export const upload = {
           "status": "401",
           "code": "`not_authenticated`",
           "when": "No valid access token."
+        },
+        {
+          "status": "503",
+          "code": "`storage_unavailable`",
+          "when": "AWS S3 could not be reached. Nothing was changed; safe to retry."
         }
       ],
       "request": "POST /api/upload/v1/files HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>\nIdempotency-Key: 8b1f6c2e-upload-1\nContent-Type: application/json\n\n{\n  \"file_name\": \"acme-invoice-0042.pdf\",\n  \"mime\": \"application/pdf\",\n  \"size\": 248913,\n  \"accept\": {\n    \"mimes\": [\n      \"application/pdf\",\n      \"image/png\",\n      \"image/jpeg\"\n    ],\n    \"max_bytes\": 10485760,\n    \"max_pages\": 10\n  }\n}",
@@ -208,6 +213,11 @@ export const upload = {
           "status": "409",
           "code": "`file_deleted`",
           "when": "The file was deleted or has expired."
+        },
+        {
+          "status": "503",
+          "code": "`storage_unavailable`",
+          "when": "AWS S3 could not be reached. Nothing was changed; safe to retry."
         }
       ],
       "request": "POST /api/upload/v1/files/0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b/complete HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>",
@@ -380,6 +390,11 @@ export const upload = {
           "status": "410",
           "code": "`file_expired`",
           "when": "The file was removed after 30 days."
+        },
+        {
+          "status": "503",
+          "code": "`storage_unavailable`",
+          "when": "AWS S3 could not be reached. Nothing was changed; safe to retry."
         }
       ],
       "request": "GET /api/upload/v1/files/0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b/download-url?disposition=attachment HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>",
@@ -424,6 +439,11 @@ export const upload = {
           "status": "404",
           "code": "`file_not_found`",
           "when": "No such file, or it belongs to another user. The same answer in both cases."
+        },
+        {
+          "status": "503",
+          "code": "`storage_unavailable`",
+          "when": "AWS S3 could not be reached. Nothing was changed; safe to retry."
         }
       ],
       "request": "DELETE /api/upload/v1/files/0193b0c9-5f22-7a08-9e44-1a2b3c4d5e6f HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>",
@@ -822,8 +842,214 @@ export const upload = {
     "Rate limits are starting values to be tuned once there is real traffic."
   ],
   "decisions": [],
-  "journeys": [],
-  "edgeCases": [],
+  "journeys": [
+    {
+      "name": "Upload a document on a computer",
+      "who": "Someone with a document on their computer",
+      "trigger": "Drags a file onto the upload area, or chooses Upload a file.",
+      "stories": [
+        "MVP1-E2-02",
+        "MVP1-E2-03",
+        "MVP1-E2-04"
+      ],
+      "steps": [
+        {
+          "person": "Drops a PDF onto the upload area, or picks it with Choose file.",
+          "system": "The upload area checks the type and size in the browser first, so an obvious mistake is caught before anything is sent."
+        },
+        {
+          "person": "Sees the file name and a progress bar starting at 0%.",
+          "system": "Upload records the file as `pending_upload` and returns a link valid for 5 minutes."
+        },
+        {
+          "person": "Watches the bar fill.",
+          "system": "The browser sends the file straight to private storage with that link. Upload never handles the bytes."
+        },
+        {
+          "person": "Sees 'Checking your file…' for a moment.",
+          "system": "Upload confirms the file arrived at the declared size, checks its first bytes match its type, and counts its pages."
+        },
+        {
+          "person": "Sees 'Uploaded' and is taken to the next step.",
+          "system": "The file is `ready`. The app that uses Upload moves on; in DocFlow, the extraction page opens."
+        }
+      ],
+      "outcome": "The file is stored privately, checked and ready to use. Only its owner can read it, through links that last 5 minutes."
+    },
+    {
+      "name": "Upload from a phone",
+      "who": "Someone with a paper invoice or a file on their phone",
+      "trigger": "Taps Choose file or Take photo.",
+      "stories": [
+        "MVP1-E2-04"
+      ],
+      "steps": [
+        {
+          "person": "Taps Take photo and photographs the invoice, or taps Choose file and picks a PDF or image.",
+          "system": "The phone's own camera or file picker opens. Nothing depends on dragging, which phones cannot do."
+        },
+        {
+          "person": "Sees the photo's name and the progress bar.",
+          "system": "As on a computer: the file is recorded and sent straight to storage."
+        },
+        {
+          "person": "Sees 'Uploaded' and moves on.",
+          "system": "The photo is checked as a JPEG or PNG and counted as one page."
+        }
+      ],
+      "outcome": "The same result as on a computer."
+    },
+    {
+      "name": "Upload a file that is not what it says",
+      "who": "Someone who picked the wrong file, for example a renamed spreadsheet",
+      "trigger": "The browser reports a PDF, but the content is something else.",
+      "stories": [
+        "MVP1-E2-03"
+      ],
+      "steps": [
+        {
+          "person": "Uploads the file; the bar reaches 100%.",
+          "system": "The file arrives in storage."
+        },
+        {
+          "person": "Sees 'This file isn't a readable PDF, PNG or JPEG. Choose another file.'",
+          "system": "The check finds the first bytes do not match the type. Upload marks the file `rejected` with the reason `type_mismatch` and deletes it from storage at once."
+        },
+        {
+          "person": "Chooses another file.",
+          "system": "A new upload starts. The rejected one is kept only as a record, without content."
+        }
+      ],
+      "outcome": "Nothing unreadable is stored or passed on to extraction."
+    },
+    {
+      "name": "Lose the connection during an upload",
+      "who": "Someone on a weak mobile connection",
+      "trigger": "The connection drops while the bar is moving.",
+      "stories": [
+        "MVP1-E2-04"
+      ],
+      "steps": [
+        {
+          "person": "Sees 'The upload stopped. Check your connection and try again.' and a Retry button.",
+          "system": "The browser's transfer failed. Upload still has the file as `pending_upload`."
+        },
+        {
+          "person": "Taps Retry.",
+          "system": "If the 5-minute link is still valid, the browser sends the file again with it; if not, it asks Upload for a new file and link."
+        },
+        {
+          "person": "Sees 'Uploaded'.",
+          "system": "The check runs as usual."
+        }
+      ],
+      "outcome": "The person never has to start over by hand. An upload abandoned altogether is deleted by the daily clean-up after 24 hours."
+    },
+    {
+      "name": "Open a stored file",
+      "who": "The file's owner, for example checking the original next to extracted data",
+      "trigger": "Taps the file's name or View original.",
+      "stories": [
+        "MVP1-E2-03"
+      ],
+      "steps": [
+        {
+          "person": "Taps View original.",
+          "system": "The app asks Upload for a link to the file."
+        },
+        {
+          "person": "Sees the PDF or image open in a new tab.",
+          "system": "Upload returns a link valid for 5 minutes; the browser reads the file straight from storage."
+        },
+        {
+          "person": "Taps Download instead.",
+          "system": "The link is made with `attachment`, so the file saves under its original name. Upload records `file.downloaded`."
+        }
+      ],
+      "outcome": "The person sees their file. The link stops working after 5 minutes, so a forwarded link is of no use to anyone else."
+    },
+    {
+      "name": "Delete a file",
+      "who": "The file's owner",
+      "trigger": "Chooses Delete on a file and confirms.",
+      "stories": [
+        "MVP1-E2-02"
+      ],
+      "steps": [
+        {
+          "person": "Chooses Delete, then confirms 'Delete this file? This can't be undone.'",
+          "system": "The app asks Upload to delete the file."
+        },
+        {
+          "person": "Sees the file disappear from the list.",
+          "system": "Upload removes the object from storage, marks the file `deleted` and records `file.deleted`."
+        }
+      ],
+      "outcome": "The content is gone for good. A record that the file existed remains, without content, so the history still makes sense."
+    }
+  ],
+  "edgeCases": [
+    {
+      "situation": "Picks a Word document or another unsupported type",
+      "sees": "'PDF, PNG and JPEG files only.' Nothing is uploaded.",
+      "code": "`unsupported_file_type`"
+    },
+    {
+      "situation": "Picks a file over 10 MB",
+      "sees": "'This file is 14.2 MB. The limit is 10 MB.' Nothing is uploaded.",
+      "code": "`file_too_large`"
+    },
+    {
+      "situation": "Uploads a PDF with more than 10 pages",
+      "sees": "'This PDF has 14 pages. The limit is 10.' The file is deleted.",
+      "code": "Rejected: `too_many_pages`"
+    },
+    {
+      "situation": "The content does not match the type",
+      "sees": "'This file isn't a readable PDF, PNG or JPEG. Choose another file.'",
+      "code": "Rejected: `type_mismatch`"
+    },
+    {
+      "situation": "The connection drops mid-upload",
+      "sees": "'The upload stopped. Check your connection and try again.' with Retry.",
+      "code": "`upload_missing`"
+    },
+    {
+      "situation": "Waits more than 5 minutes before the file is sent",
+      "sees": "Nothing different: the upload area asks for a new link and continues.",
+      "code": "(S3 refuses the expired link)"
+    },
+    {
+      "situation": "What arrived is not the size declared",
+      "sees": "'Something went wrong sending this file. Try again.'",
+      "code": "`size_mismatch`"
+    },
+    {
+      "situation": "Opens a file that is still uploading",
+      "sees": "'This file is still uploading.'",
+      "code": "`file_not_ready`"
+    },
+    {
+      "situation": "Opens a file older than 30 days",
+      "sees": "'This file was removed after 30 days. Upload it again to use it.'",
+      "code": "`file_expired`"
+    },
+    {
+      "situation": "Follows a link to someone else's file",
+      "sees": "'File not found.' Nothing reveals that the file exists.",
+      "code": "`file_not_found`"
+    },
+    {
+      "situation": "Storage is unavailable",
+      "sees": "'Uploads are unavailable for a moment. Try again shortly.' Nothing is lost.",
+      "code": "`storage_unavailable`"
+    },
+    {
+      "situation": "Is signed out",
+      "sees": "Is taken to sign in, then returned to the upload page.",
+      "code": "`not_authenticated`"
+    }
+  ],
   "components": [],
   "hostedPages": [],
   "uiRules": [],

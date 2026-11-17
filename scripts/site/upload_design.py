@@ -30,6 +30,8 @@ FILE_PENDING = {**FILE_READY, "id": F3, "pages": None, "status": "pending_upload
                 "file_name": "receipt-photo.jpg", "mime": "image/jpeg", "size_bytes": 1843200,
                 "created_at": "2026-11-17T09:20:30Z", "expires_at": "2026-12-17T09:20:30Z"}
 
+STORAGE_DOWN = error("503", "storage_unavailable", "AWS S3 could not be reached. Nothing was changed; safe to retry.")
+
 ERRORS_COMMON = [
     error("401", "not_authenticated", "No valid access token. The gateway normally answers this before the request arrives."),
     error("404", "file_not_found", "No such file, or it belongs to another user. The same answer in both cases."),
@@ -62,6 +64,7 @@ ENDPOINTS = [
             error("422", "idempotency_key_reused", "The same `Idempotency-Key` was sent with a different body."),
             error("403", "service_only", "`owner_id` was sent without the `service` role."),
             error("401", "not_authenticated", "No valid access token."),
+            STORAGE_DOWN,
         ],
         "POST /api/upload/v1/files HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>\nIdempotency-Key: 8b1f6c2e-upload-1\nContent-Type: application/json\n\n"
         + json.dumps({"file_name": "acme-invoice-0042.pdf", "mime": "application/pdf", "size": 248913,
@@ -91,6 +94,7 @@ ENDPOINTS = [
             error("409", "upload_missing", "Nothing has arrived in storage yet, for example the browser has not finished sending. Safe to retry."),
             error("409", "size_mismatch", "What arrived is not the declared size. The object is deleted; create a new file to try again."),
             error("409", "file_deleted", "The file was deleted or has expired."),
+            STORAGE_DOWN,
         ],
         f"POST /api/upload/v1/files/{F1}/complete HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>",
         json.dumps({"file": FILE_READY}, indent=2),
@@ -132,7 +136,7 @@ ENDPOINTS = [
         ],
         ["Signs an S3 GET link valid for 5 minutes, with the content type and `Content-Disposition` fixed in the signature.", "Records `file.downloaded` when `disposition` is `attachment`."],
         [response("200", "The file is ready", "`url` and `expires_at`.")],
-        ERRORS_COMMON + [error("409", "file_not_ready", "The file is still uploading, or was rejected."), error("410", "file_expired", "The file was removed after 30 days.")],
+        ERRORS_COMMON + [error("409", "file_not_ready", "The file is still uploading, or was rejected."), error("410", "file_expired", "The file was removed after 30 days."), STORAGE_DOWN],
         f"GET /api/upload/v1/files/{F1}/download-url?disposition=attachment HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>",
         json.dumps({"url": f"{BUCKET}/{KEY1}?response-content-disposition=attachment%3B%20filename%3D%22acme-invoice-0042.pdf%22&{SIGNED.replace('content-length%3Bcontent-type%3B', '')}", "expires_at": "2026-11-17T09:25:00Z"}, indent=2),
     ),
@@ -143,7 +147,7 @@ ENDPOINTS = [
         [param("fileId", "path", "uuid", "Yes", "A file of the caller's.", "The file.")],
         ["Deletes the object from S3, sets status `deleted` and `deleted_at`, and records `file.deleted`.", "A file that is already deleted returns `204` again."],
         [response("204", "The file is deleted", "No body.")],
-        ERRORS_COMMON,
+        ERRORS_COMMON + [STORAGE_DOWN],
         f"DELETE /api/upload/v1/files/{F2} HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>",
         "HTTP/1.1 204 No Content",
     ),
@@ -369,6 +373,85 @@ SCHEMA_RULES = [
     "Upload's database login can reach only the `upload` schema. No other service can read these tables.",
 ]
 
+# ------------------------------------------------------------------ user journeys
+JOURNEYS = [
+    journey(
+        "Upload a document on a computer", "Someone with a document on their computer",
+        "Drags a file onto the upload area, or chooses Upload a file.", ["MVP1-E2-02", "MVP1-E2-03", "MVP1-E2-04"],
+        [
+            ("Drops a PDF onto the upload area, or picks it with Choose file.", "The upload area checks the type and size in the browser first, so an obvious mistake is caught before anything is sent."),
+            ("Sees the file name and a progress bar starting at 0%.", "Upload records the file as `pending_upload` and returns a link valid for 5 minutes."),
+            ("Watches the bar fill.", "The browser sends the file straight to private storage with that link. Upload never handles the bytes."),
+            ("Sees 'Checking your file…' for a moment.", "Upload confirms the file arrived at the declared size, checks its first bytes match its type, and counts its pages."),
+            ("Sees 'Uploaded' and is taken to the next step.", "The file is `ready`. The app that uses Upload moves on; in DocFlow, the extraction page opens."),
+        ],
+        "The file is stored privately, checked and ready to use. Only its owner can read it, through links that last 5 minutes.",
+    ),
+    journey(
+        "Upload from a phone", "Someone with a paper invoice or a file on their phone",
+        "Taps Choose file or Take photo.", ["MVP1-E2-04"],
+        [
+            ("Taps Take photo and photographs the invoice, or taps Choose file and picks a PDF or image.", "The phone's own camera or file picker opens. Nothing depends on dragging, which phones cannot do."),
+            ("Sees the photo's name and the progress bar.", "As on a computer: the file is recorded and sent straight to storage."),
+            ("Sees 'Uploaded' and moves on.", "The photo is checked as a JPEG or PNG and counted as one page."),
+        ],
+        "The same result as on a computer.",
+    ),
+    journey(
+        "Upload a file that is not what it says", "Someone who picked the wrong file, for example a renamed spreadsheet",
+        "The browser reports a PDF, but the content is something else.", ["MVP1-E2-03"],
+        [
+            ("Uploads the file; the bar reaches 100%.", "The file arrives in storage."),
+            ("Sees 'This file isn't a readable PDF, PNG or JPEG. Choose another file.'", "The check finds the first bytes do not match the type. Upload marks the file `rejected` with the reason `type_mismatch` and deletes it from storage at once."),
+            ("Chooses another file.", "A new upload starts. The rejected one is kept only as a record, without content."),
+        ],
+        "Nothing unreadable is stored or passed on to extraction.",
+    ),
+    journey(
+        "Lose the connection during an upload", "Someone on a weak mobile connection",
+        "The connection drops while the bar is moving.", ["MVP1-E2-04"],
+        [
+            ("Sees 'The upload stopped. Check your connection and try again.' and a Retry button.", "The browser's transfer failed. Upload still has the file as `pending_upload`."),
+            ("Taps Retry.", "If the 5-minute link is still valid, the browser sends the file again with it; if not, it asks Upload for a new file and link."),
+            ("Sees 'Uploaded'.", "The check runs as usual."),
+        ],
+        "The person never has to start over by hand. An upload abandoned altogether is deleted by the daily clean-up after 24 hours.",
+    ),
+    journey(
+        "Open a stored file", "The file's owner, for example checking the original next to extracted data",
+        "Taps the file's name or View original.", ["MVP1-E2-03"],
+        [
+            ("Taps View original.", "The app asks Upload for a link to the file."),
+            ("Sees the PDF or image open in a new tab.", "Upload returns a link valid for 5 minutes; the browser reads the file straight from storage."),
+            ("Taps Download instead.", "The link is made with `attachment`, so the file saves under its original name. Upload records `file.downloaded`."),
+        ],
+        "The person sees their file. The link stops working after 5 minutes, so a forwarded link is of no use to anyone else.",
+    ),
+    journey(
+        "Delete a file", "The file's owner", "Chooses Delete on a file and confirms.", ["MVP1-E2-02"],
+        [
+            ("Chooses Delete, then confirms 'Delete this file? This can't be undone.'", "The app asks Upload to delete the file."),
+            ("Sees the file disappear from the list.", "Upload removes the object from storage, marks the file `deleted` and records `file.deleted`."),
+        ],
+        "The content is gone for good. A record that the file existed remains, without content, so the history still makes sense.",
+    ),
+]
+
+EDGE_CASES = [
+    {"situation": "Picks a Word document or another unsupported type", "sees": "'PDF, PNG and JPEG files only.' Nothing is uploaded.", "code": "`unsupported_file_type`"},
+    {"situation": "Picks a file over 10 MB", "sees": "'This file is 14.2 MB. The limit is 10 MB.' Nothing is uploaded.", "code": "`file_too_large`"},
+    {"situation": "Uploads a PDF with more than 10 pages", "sees": "'This PDF has 14 pages. The limit is 10.' The file is deleted.", "code": "Rejected: `too_many_pages`"},
+    {"situation": "The content does not match the type", "sees": "'This file isn't a readable PDF, PNG or JPEG. Choose another file.'", "code": "Rejected: `type_mismatch`"},
+    {"situation": "The connection drops mid-upload", "sees": "'The upload stopped. Check your connection and try again.' with Retry.", "code": "`upload_missing`"},
+    {"situation": "Waits more than 5 minutes before the file is sent", "sees": "Nothing different: the upload area asks for a new link and continues.", "code": "(S3 refuses the expired link)"},
+    {"situation": "What arrived is not the size declared", "sees": "'Something went wrong sending this file. Try again.'", "code": "`size_mismatch`"},
+    {"situation": "Opens a file that is still uploading", "sees": "'This file is still uploading.'", "code": "`file_not_ready`"},
+    {"situation": "Opens a file older than 30 days", "sees": "'This file was removed after 30 days. Upload it again to use it.'", "code": "`file_expired`"},
+    {"situation": "Follows a link to someone else's file", "sees": "'File not found.' Nothing reveals that the file exists.", "code": "`file_not_found`"},
+    {"situation": "Storage is unavailable", "sees": "'Uploads are unavailable for a moment. Try again shortly.' Nothing is lost.", "code": "`storage_unavailable`"},
+    {"situation": "Is signed out", "sees": "Is taken to sign in, then returned to the upload page.", "code": "`not_authenticated`"},
+]
+
 MODULE = {
     "slug": "document-upload",
     "docsPath": "docs/services/upload",
@@ -394,6 +477,8 @@ MODULE = {
     "otherTables": DATA_MODEL["otherTables"],
     "notStored": DATA_MODEL["notStored"],
     "ddl": DDL,
+    "journeys": JOURNEYS,
+    "edgeCases": EDGE_CASES,
     "queries": QUERIES,
     "noEndpoint": [
         {"topic": "Sending the file (MVP1-E2-02)", "how": "The browser PUTs the bytes straight to S3 with the link from `POST /files`, sending exactly the `headers` returned. Upload never receives the file's content through its API."},
