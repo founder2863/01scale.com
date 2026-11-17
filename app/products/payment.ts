@@ -22,21 +22,119 @@ export const payment = {
   "overview": {
     "name": "Payment",
     "version": "Version 1 · Stripe Checkout, test mode",
-    "status": "In design",
+    "status": "Designed, not built",
     "base": "/api/payment/v1",
-    "what": [],
-    "why": [],
-    "scope_in": [],
-    "scope_out": [],
+    "what": [
+      "Payment is the platform service that takes a one-time payment for something an app sells. In DocFlow it is the step where a person pays before downloading the results.",
+      "An app's server asks for an order with a price; Payment returns the address of Stripe's own checkout page, where the person pays. Card details never touch 01scale.",
+      "Stripe's signed message, not the person's browser, is what marks an order paid. Payment then tells the app, and the app unlocks what was bought. Version 1 runs in Stripe's test mode only."
+    ],
+    "why": [
+      {
+        "title": "One trusted record of who paid for what",
+        "text": "Apps check the order's status before unlocking anything, instead of each talking to Stripe."
+      },
+      {
+        "title": "Prices are never set by a browser",
+        "text": "Only an app's server can create an order, so nobody can change a price in their browser."
+      },
+      {
+        "title": "Charged once, even when things repeat",
+        "text": "Clicking twice, a repeated Stripe message or a retried request never creates a second order or charge."
+      },
+      {
+        "title": "No card data to protect",
+        "text": "Stripe's hosted page takes the card, which keeps 01scale out of most of the card-security rules."
+      }
+    ],
+    "scope_in": [
+      "One-time payment for one item, in USD, through Stripe Checkout in test mode",
+      "Reuse the open checkout page when Pay is clicked again",
+      "Mark orders paid, expired or failed from Stripe's signed events, once each",
+      "Tell the app when an order changes",
+      "List a person's orders; keep them, anonymized, if the account is deleted"
+    ],
+    "scope_out": [
+      "Saved cards and one-tap payment: `MVP2-E13`",
+      "Paying for a batch of documents: `MVP2-E13-04`",
+      "Refunds: not designed",
+      "Live (real-money) payments: not planned for the portfolio",
+      "Currencies other than USD"
+    ],
     "stories": [
       "MVP1-E6-01",
       "MVP1-E6-02",
       "MVP1-E6-03"
     ]
   },
-  "flow": [],
-  "concepts": [],
-  "quickstart": [],
+  "flow": [
+    {
+      "who": "App's server",
+      "what": "Calls `POST /orders` with the user, a reference, a description and the price. In DocFlow, when the person taps Pay."
+    },
+    {
+      "who": "Payment",
+      "what": "Records a `pending` order and creates a Stripe Checkout session; returns its address. A second call for the same reference returns the same order."
+    },
+    {
+      "who": "Browser",
+      "what": "Goes to Stripe's page; the person pays there."
+    },
+    {
+      "who": "Stripe",
+      "what": "Sends the person back to the app, and separately sends Payment a signed `checkout.session.completed` event."
+    },
+    {
+      "who": "Payment",
+      "what": "Verifies the signature, records the event once, marks the order `paid`, and announces `payment.order.paid`."
+    },
+    {
+      "who": "App",
+      "what": "Receives the event (or sees the order paid when polling) and unlocks what was bought."
+    }
+  ],
+  "concepts": [
+    {
+      "term": "Order",
+      "meaning": "One request for payment, with its price and status. The record an app trusts."
+    },
+    {
+      "term": "Checkout session",
+      "meaning": "Stripe's hosted payment page for one order, open for 1 hour."
+    },
+    {
+      "term": "Webhook",
+      "meaning": "A message Stripe sends to Payment's server when something happens, signed so it can be verified."
+    },
+    {
+      "term": "Minor units",
+      "meaning": "The amount in the currency's smallest unit: 500 means $5.00."
+    },
+    {
+      "term": "Reference",
+      "meaning": "What is being paid for, in the app's own terms; one open or paid order per reference."
+    }
+  ],
+  "quickstart": [
+    {
+      "title": "Ask for payment (app server)",
+      "text": "Set the price on the server and send the person to the returned address.",
+      "lang": "ts",
+      "code": "const { order, checkout_url } = await serviceApi.post(\"/api/payment/v1/orders\", {\n  user_id: userId, reference: `myapp:${itemId}`, description: \"Report export\",\n  amount: 500, currency: \"USD\",\n  success_url: `https://01scale.com/items/${itemId}/paid?order={ORDER_ID}`,\n  cancel_url: `https://01scale.com/items/${itemId}`,\n});\nreturn redirect(checkout_url);"
+    },
+    {
+      "title": "Confirm before unlocking",
+      "text": "Trust the order's status, never the browser arriving at the success page.",
+      "lang": "ts",
+      "code": "const { order } = await api.get(`/api/payment/v1/orders/${orderId}`);\nif (order.status !== \"paid\") return status(402);"
+    },
+    {
+      "title": "Show progress on a success page",
+      "text": "The component polls until the order settles.",
+      "lang": "tsx",
+      "code": "import { OrderStatus } from \"@01scale/ui-payment\";\n\n<OrderStatus orderId={orderId} onSettled={(o) => o.status === \"paid\" && unlock()} />"
+    }
+  ],
   "cookies": [],
   "claims": [],
   "errorSample": "{\n  \"type\": \"https://01scale.com/errors/already_paid\",\n  \"title\": \"Already paid\",\n  \"status\": 409,\n  \"detail\": \"This item is already paid for.\",\n  \"code\": \"already_paid\",\n  \"request_id\": \"req_0193a61f9c2e\"\n}",
@@ -669,8 +767,43 @@ export const payment = {
       ]
     }
   ],
-  "env": [],
-  "openQuestions": [],
+  "env": [
+    {
+      "name": "PAYMENT_DATABASE_URL",
+      "value": "Neon connection string for the `payment_service` role",
+      "secret": "Yes"
+    },
+    {
+      "name": "STRIPE_SECRET_KEY",
+      "value": "A Stripe test-mode secret key (`sk_test_…`). Live keys are refused at start-up.",
+      "secret": "Yes"
+    },
+    {
+      "name": "STRIPE_WEBHOOK_SECRET",
+      "value": "The signing secret of the webhook endpoint (`whsec_…`)",
+      "secret": "Yes"
+    },
+    {
+      "name": "IDENTITY_JWKS_URL",
+      "value": "`https://01scale.com/api/identity/v1/jwks`",
+      "secret": "No"
+    },
+    {
+      "name": "EVENTS_SIGNING_KEY",
+      "value": "32 random bytes, base64: signs and verifies platform events",
+      "secret": "Yes"
+    },
+    {
+      "name": "EVENT_SUBSCRIBERS",
+      "value": "The webhook addresses that receive Payment's events, for example DocFlow's",
+      "secret": "No"
+    }
+  ],
+  "openQuestions": [
+    "Stripe Checkout pages are kept open for 1 hour here (Stripe allows 30 minutes to 24 hours). Is an hour right?",
+    "Refunds are not designed. In test mode they matter only for the demo; should the admin be able to refund?",
+    "Rate limits are starting values."
+  ],
   "decisions": [],
   "journeys": [
     {

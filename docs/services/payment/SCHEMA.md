@@ -1,6 +1,6 @@
 # Payment service — schema
 
-> **Version 1 · Stripe Checkout, test mode.** Status: in design. Stories: `MVP1-E6-01`, `MVP1-E6-02`, `MVP1-E6-03`.
+> **Version 1 · Stripe Checkout, test mode.** Status: designed, not built. Stories: `MVP1-E6-01`, `MVP1-E6-02`, `MVP1-E6-03`.
 
 The SQL for the Payment service's tables, in the `payment` schema. No other service can read them. What each field means is in [`DATA-MODEL.md`](DATA-MODEL.md). In the build this is produced by Drizzle migrations; the SQL below is the target.
 

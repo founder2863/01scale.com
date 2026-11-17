@@ -1,6 +1,6 @@
 # Payment service — UI components
 
-> **Version 1 · Stripe Checkout, test mode.** Status: in design. Stories: `MVP1-E6-01`, `MVP1-E6-02`, `MVP1-E6-03`.
+> **Version 1 · Stripe Checkout, test mode.** Status: designed, not built. Stories: `MVP1-E6-01`, `MVP1-E6-02`, `MVP1-E6-03`.
 
 What the Payment service ships for apps to use, as the package `packages/ui-payment`. Designed, not built.
 

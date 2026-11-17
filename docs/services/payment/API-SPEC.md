@@ -1,6 +1,6 @@
 # Payment service — API specification
 
-> **Version 1 · Stripe Checkout, test mode.** Status: in design. Stories: `MVP1-E6-01`, `MVP1-E6-02`, `MVP1-E6-03`.
+> **Version 1 · Stripe Checkout, test mode.** Status: designed, not built. Stories: `MVP1-E6-01`, `MVP1-E6-02`, `MVP1-E6-03`.
 
 Base address: `https://01scale.com/api/payment/v1`. Shared rules for every 01scale API (errors, versioning, tracing) are in [`docs/architecture/API-DESIGN.md`](../../architecture/API-DESIGN.md).
 

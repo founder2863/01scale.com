@@ -1,6 +1,6 @@
 # Payment service — data model
 
-> **Version 1 · Stripe Checkout, test mode.** Status: in design. Stories: `MVP1-E6-01`, `MVP1-E6-02`, `MVP1-E6-03`.
+> **Version 1 · Stripe Checkout, test mode.** Status: designed, not built. Stories: `MVP1-E6-01`, `MVP1-E6-02`, `MVP1-E6-03`.
 
 What the service keeps, how the pieces relate, and what every field means. The SQL is in [`SCHEMA.md`](SCHEMA.md); shared database rules are in [`docs/architecture/DATABASE-DESIGN.md`](../../architecture/DATABASE-DESIGN.md).
 

@@ -1,6 +1,6 @@
 # Payment service — user journeys
 
-> **Version 1 · Stripe Checkout, test mode.** Status: in design. Stories: `MVP1-E6-01`, `MVP1-E6-02`, `MVP1-E6-03`.
+> **Version 1 · Stripe Checkout, test mode.** Status: designed, not built. Stories: `MVP1-E6-01`, `MVP1-E6-02`, `MVP1-E6-03`.
 
 What a person sees and what the system does when paying, in version 1 (Stripe test mode).
 
