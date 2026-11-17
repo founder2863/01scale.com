@@ -911,7 +911,7 @@ export const upload = {
         "Upload and download links last 5 minutes, and fix the type and size (upload) or type and filename (download) in their signature.",
         "`POST /files` accepts `Idempotency-Key`; `complete` and `DELETE` are idempotent by design.",
         "Events must carry a valid signature and are processed once per `event_id`.",
-        "Rate limit at the gateway: 100 requests a minute per user, across every endpoint of every service (Nikhil's decision on #64). Over it, `429 rate_limited` with `Retry-After`."
+        "Rate limits at the gateway (Nikhil's decision on #64): per user, 10 requests a minute that change something (POST, PUT, PATCH, DELETE) and 60 reads a minute; with an API key, 10 requests a minute in total. Over a limit, `429 rate_limited` with `Retry-After`."
       ]
     },
     {
@@ -979,7 +979,7 @@ export const upload = {
     }
   ],
   "openQuestions": [
-    "Decided by Nikhil on 17 Nov 2026 (#64): the rate limit is 100 requests a minute per user for every endpoint to begin with; higher limits come with paid plans (`MVP2-E13-06`).",
+    "Decided by Nikhil on 17 Nov 2026 (#64): these are demo services, with no batch or programmatic use yet. Each user may make 10 requests a minute that change something, on any service, and 60 reads a minute so pages and progress checks keep working; calls with an API key are limited to 10 a minute in total. Higher limits come with paid plans (`MVP2-E13-06`).",
     "Decided (#64): files are deleted after 30 days with no notice beforehand. The upload story says so, and each file's `expires_at` is returned with it.",
     "Decided (#64): each uploaded file is its own file. Several photos of the pages of one invoice are several files, and several documents; joining them into one is not in this version.",
     "`FilePreview` renders PDFs in the browser (for example with PDF.js) from the 5-minute inline link; the file never passes through Upload's API. Which library is chosen when the component is built."

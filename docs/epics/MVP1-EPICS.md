@@ -97,7 +97,7 @@ As a user or an agent, I want one address for the whole platform.
 - **AC2:** The gateway turns a session cookie or API key into a short-lived access token and forwards it; services never see cookies or API keys. An access token Identity already issued (a service or delegated token) is checked for signature and expiry and passed through unchanged.
 - **AC6:** Services and apps call each other through the gateway, like every other client (decision on #21).
 - **AC3:** `GET /api/openapi.json` returns one combined contract and `POST /api/mcp` one combined MCP server with tools namespaced by service.
-- **AC4:** The gateway applies rate limits per user and per IP, checks `Origin` on cookie-authenticated writes, and adds `X-Request-Id`. To begin with, every user has 100 requests a minute across all endpoints (Nikhil's decision on #64); sign-in endpoints keep their tighter limits per IP. Over a limit: `429 rate_limited` with `Retry-After`.
+- **AC4:** The gateway applies rate limits per user and per IP, checks `Origin` on cookie-authenticated writes, and adds `X-Request-Id`. These are demo services, with no batch or programmatic use yet (Nikhil's decision on #64): each user may make 10 requests a minute that change something (POST, PUT, PATCH, DELETE), on any service, and 60 reads a minute so pages and progress checks keep working; calls with an API key are limited to 10 a minute in total. Sign-in endpoints keep their tighter limits per IP. Over a limit: `429 rate_limited` with `Retry-After`.
 - **AC5:** The gateway contains no business logic and no data.
 - **Service:** Gateway
 - **API design:**
