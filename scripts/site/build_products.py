@@ -374,7 +374,8 @@ for path in sorted(glob.glob(os.path.join(HERE, "*_design.py"))):
     spec = importlib.util.spec_from_file_location(os.path.basename(path)[:-3], path)
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
-    RENDERED[mod.KEY] = (render.render(mod.MODULE, mod.KEY), getattr(mod, "COMPLETE", False))
+    _, all_stages = render.staged(mod.MODULE, mod.KEY)
+    RENDERED[mod.KEY] = (render.render(mod.MODULE, mod.KEY), getattr(mod, "COMPLETE", False) and all_stages)
 
 # Status shown on the site: Designed when finished, In design while documents are
 # still being added, Planned otherwise.
