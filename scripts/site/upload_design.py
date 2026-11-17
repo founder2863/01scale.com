@@ -452,6 +452,98 @@ EDGE_CASES = [
     {"situation": "Is signed out", "sees": "Is taken to sign in, then returned to the upload page.", "code": "`not_authenticated`"},
 ]
 
+# ------------------------------------------------------------------ UI components
+UI_RULES = [
+    "Components call only the Upload API, plus the storage link that API hands out. They never call another service.",
+    "An app can supply its own `create` and `complete` functions to wrap Upload in its own process (DocFlow does, to record the document as well). The components still know nothing about the app.",
+    "They ship as the package `packages/ui-upload` and work in any app.",
+    "No tokens in browser JavaScript: requests carry the HttpOnly session cookie and the gateway does the rest. Upload and download links are short-lived and fixed to one file.",
+    "Every action works without dragging: a phone uses the file picker or the camera.",
+    "Every request has a loading state that keeps the layout still, and a failure state with a plain-language message and a way to retry.",
+    "Keyboard reachable, visible focus, labelled controls, progress announced to screen readers, WCAG AA contrast, usable at 320 pixels wide, in light and dark mode.",
+]
+
+COMPONENTS = [
+    component(
+        "UploadArea", "Component",
+        "Where a person drops or picks a file; it checks the file, uploads it with progress, and reports the result.",
+        [
+            ("accept", "{mimes, maxBytes, maxPages}, optional", "Limits to check in the browser and send to Upload. Default: the service's limits."),
+            ("create, complete", "functions, optional", "Override the calls that create and confirm the file, for an app that wraps Upload. Default: Upload's own endpoints."),
+            ("onUploaded", "(file) => void", "Called with the ready file. The app decides what happens next."),
+            ("camera", "boolean, optional", "Show a Take photo button on phones. Default true."),
+        ],
+        [
+            "Idle: 'Drop a file here, or choose one', with Choose file and, on phones, Take photo",
+            "Dragging over: the area is highlighted",
+            "Refused in the browser: the reason (wrong type, too large) and the area stays ready",
+            "Uploading: the file name and an UploadProgress bar",
+            "Checking: 'Checking your file…'",
+            "Uploaded: 'Uploaded', then `onUploaded` is called",
+            "Rejected: the reason in plain words and Choose another file",
+            "Failed: the message for the error and Retry",
+            "Disabled: while the app does not allow another upload",
+        ],
+        ["`POST /files`", "the storage link (PUT)", "`POST /files/{fileId}/complete`"],
+    ),
+    component(
+        "useUpload()", "Hook",
+        "The upload steps without any visuals, for an app that wants its own design: create, send with progress, confirm, and retry with a fresh link when one has expired.",
+        [
+            ("accept", "{mimes, maxBytes, maxPages}, optional", "As for UploadArea."),
+            ("create, complete", "functions, optional", "As for UploadArea."),
+        ],
+        ["`idle`", "`uploading` with `progress` from 0 to 100", "`checking`", "`ready` with the file", "`rejected` with the reason", "`failed` with the error code"],
+        ["`POST /files`", "the storage link (PUT)", "`POST /files/{fileId}/complete`"],
+    ),
+    component(
+        "UploadProgress", "Component",
+        "A progress bar with the file name, the percentage, and Retry or Cancel.",
+        [
+            ("progress", "number 0 to 100", "How far the upload is."),
+            ("fileName", "string", "Shown above the bar."),
+            ("onRetry, onCancel", "functions, optional", "Shown as buttons when given."),
+        ],
+        ["In progress (announced to screen readers every 25%)", "Complete", "Stopped, with Retry"],
+        ["None: it shows what useUpload reports."],
+    ),
+    component(
+        "FileList", "Component",
+        "The signed-in person's files, newest first, with type, size, date and status, and actions to open or delete each.",
+        [
+            ("status", "string, optional", "Show only files with this status."),
+            ("pageSize", "number, optional", "How many to load at a time. Default 20."),
+        ],
+        [
+            "Loading: placeholder rows of the same height",
+            "Empty: 'No files yet.' and, if the app provides one, an upload button",
+            "Loaded, with Load more when there is a next page",
+            "Failed: 'Couldn't load your files.' and Retry",
+        ],
+        ["`GET /files`"],
+    ),
+    component(
+        "OpenFileButton", "Component",
+        "Opens a stored file in a new tab, or downloads it.",
+        [
+            ("fileId", "string", "The file."),
+            ("download", "boolean, optional", "Download instead of opening. Default false."),
+        ],
+        ["Default", "Working: disabled while the link is fetched", "Failed: the message (still uploading, expired, not found) next to the button"],
+        ["`GET /files/{fileId}/download-url`"],
+    ),
+    component(
+        "DeleteFileButton", "Component",
+        "Deletes a file after the person confirms.",
+        [
+            ("fileId", "string", "The file."),
+            ("onDeleted", "() => void, optional", "Called after the file is deleted, for example to refresh a list."),
+        ],
+        ["Default", "Confirming: 'Delete this file? This can't be undone.'", "Working: disabled", "Failed: the message and Retry"],
+        ["`DELETE /files/{fileId}`"],
+    ),
+]
+
 MODULE = {
     "slug": "document-upload",
     "docsPath": "docs/services/upload",
@@ -479,6 +571,8 @@ MODULE = {
     "ddl": DDL,
     "journeys": JOURNEYS,
     "edgeCases": EDGE_CASES,
+    "uiRules": UI_RULES,
+    "components": COMPONENTS,
     "queries": QUERIES,
     "noEndpoint": [
         {"topic": "Sending the file (MVP1-E2-02)", "how": "The browser PUTs the bytes straight to S3 with the link from `POST /files`, sending exactly the `headers` returned. Upload never receives the file's content through its API."},
