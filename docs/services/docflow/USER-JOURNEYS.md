@@ -11,7 +11,7 @@ What a person sees across the whole DocFlow journey, and where DocFlow's own ste
 | Step | The person | The system |
 |---|---|---|
 | 1 | Sees My documents, or 'Upload your first invoice' with a sample invoice to try. | DocFlow lists the person's documents with status and next action. |
-| 2 | Uploads; is taken to the extraction page. | DocFlow starts the document, Upload stores and checks the file, and DocFlow starts Extraction. |
+| 2 | Uploads, sees a preview of the file, and taps Continue to the extraction page. | DocFlow starts the document, Upload stores and checks the file, DocFlow starts Extraction, and the upload screen shows Upload's `FilePreview`. |
 | 3 | Watches the steps, then sees 'Review 3 flagged fields'. | Extraction tells DocFlow it finished; DocFlow sends the fields to Review. |
 | 4 | Checks the flagged fields and taps Complete review. | DocFlow re-checks the values with Extraction, completes the review, and builds the JSON and CSV. |
 
