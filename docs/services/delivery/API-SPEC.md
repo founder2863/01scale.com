@@ -23,15 +23,15 @@ Every error uses `application/problem+json` with a stable `code`. Branch on `cod
 
 ### POST /messages
 
-**Send a templated email to a user.** An app's server asks Delivery to email one of its users. Delivery looks up the address, fills the template, sends it through Resend and retries if needed. Never callable from a browser, so nobody can send email in 01scale's name.
+**Send a templated email to a user.** An app's server asks Delivery to email one of its users, acting for that user. Delivery looks up the address, fills the template, sends it through Resend and retries if needed. Only a delegated token is accepted, so a browser can never send email in 01scale's name.
 
-Access: **Service** · Scope: `delivery:write` · Story: `MVP1-E7-03`
+Access: **Service** · Scope: `delivery:write`, on a delegated token only · Story: `MVP1-E7-03`
 
 **Inputs**
 
 | Name | In | Type | Required | Constraints | Meaning |
 |---|---|---|---|---|---|
-| `user_id` | body | uuid | Yes | An existing user. | Who receives it. Delivery looks up their verified email from Identity at send time; apps never pass addresses. |
+| `Authorization` | header | string | Yes | `Bearer <delegated token>` with `delivery:write` and `act`. | Who receives it is the token's `sub`. Delivery looks up their verified email from Identity at send time; apps never pass addresses. |
 | `template` | body | string | Yes | In version 1, `order_paid`. | Which email. Each template has fixed wording, a plain-text and an HTML version. |
 | `data` | body | object | Yes | The template's fields only. For `order_paid`: `document_name` (1 to 255 characters), `amount` and `currency` (minor units and code), `link_path` (a path on 01scale.com). | What fills the template. Links are paths, so an email can only point at 01scale.com. |
 | `reference` | body | string | Yes | 1 to 200 characters. | The app's own label, for finding the message later. |
@@ -40,7 +40,7 @@ Access: **Service** · Scope: `delivery:write` · Story: `MVP1-E7-03`
 **Behaviour**
 
 - Validates the template's data and records the message as `queued`; answers `202` at once.
-- In the background: looks up the user's email through Identity, renders the template, and sends it through Resend from `receipts@01scale.com`.
+- In the background: looks up the user's email through Identity `GET /users/{userId}` with Delivery's own service token (`identity:users.read`), renders the template, and sends it through Resend from `receipts@01scale.com`.
 - On a failure Resend says is temporary, retries 3 times, after 1, 5 and 25 seconds. Then the message is `failed` with the reason, and Delivery announces `delivery.message.failed`.
 - On success the message is `sent` with Resend's message ID, and `delivery.message.sent` is recorded in the audit log.
 
@@ -57,18 +57,17 @@ Access: **Service** · Scope: `delivery:write` · Story: `MVP1-E7-03`
 | `422` | `unknown_template` | `template` is not one Delivery has. |
 | `422` | `validation_failed` | `data` is missing a field or has one the template does not use. |
 | `422` | `idempotency_key_reused` | Same key, different body. |
-| `403` | `service_only` | The caller is not an app's server. |
+| `403` | `service_only` | The token is not a delegated token: a browser session, an API key or a service acting as itself. |
 
 **Sample request**
 
 ```http
 POST /api/delivery/v1/messages HTTP/1.1
-Authorization: Bearer <DocFlow service token>
+Authorization: Bearer <delegated token: the user, act service:docflow>
 Idempotency-Key: evt_order_paid_0193b120
 Content-Type: application/json
 
 {
-  "user_id": "0193a5b2-7c1e-7a3f-9b2d-4e6f8a1c2d3e",
   "template": "order_paid",
   "reference": "docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c",
   "data": {

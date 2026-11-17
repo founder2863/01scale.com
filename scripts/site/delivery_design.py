@@ -27,9 +27,9 @@ ENDPOINTS = [
     endpoint(
         "send-message", "POST", f"{BASE}/messages", "Service", "MVP1-E7-03",
         "Send a templated email to a user",
-        "An app's server asks Delivery to email one of its users. Delivery looks up the address, fills the template, sends it through Resend and retries if needed. Never callable from a browser, so nobody can send email in 01scale's name.",
+        "An app's server asks Delivery to email one of its users, acting for that user. Delivery looks up the address, fills the template, sends it through Resend and retries if needed. Only a delegated token is accepted, so a browser can never send email in 01scale's name.",
         [
-            param("user_id", "body", "uuid", "Yes", "An existing user.", "Who receives it. Delivery looks up their verified email from Identity at send time; apps never pass addresses."),
+            param("Authorization", "header", "string", "Yes", "`Bearer <delegated token>` with `delivery:write` and `act`.", "Who receives it is the token's `sub`. Delivery looks up their verified email from Identity at send time; apps never pass addresses."),
             param("template", "body", "string", "Yes", "In version 1, `order_paid`.", "Which email. Each template has fixed wording, a plain-text and an HTML version."),
             param("data", "body", "object", "Yes", "The template's fields only. For `order_paid`: `document_name` (1 to 255 characters), `amount` and `currency` (minor units and code), `link_path` (a path on 01scale.com).", "What fills the template. Links are paths, so an email can only point at 01scale.com."),
             param("reference", "body", "string", "Yes", "1 to 200 characters.", "The app's own label, for finding the message later."),
@@ -37,7 +37,7 @@ ENDPOINTS = [
         ],
         [
             "Validates the template's data and records the message as `queued`; answers `202` at once.",
-            "In the background: looks up the user's email through Identity, renders the template, and sends it through Resend from `receipts@01scale.com`.",
+            "In the background: looks up the user's email through Identity `GET /users/{userId}` with Delivery's own service token (`identity:users.read`), renders the template, and sends it through Resend from `receipts@01scale.com`.",
             "On a failure Resend says is temporary, retries 3 times, after 1, 5 and 25 seconds. Then the message is `failed` with the reason, and Delivery announces `delivery.message.failed`.",
             "On success the message is `sent` with Resend's message ID, and `delivery.message.sent` is recorded in the audit log.",
         ],
@@ -46,10 +46,10 @@ ENDPOINTS = [
             error("422", "unknown_template", "`template` is not one Delivery has."),
             error("422", "validation_failed", "`data` is missing a field or has one the template does not use."),
             error("422", "idempotency_key_reused", "Same key, different body."),
-            error("403", "service_only", "The caller is not an app's server."),
+            error("403", "service_only", "The token is not a delegated token: a browser session, an API key or a service acting as itself."),
         ],
-        "POST /api/delivery/v1/messages HTTP/1.1\nAuthorization: Bearer <DocFlow service token>\nIdempotency-Key: evt_order_paid_0193b120\nContent-Type: application/json\n\n"
-        + json.dumps({"user_id": U1, "template": "order_paid", "reference": f"docflow:{D1}",
+        "POST /api/delivery/v1/messages HTTP/1.1\nAuthorization: Bearer <delegated token: the user, act service:docflow>\nIdempotency-Key: evt_order_paid_0193b120\nContent-Type: application/json\n\n"
+        + json.dumps({"template": "order_paid", "reference": f"docflow:{D1}",
                       "data": {"document_name": "acme-invoice-0042.pdf", "amount": 500, "currency": "USD", "link_path": f"/documents/{D1}/success"}}, indent=2),
         "HTTP/1.1 202 Accepted\nContent-Type: application/json\n\n" + json.dumps({"message": {**MSG_SENT, "status": "queued", "attempts": 0, "sent_at": None}}, indent=2),
     ),
@@ -87,7 +87,7 @@ ENDPOINTS = [
 MESSAGES = {"name": "delivery.messages", "purpose": "One row per email asked for. It records what was sent and whether it arrived at Resend; never the address or the content.", "columns": [
     column("id", "uuid", "No", "", "Primary key. UUIDv7", "The message's ID."),
     column("owner_id", "uuid", "No", "", "", "The user it is for. A plain ID; the address is looked up at send time, never stored."),
-    column("app", "text", "No", "", "1 to 50 characters, from the app's service token", "Which app asked."),
+    column("app", "text", "No", "", "1 to 50 characters, from the `app` claim of the delegated token", "Which app asked."),
     column("reference", "text", "No", "", "1 to 200 characters", "The app's label."),
     column("idempotency_key", "text", "No", "", "1 to 255 characters; unique per app", "The key that stops a second send."),
     column("channel", "text", "No", "'email'", "`email` in version 1", "How it is sent. SMS and push arrive in MVP2."),
@@ -211,6 +211,10 @@ COMPONENTS = [
 
 HOSTED = []
 
+for _e in ENDPOINTS:
+    if _e["id"] == "send-message":
+        _e["scope"] = "`delivery:write`, on a delegated token only"
+
 MODULE = {
     "slug": "download-and-email-delivery",
     "docsPath": "docs/services/delivery",
@@ -254,7 +258,7 @@ MODULE = {
     ],
     "quickstart": [
         {"title": "Send an email from an app's server", "text": "Name the user and the template; never an address.",
-         "lang": "ts", "code": 'await serviceApi.post("/api/delivery/v1/messages", {\n  user_id: userId, template: "order_paid", reference: `docflow:${documentId}`,\n  data: { document_name: "invoice.pdf", amount: 500, currency: "USD", link_path: `/documents/${documentId}/success` },\n}, { headers: { "Idempotency-Key": paymentEventId } });'},
+         "lang": "ts", "code": 'await callService("/api/delivery/v1/messages", { onBehalfOf: userId }, {\n  template: "order_paid", reference: `docflow:${documentId}`,\n  data: { document_name: "invoice.pdf", amount: 500, currency: "USD", link_path: `/documents/${documentId}/success` },\n}, { headers: { "Idempotency-Key": paymentEventId } });'},
         {"title": "Show the email's status", "text": "On a page the person is looking at.",
          "lang": "tsx", "code": 'import { MessageStatus } from "@01scale/ui-delivery";\n\n<MessageStatus reference={`docflow:${documentId}`} />'},
     ],
