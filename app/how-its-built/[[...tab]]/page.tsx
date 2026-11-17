@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { costs } from "./costs";
-import { designSkillCount, rulesHref, skillOrder, skills } from "./skills";
+import { notFound } from "next/navigation";
+import { costs } from "../costs";
+import { designSkillCount, rulesHref, skillOrder, skills } from "../skills";
+import { builtTabs, type BuiltTab } from "../tabs";
 
 const REPO = "https://github.com/founder2863/01scale.com/blob/main";
 
@@ -14,18 +16,40 @@ function mtok(value: number) {
   return `${(value / 1_000_000).toFixed(1)}M`;
 }
 
-export const metadata: Metadata = {
-  title: "How It's Built — 01scale",
-  description:
-    "The skills and agents I use to build 01scale with Claude Code: repeatable work written down, kept in the repository and run the same way every time.",
-};
+type Params = { tab?: string[] };
 
 // A per-million-token price: whole dollars without cents, otherwise two decimals.
 function perMillion(value: number) {
   return Number.isInteger(value) ? `$${value}` : `$${value.toFixed(2)}`;
 }
 
-export default function HowItsBuilt() {
+// Three addresses: /how-its-built (Skills, the default), /token-costs and /agents.
+export const dynamicParams = false;
+
+export function generateStaticParams(): Params[] {
+  return [{ tab: [] }, ...builtTabs.slice(1).map((item) => ({ tab: [item.slug] }))];
+}
+
+function resolve(params: Params): BuiltTab | null {
+  // "/how-its-built/skills" is not a real address: Skills lives at "/how-its-built".
+  if ((params.tab?.length ?? 0) > 1 || params.tab?.[0] === "skills") return null;
+  const found = builtTabs.find((item) => item.slug === (params.tab?.[0] ?? "skills"));
+  return found ? found.slug : null;
+}
+
+export async function generateMetadata({ params }: { params: Promise<Params> }): Promise<Metadata> {
+  const tab = resolve(await params);
+  const label = builtTabs.find((item) => item.slug === tab)?.label;
+  return {
+    title: tab === "skills" ? "How It's Built — 01scale" : `How It's Built · ${label} — 01scale`,
+    description:
+      "The skills and agents I use to build 01scale with Claude Code: repeatable work written down, kept in the repository and run the same way every time.",
+  };
+}
+
+export default async function HowItsBuilt({ params }: { params: Promise<Params> }) {
+  const tab = resolve(await params);
+  if (!tab) notFound();
   return (
     <>
       <section className="hero hero-small">
@@ -45,7 +69,18 @@ export default function HowItsBuilt() {
         </div>
       </section>
 
+      <div className="container">
+        <nav className="page-tabs" aria-label="How It's Built sections">
+          {builtTabs.map((item) => (
+            <Link key={item.slug} href={item.href} aria-current={item.slug === tab ? "page" : undefined}>
+              {item.label}
+            </Link>
+          ))}
+        </nav>
+      </div>
+
       <div className="container content">
+        {tab === "skills" && (
         <section id="skills">
           <h2 className="group-title">
             Skills <span className="status">In use</span>
@@ -104,7 +139,9 @@ export default function HowItsBuilt() {
             documents and this site.
           </p>
         </section>
+        )}
 
+        {tab === "token-costs" && (
         <section id="token-costs">
           <h2 className="group-title">
             Token Costs <span className="status">Updated {costs.updated}</span>
@@ -282,7 +319,9 @@ export default function HowItsBuilt() {
             <a href={`${REPO}/docs/process/TOKEN-COSTS.md`}>The full ledger and method</a>.
           </p>
         </section>
+        )}
 
+        {tab === "agents" && (
         <section id="agents">
           <h2 className="group-title">Agents</h2>
           <div className="coming-soon">
@@ -294,6 +333,7 @@ export default function HowItsBuilt() {
             </p>
           </div>
         </section>
+        )}
       </div>
     </>
   );
