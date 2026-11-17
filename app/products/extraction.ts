@@ -630,9 +630,95 @@ export const extraction = {
           "meaning": "When the job ended."
         }
       ],
-      "constraints": [],
-      "sampleCols": [],
-      "sampleRows": []
+      "constraints": [
+        "`jobs_pkey`: primary key (`id`)",
+        "`jobs_schema_check`: `schema` is `invoice-v1`",
+        "`jobs_status_check`, `jobs_step_check`, `jobs_error_code_check`: only the listed values",
+        "`jobs_attempt_check`: `attempt` between 1 and 3",
+        "`jobs_failed_check`: `error_code` and `error_message` are set exactly when `status` is `failed`",
+        "`jobs_finished_check`: `finished_at` is set exactly when `status` is `extracted` or `failed`",
+        "`jobs_extracted_check`: an extracted job has `fields_total`, `fields_flagged`, tokens, cost and duration, and `fields_flagged` ≤ `fields_total`",
+        "`jobs_numbers_check`: pages 1 to 10; counts, tokens, cost and duration never negative",
+        "`jobs_dates_check`: `started_at` not before `created_at`; `finished_at` not before `started_at`",
+        "`jobs_active_file_idx`: unique (`file_id`, `schema`) where `status` in (`queued`, `processing`), so the same file is never read twice at once",
+        "`jobs_owner_id_idx`: index on (`owner_id`, `created_at` desc), for a user's jobs",
+        "`jobs_created_at_idx`: index on (`created_at` desc), for the admin's recent jobs",
+        "`jobs_queued_idx`: partial index on (`created_at`) where `status = 'queued'`, for the sweep"
+      ],
+      "sampleCols": [
+        "id",
+        "owner_id",
+        "file_id",
+        "schema",
+        "reference",
+        "status",
+        "step",
+        "attempt",
+        "model",
+        "prompt_version",
+        "pages",
+        "fields_total",
+        "fields_flagged",
+        "tokens_in",
+        "tokens_out",
+        "cost_usd",
+        "duration_ms",
+        "error_code",
+        "error_message",
+        "created_at",
+        "started_at",
+        "finished_at"
+      ],
+      "sampleRows": [
+        [
+          "0193b0d1-4b2c-7d10-9a8b-1c2d3e4f5a6b",
+          "0193a5b2-7c1e-7a3f-9b2d-4e6f8a1c2d3e",
+          "0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b",
+          "invoice-v1",
+          "docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c",
+          "extracted",
+          "(empty)",
+          "1",
+          "claude-sonnet-5-5",
+          "extract-invoice/v1",
+          "2",
+          "19",
+          "3",
+          "6210",
+          "1480",
+          "0.040830",
+          "28900",
+          "(empty)",
+          "(empty)",
+          "2026-11-17 09:14:12+00",
+          "2026-11-17 09:14:12+00",
+          "2026-11-17 09:14:41+00"
+        ],
+        [
+          "0193b0e7-0a1b-7c2d-8e3f-4a5b6c7d8e9f",
+          "0193a5b2-7c1e-7a3f-9b2d-4e6f8a1c2d3e",
+          "0193b0e6-77aa-7b11-9c22-3d4e5f6a7b8c",
+          "invoice-v1",
+          "(empty)",
+          "failed",
+          "reading_document",
+          "3",
+          "claude-sonnet-5-5",
+          "extract-invoice/v1",
+          "1",
+          "(empty)",
+          "(empty)",
+          "(empty)",
+          "(empty)",
+          "(empty)",
+          "(empty)",
+          "model_unavailable",
+          "Reading this document is taking longer than usual. Try again in a few minutes.",
+          "2026-11-17 09:30:00+00",
+          "2026-11-17 09:30:01+00",
+          "2026-11-17 09:30:22+00"
+        ]
+      ]
     },
     {
       "name": "extraction.fields",
@@ -735,9 +821,90 @@ export const extraction = {
           "meaning": "When it was saved."
         }
       ],
-      "constraints": [],
-      "sampleCols": [],
-      "sampleRows": []
+      "constraints": [
+        "`fields_pkey`: primary key (`id`)",
+        "`fields_job_id_fkey`: foreign key (`job_id`) references `extraction.jobs` on delete cascade",
+        "`fields_job_name_line_key`: unique (`job_id`, `name`, `line_index`) with nulls not distinct, so a header field cannot appear twice in one job",
+        "`fields_name_check`: `name` is one of the invoice v1 fields",
+        "`fields_line_index_check`: `line_index` is set exactly for line-item fields, and is not negative",
+        "`fields_confidence_check`: both confidences between 0 and 1, and `confidence` ≤ `model_confidence`",
+        "`fields_evidence_check`: a present value has `source_page` and `source_quote`; an absent one has neither",
+        "`fields_quote_check`: `source_quote` 1 to 500 characters",
+        "`fields_flagged_check`: `flagged` is true exactly when `flag_reasons` is not empty",
+        "`fields_flagged_idx`: partial index on (`job_id`) where `flagged`, for the review queue"
+      ],
+      "sampleCols": [
+        "id",
+        "job_id",
+        "name",
+        "line_index",
+        "value",
+        "model_confidence",
+        "confidence",
+        "source_page",
+        "source_quote",
+        "flagged",
+        "flag_reasons",
+        "created_at"
+      ],
+      "sampleRows": [
+        [
+          "0193b0d2-1f00-7a01-8b02-0c03d04e05f7",
+          "0193b0d1-4b2c-7d10-9a8b-1c2d3e4f5a6b",
+          "vendor_name",
+          "(empty)",
+          "\"Acme Supplies Ltd\"",
+          "0.97",
+          "0.97",
+          "1",
+          "Acme Supplies Ltd",
+          "false",
+          "{}",
+          "2026-11-17 09:14:41+00"
+        ],
+        [
+          "0193b0d2-1f00-7a01-8b02-0c03d04e05f6",
+          "0193b0d1-4b2c-7d10-9a8b-1c2d3e4f5a6b",
+          "total",
+          "(empty)",
+          "\"1240.00\"",
+          "0.92",
+          "0.30",
+          "2",
+          "TOTAL DUE  $1,240.00",
+          "true",
+          "{\"Total ≠ subtotal + tax (1,150.00 + 80.00 = 1,230.00)\"}",
+          "2026-11-17 09:14:41+00"
+        ],
+        [
+          "0193b0d2-1f00-7a01-8b02-0c03d04e05f8",
+          "0193b0d1-4b2c-7d10-9a8b-1c2d3e4f5a6b",
+          "amount",
+          "0",
+          "\"1150.00\"",
+          "0.95",
+          "0.95",
+          "1",
+          "Paper, A4   10   115.00   1,150.00",
+          "false",
+          "{}",
+          "2026-11-17 09:14:41+00"
+        ],
+        [
+          "0193b0d2-1f00-7a01-8b02-0c03d04e05f9",
+          "0193b0d1-4b2c-7d10-9a8b-1c2d3e4f5a6b",
+          "vendor_tax_id",
+          "(empty)",
+          "(empty)",
+          "0.80",
+          "0.62",
+          "(empty)",
+          "(empty)",
+          "true",
+          "{\"Low confidence (0.62)\"}",
+          "2026-11-17 09:14:41+00"
+        ]
+      ]
     },
     {
       "name": "extraction.inbound_events",
@@ -768,9 +935,22 @@ export const extraction = {
           "meaning": "When Extraction processed it."
         }
       ],
-      "constraints": [],
-      "sampleCols": [],
-      "sampleRows": []
+      "constraints": [
+        "`inbound_events_pkey`: primary key (`event_id`)",
+        "`inbound_events_type_check`: `type` is 1 to 100 characters"
+      ],
+      "sampleCols": [
+        "event_id",
+        "type",
+        "created_at"
+      ],
+      "sampleRows": [
+        [
+          "0193b2aa-6f01-7c2d-9e3f-4a5b6c7d8e9f",
+          "identity.user.deleted",
+          "2026-11-17 10:00:01+00"
+        ]
+      ]
     }
   ],
   "otherTables": "The service template also gives Extraction `audit_events`, `idempotency_keys` and `outbound_events`. Extraction writes `job.created`, `job.completed` and `job.failed` to `audit_events`, and announces `extraction.job.completed` and `extraction.job.failed` through `outbound_events`. `POST /jobs` needs no idempotency key: a second call for the same file returns the running job.",
@@ -790,7 +970,14 @@ export const extraction = {
     },
     {
       "level": "Schema level: enforced by the database, whatever the code does",
-      "items": []
+      "items": [
+        "One running job per file and schema, enforced by a partial unique index.",
+        "A field name appears once per job, and once per line item for line-item fields (nulls not distinct).",
+        "A failed job always has an error code and message; a finished job always has an end time; an extracted job always has its counts, tokens, cost and duration.",
+        "Final confidence can never exceed the model's own; a flagged field always has a reason.",
+        "A value that is present always has its page and quote.",
+        "Extraction's database login can reach only the `extraction` schema, and cannot delete jobs."
+      ]
     },
     {
       "level": "Data model level: business rules the service guarantees",
@@ -857,6 +1044,19 @@ export const extraction = {
       "text": "Fetched through a 5-minute Upload link into memory for the model call, then dropped. Never written to disk or to the database."
     }
   ],
-  "ddl": "",
-  "queries": []
+  "ddl": "-- LLM Extraction service, version 1. Schema: extraction.\n-- IDs are UUIDv7 values generated by the service.\n-- Checked with `npm run schema:check`: runs on PGlite, and every sample row passes every constraint.\n\ncreate schema if not exists extraction;\n\ncreate table extraction.jobs (\n  id             uuid          primary key,\n  owner_id       uuid          not null,\n  file_id        uuid          not null,\n  schema         text          not null,\n  reference      text,\n  status         text          not null default 'queued',\n  step           text,\n  attempt        smallint      not null default 1,\n  model          text          not null,\n  prompt_version text          not null,\n  pages          smallint,\n  fields_total   smallint,\n  fields_flagged smallint,\n  tokens_in      integer,\n  tokens_out     integer,\n  cost_usd       numeric(10,6),\n  duration_ms    integer,\n  error_code     text,\n  error_message  text,\n  created_at     timestamptz   not null default now(),\n  started_at     timestamptz,\n  finished_at    timestamptz,\n\n  constraint jobs_schema_check check (schema in ('invoice-v1')),\n  constraint jobs_reference_check check (length(reference) between 1 and 200),\n  constraint jobs_status_check check (status in ('queued', 'processing', 'extracted', 'failed')),\n  constraint jobs_step_check\n    check (step in ('fetching_file', 'reading_document', 'checking_rules', 'saving')),\n  constraint jobs_attempt_check check (attempt between 1 and 3),\n  constraint jobs_model_check check (length(model) between 1 and 100 and length(prompt_version) between 1 and 100),\n  constraint jobs_error_code_check check (error_code in\n    ('file_unavailable', 'document_unreadable', 'model_unavailable', 'output_invalid', 'timed_out')),\n  constraint jobs_failed_check check (\n    (status = 'failed') = (error_code is not null)\n    and (error_code is null) = (error_message is null)\n  ),\n  constraint jobs_finished_check check ((status in ('extracted', 'failed')) = (finished_at is not null)),\n  constraint jobs_extracted_check check (\n    status <> 'extracted'\n    or (fields_total is not null and fields_flagged between 0 and fields_total\n        and tokens_in is not null and tokens_out is not null\n        and cost_usd is not null and duration_ms is not null)\n  ),\n  constraint jobs_numbers_check check (\n    (pages is null or pages between 1 and 10)\n    and coalesce(fields_total, 0) >= 0 and coalesce(tokens_in, 0) >= 0\n    and coalesce(tokens_out, 0) >= 0 and coalesce(cost_usd, 0) >= 0\n    and coalesce(duration_ms, 0) >= 0\n  ),\n  constraint jobs_dates_check check (\n    (started_at is null or started_at >= created_at)\n    and (finished_at is null or finished_at >= coalesce(started_at, created_at))\n  )\n);\n\n-- One running job per file and schema: a second request returns the first.\ncreate unique index jobs_active_file_idx on extraction.jobs (file_id, schema)\n  where status in ('queued', 'processing');\n-- A user's jobs; the admin's recent jobs; the sweep of jobs left queued.\ncreate index jobs_owner_id_idx on extraction.jobs (owner_id, created_at desc);\ncreate index jobs_created_at_idx on extraction.jobs (created_at desc);\ncreate index jobs_queued_idx on extraction.jobs (created_at) where status = 'queued';\n\ncreate table extraction.fields (\n  id               uuid         primary key,\n  job_id           uuid         not null,\n  name             text         not null,\n  line_index       smallint,\n  value            jsonb,\n  model_confidence numeric(3,2) not null,\n  confidence       numeric(3,2) not null,\n  source_page      smallint,\n  source_quote     text,\n  flagged          boolean      not null default false,\n  flag_reasons     text[]       not null default '{}',\n  created_at       timestamptz  not null default now(),\n\n  constraint fields_job_id_fkey foreign key (job_id)\n    references extraction.jobs (id) on delete cascade,\n  constraint fields_job_name_line_key unique nulls not distinct (job_id, name, line_index),\n  constraint fields_name_check check (name in ('vendor_name', 'vendor_address', 'vendor_tax_id', 'invoice_number', 'invoice_date', 'due_date', 'bill_to_name', 'bill_to_address', 'currency', 'subtotal', 'tax_total', 'total', 'payment_terms', 'description', 'quantity', 'unit_price', 'amount')),\n  constraint fields_line_index_check check (\n    (name in ('description', 'quantity', 'unit_price', 'amount')) = (line_index is not null)\n    and (line_index is null or line_index >= 0)\n  ),\n  constraint fields_confidence_check check (\n    model_confidence between 0 and 1\n    and confidence between 0 and 1\n    and confidence <= model_confidence\n  ),\n  constraint fields_evidence_check check (\n    (value is null) = (source_quote is null)\n    and (source_quote is null) = (source_page is null)\n  ),\n  constraint fields_quote_check check (length(source_quote) between 1 and 500),\n  constraint fields_flagged_check check (flagged = (cardinality(flag_reasons) > 0))\n);\n\n-- The fields a person must check, for the review queue.\ncreate index fields_flagged_idx on extraction.fields (job_id) where flagged;\n\ncreate table extraction.inbound_events (\n  event_id   uuid        primary key,\n  type       text        not null,\n  created_at timestamptz not null default now(),\n\n  constraint inbound_events_type_check check (length(type) between 1 and 100)\n);\n\n-- The service's database login reaches only this schema. Fields are deleted only\n-- with their owner's account; audit events can be added and read, never changed.\ngrant usage on schema extraction to extraction_service;\ngrant select, insert, update on extraction.jobs to extraction_service;\ngrant select, insert, delete on extraction.fields to extraction_service;\ngrant select, insert on extraction.inbound_events to extraction_service;\ngrant select, insert on extraction.audit_events to extraction_service;\n",
+  "queries": [
+    {
+      "title": "Start a job, or find the running one (`POST /jobs`)",
+      "sql": "insert into extraction.jobs (id, owner_id, file_id, schema, reference, model, prompt_version)\nvalues ($1, $2, $3, $4, $5, $6, $7)\non conflict (file_id, schema) where status in ('queued', 'processing')\ndo nothing\nreturning *;\n-- no row returned: a job is already running; read it and answer 200"
+    },
+    {
+      "title": "The fields a person must check (`GET /jobs/{jobId}/fields?flagged=true`)",
+      "sql": "select f.*\nfrom extraction.fields f\njoin extraction.jobs j on j.id = f.job_id\nwhere f.job_id = $1 and j.owner_id = $2 and f.flagged\norder by f.confidence;"
+    },
+    {
+      "title": "Recent jobs and failure rate (`GET /admin/jobs`)",
+      "sql": "select id, status, model, prompt_version, pages, tokens_in, tokens_out, cost_usd, duration_ms, error_code\nfrom extraction.jobs\norder by created_at desc\nlimit 100;"
+    }
+  ]
 };
