@@ -374,7 +374,7 @@ As a user who has outgrown the free plan, I want to upgrade to a paid plan so I 
 ### MVP2-E15-01 · Rate limiting built into the gateway — M
 Decided by Nikhil on 17 Nov 2026 (issue #21): MVP1 uses Vercel firewall rules; MVP2 builds rate limiting into the gateway service.
 As the owner, I want rate limits that are part of the platform's own code, so they are versioned, tested and the same wherever the gateway runs.
-- **AC1:** The gateway limits requests per IP (300 a minute), per user (100 a minute to begin with, decided on #64, and higher on paid plans, `MVP2-E13-06`) and per API key, with tighter limits on Identity's sign-in endpoints. Values are configuration, not code.
+- **AC1:** The gateway limits requests per IP (300 a minute), per user (10 changes and 60 reads a minute to begin with, decided on #64, and higher on paid plans, `MVP2-E13-06`) and per API key, with tighter limits on Identity's sign-in endpoints. Values are configuration, not code.
 - **AC2:** Over a limit, the answer is `429 rate_limited` with `Retry-After`, and every response carries `RateLimit-Limit`, `RateLimit-Remaining` and `RateLimit-Reset`.
 - **AC3:** Counters are shared by every running copy of the gateway, so a limit holds across instances.
 - **AC4:** The Vercel firewall rules from MVP1 are removed once the gateway's limits are live, and `docs/infra/` says so.
