@@ -464,6 +464,93 @@ SCHEMA_RULES = [
     "History rows are inserted and read, never updated. Review's database login can reach only the `review` schema.",
 ]
 
+# ------------------------------------------------------------------ user journeys
+JOURNEYS = [
+    journey(
+        "Check the flagged values", "Someone whose document has flagged fields", "Taps 'Review 3 flagged fields'.", ["MVP1-E4-01", "MVP1-E4-02"],
+        [
+            ("Sees the flagged fields first, the least certain at the top, each with its value, the reason and the quote from the document, and '0 of 3 resolved'.", "Review returns the task's queue, flagged first, lowest confidence first."),
+            ("Reads 'Total ≠ subtotal + tax' beside the total of 1,240.00 and the quote 'TOTAL DUE $1,240.00'.", "Nothing new is fetched: the evidence came with the task."),
+            ("Checks the paper invoice, taps Edit and types 1230.00.", "Review checks it is a decimal number, saves it, records the change with the old value, and saves a candidate test case. '1 of 3 resolved'."),
+            ("Taps Accept on the next field, which is right.", "The field is marked accepted; its value is unchanged."),
+            ("Taps 'Not on document' for a tax ID the invoice does not have.", "The value is emptied and marked not present. '3 of 3 resolved'."),
+        ],
+        "Every uncertain value has a person's decision, with the history kept.",
+    ),
+    journey(
+        "Finish the review", "Someone who has decided every flagged field", "Taps Complete review, now enabled.", ["MVP1-E4-03"],
+        [
+            ("Taps Complete review.", "The app re-runs the rule checks on the corrected values through the LLM Extraction service."),
+            ("If every check passes: is taken to the results.", "The app completes the task in Review; the values are locked and Review announces that the task is completed."),
+            ("If a check still fails: sees which one, for example 'Subtotal plus tax doesn't equal the total', with Fix it or 'Values are correct as on the document'.", "Nothing is locked yet."),
+            ("Confirms the values are as printed.", "The task is completed with `checks_overridden`, so the record shows the person chose to keep them."),
+        ],
+        "The values are final and ready for the results. Nothing can change them afterwards.",
+    ),
+    journey(
+        "Review on a computer with the keyboard", "Someone checking many fields quickly", "Opens the review queue on a desktop.", ["MVP1-E4-02"],
+        [
+            ("Presses Enter.", "The highlighted field is accepted and the next one is highlighted."),
+            ("Presses E, types a value and presses Enter.", "The field is edited and checked."),
+            ("Presses ↓ to skip to the next field.", "Nothing is changed."),
+        ],
+        "A short invoice is checked in seconds without the mouse. On a phone, every action is a large button instead.",
+    ),
+    journey(
+        "Approve corrections as test cases", "The owner (admin)", "Opens the eval candidates list.", ["MVP1-E4-04"],
+        [
+            ("Sees each correction: the field, what the system said and what the person changed it to.", "Review lists candidates waiting for a decision."),
+            ("Approves the ones that are real model mistakes and rejects the rest.", "Each decision is recorded with who and when."),
+            ("Exports the approved ones.", "Review writes ground-truth files with the corrected values and returns links. The documents themselves are never added automatically."),
+        ],
+        "Real mistakes become test cases, so the next prompt change is measured against them.",
+    ),
+]
+
+EDGE_CASES = [
+    {"situation": "Types a date that does not exist, like 31 February", "sees": "'Enter a real date, like 2026-11-30.' The field stays as it was.", "code": "`invalid_date`"},
+    {"situation": "Types letters into an amount", "sees": "'Enter a number, like 1230.00.'", "code": "`invalid_decimal`"},
+    {"situation": "Types a currency that is not a real code", "sees": "'Enter a 3-letter currency code, like USD.'", "code": "`invalid_currency`"},
+    {"situation": "Tries to complete with fields still to check", "sees": "Complete review stays disabled; the remaining fields are highlighted.", "code": "`fields_unresolved`"},
+    {"situation": "Edits after the review was completed, for example in a second tab", "sees": "'This review is finished, so values can't change.'", "code": "`task_completed`"},
+    {"situation": "Follows a link to someone else's review", "sees": "'Not found.'", "code": "`task_not_found`"},
+    {"situation": "Exports a correction that was not approved", "sees": "'Approve these first.' with the list.", "code": "`candidate_not_approved`"},
+    {"situation": "Is signed out", "sees": "Is taken to sign in, then back to the review.", "code": "`not_authenticated`"},
+]
+
+# ------------------------------------------------------------------ UI components
+UI_RULES = [
+    "Components call only the Human Review API. Re-checking values against document rules is the app's step, through the LLM Extraction service.",
+    "They ship as the package `packages/ui-review` and work for any set of fields: labels come from field names, checks from field types.",
+    "Keyboard on desktop: Enter accepts, E edits, ↓ moves to the next field, with the shortcuts listed on screen. On phones every action is a button at least 44 pixels tall.",
+    "Evidence (the quote and page) is always beside the value it supports.",
+    "Every request has a loading state that keeps the layout still, and a failure state with a plain-language message and a retry.",
+    "Keyboard reachable, visible focus, labelled controls, progress announced to screen readers, WCAG AA contrast, usable at 320 pixels wide, in light and dark mode.",
+]
+
+COMPONENTS = [
+    component("ReviewQueue", "Component", "The task's fields, flagged first, each with its value, reason, evidence and the three decisions, with the 'N of M resolved' counter.",
+        [("taskId", "string", "The task."), ("showAll", "boolean, optional", "Include unflagged fields. Default false; a 'Show all fields' toggle is built in.")],
+        ["Loading: placeholder rows", "Open: fields with their status", "All resolved: a short 'All checked' message", "Completed: read-only values", "Failed: 'Couldn't load this review.' and Retry"],
+        ["`GET /tasks/{taskId}`"]),
+    component("FieldDecision", "Component", "One field's value with Accept, Edit and Not on document; the edit box checks the value as the person types.",
+        [("field", "Field", "The field."), ("onDecided", "(field) => void", "Called after the decision is saved.")],
+        ["Pending", "Editing, with the format hint for the field's type", "Invalid: the message under the box", "Saving: buttons disabled", "Decided: accepted, edited (shows original and new) or not present", "Failed: the message and Retry"],
+        ["`PATCH /tasks/{taskId}/fields/{fieldId}`"]),
+    component("ResolvedCounter", "Component", "'N of M resolved', with a bar.",
+        [("resolved, total", "numbers", "From the task.")],
+        ["Partly resolved", "All resolved"],
+        ["None."]),
+    component("CompleteReviewButton", "Component", "Completes the task; disabled until every flagged field is decided. Can carry the person's confirmation that failing values are as printed.",
+        [("taskId", "string", "The task."), ("checksOverridden", "boolean, optional", "Set by the app when the person confirmed."), ("onCompleted", "(result) => void", "Called with the final values.")],
+        ["Disabled with 'N fields left'", "Ready", "Working", "Completed", "Failed: the message and Retry"],
+        ["`POST /tasks/{taskId}/complete`"]),
+    component("EvalCandidatesTable", "Component", "For an admin: corrections with both values, Approve and Reject, and Export for the approved ones.",
+        [("status", "string, optional", "Which candidates to show. Default `candidate`.")],
+        ["Loading", "Empty: 'No corrections waiting.'", "Loaded", "Exporting", "Exported: links to the files", "Not an admin: 'Not found'", "Failed: Retry"],
+        ["`GET /admin/eval-candidates`", "`PATCH /admin/eval-candidates/{candidateId}`", "`POST /admin/eval-candidates/export`"]),
+]
+
 MODULE = {
     "slug": "human-review",
     "docsPath": "docs/services/review",
@@ -488,6 +575,8 @@ MODULE = {
     "otherTables": DATA_MODEL["otherTables"],
     "notStored": DATA_MODEL["notStored"],
     "ddl": DDL,
+    "journeys": JOURNEYS,
+    "edgeCases": EDGE_CASES,
     "queries": QUERIES,
     "noEndpoint": [
         {"topic": "Re-checking corrected values (MVP1-E4-03)", "how": "The rule checks belong to the LLM Extraction service. The app calls its `POST /validations` with the corrected values before completing the task here, and passes `checks_overridden` if the person confirms values that still fail. Review itself knows no document rules."},
