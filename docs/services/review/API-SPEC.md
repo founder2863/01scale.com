@@ -228,6 +228,7 @@ Access: **Signed in** · Scope: `review:write` · Story: `MVP1-E4-02`
 - `accept` keeps the value; `edit` replaces it; `not_present` empties it.
 - Writes the old and new value, the action, who and when to the field's history, and records `review.field_updated`.
 - When the new value differs from the original, saves an eval candidate (`MVP1-E4-04`).
+- Also allowed after the task is completed, including after the app has charged for it (Nikhil's decision on #45): the change is recorded the same way, the task stays `completed`, and the latest values are the final document.
 
 **Responses**
 
@@ -244,7 +245,6 @@ Access: **Signed in** · Scope: `review:write` · Story: `MVP1-E4-02`
 | `422` | `invalid_decimal` | `value` is not a decimal number. |
 | `422` | `invalid_currency` | `value` is not an ISO 4217 currency code. |
 | `422` | `validation_failed` | `action` is unknown, or `value` is missing or sent when not allowed. |
-| `409` | `task_completed` | The task is completed; its values are locked. |
 | `401` | `not_authenticated` | No valid access token. |
 
 **Sample request**
@@ -290,7 +290,7 @@ Content-Type: application/json
 
 ### POST /tasks/{taskId}/complete
 
-**Complete the review.** Locks the values and returns them. Allowed once every flagged field is decided. Re-checking the corrected values against the document's rules is the app's step before this, using the LLM Extraction service.
+**Complete the review.** Marks the review finished and returns the values. Allowed once every flagged field is decided. Values can still be corrected afterwards, and every change is recorded. Re-checking the corrected values against the document's rules is the app's step before this, using the LLM Extraction service.
 
 Access: **Signed in** · Scope: `review:write` · Story: `MVP1-E4-03`
 
@@ -372,7 +372,7 @@ Content-Type: application/json
 
 ### GET /admin/eval-candidates
 
-**Corrections that could become eval cases.** Every value a person corrected, with what the model said, waiting for the owner to approve it as ground truth.
+**Corrections that could become eval cases.** Every value a person corrected, with what the model said, for the owner to approve as a real model mistake. It is shown only inside the app, to the admin; it is never exported (Nikhil's decision on #41).
 
 Access: **Admin** · Scope: `is_admin` · Story: `MVP1-E4-04`
 
@@ -380,7 +380,7 @@ Access: **Admin** · Scope: `is_admin` · Story: `MVP1-E4-04`
 
 | Name | In | Type | Required | Constraints | Meaning |
 |---|---|---|---|---|---|
-| `status` | query | string | No | `candidate`, `approved`, `rejected` or `exported`. Default `candidate`. | Which ones. |
+| `status` | query | string | No | `candidate`, `approved` or `rejected`. Default `candidate`. | Which ones. |
 | `cursor, limit` | query | string, integer | No | As for every list; `limit` 1 to 100. | Paging. |
 
 **Behaviour**
@@ -443,7 +443,7 @@ Access: **Admin** · Scope: `is_admin` · Story: `MVP1-E4-04`
 
 **Behaviour**
 
-- Records the decision, who and when. An exported candidate cannot change.
+- Records the decision, who and when. A decision can be changed later.
 
 **Responses**
 
@@ -456,7 +456,6 @@ Access: **Admin** · Scope: `is_admin` · Story: `MVP1-E4-04`
 | Status | Code | When |
 |---|---|---|
 | `404` | `not_found` | No such candidate, or the caller is not an admin. |
-| `409` | `candidate_exported` | Already exported. |
 | `401` | `not_authenticated` | No valid access token. |
 
 **Sample request**
@@ -483,9 +482,9 @@ Content-Type: application/json
 }
 ```
 
-### POST /admin/eval-candidates/export
+### GET /admin/accuracy
 
-**Export approved corrections as ground truth.** Produces ground-truth files for `evals/datasets/`, from approved candidates only.
+**How often people correct each field.** Replaces the export of corrections (Nikhil's decision on #41: a user's data never leaves their account). Numbers only: no values, no references, no user IDs.
 
 Access: **Admin** · Scope: `is_admin` · Story: `MVP1-E4-04`
 
@@ -493,50 +492,66 @@ Access: **Admin** · Scope: `is_admin` · Story: `MVP1-E4-04`
 
 | Name | In | Type | Required | Constraints | Meaning |
 |---|---|---|---|---|---|
-| `candidate_ids` | body | uuid[] | Yes | 1 to 500 IDs, each `approved`. | Which candidates to export. |
+| `since` | query | date | No | Default: 30 days ago. | Start of the period. |
+| `source` | query | string | No | `all` (default) or `approved`. | All corrections, or only those the admin approved as real model mistakes. |
 
 **Behaviour**
 
-- Writes one ground-truth file per document reference, with the corrected values only, and returns 5-minute links to them.
-- Marks the candidates `exported`. The files hold field values, not the document; adding a document to the eval set is a separate, manual step.
+- Read only. Counts per field name over the period: fields reviewed, flagged, corrected, marked not present, and approved mistakes; with the correction rate and the share of corrections that had been flagged (how well flagging catches mistakes).
+- Groups smaller than 5 are shown as `<5`, so a count can never point to one person's document.
 
 **Responses**
 
 | Status | When | Body or headers |
 |---|---|---|
-| `200` | Exported | `files[]`: `name` and `url`. |
+| `200` | The caller is an admin | `since`, `totals` and `fields[]`, each with its counts and rates. |
 
 **Errors**
 
 | Status | Code | When |
 |---|---|---|
 | `404` | `not_found` | The caller is not an admin. |
-| `409` | `candidate_not_approved` | An ID is not `approved`; `ids[]` lists them. |
+| `422` | `validation_failed` | `since` is not a date. |
 | `401` | `not_authenticated` | No valid access token. |
 
 **Sample request**
 
 ```http
-POST /api/review/v1/admin/eval-candidates/export HTTP/1.1
+GET /api/review/v1/admin/accuracy?since=2026-11-01 HTTP/1.1
 Host: 01scale.com
 Authorization: Bearer <access token>
-Content-Type: application/json
-
-{
-  "candidate_ids": [
-    "0193b101-aa00-7b01-8c02-0d03e04f05a6"
-  ]
-}
 ```
 
 **Sample response**
 
 ```json
 {
-  "files": [
+  "since": "2026-11-01",
+  "totals": {
+    "tasks": 42,
+    "fields_reviewed": 798,
+    "corrected": 37,
+    "correction_rate": 0.046,
+    "corrections_flagged": 0.92
+  },
+  "fields": [
     {
-      "name": "ground-truth-0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c.json",
-      "url": "https://01scale-uploads.s3.us-east-1.amazonaws.com/exports/ground-truth-....json?X-Amz-Expires=300&X-Amz-Signature=..."
+      "name": "total",
+      "reviewed": 42,
+      "flagged": 9,
+      "corrected": 6,
+      "not_present": 0,
+      "approved_mistakes": 5,
+      "correction_rate": 0.143
+    },
+    {
+      "name": "vendor_tax_id",
+      "reviewed": 42,
+      "flagged": 11,
+      "corrected": "<5",
+      "not_present": 8,
+      "approved_mistakes": "<5",
+      "correction_rate": null
     }
   ]
 }
@@ -557,7 +572,7 @@ Access: **Service** · Scope: None: HMAC signature · Story: `MVP1-E1-05`
 
 **Behaviour**
 
-- Deletes that user's tasks, fields and history. Eval candidates already `approved` or `exported` are kept, without the user's ID: they hold one field's values, which the owner chose to keep as test data.
+- Deletes that user's tasks, fields, history and eval candidates, approved ones included (Nikhil's decision on #41). Nothing of theirs is kept.
 
 **Responses**
 
@@ -609,8 +624,8 @@ HTTP/1.1 200 OK
 
 - A task's fields arrive complete with their type, evidence and flags; Review fetches nothing from other services.
 - An edit is checked by the field's type: a real date, a decimal with at most 4 places, an ISO 4217 code, or 1 to 500 characters of text.
-- A completed task's values are locked: changes answer `409 task_completed`.
+- A completed task's values can still be corrected; every change is recorded.
 - A task completes only when no flagged field is `pending`.
 - Another user's task answers `404 task_not_found`; admin endpoints answer `404 not_found` to anyone else.
-- Only `approved` candidates can be exported.
+- Admin reports show counts and rates only, with groups under 5 hidden; no correction is ever exported.
 - `POST /tasks` accepts `Idempotency-Key`; `complete` is idempotent by design.

@@ -182,7 +182,7 @@ A person checks the fields the system is unsure about.
 | `PATCH` | `/api/review/v1/tasks/{taskId}/fields/{fieldId}` | Signed in | Accept, edit or mark a field as not on the document. | `MVP1-E4-02` |
 | `POST` | `/api/review/v1/tasks/{taskId}/complete` | Signed in | Complete the task once every flagged field is resolved. | `MVP1-E4-03` |
 | `GET` | `/api/review/v1/admin/eval-candidates` | Admin | Human corrections waiting for approval as eval cases. | `MVP1-E4-04` |
-| `POST` | `/api/review/v1/admin/eval-candidates/export` | Admin | Export approved corrections as ground-truth files. | `MVP1-E4-04` |
+| `GET` | `/api/review/v1/admin/accuracy` | Admin | How often people correct each field: counts and rates only, never values (decision on #41). | `MVP1-E4-04` |
 | `GET` | `/api/review/v1/admin/quality` | Admin | Judge vs human: agreement, confusion matrix, weakest fields (30 days). | `MVP2-E10-03` |
 | `POST` | `/api/review/v1/admin/quality/export` | Admin | Export judge/human disagreements as eval candidates. | `MVP2-E10-03` |
 | `GET` | `/api/review/v1/tasks/{taskId}/chat/messages` | Signed in | The correction chat history for a task. | `MVP2-E11-03` |

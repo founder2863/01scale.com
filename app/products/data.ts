@@ -1020,6 +1020,10 @@ export const products = [
           {
             "label": "AC3",
             "text": "On desktop: Enter accepts, E edits, ↓ moves to the next field. On mobile: large tap targets."
+          },
+          {
+            "label": "AC4",
+            "text": "Fields can still be corrected after the review is completed, including after payment; each change is recorded the same way, and the latest values are the final document (Nikhil's decision on #45)."
           }
         ],
         "evals": "",
@@ -1090,7 +1094,7 @@ export const products = [
         "path": "/api/review/v1/tasks/{taskId}/fields/{fieldId}",
         "access": "Signed in",
         "summary": "Accept, edit or mark a field as not on the document.",
-        "detail": "Body `{action: accept|edit|not_present, value?}` → `200 {field}`. Errors: `422` invalid date, number or currency; `409` if the task is locked.",
+        "detail": "Body `{action: accept|edit|not_present, value?}` → `200 {field}`. Errors: `422` invalid date, number or currency. Allowed after completion (decision on #45).",
         "story": "MVP1-E4-02"
       },
       {
@@ -1118,11 +1122,11 @@ export const products = [
         "story": "MVP1-E4-04"
       },
       {
-        "method": "POST",
-        "path": "/api/review/v1/admin/eval-candidates/export",
+        "method": "GET",
+        "path": "/api/review/v1/admin/accuracy",
         "access": "Admin",
-        "summary": "Export approved corrections as ground-truth files.",
-        "detail": "Body `{candidate_ids[]}` → `200 {files: [{name, url}]}`. Only candidates with status `approved` are exported.",
+        "summary": "How often people correct each field, as counts and rates only (groups under 5 hidden).",
+        "detail": "Query `since`, `source` → `200 {since, totals, fields[]}`. Replaces the export of corrections (decision on #41).",
         "story": "MVP1-E4-04"
       }
     ],
@@ -1146,7 +1150,7 @@ export const products = [
       {
         "story": "MVP1-E4-04",
         "title": "Corrections feed the eval set",
-        "text": "`review.eval_candidates` (id, task_id, reference, field_name, model_value jsonb, human_value jsonb, status `candidate|approved|rejected|exported`, created_at)."
+        "text": "`review.eval_candidates` (id, task_id, reference, field_name, model_value jsonb, human_value jsonb, status `candidate|approved|rejected`, created_at). `task_id` references `review.tasks` with delete cascade, so candidates are deleted with the task and the account (decision on #41)."
       }
     ]
   },
