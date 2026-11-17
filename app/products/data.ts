@@ -959,8 +959,8 @@ export const products = [
     "group": "MVP1",
     "service": "Human Review",
     "description": "Review only the fields the system is unsure about, with the evidence beside each one.",
-    "status": "Planned",
-    "detailed": false,
+    "status": "In design",
+    "detailed": true,
     "epic": {
       "id": "E4",
       "title": "Human review of low-confidence fields",
