@@ -577,6 +577,8 @@ MODULE = {
     "ddl": DDL,
     "journeys": JOURNEYS,
     "edgeCases": EDGE_CASES,
+    "uiRules": UI_RULES,
+    "components": COMPONENTS,
     "queries": QUERIES,
     "noEndpoint": [
         {"topic": "Re-checking corrected values (MVP1-E4-03)", "how": "The rule checks belong to the LLM Extraction service. The app calls its `POST /validations` with the corrected values before completing the task here, and passes `checks_overridden` if the person confirms values that still fail. Review itself knows no document rules."},

@@ -1363,9 +1363,149 @@ export const review = {
       "code": "`not_authenticated`"
     }
   ],
-  "components": [],
+  "components": [
+    {
+      "name": "ReviewQueue",
+      "kind": "Component",
+      "purpose": "The task's fields, flagged first, each with its value, reason, evidence and the three decisions, with the 'N of M resolved' counter.",
+      "props": [
+        {
+          "name": "taskId",
+          "type": "string",
+          "meaning": "The task."
+        },
+        {
+          "name": "showAll",
+          "type": "boolean, optional",
+          "meaning": "Include unflagged fields. Default false; a 'Show all fields' toggle is built in."
+        }
+      ],
+      "states": [
+        "Loading: placeholder rows",
+        "Open: fields with their status",
+        "All resolved: a short 'All checked' message",
+        "Completed: read-only values",
+        "Failed: 'Couldn't load this review.' and Retry"
+      ],
+      "calls": [
+        "`GET /tasks/{taskId}`"
+      ]
+    },
+    {
+      "name": "FieldDecision",
+      "kind": "Component",
+      "purpose": "One field's value with Accept, Edit and Not on document; the edit box checks the value as the person types.",
+      "props": [
+        {
+          "name": "field",
+          "type": "Field",
+          "meaning": "The field."
+        },
+        {
+          "name": "onDecided",
+          "type": "(field) => void",
+          "meaning": "Called after the decision is saved."
+        }
+      ],
+      "states": [
+        "Pending",
+        "Editing, with the format hint for the field's type",
+        "Invalid: the message under the box",
+        "Saving: buttons disabled",
+        "Decided: accepted, edited (shows original and new) or not present",
+        "Failed: the message and Retry"
+      ],
+      "calls": [
+        "`PATCH /tasks/{taskId}/fields/{fieldId}`"
+      ]
+    },
+    {
+      "name": "ResolvedCounter",
+      "kind": "Component",
+      "purpose": "'N of M resolved', with a bar.",
+      "props": [
+        {
+          "name": "resolved, total",
+          "type": "numbers",
+          "meaning": "From the task."
+        }
+      ],
+      "states": [
+        "Partly resolved",
+        "All resolved"
+      ],
+      "calls": [
+        "None."
+      ]
+    },
+    {
+      "name": "CompleteReviewButton",
+      "kind": "Component",
+      "purpose": "Completes the task; disabled until every flagged field is decided. Can carry the person's confirmation that failing values are as printed.",
+      "props": [
+        {
+          "name": "taskId",
+          "type": "string",
+          "meaning": "The task."
+        },
+        {
+          "name": "checksOverridden",
+          "type": "boolean, optional",
+          "meaning": "Set by the app when the person confirmed."
+        },
+        {
+          "name": "onCompleted",
+          "type": "(result) => void",
+          "meaning": "Called with the final values."
+        }
+      ],
+      "states": [
+        "Disabled with 'N fields left'",
+        "Ready",
+        "Working",
+        "Completed",
+        "Failed: the message and Retry"
+      ],
+      "calls": [
+        "`POST /tasks/{taskId}/complete`"
+      ]
+    },
+    {
+      "name": "EvalCandidatesTable",
+      "kind": "Component",
+      "purpose": "For an admin: corrections with both values, Approve and Reject, and Export for the approved ones.",
+      "props": [
+        {
+          "name": "status",
+          "type": "string, optional",
+          "meaning": "Which candidates to show. Default `candidate`."
+        }
+      ],
+      "states": [
+        "Loading",
+        "Empty: 'No corrections waiting.'",
+        "Loaded",
+        "Exporting",
+        "Exported: links to the files",
+        "Not an admin: 'Not found'",
+        "Failed: Retry"
+      ],
+      "calls": [
+        "`GET /admin/eval-candidates`",
+        "`PATCH /admin/eval-candidates/{candidateId}`",
+        "`POST /admin/eval-candidates/export`"
+      ]
+    }
+  ],
   "hostedPages": [],
-  "uiRules": [],
+  "uiRules": [
+    "Components call only the Human Review API. Re-checking values against document rules is the app's step, through the LLM Extraction service.",
+    "They ship as the package `packages/ui-review` and work for any set of fields: labels come from field names, checks from field types.",
+    "Keyboard on desktop: Enter accepts, E edits, ↓ moves to the next field, with the shortcuts listed on screen. On phones every action is a button at least 44 pixels tall.",
+    "Evidence (the quote and page) is always beside the value it supports.",
+    "Every request has a loading state that keeps the layout still, and a failure state with a plain-language message and a retry.",
+    "Keyboard reachable, visible focus, labelled controls, progress announced to screen readers, WCAG AA contrast, usable at 320 pixels wide, in light and dark mode."
+  ],
   "entities": [
     {
       "name": "Task",
