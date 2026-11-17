@@ -672,8 +672,132 @@ export const payment = {
   "env": [],
   "openQuestions": [],
   "decisions": [],
-  "journeys": [],
-  "edgeCases": [],
+  "journeys": [
+    {
+      "name": "Pay for a document",
+      "who": "Someone whose results are ready",
+      "trigger": "Taps 'Pay $5.00'.",
+      "stories": [
+        "MVP1-E6-01",
+        "MVP1-E6-02",
+        "MVP1-E6-03"
+      ],
+      "steps": [
+        {
+          "person": "Sees the order summary, the price and a banner: 'Test mode — use card 4242 4242 4242 4242, any future date, any CVC'.",
+          "system": "The app's page shows what is being bought."
+        },
+        {
+          "person": "Taps Pay $5.00.",
+          "system": "The app's server asks Payment for an order; Payment creates it and a Stripe checkout page."
+        },
+        {
+          "person": "On Stripe's page (not 01scale's), enters the test card and pays.",
+          "system": "Stripe takes the payment and sends the person back to the app's success address."
+        },
+        {
+          "person": "Sees 'Confirming payment…', then the downloads unlock.",
+          "system": "Stripe's signed event reaches Payment, which marks the order paid and tells the app. The browser's return alone never unlocks anything."
+        }
+      ],
+      "outcome": "The order is paid, recorded once, and the app has been told."
+    },
+    {
+      "name": "Change your mind",
+      "who": "Someone on Stripe's page",
+      "trigger": "Taps back or Cancel on Stripe's page.",
+      "stories": [
+        "MVP1-E6-03"
+      ],
+      "steps": [
+        {
+          "person": "Returns to the app.",
+          "system": "Stripe sends them to the cancel address. The order stays `pending`."
+        },
+        {
+          "person": "Sees 'Payment cancelled — you haven't been charged' and a Pay button.",
+          "system": "Nothing was charged."
+        },
+        {
+          "person": "Taps Pay again within the hour.",
+          "system": "Payment returns the same order and the same checkout page. No second order is made."
+        }
+      ],
+      "outcome": "No duplicate orders, no charge until the person completes payment."
+    },
+    {
+      "name": "Come back after the page expired",
+      "who": "Someone who left for more than an hour",
+      "trigger": "Taps Pay again.",
+      "stories": [
+        "MVP1-E6-01",
+        "MVP1-E6-02"
+      ],
+      "steps": [
+        {
+          "person": "Taps Pay $5.00.",
+          "system": "Stripe had expired the old page and told Payment, which marked that order `expired`. Payment creates a new order and page."
+        },
+        {
+          "person": "Pays as usual.",
+          "system": "Only the new order becomes paid."
+        }
+      ],
+      "outcome": "The expired attempt stays in the history; the person pays once."
+    },
+    {
+      "name": "Card is declined",
+      "who": "Someone whose card fails",
+      "trigger": "Enters a declined test card on Stripe's page.",
+      "stories": [
+        "MVP1-E6-02"
+      ],
+      "steps": [
+        {
+          "person": "Sees Stripe's message on Stripe's page and tries another card.",
+          "system": "Stripe handles the decline itself; nothing reaches 01scale until a payment succeeds or the page expires."
+        }
+      ],
+      "outcome": "The person can retry on the same page."
+    }
+  ],
+  "edgeCases": [
+    {
+      "situation": "Taps Pay for something already paid",
+      "sees": "Goes straight to the success page.",
+      "code": "`already_paid`"
+    },
+    {
+      "situation": "The checkout page expired",
+      "sees": "A new checkout page when tapping Pay again.",
+      "code": "Order `expired`"
+    },
+    {
+      "situation": "An async payment method fails later",
+      "sees": "'Your payment didn't go through. Try again.'",
+      "code": "Order `failed`"
+    },
+    {
+      "situation": "Stripe is unavailable when starting",
+      "sees": "'Payments are unavailable for a moment. You haven't been charged.'",
+      "code": "`stripe_unavailable`"
+    },
+    {
+      "situation": "Stripe's confirmation is slow to arrive",
+      "sees": "'Confirming payment…' for a few seconds (the success page's job, `MVP1-E7-01`).",
+      "code": "Order still `pending`"
+    },
+    {
+      "situation": "Follows a link to someone else's order",
+      "sees": "'Not found.'",
+      "code": "`order_not_found`"
+    },
+    {
+      "situation": "A forged or replayed Stripe event",
+      "sees": "Nothing: it is rejected and changes no order.",
+      "code": "`invalid_signature`"
+    }
+  ],
   "components": [],
   "hostedPages": [],
   "uiRules": [],
