@@ -917,7 +917,7 @@ export const upload = {
         "Upload and download links last 5 minutes, and fix the type and size (upload) or type and filename (download) in their signature.",
         "`POST /files` accepts `Idempotency-Key`; `complete` and `DELETE` are idempotent by design.",
         "Events must carry a valid signature and are processed once per `event_id`.",
-        "Starting rate limits at the gateway: 30 file creations a minute per user; 120 reads a minute per user."
+        "Rate limit at the gateway: 100 requests a minute per user, across every endpoint of every service (Nikhil's decision on #64). Over it, `429 rate_limited` with `Retry-After`."
       ]
     },
     {
@@ -985,9 +985,9 @@ export const upload = {
     }
   ],
   "openQuestions": [
-    "Rate limits are starting values to be tuned once there is real traffic.",
-    "Files are removed after 30 days. Should a person be told before that happens? No story asks for it, so nothing is sent today.",
-    "A photo of a paper invoice is accepted as one page. Several photos of a multi-page invoice would be several files; joining them into one document is not designed."
+    "Decided by Nikhil on 17 Nov 2026 (#64): the rate limit is 100 requests a minute per user for every endpoint to begin with; higher limits come with paid plans (`MVP2-E13-06`).",
+    "Decided (#64): files are deleted after 30 days with no notice beforehand. The upload story says so, and each file's `expires_at` is returned with it.",
+    "Decided (#64): each uploaded file is its own file. Several photos of the pages of one invoice are several files, and several documents; joining them into one is not in this version."
   ],
   "decisions": [],
   "journeys": [
