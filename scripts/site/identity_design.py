@@ -130,17 +130,23 @@ ENDPOINTS = [
         "behaviour": [
             "Checks `state`, then exchanges `code` with Cognito's token endpoint using the client secret and the PKCE code verifier.",
             "Validates the ID token: signature against Cognito's keys, issuer, audience (the client ID), expiry, and `nonce`.",
-            "Requires `email_verified` to be true.",
+            "Requires `email_verified` to be true, and an email of at most 254 characters (the longest a mail server accepts). Both are checked before anything is stored.",
             "Finds the user by `cognito_sub`. If none exists, creates one and records `auth.signup`.",
             "Revokes that user's sessions created before the token's `auth_time` when the password was just reset (story MVP1-E1-04).",
             "Creates a session, sets `__Host-01s_session`, deletes `__Host-01s_login`, records `auth.signin` and redirects to `return_to`.",
             "Cognito's tokens are used once here and then discarded. They are never stored or sent to the browser.",
+            "On any failure, a browser (a request that accepts `text/html`) is redirected to the friendly page `/sign-in-error?code=<code>`, which explains the problem in plain language with one button to start again. Any other client, such as an app or an AI agent, gets the `application/problem+json` error below.",
+            "Every failure is recorded as `auth.signin_failed` with the code as its reason.",
         ],
-        "responses": [("302", "Sign-in succeeded", "`Location`: `return_to`. `Set-Cookie`: `__Host-01s_session`, and `__Host-01s_login` cleared.")],
+        "responses": [
+            ("302", "Sign-in succeeded", "`Location`: `return_to`. `Set-Cookie`: `__Host-01s_session`, and `__Host-01s_login` cleared."),
+            ("302", "Sign-in failed, and the caller is a browser", "`Location`: `/sign-in-error?code=<code>`, with `__Host-01s_login` cleared."),
+        ],
         "errors": [
             ("400", "`login_expired`", "The login cookie is missing or older than 10 minutes. The user starts again."),
-            ("400", "`login_state_mismatch`", "`state` does not match, or the ID token's `nonce` does not match. Recorded as `auth.signin_failed`."),
+            ("400", "`login_state_mismatch`", "`state` does not match, or the ID token's `nonce` does not match."),
             ("400", "`email_not_verified`", "Cognito reports the email as unverified."),
+            ("422", "`email_not_supported`", "The email is longer than 254 characters, so no user is created. Practically never happens, since Cognito has just sent mail to the address."),
             ("400", "`provider_error`", "Cognito returned `error` (for example the user cancelled), or rejected the code."),
             ("502", "`provider_unavailable`", "Cognito could not be reached. Safe to start again."),
         ],
@@ -339,6 +345,7 @@ RULES = {
         "`mode` must be `signin` or `signup`.",
         "`return_to` must be a path on 01scale.com (starts with one `/`, not `//`, at most 512 characters).",
         "`state` and `nonce` must match the values in the login cookie, compared in constant time.",
+        "The email from Cognito must be verified and at most 254 characters.",
         "The login cookie must be present and less than 10 minutes old.",
         "`session_token` must be exactly 43 base64url characters.",
         "`POST /auth/logout` must carry an `Origin` header from 01scale.com.",
@@ -408,9 +415,15 @@ QUICKSTART = [
 ]
 
 OPEN_QUESTIONS = [
-    "When sign-in fails at the callback, a person in a browser sees a JSON error. I propose redirecting browsers to a friendly `/sign-in-error` page and keeping JSON for API clients.",
-    "Session lifetime is fixed at 7 days. Shorter is safer; longer is more convenient.",
     "Rate limit numbers are starting values to be tuned once there is real traffic.",
+]
+
+# Decisions I took on questions the first draft left open.
+DECISIONS = [
+    ("Failed sign-in in a browser", "A browser is sent to a friendly page that explains the problem and offers one button to start again. Apps and AI agents still get the error with its code."),
+    ("Session length", "7 days from sign-in, not extended by use."),
+    ("Several ways to sign in for one person", "Version 1 keeps one Cognito ID on the user. A separate table of logins arrives with Sign in with Google (`MVP1-E1-08`), which moves the data then."),
+    ("An email longer than 254 characters", "Sign-in checks it before saving and returns the error `email_not_supported`, instead of failing on the database's own check."),
 ]
 
 
@@ -498,6 +511,10 @@ Base address: `https://01scale.com{BASE}`
 Set as environment variables on the Identity service's own Vercel project. Secrets are never committed.
 
 {table(['Variable', 'Value', 'Secret'], [(f'`{n}`', v, s) for n, v, s in ENV])}
+
+## Decisions
+
+{table(['Question', 'What I decided'], DECISIONS)}
 
 ## Open questions
 

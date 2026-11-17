@@ -89,7 +89,7 @@ The components the Identity service ships for apps to use, as the package `packa
 
 ## SignInError
 
-*Page.* A plain-language page for a failed sign-in, with one button to start again. Proposed; see open questions.
+*Page.* The page at `/sign-in-error` that a browser lands on when sign-in fails: a plain-language message and one button to start again.
 
 | Input | Type | Meaning |
 |---|---|---|

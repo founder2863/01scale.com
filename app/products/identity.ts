@@ -295,11 +295,13 @@ export const identity = {
       "behaviour": [
         "Checks `state`, then exchanges `code` with Cognito's token endpoint using the client secret and the PKCE code verifier.",
         "Validates the ID token: signature against Cognito's keys, issuer, audience (the client ID), expiry, and `nonce`.",
-        "Requires `email_verified` to be true.",
+        "Requires `email_verified` to be true, and an email of at most 254 characters (the longest a mail server accepts). Both are checked before anything is stored.",
         "Finds the user by `cognito_sub`. If none exists, creates one and records `auth.signup`.",
         "Revokes that user's sessions created before the token's `auth_time` when the password was just reset (story MVP1-E1-04).",
         "Creates a session, sets `__Host-01s_session`, deletes `__Host-01s_login`, records `auth.signin` and redirects to `return_to`.",
-        "Cognito's tokens are used once here and then discarded. They are never stored or sent to the browser."
+        "Cognito's tokens are used once here and then discarded. They are never stored or sent to the browser.",
+        "On any failure, a browser (a request that accepts `text/html`) is redirected to the friendly page `/sign-in-error?code=<code>`, which explains the problem in plain language with one button to start again. Any other client, such as an app or an AI agent, gets the `application/problem+json` error below.",
+        "Every failure is recorded as `auth.signin_failed` with the code as its reason."
       ],
       "request": "GET /api/identity/v1/auth/callback?code=4f1c9a7e-example&state=Zk3... HTTP/1.1\nHost: 01scale.com\nCookie: __Host-01s_login=eyJhbGciOiJkaXIi...",
       "response": "HTTP/1.1 302 Found\nLocation: /documents\nSet-Cookie: __Host-01s_session=q3ZxT0m8Jd1sV5nH2bK7wY4cR9uE6aLpF0gI3oXtNzM; Max-Age=604800; Path=/; HttpOnly; Secure; SameSite=Lax\nSet-Cookie: __Host-01s_login=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=Lax",
@@ -343,6 +345,11 @@ export const identity = {
           "status": "302",
           "when": "Sign-in succeeded",
           "body": "`Location`: `return_to`. `Set-Cookie`: `__Host-01s_session`, and `__Host-01s_login` cleared."
+        },
+        {
+          "status": "302",
+          "when": "Sign-in failed, and the caller is a browser",
+          "body": "`Location`: `/sign-in-error?code=<code>`, with `__Host-01s_login` cleared."
         }
       ],
       "errors": [
@@ -354,12 +361,17 @@ export const identity = {
         {
           "status": "400",
           "code": "`login_state_mismatch`",
-          "when": "`state` does not match, or the ID token's `nonce` does not match. Recorded as `auth.signin_failed`."
+          "when": "`state` does not match, or the ID token's `nonce` does not match."
         },
         {
           "status": "400",
           "code": "`email_not_verified`",
           "when": "Cognito reports the email as unverified."
+        },
+        {
+          "status": "422",
+          "code": "`email_not_supported`",
+          "when": "The email is longer than 254 characters, so no user is created. Practically never happens, since Cognito has just sent mail to the address."
         },
         {
           "status": "400",
@@ -946,6 +958,7 @@ export const identity = {
         "`mode` must be `signin` or `signup`.",
         "`return_to` must be a path on 01scale.com (starts with one `/`, not `//`, at most 512 characters).",
         "`state` and `nonce` must match the values in the login cookie, compared in constant time.",
+        "The email from Cognito must be verified and at most 254 characters.",
         "The login cookie must be present and less than 10 minutes old.",
         "`session_token` must be exactly 43 base64url characters.",
         "`POST /auth/logout` must carry an `Origin` header from 01scale.com.",
@@ -1029,9 +1042,25 @@ export const identity = {
     }
   ],
   "openQuestions": [
-    "When sign-in fails at the callback, a person in a browser sees a JSON error. I propose redirecting browsers to a friendly `/sign-in-error` page and keeping JSON for API clients.",
-    "Session lifetime is fixed at 7 days. Shorter is safer; longer is more convenient.",
     "Rate limit numbers are starting values to be tuned once there is real traffic."
+  ],
+  "decisions": [
+    {
+      "question": "Failed sign-in in a browser",
+      "decision": "A browser is sent to a friendly page that explains the problem and offers one button to start again. Apps and AI agents still get the error with its code."
+    },
+    {
+      "question": "Session length",
+      "decision": "7 days from sign-in, not extended by use."
+    },
+    {
+      "question": "Several ways to sign in for one person",
+      "decision": "Version 1 keeps one Cognito ID on the user. A separate table of logins arrives with Sign in with Google (`MVP1-E1-08`), which moves the data then."
+    },
+    {
+      "question": "An email longer than 254 characters",
+      "decision": "Sign-in checks it before saving and returns the error `email_not_supported`, instead of failing on the database's own check."
+    }
   ],
   "journeys": [
     {
@@ -1181,6 +1210,11 @@ export const identity = {
       "situation": "AWS Cognito is unavailable",
       "sees": "Sees 'Sign-in is temporarily unavailable. Try again.'",
       "code": "`provider_unavailable`"
+    },
+    {
+      "situation": "Has an email longer than 254 characters",
+      "sees": "Sees 'This email address can't be used with 01scale.' No user is created.",
+      "code": "`email_not_supported`"
     }
   ],
   "components": [
@@ -1323,7 +1357,7 @@ export const identity = {
     {
       "name": "SignInError",
       "kind": "Page",
-      "purpose": "A plain-language page for a failed sign-in, with one button to start again. Proposed; see open questions.",
+      "purpose": "The page at `/sign-in-error` that a browser lands on when sign-in fails: a plain-language message and one button to start again.",
       "states": [
         "One message per error code",
         "Unknown code (generic message)"

@@ -74,3 +74,4 @@ What a person sees and what the system does, for login in version 1.
 | Has not verified their email | Is asked to enter the code first; no 01scale user is created. | `email_not_verified` |
 | Session reaches 7 days | Is asked to sign in again and returns to the same page. | `not_authenticated` |
 | AWS Cognito is unavailable | Sees 'Sign-in is temporarily unavailable. Try again.' | `provider_unavailable` |
+| Has an email longer than 254 characters | Sees 'This email address can't be used with 01scale.' No user is created. | `email_not_supported` |
