@@ -27,15 +27,21 @@ for (const service of readdirSync(root).sort()) {
     const rows = existsSync(samples)
       ? readFileSync(samples, "utf8").split("\n").filter((line) => line.startsWith("insert"))
       : [];
+    let rejected = 0;
     for (const row of rows) {
       try {
         await db.exec(row);
       } catch (error) {
-        failed += 1;
+        rejected += 1;
         console.log(`FAIL ${service}: sample row rejected: ${error.message}\n  ${row.slice(0, 160)}`);
       }
     }
-    console.log(`ok   ${service}: schema runs, ${rows.length} sample rows checked`);
+    failed += rejected;
+    console.log(
+      rejected
+        ? `FAIL ${service}: schema runs, but ${rejected} of ${rows.length} sample rows were rejected`
+        : `ok   ${service}: schema runs, ${rows.length} sample rows checked`,
+    );
   } catch (error) {
     failed += 1;
     console.log(`FAIL ${service}: schema does not run: ${error.message}`);
