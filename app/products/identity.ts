@@ -1,5 +1,30 @@
 // Generated together with docs/services/identity/*.md from one source. Design only: not built yet.
 export const identity = {
+  "slug": "login-using-aws",
+  "docsPath": "docs/services/identity",
+  "extraDocs": [
+    {
+      "path": "docs/infra/cognito.md",
+      "label": "AWS Cognito setup steps"
+    }
+  ],
+  "labels": {
+    "flow": "How login works",
+    "hosted": "Pages provided by AWS Cognito in version 1"
+  },
+  "notes": {
+    "journey": "What a person sees and what the system does, for login in version 1.",
+    "ui": "What the Identity service ships for apps to use, as the package `packages/ui-identity`.",
+    "hosted": "These are not 01scale components. 01scale's own pages replace them in version 2.",
+    "token": "A signed token (JWT, ES256) that lives 5 minutes. Browsers never see it.",
+    "schema": "The SQL for the tables login uses, in the `identity` schema. No other service can read them."
+  },
+  "notStored": [
+    "Passwords: they live only in AWS Cognito.",
+    "Cognito's tokens: used once at the callback and discarded.",
+    "The session token itself: only its hash.",
+    "Access tokens: they are verified by signature, never looked up."
+  ],
   "overview": {
     "name": "Identity",
     "version": "Version 1 · Login with AWS Cognito",

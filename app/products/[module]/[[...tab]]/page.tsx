@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { products } from "../../data";
 import { Flow, PRODUCT_NAME, VISION_HREF } from "../../flow";
-import { identity } from "../../identity";
+import { details } from "../../details";
 import { TabContent } from "../../sections";
 import { tabHref, tabs, type TabSlug } from "../../tabs";
 
@@ -46,6 +46,7 @@ export default async function ProductPage({ params }: { params: Promise<Params> 
   const found = resolve(await params);
   if (!found) notFound();
   const { product, tab } = found;
+  const detail = details[product.slug];
 
   return (
     <>
@@ -57,8 +58,8 @@ export default async function ProductPage({ params }: { params: Promise<Params> 
           <h1>{product.title}</h1>
           <p className="lead">{product.description}</p>
           <p className="hero-meta">
-            {product.detailed && <span>{identity.overview.version}</span>}
-            <span>{product.detailed ? identity.overview.status : "Planned, not built"}</span>
+            {detail && <span>{detail.overview.version}</span>}
+            <span>{detail ? detail.overview.status : "Planned, not built"}</span>
             <span>
               Module {product.number} of {products.length}
             </span>

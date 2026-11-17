@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import type { ReactNode } from "react";
+import HowItsBuiltMenu from "./how-its-built/menu";
 import ProductsMenu from "./products/menu";
 import "./globals.css";
 
@@ -25,6 +26,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               </Link>
               <ProductsMenu />
               <Link href="/architecture">Architecture</Link>
+              <HowItsBuiltMenu />
             </nav>
           </div>
         </header>

@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "site:data": "python3 scripts/site/build_products.py",
+    "costs": "python3 scripts/costs/build_costs.py"
   },
   "dependencies": {
     "next": "^16.4.6",

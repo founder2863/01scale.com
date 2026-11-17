@@ -288,11 +288,38 @@ p {
   }
 }
 
-/* Narrow phones: the logo already links home. */
+/* Phones: the logo sits on its own line and the four menu items share the
+   line below, so nothing is squeezed or cut off. */
 
-@media (max-width: 340px) {
+@media (max-width: 719px) {
+  :root {
+    --header-height: 88px;
+  }
+
+  .site-header .container {
+    gap: 2px 16px;
+    padding-top: 8px;
+    padding-bottom: 6px;
+  }
+
+  .site-header nav {
+    flex-basis: 100%;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 0.9rem;
+  }
+}
+
+/* Very narrow phones: the logo already links home. */
+
+@media (max-width: 359px) {
   .nav-home {
     display: none;
+  }
+
+  .site-header nav {
+    justify-content: flex-start;
+    gap: 16px;
   }
 }
 
@@ -1519,4 +1546,297 @@ section[id] {
   .product-flow-detailed .flow-step-service {
     display: block;
   }
+}
+
+/* ---------------------------------------------------------- How It's Built */
+
+.skill-order {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
+  gap: 10px;
+  margin: 0 0 20px;
+  padding: 0;
+  list-style: none;
+}
+
+.skill-order li {
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--brand-bright);
+  border-radius: 10px;
+  background: var(--surface);
+}
+
+.skill-order strong {
+  display: block;
+  color: var(--link);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.skill-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 360px), 1fr));
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.skill-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: 100%;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+}
+
+.skill-card h3 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.skill-card code {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.skill-card p {
+  margin: 0;
+}
+
+.skill-card dl {
+  margin: 0;
+}
+
+.skill-card dt {
+  margin-top: 6px;
+  color: var(--link);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.skill-card dd {
+  margin: 0;
+  color: var(--muted);
+}
+
+.skill-card a {
+  margin-top: auto;
+  padding-top: 6px;
+  font-weight: 600;
+}
+
+.section-subtitle {
+  margin: 24px 0 10px;
+  font-size: 1.05rem;
+}
+
+.section-footnote {
+  margin-top: 20px;
+}
+
+/* ------------------------------------------------------------- Token costs */
+
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
+  gap: 10px;
+  margin: 0 0 8px;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+.stat-label {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.cost-table {
+  width: 100%;
+  margin: 0 0 12px;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+.cost-table th,
+.cost-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  text-align: right;
+  vertical-align: top;
+}
+
+.cost-table th:first-child {
+  text-align: left;
+}
+
+.cost-table thead th {
+  color: var(--link);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.cost-table tbody th {
+  font-weight: 600;
+}
+
+.cost-table tbody tr:hover {
+  background: var(--surface);
+}
+
+.cost-pending {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.yield {
+  display: inline-block;
+  width: 56px;
+  height: 6px;
+  margin-right: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--chip-bg);
+  vertical-align: middle;
+}
+
+.yield-bar {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--brand), var(--brand-bright));
+}
+
+.cost-definitions {
+  margin-top: 20px;
+}
+
+/* Phones: each row becomes a small card with labelled values. */
+
+@media (max-width: 719px) {
+  .cost-table thead {
+    display: none;
+  }
+
+  .cost-table,
+  .cost-table tbody,
+  .cost-table tr,
+  .cost-table th,
+  .cost-table td {
+    display: block;
+  }
+
+  .cost-table tr {
+    margin-bottom: 10px;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--surface);
+  }
+
+  .cost-table th,
+  .cost-table td {
+    padding: 4px 0;
+    border: 0;
+    text-align: left;
+  }
+
+  .cost-table tbody th {
+    margin-bottom: 4px;
+  }
+
+  .cost-table td {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .cost-table td::before {
+    content: attr(data-label);
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+}
+
+/* Cost baselines box at the top of Token Costs (How It's Built). */
+.cost-baseline {
+  margin: 1rem 0 1.5rem;
+}
+
+/* How It's Built: its header menu is a short list, and the page has three tabs
+   (Skills, Token Costs, Agents) in a bar that stays in view. */
+
+@media (min-width: 768px) {
+  .menu-panel-narrow {
+    width: min(260px, calc(100vw - 2 * var(--gutter)));
+  }
+}
+
+.page-tabs {
+  position: sticky;
+  top: var(--header-height);
+  z-index: 5;
+  display: flex;
+  gap: 8px;
+  margin: 0 calc(-1 * var(--gutter));
+  padding: 12px var(--gutter);
+  overflow-x: auto;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+  white-space: nowrap;
+  scrollbar-width: none;
+}
+
+.page-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.page-tabs a {
+  flex: 0 0 auto;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: var(--chip-bg);
+  color: var(--chip-text);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.page-tabs a:hover {
+  color: var(--link);
+}
+
+.page-tabs a[aria-current="page"] {
+  background: var(--brand);
+  color: #ffffff;
 }
