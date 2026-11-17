@@ -1810,6 +1810,18 @@ section[id] {
   }
 }
 
+.rate-model + .rate-model {
+  margin-top: 16px;
+}
+
+.rate-model-name {
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
 .rate-tiles li {
   display: flex;
   flex-direction: column;
