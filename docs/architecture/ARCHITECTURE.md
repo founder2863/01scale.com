@@ -256,6 +256,7 @@ These ladders are the direction; the exact steps for each are decided in that co
 | Ships alone | Its own version, changelog, release and rollback. |
 | Shows its work | Its own page on 01scale.com: try-it demo, API reference, MCP tools, spec and decisions. |
 | Fails politely | Callers set timeouts and retry safely; one service being down degrades the app, it does not corrupt it. |
+| Keeps user data private | A user's data is never seen by another user and never written to the public repository: not in code, docs, datasets, fixtures, eval reports, logs, issues or PR comments. Anything published from real usage is an aggregate, never a value. I decided this on 17 November 2026 (issue #41), because external users will test the platform and the repository is public. |
 
 Apps (DocFlow first) call the components' APIs in a fixed order. A service tells an app that something finished (a job completed, an order was paid) with a signed event over HTTP. A message queue between services is added only when a second consumer needs it.
 

@@ -1049,7 +1049,7 @@ export const products = [
           },
           {
             "label": "AC2",
-            "text": "An admin export produces new ground-truth files for `evals/datasets/` after manual approval. Customer documents are never added automatically."
+            "text": "Approved corrections stay in Review's database; they are never exported to files or to the repository (Nikhil's decision on #41: the repository is public and one user's data must never be seen by another). Reports built from them show aggregates only, never values. Evals that test new prompts use only the synthetic and licensed datasets in `evals/`."
           }
         ],
         "evals": "",
