@@ -644,12 +644,136 @@ export const upload = {
           "meaning": "When the bucket's lifecycle rule removes the object. Shown to the person so it is not a surprise."
         }
       ],
-      "constraints": [],
-      "sampleCols": [],
-      "sampleRows": []
+      "constraints": [
+        "`files_pkey`: primary key (`id`)",
+        "`files_s3_key_key`: unique (`s3_key`)",
+        "`files_s3_key_check`: `s3_key` starts with `users/{owner_id}/{id}/original.`",
+        "`files_file_name_check`: 1 to 255 characters, none of them `/`, `\\` or a control character",
+        "`files_mime_check`: `mime` is one of the five allowed types",
+        "`files_size_bytes_check`: `size_bytes` between 1 and 10,485,760",
+        "`files_pages_check`: `pages` empty, or 1 to 10 for a PDF and exactly 1 for an image; always empty for JSON and CSV",
+        "`files_accept_check`: `accept` has no keys other than `mimes`, `max_bytes`, `max_pages`",
+        "`files_status_check`: `status` is one of the five statuses",
+        "`files_rejection_check`: `rejection_reason` is set exactly when `status` is `rejected`, and is one of the four reasons",
+        "`files_ready_check`: a `ready` file has `sha256`, `completed_at` and, unless it is JSON or CSV, `pages`",
+        "`files_sha256_check`: `sha256` is 64 lower-case hex characters",
+        "`files_deleted_check`: `deleted_at` is set exactly when `status` is `deleted`",
+        "`files_dates_check`: `completed_at` is not before `created_at`; `expires_at` is exactly 30 days after `created_at`",
+        "`files_owner_id_idx`: index on (`owner_id`, `created_at` desc, `id` desc), for listing a user's files page by page",
+        "`files_pending_idx`: partial index on (`created_at`) where `status = 'pending_upload'`, for the daily clean-up",
+        "`files_expiry_idx`: partial index on (`expires_at`) where `status = 'ready'`, for marking files expired"
+      ],
+      "sampleCols": [
+        "id",
+        "owner_id",
+        "s3_key",
+        "file_name",
+        "mime",
+        "size_bytes",
+        "pages",
+        "status",
+        "rejection_reason",
+        "sha256",
+        "created_at",
+        "completed_at",
+        "expires_at"
+      ],
+      "sampleRows": [
+        [
+          "0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b",
+          "0193a5b2-7c1e-7a3f-9b2d-4e6f8a1c2d3e",
+          "users/0193a5b2-7c1e-7a3f-9b2d-4e6f8a1c2d3e/0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b/original.pdf",
+          "acme-invoice-0042.pdf",
+          "application/pdf",
+          "248913",
+          "2",
+          "ready",
+          "(empty)",
+          "3a7bd3e2360a3d29eea436fcfb7e44c735d117c42d1c1835420b6b9942dd4f1b",
+          "2026-11-17 09:14:07+00",
+          "2026-11-17 09:14:11+00",
+          "2026-12-17 09:14:07+00"
+        ],
+        [
+          "0193b0c9-5f22-7a08-9e44-1a2b3c4d5e6f",
+          "0193a5b2-7c1e-7a3f-9b2d-4e6f8a1c2d3e",
+          "users/0193a5b2-7c1e-7a3f-9b2d-4e6f8a1c2d3e/0193b0c9-5f22-7a08-9e44-1a2b3c4d5e6f/original.jpg",
+          "scan.jpg",
+          "image/jpeg",
+          "512000",
+          "(empty)",
+          "rejected",
+          "type_mismatch",
+          "(empty)",
+          "2026-11-17 09:16:40+00",
+          "2026-11-17 09:16:44+00",
+          "2026-12-17 09:16:40+00"
+        ],
+        [
+          "0193b1d0-0c3e-7b19-a2f5-7e8f9a0b1c2d",
+          "0193a5b2-7c1e-7a3f-9b2d-4e6f8a1c2d3e",
+          "users/0193a5b2-7c1e-7a3f-9b2d-4e6f8a1c2d3e/0193b1d0-0c3e-7b19-a2f5-7e8f9a0b1c2d/original.jpg",
+          "receipt-photo.jpg",
+          "image/jpeg",
+          "1843200",
+          "(empty)",
+          "pending_upload",
+          "(empty)",
+          "(empty)",
+          "2026-11-17 09:20:30+00",
+          "(empty)",
+          "2026-12-17 09:20:30+00"
+        ]
+      ]
+    },
+    {
+      "name": "upload.inbound_events",
+      "purpose": "One row per platform event Upload has acted on, so a repeated delivery has no effect.",
+      "columns": [
+        {
+          "name": "event_id",
+          "type": "uuid",
+          "nullable": "No",
+          "default": "",
+          "constraints": "Primary key",
+          "meaning": "The event's ID, from the sender."
+        },
+        {
+          "name": "type",
+          "type": "text",
+          "nullable": "No",
+          "default": "",
+          "constraints": "1 to 100 characters",
+          "meaning": "What happened, for example `identity.user.deleted`."
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": "No",
+          "default": "now()",
+          "constraints": "",
+          "meaning": "When Upload processed it."
+        }
+      ],
+      "constraints": [
+        "`inbound_events_pkey`: primary key (`event_id`); inserting a duplicate fails, which is how a repeat is detected",
+        "`inbound_events_type_check`: `type` is 1 to 100 characters"
+      ],
+      "sampleCols": [
+        "event_id",
+        "type",
+        "created_at"
+      ],
+      "sampleRows": [
+        [
+          "0193b2aa-6f01-7c2d-9e3f-4a5b6c7d8e9f",
+          "identity.user.deleted",
+          "2026-11-17 10:00:01+00"
+        ]
+      ]
     }
   ],
-  "otherTables": "The service template also gives Upload `audit_events`, `idempotency_keys` and `outbound_events`. Upload writes `file.created`, `file.uploaded`, `file.rejected`, `file.downloaded` and `file.deleted` to `audit_events`, uses `idempotency_keys` for `POST /files`, and records each processed event's ID so a repeated event has no effect. In version 1 it announces no events of its own.",
+  "otherTables": "The service template also gives Upload `audit_events`, `idempotency_keys` and `outbound_events`. Upload writes `file.created`, `file.uploaded`, `file.rejected`, `file.downloaded` and `file.deleted` to `audit_events`, uses `idempotency_keys` for `POST /files`, and keeps `inbound_events` (above) so a repeated event has no effect. In version 1 it announces no events of its own.",
   "rules": [
     {
       "level": "API level: checked on every request before anything is stored",
@@ -668,7 +792,16 @@ export const upload = {
     },
     {
       "level": "Schema level: enforced by the database, whatever the code does",
-      "items": []
+      "items": [
+        "Primary keys on both tables; `s3_key` is unique, so two files can never share an object.",
+        "The storage key must be built from the owner and file IDs.",
+        "Type, size, page count, status and rejection reason accept only their listed values or ranges.",
+        "A rejection reason exists exactly when a file is rejected; a deleted date exists exactly when it is deleted.",
+        "A ready file always has its fingerprint and completion time.",
+        "`expires_at` is always exactly 30 days after `created_at`, matching the bucket's lifecycle rule.",
+        "Rows are never deleted: the service's login has no `DELETE` grant. Audit events can be added and read, never changed.",
+        "Upload's database login can reach only the `upload` schema. No other service can read these tables."
+      ]
     },
     {
       "level": "Data model level: business rules the service guarantees",
@@ -708,6 +841,12 @@ export const upload = {
       "relations": "Exactly one per file that is not rejected or deleted, at the file's `s3_key`."
     },
     {
+      "name": "Processed event",
+      "table": "`upload.inbound_events`",
+      "what": "A platform event Upload has already acted on.",
+      "relations": "Stands alone. Holds the event's ID only, not its contents."
+    },
+    {
       "name": "Audit event",
       "table": "`upload.audit_events`",
       "what": "A permanent record that something happened to a file.",
@@ -728,6 +867,19 @@ export const upload = {
       "text": "Never stored. Signed on request and valid for 5 minutes."
     }
   ],
-  "ddl": "",
-  "queries": []
+  "ddl": "-- Upload service, version 1. Schema: upload.\n-- IDs are UUIDv7 values generated by the service.\n-- Checked with `npm run schema:check`: runs on PGlite, and every sample row passes every constraint.\n\ncreate schema if not exists upload;\n\ncreate table upload.files (\n  id               uuid        primary key,\n  owner_id         uuid        not null,\n  s3_key           text        not null,\n  file_name        text        not null,\n  mime             text        not null,\n  size_bytes       bigint      not null,\n  pages            integer,\n  accept           jsonb       not null default '{}',\n  status           text        not null default 'pending_upload',\n  rejection_reason text,\n  sha256           text,\n  created_at       timestamptz not null default now(),\n  completed_at     timestamptz,\n  deleted_at       timestamptz,\n  expires_at       timestamptz not null,\n\n  constraint files_s3_key_key unique (s3_key),\n  constraint files_s3_key_check\n    check (s3_key like 'users/' || owner_id::text || '/' || id::text || '/original.%'),\n  constraint files_file_name_check\n    check (length(file_name) between 1 and 255 and file_name !~ '[/\\\\[:cntrl:]]'),\n  constraint files_mime_check\n    check (mime in ('application/pdf', 'image/png', 'image/jpeg', 'application/json', 'text/csv')),\n  constraint files_size_bytes_check check (size_bytes between 1 and 10485760),\n  constraint files_pages_check check (\n    pages is null\n    or (mime = 'application/pdf' and pages between 1 and 10)\n    or (mime in ('image/png', 'image/jpeg') and pages = 1)\n  ),\n  constraint files_accept_check\n    check (accept - array['mimes', 'max_bytes', 'max_pages'] = '{}'::jsonb),\n  constraint files_status_check\n    check (status in ('pending_upload', 'ready', 'rejected', 'deleted', 'expired')),\n  constraint files_rejection_check check (\n    (status = 'rejected') = (rejection_reason is not null)\n    and (rejection_reason is null\n         or rejection_reason in ('type_mismatch', 'too_many_pages', 'unreadable', 'size_mismatch'))\n  ),\n  constraint files_ready_check check (\n    status <> 'ready'\n    or (sha256 is not null and completed_at is not null\n        and (pages is not null or mime in ('application/json', 'text/csv')))\n  ),\n  constraint files_sha256_check check (sha256 ~ '^[0-9a-f]{64}$'),\n  constraint files_deleted_check check ((status = 'deleted') = (deleted_at is not null)),\n  constraint files_dates_check check (\n    (completed_at is null or completed_at >= created_at)\n    and expires_at = created_at + interval '30 days'\n  )\n);\n\n-- A user's files, newest first, page by page.\ncreate index files_owner_id_idx on upload.files (owner_id, created_at desc, id desc);\n-- The daily clean-up of uploads that never arrived.\ncreate index files_pending_idx on upload.files (created_at) where status = 'pending_upload';\n-- Marking files expired when the bucket removes them.\ncreate index files_expiry_idx on upload.files (expires_at) where status = 'ready';\n\ncreate table upload.inbound_events (\n  event_id   uuid        primary key,\n  type       text        not null,\n  created_at timestamptz not null default now(),\n\n  constraint inbound_events_type_check check (length(type) between 1 and 100)\n);\n\n-- The service's database login reaches only this schema. Rows are never\n-- deleted (a deleted file keeps its row, without content), and audit events\n-- can be added and read but never changed.\ngrant usage on schema upload to upload_service;\ngrant select, insert, update on upload.files to upload_service;\ngrant select, insert on upload.inbound_events to upload_service;\ngrant select, insert on upload.audit_events to upload_service;\n",
+  "queries": [
+    {
+      "title": "List a user's files, one page (`GET /files`)",
+      "sql": "select id, file_name, mime, size_bytes, pages, status, created_at\nfrom upload.files\nwhere owner_id = $1\n  and status in ('pending_upload', 'ready', 'rejected')\n  and (created_at, id) < ($2, $3)      -- from the cursor; omitted on the first page\norder by created_at desc, id desc\nlimit $4;"
+    },
+    {
+      "title": "Mark a checked file ready (`POST /files/{fileId}/complete`)",
+      "sql": "update upload.files\nset status = 'ready', pages = $3, sha256 = $4, completed_at = now()\nwhere id = $1 and owner_id = $2 and status = 'pending_upload'\nreturning *;     -- no row: already checked, or not this user's file"
+    },
+    {
+      "title": "Find abandoned uploads (daily clean-up)",
+      "sql": "select id, s3_key\nfrom upload.files\nwhere status = 'pending_upload'\n  and created_at < now() - interval '24 hours';"
+    }
+  ]
 };

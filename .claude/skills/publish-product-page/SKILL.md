@@ -23,7 +23,7 @@ Never edit a generated file by hand. Change the source and run the command.
    - its `MODULE["slug"]` matches the module's slug in `MODULES` in `scripts/site/build_products.py`;
    - it belongs to a step in `app/products/flow.tsx`;
    - `COMPLETE` is `True` only when all six documents are written. Until then the page shows "In design".
-3. Run `npm run build`. It must pass.
+3. Run `npm run schema:check` (every schema runs and every sample row passes) and `npm run build`. Both must pass.
 4. Run `git diff --stat`. Only the files you expect should have changed. An unexpected change to a generated file means a source changed without regenerating.
 5. Check the page in a browser at 320, 390, 768, 1024, 1440 and 1920 pixels wide:
    - no sideways scrolling of the page, with every collapsible section open;

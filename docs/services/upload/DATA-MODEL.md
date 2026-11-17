@@ -10,6 +10,7 @@ What the service keeps, how the pieces relate, and what every field means. The S
 |---|---|---|---|
 | File | `upload.files` | A file a user stored, and what Upload knows about it. | Belongs to one user, by `owner_id` only. Other services refer to it by `file_id`. Its content is one object in the S3 bucket. |
 | Stored object | (S3, not the database) | The file's bytes, in a private bucket. | Exactly one per file that is not rejected or deleted, at the file's `s3_key`. |
+| Processed event | `upload.inbound_events` | A platform event Upload has already acted on. | Stands alone. Holds the event's ID only, not its contents. |
 | Audit event | `upload.audit_events` | A permanent record that something happened to a file. | Refers to the file and the user by ID, with no foreign key, so the record outlives a deleted file. |
 
 ## Life of each record
@@ -42,9 +43,19 @@ One row per file. Created when an upload is requested; it never stores the file'
 | `deleted_at` | `timestamptz` | Yes |  | Set exactly when status is `deleted` | When the file was deleted. |
 | `expires_at` | `timestamptz` | No |  | 30 days after `created_at` | When the bucket's lifecycle rule removes the object. Shown to the person so it is not a surprise. |
 
+## `upload.inbound_events`
+
+One row per platform event Upload has acted on, so a repeated delivery has no effect.
+
+| Field | Type | Empty allowed | Default | Constraints | What it means |
+|---|---|---|---|---|---|
+| `event_id` | `uuid` | No |  | Primary key | The event's ID, from the sender. |
+| `type` | `text` | No |  | 1 to 100 characters | What happened, for example `identity.user.deleted`. |
+| `created_at` | `timestamptz` | No | now() |  | When Upload processed it. |
+
 ## Other tables in this schema
 
-The service template also gives Upload `audit_events`, `idempotency_keys` and `outbound_events`. Upload writes `file.created`, `file.uploaded`, `file.rejected`, `file.downloaded` and `file.deleted` to `audit_events`, uses `idempotency_keys` for `POST /files`, and records each processed event's ID so a repeated event has no effect. In version 1 it announces no events of its own.
+The service template also gives Upload `audit_events`, `idempotency_keys` and `outbound_events`. Upload writes `file.created`, `file.uploaded`, `file.rejected`, `file.downloaded` and `file.deleted` to `audit_events`, uses `idempotency_keys` for `POST /files`, and keeps `inbound_events` (above) so a repeated event has no effect. In version 1 it announces no events of its own.
 
 ## Business rules
 

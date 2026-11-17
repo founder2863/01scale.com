@@ -485,3 +485,6 @@ with open("app/products/details.generated.ts", "w") as f:
     for k in keys:
         f.write(f"  [{k}.slug]: {k},\n")
     f.write("};\n")
+
+# Identity's SQL, for `npm run schema:check` (the other modules' is written by render.py).
+render.write_sql(guide)

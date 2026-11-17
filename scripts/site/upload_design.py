@@ -187,18 +187,58 @@ FILES = {
         column("deleted_at", "timestamptz", "Yes", "", "Set exactly when status is `deleted`", "When the file was deleted."),
         column("expires_at", "timestamptz", "No", "", "30 days after `created_at`", "When the bucket's lifecycle rule removes the object. Shown to the person so it is not a surprise."),
     ],
-    "constraints": [],
-    "sampleCols": [],
-    "sampleRows": [],
+    "constraints": [
+        "`files_pkey`: primary key (`id`)",
+        "`files_s3_key_key`: unique (`s3_key`)",
+        "`files_s3_key_check`: `s3_key` starts with `users/{owner_id}/{id}/original.`",
+        "`files_file_name_check`: 1 to 255 characters, none of them `/`, `\\` or a control character",
+        "`files_mime_check`: `mime` is one of the five allowed types",
+        "`files_size_bytes_check`: `size_bytes` between 1 and 10,485,760",
+        "`files_pages_check`: `pages` empty, or 1 to 10 for a PDF and exactly 1 for an image; always empty for JSON and CSV",
+        "`files_accept_check`: `accept` has no keys other than `mimes`, `max_bytes`, `max_pages`",
+        "`files_status_check`: `status` is one of the five statuses",
+        "`files_rejection_check`: `rejection_reason` is set exactly when `status` is `rejected`, and is one of the four reasons",
+        "`files_ready_check`: a `ready` file has `sha256`, `completed_at` and, unless it is JSON or CSV, `pages`",
+        "`files_sha256_check`: `sha256` is 64 lower-case hex characters",
+        "`files_deleted_check`: `deleted_at` is set exactly when `status` is `deleted`",
+        "`files_dates_check`: `completed_at` is not before `created_at`; `expires_at` is exactly 30 days after `created_at`",
+        "`files_owner_id_idx`: index on (`owner_id`, `created_at` desc, `id` desc), for listing a user's files page by page",
+        "`files_pending_idx`: partial index on (`created_at`) where `status = 'pending_upload'`, for the daily clean-up",
+        "`files_expiry_idx`: partial index on (`expires_at`) where `status = 'ready'`, for marking files expired",
+    ],
+    "sampleCols": ["id", "owner_id", "s3_key", "file_name", "mime", "size_bytes", "pages", "status", "rejection_reason", "sha256", "created_at", "completed_at", "expires_at"],
+    "sampleRows": [
+        [F1, U1, f"users/{U1}/{F1}/original.pdf", "acme-invoice-0042.pdf", "application/pdf", "248913", "2", "ready", "(empty)", "3a7bd3e2360a3d29eea436fcfb7e44c735d117c42d1c1835420b6b9942dd4f1b", "2026-11-17 09:14:07+00", "2026-11-17 09:14:11+00", "2026-12-17 09:14:07+00"],
+        [F2, U1, f"users/{U1}/{F2}/original.jpg", "scan.jpg", "image/jpeg", "512000", "(empty)", "rejected", "type_mismatch", "(empty)", "2026-11-17 09:16:40+00", "2026-11-17 09:16:44+00", "2026-12-17 09:16:40+00"],
+        [F3, U1, f"users/{U1}/{F3}/original.jpg", "receipt-photo.jpg", "image/jpeg", "1843200", "(empty)", "pending_upload", "(empty)", "(empty)", "2026-11-17 09:20:30+00", "(empty)", "2026-12-17 09:20:30+00"],
+    ],
+}
+
+INBOUND = {
+    "name": "upload.inbound_events",
+    "purpose": "One row per platform event Upload has acted on, so a repeated delivery has no effect.",
+    "columns": [
+        column("event_id", "uuid", "No", "", "Primary key", "The event's ID, from the sender."),
+        column("type", "text", "No", "", "1 to 100 characters", "What happened, for example `identity.user.deleted`."),
+        column("created_at", "timestamptz", "No", "now()", "", "When Upload processed it."),
+    ],
+    "constraints": [
+        "`inbound_events_pkey`: primary key (`event_id`); inserting a duplicate fails, which is how a repeat is detected",
+        "`inbound_events_type_check`: `type` is 1 to 100 characters",
+    ],
+    "sampleCols": ["event_id", "type", "created_at"],
+    "sampleRows": [["0193b2aa-6f01-7c2d-9e3f-4a5b6c7d8e9f", "identity.user.deleted", "2026-11-17 10:00:01+00"]],
 }
 
 DATA_MODEL = {
-    "tables": [FILES],
+    "tables": [FILES, INBOUND],
     "entities": [
         {"name": "File", "table": "`upload.files`", "what": "A file a user stored, and what Upload knows about it.",
          "relations": "Belongs to one user, by `owner_id` only. Other services refer to it by `file_id`. Its content is one object in the S3 bucket."},
         {"name": "Stored object", "table": "(S3, not the database)", "what": "The file's bytes, in a private bucket.",
          "relations": "Exactly one per file that is not rejected or deleted, at the file's `s3_key`."},
+        {"name": "Processed event", "table": "`upload.inbound_events`", "what": "A platform event Upload has already acted on.",
+         "relations": "Stands alone. Holds the event's ID only, not its contents."},
         {"name": "Audit event", "table": "`upload.audit_events`", "what": "A permanent record that something happened to a file.",
          "relations": "Refers to the file and the user by ID, with no foreign key, so the record outlives a deleted file."},
     ],
@@ -207,7 +247,7 @@ DATA_MODEL = {
         {"name": "Stored object", "text": "Arrives when the browser sends it → removed at once if the check rejects it, when the file is deleted, or by the bucket after 30 days."},
         {"name": "Upload and download links", "text": "Never stored. Signed on request and valid for 5 minutes."},
     ],
-    "otherTables": "The service template also gives Upload `audit_events`, `idempotency_keys` and `outbound_events`. Upload writes `file.created`, `file.uploaded`, `file.rejected`, `file.downloaded` and `file.deleted` to `audit_events`, uses `idempotency_keys` for `POST /files`, and records each processed event's ID so a repeated event has no effect. In version 1 it announces no events of its own.",
+    "otherTables": "The service template also gives Upload `audit_events`, `idempotency_keys` and `outbound_events`. Upload writes `file.created`, `file.uploaded`, `file.rejected`, `file.downloaded` and `file.deleted` to `audit_events`, uses `idempotency_keys` for `POST /files`, and keeps `inbound_events` (above) so a repeated event has no effect. In version 1 it announces no events of its own.",
     "notStored": [
         "The file's content: it lives only in S3, never in the database.",
         "Upload and download links: signed on request, valid for 5 minutes.",
@@ -225,6 +265,109 @@ DATA_MODEL = {
         "Every change of status writes an audit event in the same transaction.",
     ],
 }
+
+# ------------------------------------------------------------------ schema
+DDL = """-- Upload service, version 1. Schema: upload.
+-- IDs are UUIDv7 values generated by the service.
+-- Checked with `npm run schema:check`: runs on PGlite, and every sample row passes every constraint.
+
+create schema if not exists upload;
+
+create table upload.files (
+  id               uuid        primary key,
+  owner_id         uuid        not null,
+  s3_key           text        not null,
+  file_name        text        not null,
+  mime             text        not null,
+  size_bytes       bigint      not null,
+  pages            integer,
+  accept           jsonb       not null default '{}',
+  status           text        not null default 'pending_upload',
+  rejection_reason text,
+  sha256           text,
+  created_at       timestamptz not null default now(),
+  completed_at     timestamptz,
+  deleted_at       timestamptz,
+  expires_at       timestamptz not null,
+
+  constraint files_s3_key_key unique (s3_key),
+  constraint files_s3_key_check
+    check (s3_key like 'users/' || owner_id::text || '/' || id::text || '/original.%'),
+  constraint files_file_name_check
+    check (length(file_name) between 1 and 255 and file_name !~ '[/\\\\[:cntrl:]]'),
+  constraint files_mime_check
+    check (mime in ('application/pdf', 'image/png', 'image/jpeg', 'application/json', 'text/csv')),
+  constraint files_size_bytes_check check (size_bytes between 1 and 10485760),
+  constraint files_pages_check check (
+    pages is null
+    or (mime = 'application/pdf' and pages between 1 and 10)
+    or (mime in ('image/png', 'image/jpeg') and pages = 1)
+  ),
+  constraint files_accept_check
+    check (accept - array['mimes', 'max_bytes', 'max_pages'] = '{}'::jsonb),
+  constraint files_status_check
+    check (status in ('pending_upload', 'ready', 'rejected', 'deleted', 'expired')),
+  constraint files_rejection_check check (
+    (status = 'rejected') = (rejection_reason is not null)
+    and (rejection_reason is null
+         or rejection_reason in ('type_mismatch', 'too_many_pages', 'unreadable', 'size_mismatch'))
+  ),
+  constraint files_ready_check check (
+    status <> 'ready'
+    or (sha256 is not null and completed_at is not null
+        and (pages is not null or mime in ('application/json', 'text/csv')))
+  ),
+  constraint files_sha256_check check (sha256 ~ '^[0-9a-f]{64}$'),
+  constraint files_deleted_check check ((status = 'deleted') = (deleted_at is not null)),
+  constraint files_dates_check check (
+    (completed_at is null or completed_at >= created_at)
+    and expires_at = created_at + interval '30 days'
+  )
+);
+
+-- A user's files, newest first, page by page.
+create index files_owner_id_idx on upload.files (owner_id, created_at desc, id desc);
+-- The daily clean-up of uploads that never arrived.
+create index files_pending_idx on upload.files (created_at) where status = 'pending_upload';
+-- Marking files expired when the bucket removes them.
+create index files_expiry_idx on upload.files (expires_at) where status = 'ready';
+
+create table upload.inbound_events (
+  event_id   uuid        primary key,
+  type       text        not null,
+  created_at timestamptz not null default now(),
+
+  constraint inbound_events_type_check check (length(type) between 1 and 100)
+);
+
+-- The service's database login reaches only this schema. Rows are never
+-- deleted (a deleted file keeps its row, without content), and audit events
+-- can be added and read but never changed.
+grant usage on schema upload to upload_service;
+grant select, insert, update on upload.files to upload_service;
+grant select, insert on upload.inbound_events to upload_service;
+grant select, insert on upload.audit_events to upload_service;
+"""
+
+QUERIES = [
+    {"title": "List a user's files, one page (`GET /files`)",
+     "sql": "select id, file_name, mime, size_bytes, pages, status, created_at\nfrom upload.files\nwhere owner_id = $1\n  and status in ('pending_upload', 'ready', 'rejected')\n  and (created_at, id) < ($2, $3)      -- from the cursor; omitted on the first page\norder by created_at desc, id desc\nlimit $4;"},
+    {"title": "Mark a checked file ready (`POST /files/{fileId}/complete`)",
+     "sql": "update upload.files\nset status = 'ready', pages = $3, sha256 = $4, completed_at = now()\nwhere id = $1 and owner_id = $2 and status = 'pending_upload'\nreturning *;     -- no row: already checked, or not this user's file"},
+    {"title": "Find abandoned uploads (daily clean-up)",
+     "sql": "select id, s3_key\nfrom upload.files\nwhere status = 'pending_upload'\n  and created_at < now() - interval '24 hours';"},
+]
+
+SCHEMA_RULES = [
+    "Primary keys on both tables; `s3_key` is unique, so two files can never share an object.",
+    "The storage key must be built from the owner and file IDs.",
+    "Type, size, page count, status and rejection reason accept only their listed values or ranges.",
+    "A rejection reason exists exactly when a file is rejected; a deleted date exists exactly when it is deleted.",
+    "A ready file always has its fingerprint and completion time.",
+    "`expires_at` is always exactly 30 days after `created_at`, matching the bucket's lifecycle rule.",
+    "Rows are never deleted: the service's login has no `DELETE` grant. Audit events can be added and read, never changed.",
+    "Upload's database login can reach only the `upload` schema. No other service can read these tables.",
+]
 
 MODULE = {
     "slug": "document-upload",
@@ -250,6 +393,8 @@ MODULE = {
     "lifecycles": DATA_MODEL["lifecycles"],
     "otherTables": DATA_MODEL["otherTables"],
     "notStored": DATA_MODEL["notStored"],
+    "ddl": DDL,
+    "queries": QUERIES,
     "noEndpoint": [
         {"topic": "Sending the file (MVP1-E2-02)", "how": "The browser PUTs the bytes straight to S3 with the link from `POST /files`, sending exactly the `headers` returned. Upload never receives the file's content through its API."},
         {"topic": "The storage bucket (MVP1-E2-01)", "how": "Private, encrypted, no public access, objects deleted after 30 days, and CORS open only to 01scale.com and localhost. Setup steps in `docs/infra/s3.md`."},
@@ -271,7 +416,7 @@ MODULE = {
             "Events must carry a valid signature and are processed once per `event_id`.",
             "Starting rate limits at the gateway: 30 file creations a minute per user; 120 reads a minute per user.",
         ]},
-        {"level": "Schema level: enforced by the database, whatever the code does", "items": []},
+        {"level": "Schema level: enforced by the database, whatever the code does", "items": SCHEMA_RULES},
         {"level": "Data model level: business rules the service guarantees", "items": DATA_MODEL["rule"]},
     ],
     "openQuestions": [
