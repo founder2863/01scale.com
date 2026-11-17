@@ -149,14 +149,22 @@ export default async function HowItsBuilt({ params }: { params: Promise<Params> 
 
           <div className="card cost-baseline">
             <p className="card-title">Cost baselines</p>
-            <ul className="plain-list">
+            <ul className="rate-tiles">
               <li>
-                $8 per million input tokens, $40 per million output, $0.20 per
-                million read from the cache, $16 per million written to the
-                cache, with zero error against all 21 snapshots. Each response is
-                priced from its recorded tokens, then each model&apos;s total is
-                scaled to the tool&apos;s own latest figure, so the rows add up to
-                exactly $73.45.
+                <span className="rate-value">$8</span>
+                <span className="rate-label">per million input tokens</span>
+              </li>
+              <li>
+                <span className="rate-value">$40</span>
+                <span className="rate-label">per million output</span>
+              </li>
+              <li>
+                <span className="rate-value">$0.20</span>
+                <span className="rate-label">per million read from the cache</span>
+              </li>
+              <li>
+                <span className="rate-value">$16</span>
+                <span className="rate-label">per million written to the cache</span>
               </li>
             </ul>
           </div>
