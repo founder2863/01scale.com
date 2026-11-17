@@ -732,8 +732,8 @@ export const products = [
     "group": "MVP1",
     "service": "LLM Extraction",
     "description": "Claude turns a document into structured data, with a confidence score and evidence for every field.",
-    "status": "Planned",
-    "detailed": false,
+    "status": "Designed",
+    "detailed": true,
     "epic": {
       "id": "E3",
       "title": "Extraction with Claude",
