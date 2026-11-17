@@ -12,18 +12,17 @@ Assembly only. This skill adds no design content; it moves what exists onto the 
 | Source | Command | Generated |
 |---|---|---|
 | Stories in `docs/epics/*.md` | `npm run site:data` | `app/products/data.ts`: every module's requirements, endpoint list and data notes |
-| `scripts/site/<service>_design.py` | `npm run site:data` | `docs/services/<service>/*.md` and `app/products/<service>.ts` |
+| `scripts/site/<key>_design.py` | `npm run site:data` | `docs/services/<service>/*.md`, `app/products/<key>.ts` and the registry `app/products/details.generated.ts` |
 
 Never edit a generated file by hand. Change the source and run the command.
 
 ## Steps
 
 1. Run `npm run site:data`. It must finish without errors.
-2. For a module being published for the first time:
-   - make `scripts/site/build_products.py` write `app/products/<service>.ts` for it, the way it does for Identity;
-   - register it in `app/products/details.ts`;
-   - add its slug to `DESIGNED` in `scripts/site/build_products.py`;
-   - confirm it belongs to a step in `app/products/flow.tsx`.
+2. For a module being published for the first time, nothing needs registering: the build script finds every `*_design.py` file. Check that:
+   - its `MODULE["slug"]` matches the module's slug in `MODULES` in `scripts/site/build_products.py`;
+   - it belongs to a step in `app/products/flow.tsx`;
+   - `COMPLETE` is `True` only when all six documents are written. Until then the page shows "In design".
 3. Run `npm run build`. It must pass.
 4. Run `git diff --stat`. Only the files you expect should have changed. An unexpected change to a generated file means a source changed without regenerating.
 5. Check the page in a browser at 320, 390, 768, 1024, 1440 and 1920 pixels wide:

@@ -18,7 +18,7 @@ If the stories are missing acceptance criteria, stop and ask. Do not design from
 
 ## Steps
 
-Create `scripts/site/<service>_design.py` (copy the shape of `identity_design.py`), then fill it one skill at a time:
+Create `scripts/site/<key>_design.py` defining `KEY` (a short name such as `upload`), `MODULE` (the design, in the same shape as `app/products/identity.ts`) and `COMPLETE = False`. Use the helpers in `scripts/site/render.py` (`endpoint`, `param`, `column`, `journey`, `component`, ...). Then fill it one skill at a time, running `npm run site:data` and committing after each step, so the pull request has one commit per document. The product page shows "In design" and "Coming Soon..." for the parts not yet written:
 
 | Step | Skill | Fills |
 |---|---|---|
@@ -41,7 +41,7 @@ Steps 1 and 2 can be done together. Do not start step 3 before step 2 is settled
 
 ## Output
 
-- `scripts/site/<service>_design.py`, the generated files, and the module's status set to "Designed".
+- `scripts/site/<key>_design.py` with `COMPLETE = True`, the generated files, and the module shown as "Designed".
 - A pull request named after the story IDs, whose description lists the technical choices, the refinements beyond the stories, and the open questions.
 
 ## Not in scope
