@@ -118,6 +118,7 @@ Environment variables on the service's own deployment. Secrets are never committ
 
 - Cognito's managed login has no 'change password while signed in' page. I designed the change through its forgot-password page (a code by email, then a new password). The alternative is our own form calling Cognito's `ChangePassword`, which needs Cognito's access token that Identity does not keep. Is the emailed code acceptable for MVP1?
 - The story names the column `owner_id`; Identity's tables use `user_id` (as `sessions` does). I used `user_id` and propose updating the story.
+- API keys have no `payment:write` scope: only a person, through Stripe's page, completes a payment (`MVP1-E0-06` AC5).
 - The story keeps 'the first 8 characters' as the prefix; every key starts `sk_01s_`, so I keep the first 8 characters after it.
 - `GET /users/{userId}` is new: Delivery needs a person's email and no story lists the endpoint. I propose adding it to `MVP1-E7-01`.
 - `docs/infra/cognito.md` needs a step for the IAM user that may call `AdminDeleteUser`.

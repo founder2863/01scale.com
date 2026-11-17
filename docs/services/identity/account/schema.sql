@@ -23,7 +23,7 @@ create table identity.api_keys (
   constraint api_keys_key_hash_check check (key_hash ~ '^[0-9a-f]{64}$'),
   constraint api_keys_scopes_check check (
     cardinality(scopes) >= 1
-    and scopes <@ array['upload:read', 'upload:write', 'extraction:read', 'extraction:write', 'review:read', 'review:write', 'payment:read', 'payment:write', 'delivery:read', 'docflow:read', 'docflow:write']::text[]
+    and scopes <@ array['upload:read', 'upload:write', 'extraction:read', 'extraction:write', 'review:read', 'review:write', 'payment:read', 'delivery:read', 'docflow:read', 'docflow:write']::text[]
   ),
   constraint api_keys_dates_check check (
     expires_at > created_at

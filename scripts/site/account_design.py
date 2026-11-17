@@ -18,7 +18,7 @@ K1 = "0193b200-1a2b-7c3d-8e4f-5a6b7c8d9e0f"
 K2 = "0193b201-2b3c-7d4e-8f5a-6b7c8d9e0f1a"
 H = "Host: 01scale.com\nCookie: __Host-01s_session=<session token>\nOrigin: https://01scale.com"
 SCOPES = ["upload:read", "upload:write", "extraction:read", "extraction:write", "review:read", "review:write",
-          "payment:read", "payment:write", "delivery:read", "docflow:read", "docflow:write"]
+          "payment:read", "delivery:read", "docflow:read", "docflow:write"]
 SCOPE_TEXT = ", ".join(f"`{s}`" for s in SCOPES)
 NOT_AUTH = error("401", "not_authenticated", "No valid session.")
 SESSION_ONLY = error("403", "session_required", "Called with an API key. Only a person signed in with a browser can do this.")
@@ -86,13 +86,13 @@ ENDPOINTS = [
         param("api_key", "body", "string", "One of", "`sk_01s_` and 43 base64url characters. Sent instead of `session_token`.", "The key from the agent's `Authorization` header.")],
        ["Hashes the key and finds it; it must not be revoked or expired.", "Signs an access token with `auth: api_key`, `akid` (the key's ID) and the key's `scopes`, never `*`.", "Updates `last_used_at` at most once a minute per key."],
        [response("200", "The key is valid", "`access_token`, `token_type`, `expires_in` (300).")],
-       [error("401", "invalid_api_key", "The key is unknown, revoked or expired. The same answer in every case."), error("401", "invalid_service_key", "The caller is not the gateway.")],
+       [error("401", "invalid_api_key", "The key is unknown, revoked or expired. The same answer in every case."), error("401", "invalid_service_credential", "The caller is not the gateway.")],
        f"POST {BASE}/token HTTP/1.1\nAuthorization: Bearer <gateway service key>\nContent-Type: application/json\n\n" + json.dumps({"api_key": "sk_01s_…"}, indent=2),
        json.dumps({"access_token": "eyJhbGciOiJFUzI1NiIsImtpZCI6ImsyMDI2LTExIn0…", "token_type": "Bearer", "expires_in": 300}, indent=2)),
     ep("get-user", "GET", "/users/{userId}", "Service", "MVP1-E7-01", "Look up a user's email",
        "For services that write to a person, such as Delivery's emails. New: no story lists it yet.",
        [param("userId", "path", "uuid", "Yes", "", "The user."), param("Authorization", "header", "string", "Yes", "A service access token with the scope `identity:users.read`.", "Only services may call it.")],
-       ["Read only. Records nothing: the calling service audits its own use."],
+       ["Read only. Records nothing: the calling service audits its own use.", "The caller gets its service token by signing in as a client (Service access, `docs/services/identity/service-access`)."],
        [response("200", "The user exists", "`id`, `email`.")],
        [error("404", "user_not_found", "No such user, including a deleted one."), error("403", "insufficient_scope", "The caller's token lacks `identity:users.read`.")],
        f"GET {BASE}/users/{U1} HTTP/1.1\nAuthorization: Bearer <service access token>",
@@ -283,6 +283,7 @@ MODULE = {
     "openQuestions": [
         "Cognito's managed login has no 'change password while signed in' page. I designed the change through its forgot-password page (a code by email, then a new password). The alternative is our own form calling Cognito's `ChangePassword`, which needs Cognito's access token that Identity does not keep. Is the emailed code acceptable for MVP1?",
         "The story names the column `owner_id`; Identity's tables use `user_id` (as `sessions` does). I used `user_id` and propose updating the story.",
+        "API keys have no `payment:write` scope: only a person, through Stripe's page, completes a payment (`MVP1-E0-06` AC5).",
         "The story keeps 'the first 8 characters' as the prefix; every key starts `sk_01s_`, so I keep the first 8 characters after it.",
         "`GET /users/{userId}` is new: Delivery needs a person's email and no story lists the endpoint. I propose adding it to `MVP1-E7-01`.",
         "`docs/infra/cognito.md` needs a step for the IAM user that may call `AdminDeleteUser`.",

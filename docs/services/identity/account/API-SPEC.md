@@ -242,7 +242,7 @@ Access: **Signed in** · Story: `MVP1-E0-06`
 | Name | In | Type | Required | Constraints | Meaning |
 |---|---|---|---|---|---|
 | `name` | body | string | Yes | 1 to 100 characters. | What the key is for, such as 'Claude Desktop'. |
-| `scopes` | body | string[] | Yes | 1 or more of: `upload:read`, `upload:write`, `extraction:read`, `extraction:write`, `review:read`, `review:write`, `payment:read`, `payment:write`, `delivery:read`, `docflow:read`, `docflow:write`. No duplicates. | What the key may do. |
+| `scopes` | body | string[] | Yes | 1 or more of: `upload:read`, `upload:write`, `extraction:read`, `extraction:write`, `review:read`, `review:write`, `payment:read`, `delivery:read`, `docflow:read`, `docflow:write`. No duplicates. | What the key may do. |
 | `expires_at` | body | date-time | No | In the future, at most 1 year away. Default: 90 days. | When it stops working. |
 | `Idempotency-Key` | header | string | No | 1 to 255 characters. | A retry returns the same key, without the secret, instead of making a second one. |
 
@@ -389,7 +389,7 @@ Access: **Service** · Story: `MVP1-E0-06`
 | Status | Code | When |
 |---|---|---|
 | `401` | `invalid_api_key` | The key is unknown, revoked or expired. The same answer in every case. |
-| `401` | `invalid_service_key` | The caller is not the gateway. |
+| `401` | `invalid_service_credential` | The caller is not the gateway. |
 
 **Sample request**
 
@@ -429,6 +429,7 @@ Access: **Service** · Story: `MVP1-E7-01`
 **Behaviour**
 
 - Read only. Records nothing: the calling service audits its own use.
+- The caller gets its service token by signing in as a client (Service access, `docs/services/identity/service-access`).
 
 **Responses**
 

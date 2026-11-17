@@ -47,7 +47,7 @@ A JWT signed with ES256. The header carries `kid`, the name of the signing key.
 | `iat`, `exp` | Unix seconds; `exp` = `iat` + 300 | Issued at and expiry (5 minutes) |
 | `jti` | A UUID | Unique ID of this token, for logs |
 | `sid` | `0193a5b2-9d40-7c11-a6e3-5f1b2c3d4e5f` | The session it came from |
-| `auth` | `session` | How the user authenticated (`api_key` arrives with story MVP1-E0-06) |
+| `auth` | `session` | How the caller authenticated: `session` here; `api_key` (Account management), `service` and `delegated` (Service access, `docs/services/identity/service-access`) |
 | `scopes` | `["*"]` | What the caller may do; a browser session has full access to the user's own data |
 | `is_admin` | `false` | Whether admin-only endpoints are allowed |
 
