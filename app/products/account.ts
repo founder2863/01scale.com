@@ -795,9 +795,104 @@ export const account = {
       "code": "`not_authenticated`"
     }
   ],
-  "components": [],
-  "hostedPages": [],
-  "uiRules": [],
+  "components": [
+    {
+      "name": "AccountDetails",
+      "kind": "Component",
+      "purpose": "The person's email and the date they joined.",
+      "props": [],
+      "states": [
+        "Loading (fixed-height placeholder)",
+        "Shown",
+        "Failed: Retry"
+      ],
+      "calls": [
+        "`GET /me`"
+      ]
+    },
+    {
+      "name": "PasswordChangeButton",
+      "kind": "Component",
+      "purpose": "Change password, and the success message on return.",
+      "props": [
+        {
+          "name": "changed",
+          "type": "boolean, optional",
+          "meaning": "Show 'Your password was changed'; the page sets it from `password_changed=1`."
+        }
+      ],
+      "states": [
+        "Default",
+        "Working",
+        "Changed",
+        "Failed: Retry"
+      ],
+      "calls": [
+        "`POST /me/password-change`"
+      ]
+    },
+    {
+      "name": "DeleteAccountDialog",
+      "kind": "Component",
+      "purpose": "Explains what is deleted and kept, and asks the person to type DELETE.",
+      "props": [
+        {
+          "name": "onDeleted",
+          "type": "function, optional",
+          "meaning": "Default: go to the home page with 'Your account was deleted'."
+        }
+      ],
+      "states": [
+        "Closed",
+        "Open, button inactive",
+        "Open, DELETE typed",
+        "Working",
+        "Failed: message and Try again"
+      ],
+      "calls": [
+        "`DELETE /me`"
+      ]
+    },
+    {
+      "name": "ApiKeysManager",
+      "kind": "Component",
+      "purpose": "Lists keys and creates and revokes them; shows a new secret once with Copy.",
+      "props": [
+        {
+          "name": "scopes",
+          "type": "string[], optional",
+          "meaning": "Which scopes to offer. Default: all."
+        }
+      ],
+      "states": [
+        "Loading",
+        "Empty: 'No keys yet' and what keys are for",
+        "Listed",
+        "Creating",
+        "Secret shown once",
+        "Revoking",
+        "Limit reached",
+        "Failed: Retry"
+      ],
+      "calls": [
+        "`GET /api-keys`",
+        "`POST /api-keys`",
+        "`DELETE /api-keys/{keyId}`"
+      ]
+    }
+  ],
+  "hostedPages": [
+    {
+      "page": "Cognito: forgot password",
+      "what": "Sends a code by email and sets the new password, then shows Cognito's sign-in."
+    }
+  ],
+  "uiRules": [
+    "Components call only Identity's API; the account page adds DocFlow's and Payment's components beside them.",
+    "A secret is shown once, in a box with Copy, and never stored in the browser.",
+    "Destructive buttons say exactly what they do and need a second step.",
+    "Same accessibility and size rules as every 01scale page."
+  ],
   "entities": [
     {
       "name": "API key",
