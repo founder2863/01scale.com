@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import type { Product } from "./data";
-import { identity } from "./identity";
+import { details } from "./details";
 import type { TabSlug } from "./tabs";
 
 const REPO = "https://github.com/founder2863/01scale.com/blob/main";
@@ -44,7 +44,8 @@ function Method({ method }: { method: string }) {
 /* ---------------------------------------------------------------- Read Me */
 
 function ReadMe({ product }: { product: Product }) {
-  if (!product.detailed) {
+  const detail = details[product.slug];
+  if (!detail) {
     return (
       <>
         <h2>Read Me</h2>
@@ -74,7 +75,7 @@ function ReadMe({ product }: { product: Product }) {
     );
   }
 
-  const { overview } = identity;
+  const { overview } = detail;
   return (
     <>
       <h2>Read Me</h2>
@@ -111,9 +112,9 @@ function ReadMe({ product }: { product: Product }) {
         </div>
       </div>
 
-      <h3>How login works</h3>
+      <h3>{detail.labels.flow}</h3>
       <ol className="flow">
-        {identity.flow.map((step) => (
+        {detail.flow.map((step) => (
           <li key={step.what}>
             <strong>{step.who}.</strong> {rich(step.what)}
           </li>
@@ -122,7 +123,7 @@ function ReadMe({ product }: { product: Product }) {
 
       <h3>Words used here</h3>
       <dl className="decisions">
-        {identity.concepts.map((concept) => (
+        {detail.concepts.map((concept) => (
           <div key={concept.term}>
             <dt>{concept.term}</dt>
             <dd>{rich(concept.meaning)}</dd>
@@ -132,7 +133,7 @@ function ReadMe({ product }: { product: Product }) {
 
       <h3>Quick start</h3>
       <p className="note">These examples work once the service is built and deployed.</p>
-      {identity.quickstart.map((step, index) => (
+      {detail.quickstart.map((step, index) => (
         <div className="step" key={step.title}>
           <h4>
             {index + 1}. {step.title}
@@ -147,7 +148,7 @@ function ReadMe({ product }: { product: Product }) {
         Environment variables on the service&apos;s own deployment. Secrets are never committed.
       </p>
       <dl className="fields">
-        {identity.env.map((variable) => (
+        {detail.env.map((variable) => (
           <div key={variable.name}>
             <dt>
               <code>{variable.name}</code>
@@ -160,13 +161,15 @@ function ReadMe({ product }: { product: Product }) {
 
       <h3>Open questions</h3>
       <ul className="plain-list">
-        {identity.openQuestions.map((question) => (
+        {detail.openQuestions.map((question) => (
           <li key={question}>{rich(question)}</li>
         ))}
       </ul>
 
-      <DocLink path="docs/services/identity/README.md" label="Developer guide on GitHub" />
-      <DocLink path="docs/infra/cognito.md" label="AWS Cognito setup steps" />
+      <DocLink path={`${detail.docsPath}/README.md`} label="Developer guide on GitHub" />
+      {detail.extraDocs.map((doc) => (
+        <DocLink key={doc.path} path={doc.path} label={doc.label} />
+      ))}
     </>
   );
 }
@@ -235,7 +238,8 @@ function Requirements({ product }: { product: Product }) {
 /* ---------------------------------------------------------- User journey */
 
 function UserJourney({ product }: { product: Product }) {
-  if (!product.detailed) {
+  const detail = details[product.slug];
+  if (!detail) {
     return (
       <>
         <h2>User Journey</h2>
@@ -247,9 +251,9 @@ function UserJourney({ product }: { product: Product }) {
   return (
     <>
       <h2>User Journey</h2>
-      <p className="note">What a person sees and what the system does, for login in version 1.</p>
+      <p className="note">{detail.notes.journey}</p>
 
-      {identity.journeys.map((journey) => (
+      {detail.journeys.map((journey) => (
         <article className="story" key={journey.name}>
           <h3>{journey.name}</h3>
           <p className="story-meta">
@@ -285,7 +289,7 @@ function UserJourney({ product }: { product: Product }) {
 
       <h3>When something goes wrong</h3>
       <dl className="fields">
-        {identity.edgeCases.map((edge) => (
+        {detail.edgeCases.map((edge) => (
           <div key={edge.situation}>
             <dt>
               {edge.situation}
@@ -296,7 +300,7 @@ function UserJourney({ product }: { product: Product }) {
         ))}
       </dl>
 
-      <DocLink path="docs/services/identity/USER-JOURNEYS.md" label="User journeys on GitHub" />
+      <DocLink path={`${detail.docsPath}/USER-JOURNEYS.md`} label="User journeys on GitHub" />
     </>
   );
 }
@@ -304,7 +308,8 @@ function UserJourney({ product }: { product: Product }) {
 /* --------------------------------------------------------- UI components */
 
 function UiComponents({ product }: { product: Product }) {
-  if (!product.detailed) {
+  const detail = details[product.slug];
+  if (!detail) {
     return (
       <>
         <h2>UI Components</h2>
@@ -318,18 +323,15 @@ function UiComponents({ product }: { product: Product }) {
       <h2>
         UI Components <span className="status">Designed</span>
       </h2>
-      <p className="note">
-        What the Identity service ships for apps to use, as the package{" "}
-        <code>packages/ui-identity</code>.
-      </p>
+      <p className="note">{rich(detail.notes.ui)}</p>
       <ul className="plain-list">
-        {identity.uiRules.map((rule) => (
+        {detail.uiRules.map((rule) => (
           <li key={rule}>{rich(rule)}</li>
         ))}
       </ul>
 
       <div className="component-grid">
-        {identity.components.map((component) => (
+        {detail.components.map((component) => (
           <article className="story" key={component.name}>
             <h3>{component.name}</h3>
             <p className="story-meta">
@@ -364,12 +366,10 @@ function UiComponents({ product }: { product: Product }) {
         ))}
       </div>
 
-      <h3>Pages provided by AWS Cognito in version 1</h3>
-      <p className="note">
-        These are not 01scale components. 01scale&apos;s own pages replace them in version 2.
-      </p>
+      <h3>{detail.labels.hosted}</h3>
+      <p className="note">{detail.notes.hosted}</p>
       <dl className="decisions">
-        {identity.hostedPages.map((page) => (
+        {detail.hostedPages.map((page) => (
           <div key={page.page}>
             <dt>{page.page}</dt>
             <dd>{page.what}</dd>
@@ -377,7 +377,7 @@ function UiComponents({ product }: { product: Product }) {
         ))}
       </dl>
 
-      <DocLink path="docs/services/identity/UI-COMPONENTS.md" label="UI components on GitHub" />
+      <DocLink path={`${detail.docsPath}/UI-COMPONENTS.md`} label="UI components on GitHub" />
     </>
   );
 }
@@ -385,7 +385,8 @@ function UiComponents({ product }: { product: Product }) {
 /* --------------------------------------------------------------- API spec */
 
 function ApiSpec({ product }: { product: Product }) {
-  if (!product.detailed) {
+  const detail = details[product.slug];
+  if (!detail) {
     return (
       <>
         <h2>
@@ -426,7 +427,7 @@ function ApiSpec({ product }: { product: Product }) {
     );
   }
 
-  const { overview } = identity;
+  const { overview } = detail;
   return (
     <>
       <h2>
@@ -437,7 +438,7 @@ function ApiSpec({ product }: { product: Product }) {
         inputs, constraints, errors and samples.
       </p>
 
-      {identity.endpoints.map((endpoint) => (
+      {detail.endpoints.map((endpoint) => (
         <details className="endpoint" key={endpoint.id} id={endpoint.id}>
           <summary>
             <Method method={endpoint.method} />
@@ -522,11 +523,11 @@ function ApiSpec({ product }: { product: Product }) {
       <p>
         Every error has the same shape and a stable <code>code</code> to branch on.
       </p>
-      <Code>{identity.errorSample}</Code>
+      <Code>{detail.errorSample}</Code>
 
       <h3>Cookies</h3>
       <dl className="fields">
-        {identity.cookies.map((cookie) => (
+        {detail.cookies.map((cookie) => (
           <div key={cookie.name}>
             <dt>
               {rich(cookie.name)}
@@ -539,9 +540,9 @@ function ApiSpec({ product }: { product: Product }) {
       </dl>
 
       <h3>Access token</h3>
-      <p>A signed token (JWT, ES256) that lives 5 minutes. Browsers never see it.</p>
+      <p>{detail.notes.token}</p>
       <dl className="fields">
-        {identity.claims.map((claim) => (
+        {detail.claims.map((claim) => (
           <div key={claim.claim}>
             <dt>{rich(claim.claim)}</dt>
             <dd>{claim.meaning}</dd>
@@ -552,7 +553,7 @@ function ApiSpec({ product }: { product: Product }) {
 
       <h3>Handled without an endpoint</h3>
       <dl className="decisions">
-        {identity.noEndpoint.map((item) => (
+        {detail.noEndpoint.map((item) => (
           <div key={item.topic}>
             <dt>{item.topic}</dt>
             <dd>{rich(item.how)}</dd>
@@ -562,12 +563,12 @@ function ApiSpec({ product }: { product: Product }) {
 
       <h3>Constraints at the API level</h3>
       <ul className="plain-list">
-        {identity.rules[0].items.map((item) => (
+        {detail.rules[0].items.map((item) => (
           <li key={item}>{rich(item)}</li>
         ))}
       </ul>
 
-      <DocLink path="docs/services/identity/API-SPEC.md" label="API specification on GitHub" />
+      <DocLink path={`${detail.docsPath}/API-SPEC.md`} label="API specification on GitHub" />
     </>
   );
 }
@@ -575,7 +576,8 @@ function ApiSpec({ product }: { product: Product }) {
 /* ------------------------------------------------------------- Data model */
 
 function DataModel({ product }: { product: Product }) {
-  if (!product.detailed) {
+  const detail = details[product.slug];
+  if (!detail) {
     return (
       <>
         <h2>Data Model</h2>
@@ -611,7 +613,7 @@ function DataModel({ product }: { product: Product }) {
 
       <h3>Entities</h3>
       <div className="cards">
-        {identity.entities.map((entity) => (
+        {detail.entities.map((entity) => (
           <div className="card" key={entity.name}>
             <p className="card-title">{entity.name}</p>
             <p>{entity.what}</p>
@@ -623,7 +625,7 @@ function DataModel({ product }: { product: Product }) {
 
       <h3>Life of each record</h3>
       <dl className="decisions">
-        {identity.lifecycles.map((item) => (
+        {detail.lifecycles.map((item) => (
           <div key={item.name}>
             <dt>{item.name}</dt>
             <dd>{item.text}</dd>
@@ -632,8 +634,8 @@ function DataModel({ product }: { product: Product }) {
       </dl>
 
       <h3>Fields</h3>
-      {identity.tables.map((table) => (
-        <details className="more" key={table.name} open={table.name === "identity.users"}>
+      {detail.tables.map((table) => (
+        <details className="more" key={table.name} open={table === detail.tables[0]}>
           <summary>
             <code>{table.name}</code>
           </summary>
@@ -656,24 +658,23 @@ function DataModel({ product }: { product: Product }) {
           </div>
         </details>
       ))}
-      <p className="note">{rich(identity.otherTables)}</p>
+      <p className="note">{rich(detail.otherTables)}</p>
 
-      <h3>{identity.rules[2].level}</h3>
+      <h3>{detail.rules[2].level}</h3>
       <ul className="plain-list">
-        {identity.rules[2].items.map((item) => (
+        {detail.rules[2].items.map((item) => (
           <li key={item}>{rich(item)}</li>
         ))}
       </ul>
 
       <h3>What is deliberately not stored</h3>
       <ul className="plain-list">
-        <li>Passwords: they live only in AWS Cognito.</li>
-        <li>Cognito&apos;s tokens: used once at the callback and discarded.</li>
-        <li>The session token itself: only its hash.</li>
-        <li>Access tokens: they are verified by signature, never looked up.</li>
+        {detail.notStored.map((item) => (
+          <li key={item}>{item}</li>
+        ))}
       </ul>
 
-      <DocLink path="docs/services/identity/DATA-MODEL.md" label="Data model on GitHub" />
+      <DocLink path={`${detail.docsPath}/DATA-MODEL.md`} label="Data model on GitHub" />
     </>
   );
 }
@@ -681,7 +682,8 @@ function DataModel({ product }: { product: Product }) {
 /* ----------------------------------------------------------------- Schema */
 
 function Schema({ product }: { product: Product }) {
-  if (!product.detailed) {
+  const detail = details[product.slug];
+  if (!detail) {
     return (
       <>
         <h2>Schema</h2>
@@ -695,21 +697,18 @@ function Schema({ product }: { product: Product }) {
       <h2>
         Schema <span className="status">Designed</span>
       </h2>
-      <p className="note">
-        The SQL for the tables login uses, in the <code>identity</code> schema. No other service
-        can read them.
-      </p>
-      <Code>{identity.ddl}</Code>
+      <p className="note">{rich(detail.notes.schema)}</p>
+      <Code>{detail.ddl}</Code>
 
-      <h3>{identity.rules[1].level}</h3>
+      <h3>{detail.rules[1].level}</h3>
       <ul className="plain-list">
-        {identity.rules[1].items.map((item) => (
+        {detail.rules[1].items.map((item) => (
           <li key={item}>{rich(item)}</li>
         ))}
       </ul>
 
       <h3>Constraints and indexes by table</h3>
-      {identity.tables.map((table) => (
+      {detail.tables.map((table) => (
         <details className="more" key={table.name}>
           <summary>
             <code>{table.name}</code>
@@ -723,7 +722,7 @@ function Schema({ product }: { product: Product }) {
       ))}
 
       <h3>Sample data</h3>
-      {identity.tables.map((table) => (
+      {detail.tables.map((table) => (
         <div key={table.name}>
           <h4>{table.name}</h4>
           <div className="table-scroll">
@@ -750,14 +749,14 @@ function Schema({ product }: { product: Product }) {
       ))}
 
       <h3>Common queries</h3>
-      {identity.queries.map((query) => (
+      {detail.queries.map((query) => (
         <div key={query.title}>
           <h4>{query.title}</h4>
           <Code>{query.sql}</Code>
         </div>
       ))}
 
-      <DocLink path="docs/services/identity/SCHEMA.md" label="Schema on GitHub" />
+      <DocLink path={`${detail.docsPath}/SCHEMA.md`} label="Schema on GitHub" />
     </>
   );
 }

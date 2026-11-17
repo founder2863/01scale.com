@@ -140,6 +140,30 @@ As a hiring manager, I want one page that explains the whole product and shows w
 - **API design:** No endpoints. The flow and the mapping of modules to steps live in `app/products/flow.tsx`.
 - **Database design:** No tables.
 
+### MVP1-E0-12 · Design skills and How It's Built page — M
+As a hiring manager, I want to see how the work is done with AI, not only what was built, so I can judge how the builder works.
+- **AC1:** Designing a module is written down as one skill per document (API spec, data model, schema, user journey, UI components, read me), one that publishes the product page, and one that runs them in order. They live in `.claude/skills/` and follow one shared rules file, `docs/process/DESIGN-RULES.md`.
+- **AC2:** Each skill states what to read first, what to produce, the rules that are easy to get wrong, and the checks that say it is done.
+- **AC3:** The scripts that generate the design documents and the product page data are kept in the repository (`scripts/site/`) and run with `npm run site:data`, so the next session can reproduce them.
+- **AC4:** The product page template works for any module with a design, not only Identity.
+- **AC5:** The site has a How It's Built page in the navigation, with a Skills section listing each skill, its job, what it reads and produces, and a link to its file; and an Agents section marked "Coming Soon...".
+- **AC6:** The skills are proven by designing a second module with them (Upload is next). Until then the page says their first run is pending.
+- **Service:** Site (`apps/web`) and repository tooling
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E0-13 · Token cost tracking — S
+As a hiring manager, I want to see what each story cost to build with AI, including rework, so I can judge the builder's cost discipline.
+- **AC1:** Every request in a working session is measured: tokens used and cost, from the session record, using the cost Claude Code computes itself. No cost is entered by hand.
+- **AC2:** Each request is assigned to a story as build or rework, or to a scaffolding area (questions, discovery, tooling, process), in a ledger kept in the repository (`docs/process/token-ledger.json`).
+- **AC3:** The How It's Built page has a Token Costs section with a table per story: tokens, build cost, rework cost, total and token yield; a separate scaffolding table; and running totals.
+- **AC4:** Token yield per story is build tokens divided by build plus rework tokens, and is defined on the page.
+- **AC5:** A cost the tool has not recorded yet is shown as pending, never estimated.
+- **AC6:** Updating the table is one command (`npm run costs`) and a skill (`record-token-costs`) describes when and how to do it.
+- **Service:** Site (`apps/web`) and repository tooling
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
 ---
 
 ## E1 · Accounts with AWS Cognito (MVP1 "a")
