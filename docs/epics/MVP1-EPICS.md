@@ -411,6 +411,21 @@ As Priya, I want to drag and drop or pick a file on my phone and see progress.
   - `GET /api/extraction/v1/admin/jobs` (admin) — Last 100 jobs with tokens, cost, duration and failure rate. → `200 {data: [Job], summary: {failure_rate, avg_cost_usd, p95_duration_ms}}`. Errors: `404` for non-admins.
 - **Database design:** `extraction.jobs` adds tokens_in, tokens_out, cost_usd numeric(10,6), duration_ms.
 
+### MVP1-E3-06 · Ask questions about my documents (RAG) — L
+As a user, I want to ask a question in plain language across my processed invoices, such as "How much did I pay Acme Supplies in October?", and get an answer that shows the invoices it came from.
+- **AC1:** When an extraction finishes, the document's page text (`extraction.page_texts`) is split into passages, turned into embeddings and added to the owner's own index. Deleting a document or the account deletes its passages.
+- **AC2:** A question retrieves the most relevant passages **only from the caller's own documents** (the owner filter is part of the search itself, never applied afterwards), and Claude answers using only those passages.
+- **AC3:** Every statement in the answer cites its document, page and quote. Each quote is checked against the retrieved text, as the extraction quote check does; a statement whose quote is not found is removed. If nothing relevant is found, the answer says so instead of guessing.
+- **AC4:** The question box can be limited to chosen documents. The answer shows its citations as links that open the document at the cited page, using Upload's `FilePreview`.
+- **AC5:** Evals RAG-1 to RAG-4 (`docs/evals/EVALS.md`) meet their thresholds on the synthetic dataset before release. Model, prompt version, tokens, cost and time are recorded per question, like extraction jobs.
+- **AC6:** Asking counts towards the limit of 10 requests a minute that change something; agents can ask through the MCP tool `extraction.askDocuments`, within the same limits.
+- **Evals:** RAG-1 retrieval recall, RAG-2 faithfulness, RAG-3 refusal on unanswerable questions, RAG-4 latency and cost (see `EVALS.md`).
+- **Service:** LLM Extraction (index and answers); DocFlow composes the "Ask" box on `/documents`
+- **API design:**
+  - `POST /api/extraction/v1/questions` (signed in) — Answer a question from my documents, with citations. Body `{question, file_ids?}` → `200 {answer, citations: [{file_id, page, quote}], found: boolean, model, prompt_version}`. Errors: `422 validation_failed`, `429 rate_limited`.
+- **Database design:** `extraction.passages` (id, job_id → jobs on delete cascade, owner_id, page, text, embedding `vector`, created_at); an approximate-nearest-neighbour index on `embedding` (pgvector, HNSW) and an index on `owner_id`. `extraction.questions` (id, owner_id, model, prompt_version, tokens_in, tokens_out, cost_usd, duration_ms, found, created_at): no question or answer text is stored.
+- **Open questions:** Claude has no embeddings model, so a second provider is needed: Voyage AI (the embeddings provider Anthropic recommends) is my suggestion, against OpenAI or an open-source model run by the service. Neon supports pgvector, and PGlite has it for tests.
+
 ---
 
 ## E4 · Human review of low-confidence fields (MVP1 "d")

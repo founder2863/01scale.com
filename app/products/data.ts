@@ -862,6 +862,41 @@ export const products = [
         ],
         "evals": "",
         "service": "LLM Extraction"
+      },
+      {
+        "id": "MVP1-E3-06",
+        "title": "Ask questions about my documents (RAG)",
+        "size": "L",
+        "pending": "",
+        "story": "As a user, I want to ask a question in plain language across my processed invoices, such as \"How much did I pay Acme Supplies in October?\", and get an answer that shows the invoices it came from.",
+        "acs": [
+          {
+            "label": "AC1",
+            "text": "When an extraction finishes, the document's page text (`extraction.page_texts`) is split into passages, turned into embeddings and added to the owner's own index. Deleting a document or the account deletes its passages."
+          },
+          {
+            "label": "AC2",
+            "text": "A question retrieves the most relevant passages **only from the caller's own documents** (the owner filter is part of the search itself, never applied afterwards), and Claude answers using only those passages."
+          },
+          {
+            "label": "AC3",
+            "text": "Every statement in the answer cites its document, page and quote. Each quote is checked against the retrieved text, as the extraction quote check does; a statement whose quote is not found is removed. If nothing relevant is found, the answer says so instead of guessing."
+          },
+          {
+            "label": "AC4",
+            "text": "The question box can be limited to chosen documents. The answer shows its citations as links that open the document at the cited page, using Upload's `FilePreview`."
+          },
+          {
+            "label": "AC5",
+            "text": "Evals RAG-1 to RAG-4 (`docs/evals/EVALS.md`) meet their thresholds on the synthetic dataset before release. Model, prompt version, tokens, cost and time are recorded per question, like extraction jobs."
+          },
+          {
+            "label": "AC6",
+            "text": "Asking counts towards the limit of 10 requests a minute that change something; agents can ask through the MCP tool `extraction.askDocuments`, within the same limits."
+          }
+        ],
+        "evals": "RAG-1 retrieval recall, RAG-2 faithfulness, RAG-3 refusal on unanswerable questions, RAG-4 latency and cost (see `EVALS.md`).",
+        "service": "LLM Extraction (index and answers); DocFlow composes the \"Ask\" box on `/documents`"
       }
     ],
     "endpoints": [
@@ -912,6 +947,14 @@ export const products = [
         "summary": "Last 100 jobs with tokens, cost, duration and failure rate.",
         "detail": "→ `200 {data: [Job], summary: {failure_rate, avg_cost_usd, p95_duration_ms}}`. Errors: `404` for non-admins.",
         "story": "MVP1-E3-05"
+      },
+      {
+        "method": "POST",
+        "path": "/api/extraction/v1/questions",
+        "access": "Signed in",
+        "summary": "Answer a question from my documents, with citations.",
+        "detail": "Body `{question, file_ids?}` → `200 {answer, citations: [{file_id, page, quote}], found: boolean, model, prompt_version}`. Errors: `422 validation_failed`, `429 rate_limited`.",
+        "story": "MVP1-E3-06"
       }
     ],
     "apiNotes": [
@@ -949,6 +992,11 @@ export const products = [
         "story": "MVP1-E3-05",
         "title": "Cost and latency logging",
         "text": "`extraction.jobs` adds tokens_in, tokens_out, cost_usd numeric(10,6), duration_ms."
+      },
+      {
+        "story": "MVP1-E3-06",
+        "title": "Ask questions about my documents (RAG)",
+        "text": "`extraction.passages` (id, job_id → jobs on delete cascade, owner_id, page, text, embedding `vector`, created_at); an approximate-nearest-neighbour index on `embedding` (pgvector, HNSW) and an index on `owner_id`. `extraction.questions` (id, owner_id, model, prompt_version, tokens_in, tokens_out, cost_usd, duration_ms, found, created_at): no question or answer text is stored."
       }
     ]
   },
