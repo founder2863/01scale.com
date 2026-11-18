@@ -165,6 +165,44 @@ As a hiring manager, I want to see what each story cost to build with AI, includ
 - **API design:** No endpoints.
 - **Database design:** No tables.
 
+
+### MVP1-E0-14 · Market Outlook section on every module page — M
+As a hiring manager, I want to see why each platform component matters in the market, so I can judge the product thinking behind it, not only the build.
+- **AC1:** Every module page has a **Market Outlook** section in its navigation, right after Read Me. It covers four things: **how big the market is**, **why I am building this component**, **where I have used it** in my own work, and **the key market players**.
+- **AC2:** Market size gives a figure, the year it refers to, and its source with a link (an analyst report, a public filing or a company's own statement). A figure without a source is not shown. Where sources disagree, the range is shown with each source.
+- **AC3:** Key market players are listed with one line each on how they approach the problem (for Identity, for example, a managed service such as AWS Cognito, an identity platform such as Okta or Auth0, and a developer-first product such as Clerk), and where this component sits against them.
+- **AC4:** "Why I am building this" and "Where I have used it" are Nikhil's own words, written in the first person. Claude may draft the research parts but never invents personal experience; until Nikhil writes those two parts, they show "Coming Soon...".
+- **AC5:** Each module's market content lives with its design (`scripts/site/<key>_design.py` or a file beside it) and is generated into the page with `npm run site:data`, like every other section. A skill (`design-market-outlook`) states how to research it: sources to prefer, how to cite, how recent a figure must be, and what never to invent.
+- **AC6:** The section shows the date it was last researched. It works from 320 to 1920 pixels wide, in light and dark mode.
+- **Service:** Site (`apps/web`) and design tooling
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E0-15 · PRD Reference section on every module page — S
+As a hiring manager, I want to trace each module back to the product requirements, so I can see that what was designed is what the product needed.
+- **AC1:** Every module page has a **PRD Reference** section in its navigation, after Market Outlook. It lists the PRD sections the module implements (for example MVP1 PRD §8 Functional requirements and §12 Non-functional requirements for Upload), each with a link to that section of `docs/prd/MVP1-PRD.md` or `docs/prd/MVP2-PRD.md`.
+- **AC2:** Each referenced requirement shows the stories that deliver it, so the trace runs PRD → story → design on one screen.
+- **AC3:** A requirement the module's stories do not cover yet is listed as a gap, not hidden.
+- **AC4:** The mapping is kept in one place per module and generated into the page with `npm run site:data`. When a PRD section or a story changes, the page data changes in the same PR.
+- **AC5:** A module whose mapping is not done yet shows "Coming Soon...". The section works from 320 to 1920 pixels wide, in light and dark mode.
+- **Service:** Site (`apps/web`) and design tooling
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E0-16 · MCP section on every module page — M
+As a developer or an AI agent, I want to see each module's MCP tools on its page, so I know what an agent can do with the component and how to connect.
+- **AC1:** Every module page has an **MCP** section in its navigation, after API Spec. It lists the module's MCP tools, generated from its API spec: the tool name (`<service>.<operationId>`), what it does, its inputs, the scope it needs, and the endpoint it mirrors.
+- **AC2:** Operations an agent cannot complete alone are marked and explained: session-only actions (API keys, password, deleting the account) and payment, where the agent gets a `checkout_url` for a person to open (`MVP1-E0-06` AC5).
+- **AC3:** The section shows how to connect: the service's own server (`POST /api/{service}/mcp`), the combined server at the gateway (`POST /api/mcp`), and a copyable client configuration that uses an API key from an environment variable, never a real key.
+- **AC4:** It also states the limits that apply to agents: 10 requests a minute in total with an API key, so no batch use yet (decision on PR #64).
+- **AC5:** Until a module's MCP server is built, the section shows its designed tools marked "Designed, not live". Once built, it reads the tool list from the live server's contract, so the page and the server cannot drift apart.
+- **AC6:** A module with no designed endpoints shows "Coming Soon...". The section works from 320 to 1920 pixels wide, in light and dark mode.
+- **Service:** Site (`apps/web`) and design tooling; tools come from each service's API spec (`MVP1-E0-05`, `MVP1-E0-06`)
+- **API design:** No new endpoints. Reads each service's API spec now, and its `GET /api/{service}/v1/openapi.json` once built.
+- **Database design:** No tables.
+
+**Order of sections on a module page after these three stories:** Read Me, Market Outlook, PRD Reference, Requirement EPIC, User Journey, UI Components, API Spec, MCP, Data Model, Schema.
+
 ---
 
 ## E1 · Accounts with AWS Cognito (MVP1 "a")
