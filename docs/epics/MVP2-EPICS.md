@@ -347,6 +347,91 @@ As a user who has outgrown the free plan, I want to upgrade to a paid plan so I 
 
 ---
 
+## E16 · Agents: roles, groups and permissions (MVP2 "i")
+**Goal:** agents become first-class users of the platform, with their own identity, and every action by a person or an agent is allowed by an explicit permission, granted through roles and groups. Builds on the hand-built identity of E8; replaces MVP1's loose API keys and fixed scopes. Payment and account-security actions keep a human in the loop.
+
+### MVP2-E16-01 · Agent identities — M
+As a user, I want to register each AI agent I use as its own identity, so I can see and control what each one does.
+- **AC1:** I can register an agent with a name and description. It gets its own ID and its own credentials; API keys now belong to an agent, not directly to me.
+- **AC2:** An agent acting for me gets tokens with my user as `sub` and the agent in `act` (`agent:<id>`), so every service knows both who it is for and who is acting.
+- **AC3:** I can suspend or revoke an agent; its next request is refused, and tokens already issued stop within 5 minutes.
+- **AC4:** Every agent action is audited with the agent's ID; the agent page shows its last activity.
+- **Service:** Identity
+- **API design:**
+  - `GET /api/identity/v1/agents` (signed in) — My agents. → `200 {data: [Agent], next_cursor}`.
+  - `POST /api/identity/v1/agents` (signed in, session only) — Register an agent. Body `{name, description?}` → `201 {agent}`.
+  - `PATCH /api/identity/v1/agents/{agentId}` (signed in, session only) — Rename, suspend or reactivate. Body `{name?, description?, status?: active|suspended}` → `200 {agent}`.
+  - `DELETE /api/identity/v1/agents/{agentId}` (signed in, session only) — Revoke the agent and all its keys. → `204`.
+  - `POST /api/identity/v1/api-keys` gains `agent_id` (required).
+- **Database design:** `identity.agents` (id, owner_id, name, description, status `active|suspended|revoked`, last_active_at, created_at, revoked_at). `identity.api_keys` adds `agent_id` → agents, delete cascades.
+
+### MVP2-E16-02 · Permissions and roles — M
+As a user, I want to give people and agents a role instead of choosing permissions one by one, so access is simple to grant and easy to understand.
+- **AC1:** Every service publishes its permissions in its contract, named `<service>:<resource>.<action>` (for example `upload:file.create`, `review:task.complete`, `payment:order.create`). Identity combines them into one catalogue.
+- **AC2:** A role is a named set of permissions. Built-in roles: **Owner** (everything), **Editor** (upload, extract, review; no payment, no account security), **Viewer** (read only), **Extraction agent** (upload and extract, read reviews) and **Review agent** (propose corrections only). I can also create my own roles.
+- **AC3:** Permissions marked sensitive (payment, API keys, password and sign-in methods, deleting the account or data) can never be granted to an agent's role. An agent that needs one asks for approval (`MVP2-E16-05`).
+- **AC4:** Built-in roles cannot be changed or deleted; a custom role in use cannot be deleted until it is removed everywhere.
+- **Service:** Identity; every service publishes its permissions
+- **API design:**
+  - `GET /api/identity/v1/permissions` (signed in) — The catalogue, grouped by service, with `sensitive` marked. → `200 {data: [Permission]}`.
+  - `GET /api/identity/v1/roles` (signed in) — Built-in and my custom roles. → `200 {data: [Role]}`.
+  - `POST /api/identity/v1/roles` (signed in, session only) — Create a custom role. Body `{name, description?, permissions[]}` → `201 {role}`. Errors: `422 sensitive_permission_for_agent_role` when an agent role holds a sensitive permission.
+  - `PATCH /api/identity/v1/roles/{roleId}`, `DELETE /api/identity/v1/roles/{roleId}` (signed in, session only). Errors: `409 role_built_in`, `409 role_in_use`.
+- **Database design:** `identity.roles` (id, owner_id null for built-in, name, description, for_agents boolean, built_in boolean, created_at). `identity.role_permissions` (role_id → roles, permission, primary key (role_id, permission)).
+
+### MVP2-E16-03 · Workspaces and groups — L
+As a user, I want to invite people and add agents to a shared workspace, organised in groups, so a team can work on the same documents with the right access each.
+- **AC1:** Every user has a personal workspace; MVP1 data moves into it. I can create a shared workspace and invite people by email; an invitation expires after 7 days.
+- **AC2:** In a workspace I can create groups (for example "Reviewers" or "Bookkeeping agents"), add people and agents to them, and give each group roles. A member's permissions are the union of their own roles and their groups' roles; there is no "deny" in this version.
+- **AC3:** Removing someone from a group or the workspace takes effect within 5 minutes (the token lifetime), and is audited.
+- **AC4:** Data created in a workspace belongs to the workspace, not to the person who created it, so it stays when a member leaves.
+- **Service:** Identity (workspaces, members, groups); every service (ownership by workspace, see `MVP2-E16-04`)
+- **API design:**
+  - `GET /api/identity/v1/workspaces`, `POST /api/identity/v1/workspaces` (signed in) — My workspaces; create one. Body `{name}` → `201 {workspace}`.
+  - `POST /api/identity/v1/workspaces/{workspaceId}/invitations` (signed in, session only) — Invite by email. Body `{email, role_ids[]}` → `202`. Same answer whether or not the email has an account.
+  - `POST /api/identity/v1/invitations/{token}/accept` (signed in) — Join. → `200 {workspace}`.
+  - `GET|POST /api/identity/v1/workspaces/{workspaceId}/groups`, `PATCH|DELETE …/groups/{groupId}` — Manage groups. Body `{name, role_ids[]}`.
+  - `PUT|DELETE …/groups/{groupId}/members/{principalId}` — Add or remove a person or an agent.
+  - `DELETE …/workspaces/{workspaceId}/members/{userId}` — Remove a member.
+- **Database design:** `identity.workspaces` (id, name, personal boolean, created_by, created_at). `identity.workspace_members` (workspace_id, user_id, joined_at). `identity.groups` (id, workspace_id, name, created_at). `identity.group_members` (group_id, principal_type `user|agent`, principal_id). `identity.role_assignments` (workspace_id, principal_type `user|agent|group`, principal_id, role_id). `identity.invitations` (id, workspace_id, email, role_ids, token_hash, expires_at, accepted_at).
+
+### MVP2-E16-04 · Permission checks in every service — L
+As the owner, I want every service to check permissions the same way, so roles and groups mean the same thing everywhere.
+- **AC1:** Access tokens carry the workspace and the caller's effective permissions in it (or a reference the service resolves and caches). The service template's `requirePermission("review:task.complete")` replaces scope checks in every endpoint.
+- **AC2:** Records are owned by the workspace (`owner_id` becomes the workspace ID). A record in another workspace still answers `404`; a record in my workspace without the permission answers `403 permission_denied` naming the missing permission.
+- **AC3:** Every audit event records the person, the acting agent if any, the workspace and the role that allowed it.
+- **AC4:** A migration moves every MVP1 record to its owner's personal workspace with no change for the user; each service migrates only its own schema.
+- **Service:** Service template, then every service
+- **API design:** No new endpoints. Every endpoint's spec names its permission instead of its scope; `403 permission_denied` is added to the shared error codes.
+- **Database design:** In every service, `owner_id` refers to a workspace (still a plain ID, no cross-schema key); audit events add `workspace_id` and `role_id`.
+
+### MVP2-E16-05 · Approvals for agent actions — M
+As a user, I want an agent to ask me before it does something sensitive, so it can be useful without being able to spend money or delete data on its own.
+- **AC1:** When an agent calls an action whose permission is sensitive or that its roles do not include, it receives `202` with an approval request instead of a refusal; the request says what, for whom and why.
+- **AC2:** I see the request in the app (and by email or push, `MVP2-E14`) and approve or reject it. An approval allows that one action once; it expires after 24 hours.
+- **AC3:** Payment still needs a person on Stripe's page even after approval: the agent receives a `checkout_url` for me to open.
+- **AC4:** Every request, approval and rejection is audited.
+- **Service:** Identity (approvals); the service template (returns the approval request)
+- **API design:**
+  - `POST /api/identity/v1/approvals` (service) — Create a request for a blocked agent action. Body `{agent_id, permission, resource, summary}` → `201 {approval}`.
+  - `GET /api/identity/v1/approvals` (signed in) — My pending and past requests. → `200 {data: [Approval], next_cursor}`.
+  - `POST /api/identity/v1/approvals/{approvalId}/approve`, `…/reject` (signed in, session only) → `200 {approval}`.
+  - The agent retries its call with `Approval-Id`; the service checks it with Identity once.
+- **Database design:** `identity.approvals` (id, workspace_id, agent_id, permission, resource, summary, status `pending|approved|rejected|expired|used`, decided_by, decided_at, expires_at, created_at).
+
+### MVP2-E16-06 · Access page — S
+As a user, I want one page that shows who and what can do what in my workspace, so I can check and change access with confidence.
+- **AC1:** `/account/access` lists people, agents, groups and roles in the workspace, with each agent's last activity and a revoke button.
+- **AC2:** "Explain access": choose a person or agent and a permission, and see whether it is allowed and which role or group grants it.
+- **AC3:** Pending approvals are listed at the top with Approve and Reject.
+- **AC4:** The page is built from Identity's UI components, each usable on its own; it works from 320 to 1920 pixels wide, in light and dark mode.
+- **Service:** Identity (UI components in `packages/ui-identity`), composed by the app
+- **API design:**
+  - `GET /api/identity/v1/workspaces/{workspaceId}/access/explain` (signed in) — Query `principal_id`, `permission` → `200 {allowed, granted_by: [{type: role|group, id, name}]}`.
+- **Database design:** No new tables.
+
+---
+
 ## Definition of done for MVP2
 - All AC pass; MVP2 evals meet thresholds on the holdout set; the ASVS auth checklist is complete.
 - No Cognito dependency left in code or environment variables.
