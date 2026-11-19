@@ -2797,6 +2797,45 @@ export const products = [
         ],
         "evals": "",
         "service": "Payment (subscriptions), Identity (plan in the token), Gateway (limits per plan)"
+      },
+      {
+        "id": "MVP2-E13-07",
+        "title": "Scheduled payments",
+        "size": "M",
+        "pending": "",
+        "story": "As a user, I want to choose the date a payment is taken, for example at the end of the month for all the invoices I processed, so I don't have to pay at the moment I finish.",
+        "acs": [
+          {
+            "label": "AC1",
+            "text": "Instead of paying now, I can choose a date up to 90 days ahead, in my own time zone, and which saved card to use (my default card unless I pick another, `MVP2-E13-03`). I see the amount, the date and the card before I confirm."
+          },
+          {
+            "label": "AC2",
+            "text": "The day before, I am reminded by my notification settings (`MVP2-E14`), with a link to change the date, the card, or cancel."
+          },
+          {
+            "label": "AC3",
+            "text": "On the date, Payment charges the saved card without me present (an off-session Stripe PaymentIntent). The charge happens once, whatever repeats: the schedule's ID is Stripe's idempotency key."
+          },
+          {
+            "label": "AC4",
+            "text": "If the bank asks for authentication (3-D Secure) or the card is declined, the payment waits as `requires_action` or `failed`, I am notified with a link to complete it or choose another card, and Payment retries a declined card once the next day. Nothing is charged twice."
+          },
+          {
+            "label": "AC5",
+            "text": "I can change the date or card, or cancel, until the charge starts. Downloads unlock only when the scheduled payment succeeds, as for any payment."
+          },
+          {
+            "label": "AC6",
+            "text": "The amount is set by the app's server when the schedule is created and cannot change afterwards; a different amount needs a new schedule. A person always sets up, changes and confirms a schedule: an agent can only propose one, through an approval (`MVP2-E16-05`)."
+          },
+          {
+            "label": "AC7",
+            "text": "Every schedule, change, cancellation, charge and failure is audited."
+          }
+        ],
+        "evals": "",
+        "service": "Payment (schedules and the daily run); DocFlow offers \"Pay on a date\"; Delivery sends the reminder and failure notices"
       }
     ],
     "endpoints": [
@@ -2887,6 +2926,46 @@ export const products = [
         "summary": "Cancel at the end of the period.",
         "detail": "→ `200 {subscription}`.",
         "story": "MVP2-E13-06"
+      },
+      {
+        "method": "POST",
+        "path": "/api/payment/v1/schedules",
+        "access": "Service, delegated token",
+        "summary": "Schedule a charge for a user.",
+        "detail": "The app's server sets the amount. Body `{reference, description, amount, currency, charge_on, time_zone, payment_method_id?}` + `Idempotency-Key` → `201 {schedule}`. Errors: `422 charge_date_out_of_range` (past, or more than 90 days ahead), `409 already_paid`, `422 no_saved_card`.",
+        "story": "MVP2-E13-07"
+      },
+      {
+        "method": "GET",
+        "path": "/api/payment/v1/schedules",
+        "access": "Signed in",
+        "summary": "My scheduled payments, soonest first.",
+        "detail": "Query `status`, `cursor`, `limit` → `200 {data: [Schedule], next_cursor}`.",
+        "story": "MVP2-E13-07"
+      },
+      {
+        "method": "PATCH",
+        "path": "/api/payment/v1/schedules/{scheduleId}",
+        "access": "Signed in, session only",
+        "summary": "Change the date or card.",
+        "detail": "Body `{charge_on?, payment_method_id?}` → `200 {schedule}`. Errors: `409 schedule_started`.",
+        "story": "MVP2-E13-07"
+      },
+      {
+        "method": "DELETE",
+        "path": "/api/payment/v1/schedules/{scheduleId}",
+        "access": "Signed in, session only",
+        "summary": "Cancel.",
+        "detail": "→ `200 {schedule}` with status `cancelled`. Errors: `409 schedule_started`.",
+        "story": "MVP2-E13-07"
+      },
+      {
+        "method": "POST",
+        "path": "/api/docflow/v1/batches/{batchId}/schedule-payment",
+        "access": "Signed in",
+        "summary": "Pay for a batch on a date.",
+        "detail": "Body `{charge_on, payment_method_id?}` → `201 {schedule}`. DocFlow computes the amount and calls Payment.",
+        "story": "MVP2-E13-07"
       }
     ],
     "apiNotes": [
@@ -2901,6 +2980,10 @@ export const products = [
       {
         "story": "MVP2-E13-06",
         "text": "Payment announces `payment.subscription.changed`; Identity puts `plan` in the user's access tokens."
+      },
+      {
+        "story": "MVP2-E13-07",
+        "text": "Payment announces `payment.schedule.charged`, `.failed` and `.requires_action` to the app that created the schedule (routed by reference, decision on #13)."
       }
     ],
     "dbNotes": [
@@ -2933,6 +3016,11 @@ export const products = [
         "story": "MVP2-E13-06",
         "title": "Free plan and upgrade to paid",
         "text": "`payment.subscriptions` (id, owner_id unique, plan, status `active|past_due|cancelled`, stripe_subscription_id unique, current_period_end, created_at). `identity.users` adds `plan`, kept in step from the event."
+      },
+      {
+        "story": "MVP2-E13-07",
+        "title": "Scheduled payments",
+        "text": "`payment.schedules` (id, owner_id, app, reference, description, amount, currency, payment_method_id, charge_on date, time_zone, status `scheduled|processing|charged|requires_action|failed|cancelled`, payment_id → payments, attempts, reminded_at, created_at, cancelled_at). A partial unique index allows one open schedule per app and reference. A daily job picks schedules due today (in their time zone) with `for update skip locked`, so two runs never charge the same schedule."
       }
     ]
   },

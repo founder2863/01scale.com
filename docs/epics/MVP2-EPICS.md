@@ -300,6 +300,26 @@ As a user who has outgrown the free plan, I want to upgrade to a paid plan so I 
   - Payment announces `payment.subscription.changed`; Identity puts `plan` in the user's access tokens.
 - **Database design:** `payment.subscriptions` (id, owner_id unique, plan, status `active|past_due|cancelled`, stripe_subscription_id unique, current_period_end, created_at). `identity.users` adds `plan`, kept in step from the event.
 
+
+### MVP2-E13-07 · Scheduled payments — M
+As a user, I want to choose the date a payment is taken, for example at the end of the month for all the invoices I processed, so I don't have to pay at the moment I finish.
+- **AC1:** Instead of paying now, I can choose a date up to 90 days ahead, in my own time zone, and which saved card to use (my default card unless I pick another, `MVP2-E13-03`). I see the amount, the date and the card before I confirm.
+- **AC2:** The day before, I am reminded by my notification settings (`MVP2-E14`), with a link to change the date, the card, or cancel.
+- **AC3:** On the date, Payment charges the saved card without me present (an off-session Stripe PaymentIntent). The charge happens once, whatever repeats: the schedule's ID is Stripe's idempotency key.
+- **AC4:** If the bank asks for authentication (3-D Secure) or the card is declined, the payment waits as `requires_action` or `failed`, I am notified with a link to complete it or choose another card, and Payment retries a declined card once the next day. Nothing is charged twice.
+- **AC5:** I can change the date or card, or cancel, until the charge starts. Downloads unlock only when the scheduled payment succeeds, as for any payment.
+- **AC6:** The amount is set by the app's server when the schedule is created and cannot change afterwards; a different amount needs a new schedule. A person always sets up, changes and confirms a schedule: an agent can only propose one, through an approval (`MVP2-E16-05`).
+- **AC7:** Every schedule, change, cancellation, charge and failure is audited.
+- **Service:** Payment (schedules and the daily run); DocFlow offers "Pay on a date"; Delivery sends the reminder and failure notices
+- **API design:**
+  - `POST /api/payment/v1/schedules` (service, delegated token) — Schedule a charge for a user. The app's server sets the amount. Body `{reference, description, amount, currency, charge_on, time_zone, payment_method_id?}` + `Idempotency-Key` → `201 {schedule}`. Errors: `422 charge_date_out_of_range` (past, or more than 90 days ahead), `409 already_paid`, `422 no_saved_card`.
+  - `GET /api/payment/v1/schedules` (signed in) — My scheduled payments, soonest first. Query `status`, `cursor`, `limit` → `200 {data: [Schedule], next_cursor}`.
+  - `PATCH /api/payment/v1/schedules/{scheduleId}` (signed in, session only) — Change the date or card. Body `{charge_on?, payment_method_id?}` → `200 {schedule}`. Errors: `409 schedule_started`.
+  - `DELETE /api/payment/v1/schedules/{scheduleId}` (signed in, session only) — Cancel. → `200 {schedule}` with status `cancelled`. Errors: `409 schedule_started`.
+  - `POST /api/docflow/v1/batches/{batchId}/schedule-payment` (signed in) — Pay for a batch on a date. Body `{charge_on, payment_method_id?}` → `201 {schedule}`. DocFlow computes the amount and calls Payment.
+  - Payment announces `payment.schedule.charged`, `.failed` and `.requires_action` to the app that created the schedule (routed by reference, decision on #13).
+- **Database design:** `payment.schedules` (id, owner_id, app, reference, description, amount, currency, payment_method_id, charge_on date, time_zone, status `scheduled|processing|charged|requires_action|failed|cancelled`, payment_id → payments, attempts, reminded_at, created_at, cancelled_at). A partial unique index allows one open schedule per app and reference. A daily job picks schedules due today (in their time zone) with `for update skip locked`, so two runs never charge the same schedule.
+
 ---
 
 ## E14 · Notifications: email, SMS, push (MVP2 "g")
