@@ -1515,8 +1515,8 @@ export const products = [
     "group": "MVP1",
     "service": "Delivery",
     "description": "Get the files immediately by secure download, with a copy by email.",
-    "status": "Planned",
-    "detailed": false,
+    "status": "Designed",
+    "detailed": true,
     "epic": {
       "id": "E7",
       "title": "Success, download and email",
@@ -1619,6 +1619,10 @@ export const products = [
       {
         "story": "MVP1-E7-03",
         "text": "DocFlow calls `POST /messages` when it receives `payment.order.paid` on its webhook (E0-09), so the email is triggered by the server, not the browser."
+      },
+      {
+        "story": "MVP1-E7-03",
+        "text": "Delivery reads the recipient's verified address at send time with Identity `GET /api/identity/v1/users/{userId}` (service only, scope `identity:users.read`; designed with `MVP1-E1-05`). Decided by Nikhil on PR #68; the address is never passed in a request or an event."
       }
     ],
     "dbNotes": [

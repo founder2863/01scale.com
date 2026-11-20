@@ -535,6 +535,7 @@ As the owner, I want to refund a paid order in full, so a demo user who was char
   - `POST /api/delivery/v1/messages` (service) — Send a templated email to a user. Called by an app's server. Body `{user_id, template, data, reference}` + `Idempotency-Key` → `202 {message}`. Retries 3 times with backoff. Emits `delivery.message.failed` on permanent failure.
   - `GET /api/delivery/v1/messages` (signed in) — My messages and their delivery status. Query `reference`, `cursor` → `200 {data: [{id, channel, template, status: queued|sent|failed, attempts, sent_at}], next_cursor}`.
   - DocFlow calls `POST /messages` when it receives `payment.order.paid` on its webhook (E0-09), so the email is triggered by the server, not the browser.
+  - Delivery reads the recipient's verified address at send time with Identity `GET /api/identity/v1/users/{userId}` (service only, scope `identity:users.read`; designed with `MVP1-E1-05`). Decided by Nikhil on PR #68; the address is never passed in a request or an event.
 - **Database design:** `delivery.messages` (id, owner_id, app, reference, channel `email`, template, status `queued|sent|failed`, attempts, provider_message_id, last_error, sent_at, created_at). The recipient address is read from Identity at send time, not stored.
 
 ---
