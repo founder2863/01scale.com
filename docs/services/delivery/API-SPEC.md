@@ -40,7 +40,7 @@ Access: **Service** · Scope: `delivery:write`, on a delegated token only · Sto
 **Behaviour**
 
 - Validates the template's data and records the message as `queued`; answers `202` at once.
-- In the background: looks up the user's email through Identity `GET /users/{userId}` with Delivery's own service token (`identity:users.read`), renders the template, and sends it through Resend from `receipts@01scale.com`.
+- In the background: looks up the user's email through Identity `GET /api/identity/v1/users/{userId}` with Delivery's own service token (`identity:users.read`), renders the template, and sends it through Resend from `receipts@01scale.com`.
 - On a failure Resend says is temporary, retries 3 times, after 1, 5 and 25 seconds. Then the message is `failed` with the reason, and Delivery announces `delivery.message.failed`.
 - On success the message is `sent` with Resend's message ID, and `delivery.message.sent` is recorded in the audit log.
 
