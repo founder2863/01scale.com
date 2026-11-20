@@ -420,6 +420,14 @@ export const products = [
       },
       {
         "method": "GET",
+        "path": "/api/identity/v1/users/{userId}",
+        "access": "Service only, scope `identity:users.read`",
+        "summary": "A user's verified email, for a service that writes to them (Delivery, `MVP1-E7-03`).",
+        "detail": "→ `200 {id, email}`. Errors: `404 user_not_found`, including for a deleted user. Added on PR #70.",
+        "story": "MVP1-E1-05"
+      },
+      {
+        "method": "GET",
         "path": "/api/docflow/v1/stats",
         "access": "Signed in",
         "summary": "My DocFlow totals for the account page.",
@@ -474,7 +482,7 @@ export const products = [
       {
         "story": "MVP1-E0-06",
         "title": "Agent access: API keys and MCP",
-        "text": "`identity.api_keys` (id, owner_id, name, prefix, key_hash unique, scopes text[], last_used_at, expires_at, revoked_at, created_at). Only the SHA-256 hash of the secret is stored; `prefix` (first 8 characters) is kept for display."
+        "text": "`identity.api_keys` (id, user_id → users, name, prefix, key_hash unique, scopes text[], last_used_at, expires_at, revoked_at, created_at). Only the SHA-256 hash of the secret is stored; `prefix` (first 8 characters) is kept for display."
       }
     ]
   },

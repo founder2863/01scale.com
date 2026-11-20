@@ -751,10 +751,11 @@ export const account = {
     }
   ],
   "openQuestions": [
-    "Cognito's managed login has no 'change password while signed in' page. I designed the change through its forgot-password page (a code by email, then a new password). The alternative is our own form calling Cognito's `ChangePassword`, which needs Cognito's access token that Identity does not keep. Is the emailed code acceptable for MVP1?",
-    "The story names the column `owner_id`; Identity's tables use `user_id` (as `sessions` does). I used `user_id` and propose updating the story.",
-    "The story keeps 'the first 8 characters' as the prefix; every key starts `sk_01s_`, so I keep the first 8 characters after it.",
-    "`GET /users/{userId}` is new: Delivery needs a person's email and no story lists the endpoint. I propose adding it to `MVP1-E7-01`.",
+    "Decided by Nikhil on 20 Nov 2026 (#70): the password change goes through Cognito's forgot-password page (a code by email) in MVP1; our own screens come with MVP2 (`MVP2-E8-10`).",
+    "Decided (#70): the column is `user_id`, as in `identity.sessions`; story `MVP1-E0-06` is updated.",
+    "Decided (#70): the key prefix is the first 8 characters after `sk_01s_`, since every key starts with `sk_01s_`.",
+    "Decided (#70): `GET /users/{userId}` is listed in `MVP1-E1-05` (Identity, which owns it) and `MVP1-E7-03` (Delivery, which calls it).",
+    "Open (#70): should deleting an account first only deactivate it and keep the data (a soft delete)? Pros and cons are on the PR; the design below still deletes.",
     "`docs/infra/cognito.md` needs a step for the IAM user that may call `AdminDeleteUser`.",
     "Starting limits: 10 active keys per person, 90-day default expiry, 1 year at most."
   ],

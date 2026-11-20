@@ -74,7 +74,7 @@ As an AI agent acting for a user, I want to authenticate without a browser and d
   - `POST /api/identity/v1/api-keys` (signed in) — Create an API key for an agent or script. The secret is shown once. Body `{name, scopes[], expires_at?}` → `201 {api_key, secret}`. Session only: a key cannot create keys. Errors: `422`.
   - `DELETE /api/identity/v1/api-keys/{keyId}` (signed in) — Revoke an API key immediately. → `204`. Errors: `404`.
   - `POST /api/{service}/mcp` (signed in) — That service's MCP server: its operations exposed as tools for AI agents. Streamable HTTP. Tools map 1:1 to the service's OpenAPI `operationId`s and call the same service functions as the REST handlers.
-- **Database design:** `identity.api_keys` (id, owner_id, name, prefix, key_hash unique, scopes text[], last_used_at, expires_at, revoked_at, created_at). Only the SHA-256 hash of the secret is stored; `prefix` (first 8 characters) is kept for display.
+- **Database design:** `identity.api_keys` (id, user_id → users, name, prefix, key_hash unique, scopes text[], last_used_at, expires_at, revoked_at, created_at). Only the SHA-256 hash of the secret is stored; `prefix` (first 8 characters) is kept for display.
 
 ### MVP1-E0-07 · Service template — L
 As the owner, I want one template every service is built from, so each new service is mostly copying and all of them behave the same way.
@@ -221,6 +221,7 @@ As a user, I want to see and manage my account.
   - `GET /api/identity/v1/me` (signed in) — My account: email and joined date. → `200 {id, email, created_at}`.
   - `POST /api/identity/v1/me/password-change` (signed in) — Start a password change through the identity provider. → `200 {redirect_url}`; the provider returns the user to `/account?password_changed=1`. Session only.
   - `DELETE /api/identity/v1/me` (signed in) — Delete my account. Every service then deletes that user's data. Body `{confirm: "DELETE"}` → `202`, session cleared. Emits `identity.user.deleted`; each service deletes or anonymizes its own rows. Session only. Errors: `422`.
+  - `GET /api/identity/v1/users/{userId}` (service only, scope `identity:users.read`) — A user's verified email, for a service that writes to them (Delivery, `MVP1-E7-03`). → `200 {id, email}`. Errors: `404 user_not_found`, including for a deleted user. Added on PR #70.
   - `GET /api/docflow/v1/stats` (signed in) — My DocFlow totals for the account page. → `200 {documents_processed}`.
   - The account page is composed by the app: it reads `GET /api/identity/v1/me`, `GET /api/docflow/v1/stats` and `GET /api/payment/v1/orders`.
 - **Database design:** No new tables. Identity deletes the user's rows and emits `identity.user.deleted`; each service deletes its rows for that `owner_id`. Payment keeps orders with `owner_id` set to null.
