@@ -118,7 +118,8 @@ const decisions = [
   ["Repository", "One repository, one folder per service, each with its own pipeline and version"],
   ["Hosting", "One Vercel project per service; Extraction moves to AWS Lambda"],
   ["Database", "One Neon project, a schema and login per service, nothing shared"],
-  ["Communication", "The app orchestrates with API calls; services report completion with signed events"],
+  ["Communication", "The app orchestrates with API calls, all through the gateway; services report completion with signed events, sent only to the app that started the work. Event-driven when the second app arrives"],
+  ["Acting for a person", "When no one is signed in, a service gets a 5-minute token for that person from Identity, marked with who is acting"],
   ["Consistency", "Strong inside a service, eventual between services, never optimistic about money"],
   ["Every service ships", "UI components, an API, MCP tools for AI agents, and its own demo page"],
 ];

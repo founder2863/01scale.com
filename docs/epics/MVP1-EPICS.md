@@ -116,7 +116,7 @@ As the owner, I want DocFlow to be a thin app that only connects platform servic
 - **Service:** DocFlow app
 - **API design:**
   - `POST /api/docflow/v1/webhooks/{service}` (service) — Receives signed events from platform services and moves the process forward. HMAC-signed body `{event_id, type, occurred_at, data}` → `200`. Idempotent on `event_id`. Handles `extraction.job.completed|failed`, `payment.order.paid|expired|failed`, `identity.user.deleted`. Errors: `401` bad signature.
-- **Database design:** `docflow.documents` (id, owner_id, file_name, file_id, job_id, review_task_id, order_id, status `pending_upload|uploaded|rejected|extracting|extraction_failed|needs_review|reviewed|paid`, created_at). The process record: it holds only IDs of records owned by other services. `docflow.inbound_events` (event_id primary key, type, received_at) gives idempotency.
+- **Database design:** `docflow.documents` (id, owner_id, file_name, file_id, job_id, review_task_id, order_id, status `pending_upload|uploaded|rejected|extracting|extraction_failed|needs_review|reviewed|paid`, created_at). The process record: it holds only IDs of records owned by other services. `docflow.inbound_events` (event_id primary key, type, created_at) gives idempotency.
 
 ### MVP1-E0-10 · Site navigation and product page template — M
 As a hiring manager, I want every module to have its own page laid out the same way, on any device, so I can judge the product thinking quickly.
