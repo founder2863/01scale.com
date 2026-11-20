@@ -424,6 +424,14 @@ export const products = [
       },
       {
         "method": "GET",
+        "path": "/api/identity/v1/users/{userId}",
+        "access": "Service only, scope `identity:users.read`",
+        "summary": "A user's verified email, for a service that writes to them (Delivery, `MVP1-E7-03`).",
+        "detail": "→ `200 {id, email}`. Errors: `404 user_not_found`, including for a deleted user. Added on PR #70.",
+        "story": "MVP1-E1-05"
+      },
+      {
+        "method": "GET",
         "path": "/api/docflow/v1/stats",
         "access": "Signed in",
         "summary": "My DocFlow totals for the account page.",
@@ -1388,6 +1396,41 @@ export const products = [
         ],
         "evals": "",
         "service": "Payment (UI component), used by the DocFlow app"
+      },
+      {
+        "id": "MVP1-E6-04",
+        "title": "Refunds",
+        "size": "S",
+        "pending": "Decided on PR #67: refunds are not in the first version of Payment; this story adds them.",
+        "story": "As the owner, I want to refund a paid order in full, so a demo user who was charged by mistake (in test mode) can be put right, and the platform shows how a refund flows through every service.",
+        "acs": [
+          {
+            "label": "AC1",
+            "text": "An admin can refund a paid order in full from the admin page, with a reason. A person always does this: it is session only and never available to API keys or agents."
+          },
+          {
+            "label": "AC2",
+            "text": "Payment creates the refund in Stripe with the order's ID as the idempotency key, so a repeated request never refunds twice. The order becomes `refunded` when Stripe's webhook confirms it (`charge.refunded`), not when the request is sent."
+          },
+          {
+            "label": "AC3",
+            "text": "Payment announces `payment.order.refunded` to the app that created the order (routed by reference, decision on #13). In DocFlow, the document's downloads lock again and its status shows \"Refunded\"; the reviewed data stays."
+          },
+          {
+            "label": "AC4",
+            "text": "The person who paid is emailed through Delivery that the refund was made, with the amount; Stripe's own refund receipt still applies."
+          },
+          {
+            "label": "AC5",
+            "text": "A refund is audited (`order.refunded`) with the admin, the reason and the amount. Partial refunds are not in this version."
+          },
+          {
+            "label": "AC6",
+            "text": "Refunding an order that is not paid answers `409 not_paid`; refunding it again answers `409 already_refunded`."
+          }
+        ],
+        "evals": "",
+        "service": "Payment; DocFlow reacts to the event; Delivery sends the email"
       }
     ],
     "endpoints": [
@@ -1430,12 +1473,28 @@ export const products = [
         "summary": "Get one order, for payment and success pages to poll.",
         "detail": "→ `200 {order: {id, reference, description, amount, currency, status: pending|paid|expired|failed}}`.",
         "story": "MVP1-E6-03"
+      },
+      {
+        "method": "POST",
+        "path": "/api/payment/v1/orders/{orderId}/refund",
+        "access": "Admin, session only",
+        "summary": "Refund a paid order in full.",
+        "detail": "Body `{reason}` + `Idempotency-Key` → `202 {order}` with status `refund_pending`. Errors: `409 not_paid`, `409 already_refunded`, `503 stripe_unavailable`.",
+        "story": "MVP1-E6-04"
       }
     ],
     "apiNotes": [
       {
         "story": "MVP1-E6-03",
         "text": "The page also calls DocFlow `POST …/checkout` (E6-01)."
+      },
+      {
+        "story": "MVP1-E6-04",
+        "text": "The Stripe webhook (`MVP1-E6-02`) also handles `charge.refunded`."
+      },
+      {
+        "story": "MVP1-E6-04",
+        "text": "DocFlow's webhook handles `payment.order.refunded`."
       }
     ],
     "dbNotes": [
@@ -1453,6 +1512,11 @@ export const products = [
         "story": "MVP1-E6-03",
         "title": "Payment page and states",
         "text": "No schema change."
+      },
+      {
+        "story": "MVP1-E6-04",
+        "title": "Refunds",
+        "text": "`payment.orders.status` adds `refund_pending` and `refunded`; the order adds `refund_reason`, `stripe_refund_id` (unique) and `refunded_at`. `docflow.documents.status` adds `refunded`."
       }
     ]
   },
@@ -1567,6 +1631,10 @@ export const products = [
       {
         "story": "MVP1-E7-03",
         "text": "DocFlow calls `POST /messages` when it receives `payment.order.paid` on its webhook (E0-09), so the email is triggered by the server, not the browser."
+      },
+      {
+        "story": "MVP1-E7-03",
+        "text": "Delivery reads the recipient's verified address at send time with Identity `GET /api/identity/v1/users/{userId}` (service only, scope `identity:users.read`; designed with `MVP1-E1-05`). Decided by Nikhil on PR #68; the address is never passed in a request or an event."
       }
     ],
     "dbNotes": [
@@ -1843,6 +1911,68 @@ export const products = [
         ],
         "evals": "",
         "service": "Identity"
+      },
+      {
+        "id": "MVP2-E8-11",
+        "title": "Deactivate first, delete after 30 days",
+        "size": "S",
+        "pending": "",
+        "story": "Decided by Nikhil on 20 Nov 2026 (PR #70): MVP1 deletes an account at once; MVP2 adds a 30-day window to undo a deletion. As a user, I want a deleted account to stay recoverable for 30 days, so a mistake or a change of mind does not lose my work, while my data is still erased for good afterwards.",
+        "acs": [
+          {
+            "label": "AC1",
+            "text": "\"Delete account\" deactivates the account at once: I am signed out everywhere, my sessions, API keys and agents stop working, and no one can reach my data. I see the date it will be deleted for good."
+          },
+          {
+            "label": "AC2",
+            "text": "Signing in within 30 days offers **Restore account**, which brings everything back as it was. After restoring, nothing has been deleted."
+          },
+          {
+            "label": "AC3",
+            "text": "After 30 days, a daily job deletes the account for good through the existing `identity.user.deleted` event, so every service deletes or anonymizes its own data exactly as in MVP1. \"Delete now\" skips the wait for anyone who asks."
+          },
+          {
+            "label": "AC4",
+            "text": "While deactivated, the account receives no emails, and `GET /api/identity/v1/users/{userId}` answers `404`, so no service writes to it."
+          },
+          {
+            "label": "AC5",
+            "text": "Deactivation, restore and the final deletion are each audited. The consent line and the account page say that deletion completes 30 days after the request."
+          }
+        ],
+        "evals": "",
+        "service": "Identity only: other services need no change, because a deactivated user cannot sign in and their data is reachable only by them."
+      },
+      {
+        "id": "MVP2-E8-12",
+        "title": "Rotate service client secrets without downtime",
+        "size": "S",
+        "pending": "",
+        "story": "Decided by Nikhil on 20 Nov 2026 (PR #73): parked for MVP2. In MVP1 a client secret changes only with a database migration and a deployment. As the owner, I want to change a service's or app's client secret without any moment where its calls fail, so a leaked or old secret can be replaced at once and routinely.",
+        "acs": [
+          {
+            "label": "AC1",
+            "text": "Each client can hold two active secrets at the same time. Identity accepts either while both are active."
+          },
+          {
+            "label": "AC2",
+            "text": "Rotating is three steps with no downtime: add a new secret; set it in the client's environment and redeploy; retire the old secret. Retiring it takes effect on the next sign-in; tokens already issued last at most 5 minutes."
+          },
+          {
+            "label": "AC3",
+            "text": "A secret can also be retired at once in an emergency, for example after a leak, even if the client then fails until it has the new one."
+          },
+          {
+            "label": "AC4",
+            "text": "The admin page shows, per client, when each secret was created and last used, so an unused old secret is easy to spot. Each secret is shown once at creation and stored only as a hash."
+          },
+          {
+            "label": "AC5",
+            "text": "Adding and retiring secrets are admin and session-only actions, never available to API keys or agents, and are audited."
+          }
+        ],
+        "evals": "",
+        "service": "Identity"
       }
     ],
     "endpoints": [
@@ -2005,6 +2135,38 @@ export const products = [
         "summary": "Users migrated from Cognito vs not yet migrated.",
         "detail": "→ `200 {migrated, pending, cutoff_at}`.",
         "story": "MVP2-E8-08"
+      },
+      {
+        "method": "POST",
+        "path": "/api/identity/v1/me/restore",
+        "access": "Signed in during the 30 days",
+        "summary": "Restore my account.",
+        "detail": "→ `200 {user}`. Errors: `409 not_deactivated`.",
+        "story": "MVP2-E8-11"
+      },
+      {
+        "method": "POST",
+        "path": "/api/identity/v1/admin/service-clients/{clientId}/secrets",
+        "access": "Admin, session only",
+        "summary": "Add a secret.",
+        "detail": "→ `201 {secret_id, secret}`, the secret shown once. Errors: `409 too_many_secrets` when two are already active.",
+        "story": "MVP2-E8-12"
+      },
+      {
+        "method": "DELETE",
+        "path": "/api/identity/v1/admin/service-clients/{clientId}/secrets/{secretId}",
+        "access": "Admin, session only",
+        "summary": "Retire a secret.",
+        "detail": "→ `204`. Errors: `409 last_secret` unless `?emergency=true`.",
+        "story": "MVP2-E8-12"
+      },
+      {
+        "method": "GET",
+        "path": "/api/identity/v1/admin/service-clients",
+        "access": "Admin",
+        "summary": "Clients with their secrets' created and last-used dates.",
+        "detail": "Never returns a secret.",
+        "story": "MVP2-E8-12"
       }
     ],
     "apiNotes": [
@@ -2019,6 +2181,10 @@ export const products = [
       {
         "story": "MVP2-E8-10",
         "text": "No new endpoints: composes `GET /api/identity/v1/passkeys` and `DELETE …/passkeys/{passkeyId}` (`MVP2-E8-04`), `POST /api/identity/v1/me/email-change` (`MVP2-E8-07`) and `GET /api/identity/v1/sessions` (`MVP2-E8-06`). Removes `POST /api/identity/v1/me/password-change` (MVP1), with a deprecation note in the changelog."
+      },
+      {
+        "story": "MVP2-E8-11",
+        "text": "`DELETE /api/identity/v1/me` (signed in, session only) now deactivates. Body `{confirm: \"DELETE\"}` → `202 {deletes_at}`. With `{confirm: \"DELETE\", now: true}` it deletes at once, as in MVP1."
       }
     ],
     "dbNotes": [
@@ -2071,6 +2237,16 @@ export const products = [
         "story": "MVP2-E8-10",
         "title": "Account security on our own screens",
         "text": "No schema change."
+      },
+      {
+        "story": "MVP2-E8-11",
+        "title": "Deactivate first, delete after 30 days",
+        "text": "`identity.users` adds `deactivated_at` and `deletes_at` (both empty unless deactivated). A partial index on `deletes_at` serves the daily job."
+      },
+      {
+        "story": "MVP2-E8-12",
+        "title": "Rotate service client secrets without downtime",
+        "text": "`identity.service_client_secrets` (id, client_id → service_clients, secret_hash unique, created_at, last_used_at, retired_at), replacing `service_clients.secret_hash`. A partial unique rule allows at most two active secrets per client."
       }
     ]
   },

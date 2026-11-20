@@ -114,6 +114,35 @@ As a user, I want to manage how I sign in on 01scale's own account page, without
 - **API design:** No new endpoints: composes `GET /api/identity/v1/passkeys` and `DELETE …/passkeys/{passkeyId}` (`MVP2-E8-04`), `POST /api/identity/v1/me/email-change` (`MVP2-E8-07`) and `GET /api/identity/v1/sessions` (`MVP2-E8-06`). Removes `POST /api/identity/v1/me/password-change` (MVP1), with a deprecation note in the changelog.
 - **Database design:** No schema change.
 
+### MVP2-E8-11 · Deactivate first, delete after 30 days — S
+Decided by Nikhil on 20 Nov 2026 (PR #70): MVP1 deletes an account at once; MVP2 adds a 30-day window to undo a deletion.
+As a user, I want a deleted account to stay recoverable for 30 days, so a mistake or a change of mind does not lose my work, while my data is still erased for good afterwards.
+- **AC1:** "Delete account" deactivates the account at once: I am signed out everywhere, my sessions, API keys and agents stop working, and no one can reach my data. I see the date it will be deleted for good.
+- **AC2:** Signing in within 30 days offers **Restore account**, which brings everything back as it was. After restoring, nothing has been deleted.
+- **AC3:** After 30 days, a daily job deletes the account for good through the existing `identity.user.deleted` event, so every service deletes or anonymizes its own data exactly as in MVP1. "Delete now" skips the wait for anyone who asks.
+- **AC4:** While deactivated, the account receives no emails, and `GET /api/identity/v1/users/{userId}` answers `404`, so no service writes to it.
+- **AC5:** Deactivation, restore and the final deletion are each audited. The consent line and the account page say that deletion completes 30 days after the request.
+- **Service:** Identity only: other services need no change, because a deactivated user cannot sign in and their data is reachable only by them.
+- **API design:**
+  - `DELETE /api/identity/v1/me` (signed in, session only) now deactivates. Body `{confirm: "DELETE"}` → `202 {deletes_at}`. With `{confirm: "DELETE", now: true}` it deletes at once, as in MVP1.
+  - `POST /api/identity/v1/me/restore` (signed in during the 30 days) — Restore my account. → `200 {user}`. Errors: `409 not_deactivated`.
+- **Database design:** `identity.users` adds `deactivated_at` and `deletes_at` (both empty unless deactivated). A partial index on `deletes_at` serves the daily job.
+
+### MVP2-E8-12 · Rotate service client secrets without downtime — S
+Decided by Nikhil on 20 Nov 2026 (PR #73): parked for MVP2. In MVP1 a client secret changes only with a database migration and a deployment.
+As the owner, I want to change a service's or app's client secret without any moment where its calls fail, so a leaked or old secret can be replaced at once and routinely.
+- **AC1:** Each client can hold two active secrets at the same time. Identity accepts either while both are active.
+- **AC2:** Rotating is three steps with no downtime: add a new secret; set it in the client's environment and redeploy; retire the old secret. Retiring it takes effect on the next sign-in; tokens already issued last at most 5 minutes.
+- **AC3:** A secret can also be retired at once in an emergency, for example after a leak, even if the client then fails until it has the new one.
+- **AC4:** The admin page shows, per client, when each secret was created and last used, so an unused old secret is easy to spot. Each secret is shown once at creation and stored only as a hash.
+- **AC5:** Adding and retiring secrets are admin and session-only actions, never available to API keys or agents, and are audited.
+- **Service:** Identity
+- **API design:**
+  - `POST /api/identity/v1/admin/service-clients/{clientId}/secrets` (admin, session only) — Add a secret. → `201 {secret_id, secret}`, the secret shown once. Errors: `409 too_many_secrets` when two are already active.
+  - `DELETE /api/identity/v1/admin/service-clients/{clientId}/secrets/{secretId}` (admin, session only) — Retire a secret. → `204`. Errors: `409 last_secret` unless `?emergency=true`.
+  - `GET /api/identity/v1/admin/service-clients` (admin) — Clients with their secrets' created and last-used dates. Never returns a secret.
+- **Database design:** `identity.service_client_secrets` (id, client_id → service_clients, secret_hash unique, created_at, last_used_at, retired_at), replacing `service_clients.secret_hash`. A partial unique rule allows at most two active secrets per client.
+
 ---
 
 ## E9 · Multi-document support (MVP2 "b") — `llm`

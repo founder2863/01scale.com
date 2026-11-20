@@ -175,7 +175,7 @@ export const delivery = {
       ],
       "behaviour": [
         "Validates the template's data and records the message as `queued`; answers `202` at once.",
-        "In the background: looks up the user's email through Identity `GET /users/{userId}` with Delivery's own service token (`identity:users.read`), renders the template, and sends it through Resend from `receipts@01scale.com`.",
+        "In the background: looks up the user's email through Identity `GET /api/identity/v1/users/{userId}` with Delivery's own service token (`identity:users.read`), renders the template, and sends it through Resend from `receipts@01scale.com`.",
         "On a failure Resend says is temporary, retries 3 times, after 1, 5 and 25 seconds. Then the message is `failed` with the reason, and Delivery announces `delivery.message.failed`.",
         "On success the message is `sent` with Resend's message ID, and `delivery.message.sent` is recorded in the audit log."
       ],
@@ -612,7 +612,7 @@ export const delivery = {
     }
   ],
   "openQuestions": [
-    "Delivery looks up a user's email from Identity, but Identity has no endpoint for a service to read another user's email. Identity needs `GET /api/identity/v1/users/{userId}` (service access only), or the event that triggers the email must carry the address.",
+    "Decided by Nikhil on 20 Nov 2026 (#68): Delivery reads the verified address with Identity `GET /api/identity/v1/users/{userId}`, a service-only endpoint that needs the scope `identity:users.read`. It is designed with Account management (`MVP1-E1-05`, PR #70). The event that triggers an email never carries the address.",
     "Resend can report bounces and complaints by webhook. Version 1 records only whether Resend accepted the email; should a later bounce mark it failed?"
   ],
   "decisions": [],
