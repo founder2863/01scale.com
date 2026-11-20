@@ -330,8 +330,8 @@ export const products = [
     "group": "MVP1",
     "service": "Identity",
     "description": "An account page to view and update your details, delete your account, and create API keys for AI agents.",
-    "status": "Planned",
-    "detailed": false,
+    "status": "Designed",
+    "detailed": true,
     "epic": {
       "id": "E1",
       "title": "Accounts with AWS Cognito",
@@ -420,6 +420,14 @@ export const products = [
       },
       {
         "method": "GET",
+        "path": "/api/identity/v1/users/{userId}",
+        "access": "Service only, scope `identity:users.read`",
+        "summary": "A user's verified email, for a service that writes to them (Delivery, `MVP1-E7-03`).",
+        "detail": "→ `200 {id, email}`. Errors: `404 user_not_found`, including for a deleted user. Added on PR #70.",
+        "story": "MVP1-E1-05"
+      },
+      {
+        "method": "GET",
         "path": "/api/docflow/v1/stats",
         "access": "Signed in",
         "summary": "My DocFlow totals for the account page.",
@@ -474,7 +482,7 @@ export const products = [
       {
         "story": "MVP1-E0-06",
         "title": "Agent access: API keys and MCP",
-        "text": "`identity.api_keys` (id, owner_id, name, prefix, key_hash unique, scopes text[], last_used_at, expires_at, revoked_at, created_at). Only the SHA-256 hash of the secret is stored; `prefix` (first 8 characters) is kept for display."
+        "text": "`identity.api_keys` (id, user_id → users, name, prefix, key_hash unique, scopes text[], last_used_at, expires_at, revoked_at, created_at). Only the SHA-256 hash of the secret is stored; `prefix` (first 8 characters) is kept for display."
       }
     ]
   },
@@ -1876,6 +1884,37 @@ export const products = [
         ],
         "evals": "",
         "service": "Identity and service template"
+      },
+      {
+        "id": "MVP2-E8-11",
+        "title": "Deactivate first, delete after 30 days",
+        "size": "S",
+        "pending": "",
+        "story": "Decided by Nikhil on 20 Nov 2026 (PR #70): MVP1 deletes an account at once; MVP2 adds a 30-day window to undo a deletion. As a user, I want a deleted account to stay recoverable for 30 days, so a mistake or a change of mind does not lose my work, while my data is still erased for good afterwards.",
+        "acs": [
+          {
+            "label": "AC1",
+            "text": "\"Delete account\" deactivates the account at once: I am signed out everywhere, my sessions, API keys and agents stop working, and no one can reach my data. I see the date it will be deleted for good."
+          },
+          {
+            "label": "AC2",
+            "text": "Signing in within 30 days offers **Restore account**, which brings everything back as it was. After restoring, nothing has been deleted."
+          },
+          {
+            "label": "AC3",
+            "text": "After 30 days, a daily job deletes the account for good through the existing `identity.user.deleted` event, so every service deletes or anonymizes its own data exactly as in MVP1. \"Delete now\" skips the wait for anyone who asks."
+          },
+          {
+            "label": "AC4",
+            "text": "While deactivated, the account receives no emails, and `GET /api/identity/v1/users/{userId}` answers `404`, so no service writes to it."
+          },
+          {
+            "label": "AC5",
+            "text": "Deactivation, restore and the final deletion are each audited. The consent line and the account page say that deletion completes 30 days after the request."
+          }
+        ],
+        "evals": "",
+        "service": "Identity only: other services need no change, because a deactivated user cannot sign in and their data is reachable only by them."
       }
     ],
     "endpoints": [
@@ -2038,6 +2077,14 @@ export const products = [
         "summary": "Users migrated from Cognito vs not yet migrated.",
         "detail": "→ `200 {migrated, pending, cutoff_at}`.",
         "story": "MVP2-E8-08"
+      },
+      {
+        "method": "POST",
+        "path": "/api/identity/v1/me/restore",
+        "access": "Signed in during the 30 days",
+        "summary": "Restore my account.",
+        "detail": "→ `200 {user}`. Errors: `409 not_deactivated`.",
+        "story": "MVP2-E8-11"
       }
     ],
     "apiNotes": [
@@ -2048,6 +2095,10 @@ export const products = [
       {
         "story": "MVP2-E8-09",
         "text": "No new endpoints. The gateway checks the `Origin` header on cookie-authenticated writes; API-key requests are exempt from CSRF checks because they carry no ambient credentials."
+      },
+      {
+        "story": "MVP2-E8-11",
+        "text": "`DELETE /api/identity/v1/me` (signed in, session only) now deactivates. Body `{confirm: \"DELETE\"}` → `202 {deletes_at}`. With `{confirm: \"DELETE\", now: true}` it deletes at once, as in MVP1."
       }
     ],
     "dbNotes": [
@@ -2095,6 +2146,11 @@ export const products = [
         "story": "MVP2-E8-09",
         "title": "Auth security hardening",
         "text": "No schema change."
+      },
+      {
+        "story": "MVP2-E8-11",
+        "title": "Deactivate first, delete after 30 days",
+        "text": "`identity.users` adds `deactivated_at` and `deletes_at` (both empty unless deactivated). A partial index on `deletes_at` serves the daily job."
       }
     ]
   },
