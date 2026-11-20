@@ -109,9 +109,10 @@ As a user or an agent, I want one address for the whole platform.
 ### MVP1-E0-09 · DocFlow app shell — M
 As the owner, I want DocFlow to be a thin app that only connects platform services, so the next app can be built the same way.
 - **AC1:** `apps/docflow` holds the DocFlow pages, its own API under `/api/docflow/v1`, and one table of process records. It contains no identity, storage, extraction, review, payment or email logic.
-- **AC2:** DocFlow calls the services' APIs in a fixed order: upload → extraction → review → payment → delivery. It forwards the user's access token, so each service applies its own ownership checks.
+- **AC2:** DocFlow calls the services' APIs in a fixed order: upload → extraction → review → payment → delivery. It forwards the user's access token, or, for a step with no person present, a delegated token for them from Identity (decision on #24), so each service applies its own ownership checks. All calls go through the gateway (decision on #21).
 - **AC3:** DocFlow reacts to signed service events on its webhook (extraction finished, order paid, user deleted) and each event is processed once.
 - **AC4:** A boundary check fails the pipeline if a platform service refers to DocFlow.
+- **AC5:** DocFlow acts only on events about a document's current job or order, and every step can be retried after a failure halfway without doing it twice (review findings M4, M5).
 - **Service:** DocFlow app
 - **API design:**
   - `POST /api/docflow/v1/webhooks/{service}` (service) — Receives signed events from platform services and moves the process forward. HMAC-signed body `{event_id, type, occurred_at, data}` → `200`. Idempotent on `event_id`. Handles `extraction.job.completed|failed`, `payment.order.paid|expired|failed`, `identity.user.deleted`. Errors: `401` bad signature.

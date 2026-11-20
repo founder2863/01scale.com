@@ -105,7 +105,8 @@ Environment variables on the service's own deployment. Secrets are never committ
 |---|---|---|
 | `DOCFLOW_DATABASE_URL` | Neon connection string for the `docflow_service` role | Yes |
 | `DOCFLOW_PRICE_CENTS` | `500` | No |
-| `DOCFLOW_SERVICE_TOKEN` | How DocFlow's server authenticates to services as the app | Yes |
+| `DOCFLOW_CLIENT_SECRET` | DocFlow's client secret for Identity's `POST /token`, to get delegated tokens (Service access) | Yes |
+| `EVENT_ROUTES` | Not needed: DocFlow emits no events. It is the target of `docflow:` routes in every service. | No |
 | `EVENTS_SIGNING_KEY` | 32 random bytes, base64 | Yes |
 
 ## Open questions
