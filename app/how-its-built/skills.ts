@@ -83,6 +83,14 @@ export const skills = [
     reads: "The session transcript and the token ledger",
     makes: "The Token Costs table",
   },
+  {
+    name: "Review the architecture",
+    id: "review-architecture",
+    kind: "Across all modules",
+    job: "Reads every module's design at once and checks the seams: calls between services, events, data ownership, failure cases, security and the sequence diagrams. Writes a findings report with severity, owner and proposal.",
+    reads: "Every design, the architecture decisions and the stories",
+    makes: "An architecture review in docs/architecture/reviews",
+  },
 ].map((skill) => ({ ...skill, href: `${REPO}/.claude/skills/${skill.id}/SKILL.md` }));
 
 export const designSkillCount = 8;
