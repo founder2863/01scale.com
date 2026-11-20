@@ -8,7 +8,7 @@
 - **Through the gateway (chosen):** every caller uses `01scale.com/api/{service}/v1/…`, whether it is an app, a UI component or an agent.
 - **Direct:** apps call each service's own deployment address.
 
-**Why.** 01scale is API first, and each service's UI components are designed on their own. A service's public API is its only interface. Every caller uses the same address, rules, rate limits, request IDs and logs, and where a service runs is known only to the gateway.
+**Why.** The platform components are independent apps among themselves: any app, internal or over the internet, can call them, so the gateway must always sit in between (reconfirmed on PR #72, 20 Nov 2026). 01scale is API first, and each service's UI components are designed on their own. A service's public API is its only interface. Every caller uses the same address, rules, rate limits, request IDs and logs, and where a service runs is known only to the gateway.
 
 **Cost accepted.**
 - One extra network hop per call.
