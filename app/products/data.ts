@@ -1919,6 +1919,37 @@ export const products = [
         ],
         "evals": "",
         "service": "Identity only: other services need no change, because a deactivated user cannot sign in and their data is reachable only by them."
+      },
+      {
+        "id": "MVP2-E8-12",
+        "title": "Rotate service client secrets without downtime",
+        "size": "S",
+        "pending": "",
+        "story": "Decided by Nikhil on 20 Nov 2026 (PR #73): parked for MVP2. In MVP1 a client secret changes only with a database migration and a deployment. As the owner, I want to change a service's or app's client secret without any moment where its calls fail, so a leaked or old secret can be replaced at once and routinely.",
+        "acs": [
+          {
+            "label": "AC1",
+            "text": "Each client can hold two active secrets at the same time. Identity accepts either while both are active."
+          },
+          {
+            "label": "AC2",
+            "text": "Rotating is three steps with no downtime: add a new secret; set it in the client's environment and redeploy; retire the old secret. Retiring it takes effect on the next sign-in; tokens already issued last at most 5 minutes."
+          },
+          {
+            "label": "AC3",
+            "text": "A secret can also be retired at once in an emergency, for example after a leak, even if the client then fails until it has the new one."
+          },
+          {
+            "label": "AC4",
+            "text": "The admin page shows, per client, when each secret was created and last used, so an unused old secret is easy to spot. Each secret is shown once at creation and stored only as a hash."
+          },
+          {
+            "label": "AC5",
+            "text": "Adding and retiring secrets are admin and session-only actions, never available to API keys or agents, and are audited."
+          }
+        ],
+        "evals": "",
+        "service": "Identity"
       }
     ],
     "endpoints": [
@@ -2089,6 +2120,30 @@ export const products = [
         "summary": "Restore my account.",
         "detail": "→ `200 {user}`. Errors: `409 not_deactivated`.",
         "story": "MVP2-E8-11"
+      },
+      {
+        "method": "POST",
+        "path": "/api/identity/v1/admin/service-clients/{clientId}/secrets",
+        "access": "Admin, session only",
+        "summary": "Add a secret.",
+        "detail": "→ `201 {secret_id, secret}`, the secret shown once. Errors: `409 too_many_secrets` when two are already active.",
+        "story": "MVP2-E8-12"
+      },
+      {
+        "method": "DELETE",
+        "path": "/api/identity/v1/admin/service-clients/{clientId}/secrets/{secretId}",
+        "access": "Admin, session only",
+        "summary": "Retire a secret.",
+        "detail": "→ `204`. Errors: `409 last_secret` unless `?emergency=true`.",
+        "story": "MVP2-E8-12"
+      },
+      {
+        "method": "GET",
+        "path": "/api/identity/v1/admin/service-clients",
+        "access": "Admin",
+        "summary": "Clients with their secrets' created and last-used dates.",
+        "detail": "Never returns a secret.",
+        "story": "MVP2-E8-12"
       }
     ],
     "apiNotes": [
@@ -2155,6 +2210,11 @@ export const products = [
         "story": "MVP2-E8-11",
         "title": "Deactivate first, delete after 30 days",
         "text": "`identity.users` adds `deactivated_at` and `deletes_at` (both empty unless deactivated). A partial index on `deletes_at` serves the daily job."
+      },
+      {
+        "story": "MVP2-E8-12",
+        "title": "Rotate service client secrets without downtime",
+        "text": "`identity.service_client_secrets` (id, client_id → service_clients, secret_hash unique, created_at, last_used_at, retired_at), replacing `service_clients.secret_hash`. A partial unique rule allows at most two active secrets per client."
       }
     ]
   },

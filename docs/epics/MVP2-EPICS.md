@@ -110,6 +110,21 @@ As a user, I want a deleted account to stay recoverable for 30 days, so a mistak
   - `POST /api/identity/v1/me/restore` (signed in during the 30 days) — Restore my account. → `200 {user}`. Errors: `409 not_deactivated`.
 - **Database design:** `identity.users` adds `deactivated_at` and `deletes_at` (both empty unless deactivated). A partial index on `deletes_at` serves the daily job.
 
+### MVP2-E8-12 · Rotate service client secrets without downtime — S
+Decided by Nikhil on 20 Nov 2026 (PR #73): parked for MVP2. In MVP1 a client secret changes only with a database migration and a deployment.
+As the owner, I want to change a service's or app's client secret without any moment where its calls fail, so a leaked or old secret can be replaced at once and routinely.
+- **AC1:** Each client can hold two active secrets at the same time. Identity accepts either while both are active.
+- **AC2:** Rotating is three steps with no downtime: add a new secret; set it in the client's environment and redeploy; retire the old secret. Retiring it takes effect on the next sign-in; tokens already issued last at most 5 minutes.
+- **AC3:** A secret can also be retired at once in an emergency, for example after a leak, even if the client then fails until it has the new one.
+- **AC4:** The admin page shows, per client, when each secret was created and last used, so an unused old secret is easy to spot. Each secret is shown once at creation and stored only as a hash.
+- **AC5:** Adding and retiring secrets are admin and session-only actions, never available to API keys or agents, and are audited.
+- **Service:** Identity
+- **API design:**
+  - `POST /api/identity/v1/admin/service-clients/{clientId}/secrets` (admin, session only) — Add a secret. → `201 {secret_id, secret}`, the secret shown once. Errors: `409 too_many_secrets` when two are already active.
+  - `DELETE /api/identity/v1/admin/service-clients/{clientId}/secrets/{secretId}` (admin, session only) — Retire a secret. → `204`. Errors: `409 last_secret` unless `?emergency=true`.
+  - `GET /api/identity/v1/admin/service-clients` (admin) — Clients with their secrets' created and last-used dates. Never returns a secret.
+- **Database design:** `identity.service_client_secrets` (id, client_id → service_clients, secret_hash unique, created_at, last_used_at, retired_at), replacing `service_clients.secret_hash`. A partial unique rule allows at most two active secrets per client.
+
 ### MVP2-E8-09 · Auth security hardening — M
 - **AC1:** CSRF protection on all state-changing routes (SameSite plus an origin check).
 - **AC2:** Every auth event is audited: requested, succeeded, failed, locked, passkey added/removed, session revoked.

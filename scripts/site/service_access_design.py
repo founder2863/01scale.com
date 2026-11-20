@@ -174,7 +174,7 @@ MODULE = {
         {"name": "<CLIENT>_CLIENT_SECRET", "value": "`cs_01s_` and 43 base64url characters, one per service or app", "secret": "Yes"},
     ],
     "openQuestions": [
-        "Secrets change only with a migration and a deployment in MVP1. A second, overlapping secret per client would allow rotation without downtime.",
+        "Decided by Nikhil on 20 Nov 2026 (#73): in MVP1 a client secret changes only with a migration and a deployment. Rotation without downtime (two overlapping secrets per client) is MVP2 story `MVP2-E8-12`.",
         "Starting scopes for each client are in the sample rows; each service's spec still has to name the scope of each endpoint (review finding M3).",
     ],
     "errorSample": problem("delegation_not_allowed", "Delegation not allowed", 403, "This client may not act for users."),
