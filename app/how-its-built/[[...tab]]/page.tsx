@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { costs } from "../costs";
 import { designSkillCount, rulesHref, skillOrder, skills } from "../skills";
 import { builtTabs, type BuiltTab } from "../tabs";
+import YieldExplainer from "../yield-explainer";
 
 const REPO = "https://github.com/founder2863/01scale.com/blob/main";
 
@@ -202,6 +203,8 @@ export default async function HowItsBuilt({ params }: { params: Promise<Params> 
               <span className="stat-label">Token yield across stories</span>
             </div>
           </div>
+
+          <YieldExplainer />
 
           <h3 className="section-subtitle">Per story</h3>
           <table className="cost-table">

@@ -490,6 +490,22 @@ As Priya, I want to drag and drop or pick a file on my phone and see progress.
   - The page also calls DocFlow `POST …/checkout` (E6-01).
 - **Database design:** No schema change.
 
+### MVP1-E6-04 · Refunds — S
+**Status: pending.** Decided on PR #67: refunds are not in the first version of Payment; this story adds them.
+As the owner, I want to refund a paid order in full, so a demo user who was charged by mistake (in test mode) can be put right, and the platform shows how a refund flows through every service.
+- **AC1:** An admin can refund a paid order in full from the admin page, with a reason. A person always does this: it is session only and never available to API keys or agents.
+- **AC2:** Payment creates the refund in Stripe with the order's ID as the idempotency key, so a repeated request never refunds twice. The order becomes `refunded` when Stripe's webhook confirms it (`charge.refunded`), not when the request is sent.
+- **AC3:** Payment announces `payment.order.refunded` to the app that created the order (routed by reference, decision on #13). In DocFlow, the document's downloads lock again and its status shows "Refunded"; the reviewed data stays.
+- **AC4:** The person who paid is emailed through Delivery that the refund was made, with the amount; Stripe's own refund receipt still applies.
+- **AC5:** A refund is audited (`order.refunded`) with the admin, the reason and the amount. Partial refunds are not in this version.
+- **AC6:** Refunding an order that is not paid answers `409 not_paid`; refunding it again answers `409 already_refunded`.
+- **Service:** Payment; DocFlow reacts to the event; Delivery sends the email
+- **API design:**
+  - `POST /api/payment/v1/orders/{orderId}/refund` (admin, session only) — Refund a paid order in full. Body `{reason}` + `Idempotency-Key` → `202 {order}` with status `refund_pending`. Errors: `409 not_paid`, `409 already_refunded`, `503 stripe_unavailable`.
+  - The Stripe webhook (`MVP1-E6-02`) also handles `charge.refunded`.
+  - DocFlow's webhook handles `payment.order.refunded`.
+- **Database design:** `payment.orders.status` adds `refund_pending` and `refunded`; the order adds `refund_reason`, `stripe_refund_id` (unique) and `refunded_at`. `docflow.documents.status` adds `refunded`.
+
 ---
 
 ## E7 · Success, download and email (MVP1 "g")
@@ -519,6 +535,7 @@ As Priya, I want to drag and drop or pick a file on my phone and see progress.
   - `POST /api/delivery/v1/messages` (service) — Send a templated email to a user. Called by an app's server. Body `{user_id, template, data, reference}` + `Idempotency-Key` → `202 {message}`. Retries 3 times with backoff. Emits `delivery.message.failed` on permanent failure.
   - `GET /api/delivery/v1/messages` (signed in) — My messages and their delivery status. Query `reference`, `cursor` → `200 {data: [{id, channel, template, status: queued|sent|failed, attempts, sent_at}], next_cursor}`.
   - DocFlow calls `POST /messages` when it receives `payment.order.paid` on its webhook (E0-09), so the email is triggered by the server, not the browser.
+  - Delivery reads the recipient's verified address at send time with Identity `GET /api/identity/v1/users/{userId}` (service only, scope `identity:users.read`; designed with `MVP1-E1-05`). Decided by Nikhil on PR #68; the address is never passed in a request or an event.
 - **Database design:** `delivery.messages` (id, owner_id, app, reference, channel `email`, template, status `queued|sent|failed`, attempts, provider_message_id, last_error, sent_at, created_at). The recipient address is read from Identity at send time, not stored.
 
 ---
