@@ -184,7 +184,7 @@ A person checks the fields the system is unsure about.
 | `GET` | `/api/review/v1/admin/eval-candidates` | Admin | Human corrections waiting for approval as eval cases. | `MVP1-E4-04` |
 | `GET` | `/api/review/v1/admin/accuracy` | Admin | How often people correct each field: counts and rates only, never values (decision on #41). | `MVP1-E4-04` |
 | `GET` | `/api/review/v1/admin/quality` | Admin | Judge vs human: agreement, confusion matrix, weakest fields (30 days). | `MVP2-E10-03` |
-| `POST` | `/api/review/v1/admin/quality/export` | Admin | Export judge/human disagreements as eval candidates. | `MVP2-E10-03` |
+| `POST` | `/api/review/v1/admin/quality/candidates` | Admin | Add judge/human disagreements to eval candidates inside Review's database; a count only, nothing leaves the service (#41). | `MVP2-E10-03` |
 | `GET` | `/api/review/v1/tasks/{taskId}/chat/messages` | Signed in | The correction chat history for a task. | `MVP2-E11-03` |
 | `POST` | `/api/review/v1/tasks/{taskId}/chat/messages` | Signed in | Ask the correction agent to fix data in plain language. | `MVP2-E11-03` |
 | `POST` | `/api/review/v1/tasks/{taskId}/proposals/{proposalId}/apply` | Signed in | Apply a proposed change. | `MVP2-E11-03` |

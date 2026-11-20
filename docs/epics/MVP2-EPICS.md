@@ -184,12 +184,12 @@ As a user, I want to see the original invoice beside its results months later, s
 - **Database design:** `extraction.fields` adds confidence_version; `confidence` now holds the combined score. `review.fields` adds judge_verdict, judge_reason (copied in when the task is created).
 
 ### MVP2-E10-03 · Judge vs human dashboard — S
-- **AC1:** `/admin/quality` shows, for the last 30 days: judge agreement with human decisions, the confusion matrix and the fields the judge most often gets wrong.
-- **AC2:** Cases where the judge and the human disagree can be exported as eval candidates.
+- **AC1:** `/admin/quality` shows, for the last 30 days, **numbers only**: judge agreement with human decisions, the confusion matrix and the fields the judge most often gets wrong. No field value, document or user appears (Nikhil's rule on #41; small-group rules in `MVP2-E10-04`).
+- **AC2:** The admin can add the cases where the judge and the human disagree to Review's eval candidates, **inside Review's database**, for the admin to approve as in `MVP1-E4-04`. Nothing is exported to files or to the repository, and the candidates are deleted with their owner's account (decisions on #41).
 - **Service:** Human Review
 - **API design:**
   - `GET /api/review/v1/admin/quality` (admin) — Judge vs human: agreement, confusion matrix, weakest fields (30 days). Query `days` → `200 {agreement_rate, confusion_matrix, worst_fields[]}`.
-  - `POST /api/review/v1/admin/quality/export` (admin) — Export judge/human disagreements as eval candidates. → `201 {created}` rows in `review.eval_candidates`.
+  - `POST /api/review/v1/admin/quality/candidates` (admin, session only) — Add judge/human disagreements to `review.eval_candidates`, inside Review's database. → `201 {created}`: a count only, no values. Nothing leaves the service.
   - Review can compare judge and human because each review field stores the judge verdict it was created with.
 - **Database design:** No new tables; aggregates `review.fields.judge_verdict` against `review.field_changes`.
 

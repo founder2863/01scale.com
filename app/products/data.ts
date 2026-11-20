@@ -2355,11 +2355,11 @@ export const products = [
         "acs": [
           {
             "label": "AC1",
-            "text": "`/admin/quality` shows, for the last 30 days: judge agreement with human decisions, the confusion matrix and the fields the judge most often gets wrong."
+            "text": "`/admin/quality` shows, for the last 30 days, **numbers only**: judge agreement with human decisions, the confusion matrix and the fields the judge most often gets wrong. No field value, document or user appears (Nikhil's rule on #41; small-group rules in `MVP2-E10-04`)."
           },
           {
             "label": "AC2",
-            "text": "Cases where the judge and the human disagree can be exported as eval candidates."
+            "text": "The admin can add the cases where the judge and the human disagree to Review's eval candidates, **inside Review's database**, for the admin to approve as in `MVP1-E4-04`. Nothing is exported to files or to the repository, and the candidates are deleted with their owner's account (decisions on #41)."
           }
         ],
         "evals": "",
@@ -2404,10 +2404,10 @@ export const products = [
       },
       {
         "method": "POST",
-        "path": "/api/review/v1/admin/quality/export",
-        "access": "Admin",
-        "summary": "Export judge/human disagreements as eval candidates.",
-        "detail": "→ `201 {created}` rows in `review.eval_candidates`.",
+        "path": "/api/review/v1/admin/quality/candidates",
+        "access": "Admin, session only",
+        "summary": "Add judge/human disagreements to `review.eval_candidates`, inside Review's database.",
+        "detail": "→ `201 {created}`: a count only, no values. Nothing leaves the service.",
         "story": "MVP2-E10-03"
       }
     ],
