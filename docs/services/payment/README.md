@@ -101,13 +101,13 @@ import { OrderStatus } from "@01scale/ui-payment";
 
 Base address: `https://01scale.com/api/payment/v1`
 
-| Method | Path | Access | Purpose |
-|---|---|---|---|
-| `POST` | `/orders` | Service | Create an order and a checkout page |
-| `POST` | `/webhooks/stripe` | Service | Receive Stripe's events |
-| `GET` | `/orders/{orderId}` | Signed in | Get one order |
-| `GET` | `/orders` | Signed in | List my orders |
-| `POST` | `/events` | Service | Receive platform events |
+| Method | Path | Access | Scope | Purpose |
+|---|---|---|---|---|
+| `POST` | `/orders` | Service | `payment:write` | Create an order and a checkout page |
+| `POST` | `/webhooks/stripe` | Service | None: HMAC signature | Receive Stripe's events |
+| `GET` | `/orders/{orderId}` | Signed in | `payment:read` | Get one order |
+| `GET` | `/orders` | Signed in | `payment:read` | List my orders |
+| `POST` | `/events` | Service | None: HMAC signature | Receive platform events |
 
 ## Configuration
 

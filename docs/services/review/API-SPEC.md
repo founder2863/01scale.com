@@ -25,7 +25,7 @@ Every error uses `application/problem+json` with a stable `code`. Branch on `cod
 
 **Create a review task.** Takes a set of fields that need a person's check and keeps its own copy of them. Review never reads another service's data: whatever it needs is sent here.
 
-Access: **Signed in** · Story: `MVP1-E4-01`
+Access: **Signed in** · Scope: `review:write` · Story: `MVP1-E4-01`
 
 **Inputs**
 
@@ -122,7 +122,7 @@ Content-Type: application/json
 
 **Get the review queue.** The task and its fields: flagged fields first, lowest confidence first. Unflagged fields only when asked.
 
-Access: **Signed in** · Story: `MVP1-E4-01`
+Access: **Signed in** · Scope: `review:read` · Story: `MVP1-E4-01`
 
 **Inputs**
 
@@ -213,7 +213,7 @@ Authorization: Bearer <access token>
 
 **Accept, edit or mark a field as not on the document.** Records a person's decision on one field. Any field can be changed again until the task is completed.
 
-Access: **Signed in** · Story: `MVP1-E4-02`
+Access: **Signed in** · Scope: `review:write` · Story: `MVP1-E4-02`
 
 **Inputs**
 
@@ -292,7 +292,7 @@ Content-Type: application/json
 
 **Complete the review.** Locks the values and returns them. Allowed once every flagged field is decided. Re-checking the corrected values against the document's rules is the app's step before this, using the LLM Extraction service.
 
-Access: **Signed in** · Story: `MVP1-E4-03`
+Access: **Signed in** · Scope: `review:write` · Story: `MVP1-E4-03`
 
 **Inputs**
 
@@ -374,7 +374,7 @@ Content-Type: application/json
 
 **Corrections that could become eval cases.** Every value a person corrected, with what the model said, waiting for the owner to approve it as ground truth.
 
-Access: **Admin** · Story: `MVP1-E4-04`
+Access: **Admin** · Scope: `is_admin` · Story: `MVP1-E4-04`
 
 **Inputs**
 
@@ -432,7 +432,7 @@ Authorization: Bearer <access token>
 
 **Approve or reject a candidate.** The manual approval the story requires before any correction becomes ground truth.
 
-Access: **Admin** · Story: `MVP1-E4-04`
+Access: **Admin** · Scope: `is_admin` · Story: `MVP1-E4-04`
 
 **Inputs**
 
@@ -487,7 +487,7 @@ Content-Type: application/json
 
 **Export approved corrections as ground truth.** Produces ground-truth files for `evals/datasets/`, from approved candidates only.
 
-Access: **Admin** · Story: `MVP1-E4-04`
+Access: **Admin** · Scope: `is_admin` · Story: `MVP1-E4-04`
 
 **Inputs**
 
@@ -546,7 +546,7 @@ Content-Type: application/json
 
 **Receive platform events.** Where other services' signed events arrive. In version 1 Review acts on one: a user's account was deleted.
 
-Access: **Service** · Story: `MVP1-E1-05`
+Access: **Service** · Scope: None: HMAC signature · Story: `MVP1-E1-05`
 
 **Inputs**
 

@@ -239,7 +239,8 @@ export const payment = {
         }
       ],
       "request": "POST /api/payment/v1/orders HTTP/1.1\nAuthorization: Bearer <DocFlow service token>\nContent-Type: application/json\n\n{\n  \"user_id\": \"0193a5b2-7c1e-7a3f-9b2d-4e6f8a1c2d3e\",\n  \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n  \"description\": \"Invoice extraction: acme-invoice-0042.pdf\",\n  \"amount\": 500,\n  \"currency\": \"USD\",\n  \"success_url\": \"https://01scale.com/documents/0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c/success?order={ORDER_ID}\",\n  \"cancel_url\": \"https://01scale.com/documents/0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c/pay?cancelled=1\"\n}",
-      "response": "{\n  \"order\": {\n    \"id\": \"0193b120-5a6b-7c7d-8e8f-9a0b1c2d3e4f\",\n    \"app\": \"docflow\",\n    \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n    \"description\": \"Invoice extraction: acme-invoice-0042.pdf\",\n    \"amount\": 500,\n    \"currency\": \"USD\",\n    \"status\": \"pending\",\n    \"checkout_url\": \"https://checkout.stripe.com/c/pay/cs_test_a1B2c3D4e5F6g7H8i9J0exampleSession#fidkdWxOYHwnPyd1blpxYHZxWjA0example\",\n    \"checkout_expires_at\": \"2026-11-17T10:16:10Z\",\n    \"paid_at\": null,\n    \"created_at\": \"2026-11-17T09:16:10Z\"\n  },\n  \"checkout_url\": \"https://checkout.stripe.com/c/pay/cs_test_a1B2c3D4e5F6g7H8i9J0exampleSession#fidkdWxOYHwnPyd1blpxYHZxWjA0example\"\n}"
+      "response": "{\n  \"order\": {\n    \"id\": \"0193b120-5a6b-7c7d-8e8f-9a0b1c2d3e4f\",\n    \"app\": \"docflow\",\n    \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n    \"description\": \"Invoice extraction: acme-invoice-0042.pdf\",\n    \"amount\": 500,\n    \"currency\": \"USD\",\n    \"status\": \"pending\",\n    \"checkout_url\": \"https://checkout.stripe.com/c/pay/cs_test_a1B2c3D4e5F6g7H8i9J0exampleSession#fidkdWxOYHwnPyd1blpxYHZxWjA0example\",\n    \"checkout_expires_at\": \"2026-11-17T10:16:10Z\",\n    \"paid_at\": null,\n    \"created_at\": \"2026-11-17T09:16:10Z\"\n  },\n  \"checkout_url\": \"https://checkout.stripe.com/c/pay/cs_test_a1B2c3D4e5F6g7H8i9J0exampleSession#fidkdWxOYHwnPyd1blpxYHZxWjA0example\"\n}",
+      "scope": "`payment:write`"
     },
     {
       "id": "stripe-webhook",
@@ -290,7 +291,8 @@ export const payment = {
         }
       ],
       "request": "POST /api/payment/v1/webhooks/stripe HTTP/1.1\nStripe-Signature: t=1794826622,v1=5257a869e7ec...\nContent-Type: application/json\n\n{\n  \"id\": \"evt_test_1Q2w3E4r5T6y\",\n  \"type\": \"checkout.session.completed\",\n  \"data\": {\n    \"object\": {\n      \"id\": \"cs_test_a1B2c3D4e5F6g7H8i9J0exampleSession\",\n      \"client_reference_id\": \"0193b120-5a6b-7c7d-8e8f-9a0b1c2d3e4f\",\n      \"payment_status\": \"paid\",\n      \"metadata\": {\n        \"order_id\": \"0193b120-5a6b-7c7d-8e8f-9a0b1c2d3e4f\"\n      }\n    }\n  }\n}",
-      "response": "HTTP/1.1 200 OK"
+      "response": "HTTP/1.1 200 OK",
+      "scope": "None: HMAC signature"
     },
     {
       "id": "get-order",
@@ -333,7 +335,8 @@ export const payment = {
         }
       ],
       "request": "GET /api/payment/v1/orders/0193b120-5a6b-7c7d-8e8f-9a0b1c2d3e4f HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>",
-      "response": "{\n  \"order\": {\n    \"id\": \"0193b120-5a6b-7c7d-8e8f-9a0b1c2d3e4f\",\n    \"app\": \"docflow\",\n    \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n    \"description\": \"Invoice extraction: acme-invoice-0042.pdf\",\n    \"amount\": 500,\n    \"currency\": \"USD\",\n    \"status\": \"paid\",\n    \"checkout_url\": null,\n    \"checkout_expires_at\": \"2026-11-17T10:16:10Z\",\n    \"paid_at\": \"2026-11-17T09:17:02Z\",\n    \"created_at\": \"2026-11-17T09:16:10Z\"\n  }\n}"
+      "response": "{\n  \"order\": {\n    \"id\": \"0193b120-5a6b-7c7d-8e8f-9a0b1c2d3e4f\",\n    \"app\": \"docflow\",\n    \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n    \"description\": \"Invoice extraction: acme-invoice-0042.pdf\",\n    \"amount\": 500,\n    \"currency\": \"USD\",\n    \"status\": \"paid\",\n    \"checkout_url\": null,\n    \"checkout_expires_at\": \"2026-11-17T10:16:10Z\",\n    \"paid_at\": \"2026-11-17T09:17:02Z\",\n    \"created_at\": \"2026-11-17T09:16:10Z\"\n  }\n}",
+      "scope": "`payment:read`"
     },
     {
       "id": "list-orders",
@@ -392,7 +395,8 @@ export const payment = {
         }
       ],
       "request": "GET /api/payment/v1/orders?reference=docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>",
-      "response": "{\n  \"data\": [\n    {\n      \"id\": \"0193b120-5a6b-7c7d-8e8f-9a0b1c2d3e4f\",\n      \"app\": \"docflow\",\n      \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n      \"description\": \"Invoice extraction: acme-invoice-0042.pdf\",\n      \"amount\": 500,\n      \"currency\": \"USD\",\n      \"status\": \"paid\",\n      \"checkout_url\": null,\n      \"checkout_expires_at\": \"2026-11-17T10:16:10Z\",\n      \"paid_at\": \"2026-11-17T09:17:02Z\",\n      \"created_at\": \"2026-11-17T09:16:10Z\"\n    }\n  ],\n  \"next_cursor\": null\n}"
+      "response": "{\n  \"data\": [\n    {\n      \"id\": \"0193b120-5a6b-7c7d-8e8f-9a0b1c2d3e4f\",\n      \"app\": \"docflow\",\n      \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n      \"description\": \"Invoice extraction: acme-invoice-0042.pdf\",\n      \"amount\": 500,\n      \"currency\": \"USD\",\n      \"status\": \"paid\",\n      \"checkout_url\": null,\n      \"checkout_expires_at\": \"2026-11-17T10:16:10Z\",\n      \"paid_at\": \"2026-11-17T09:17:02Z\",\n      \"created_at\": \"2026-11-17T09:16:10Z\"\n    }\n  ],\n  \"next_cursor\": null\n}",
+      "scope": "`payment:read`"
     },
     {
       "id": "events",
@@ -438,7 +442,8 @@ export const payment = {
         }
       ],
       "request": "POST /api/payment/v1/events HTTP/1.1\nX-01scale-Signature: sha256=8c1f...\nContent-Type: application/json\n\n{\n  \"event_id\": \"0193b2aa-6f01-7c2d-9e3f-4a5b6c7d8e9f\",\n  \"type\": \"identity.user.deleted\",\n  \"occurred_at\": \"2026-11-17T10:00:00Z\",\n  \"data\": {\n    \"user_id\": \"0193a5b2-7c1e-7a3f-9b2d-4e6f8a1c2d3e\"\n  }\n}",
-      "response": "HTTP/1.1 200 OK"
+      "response": "HTTP/1.1 200 OK",
+      "scope": "None: HMAC signature"
     }
   ],
   "noEndpoint": [

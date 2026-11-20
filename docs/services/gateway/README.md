@@ -22,8 +22,8 @@ It also turns a session cookie or an API key into a short-lived access token, so
 
 **In scope**
 
-- Routing by path
-- Cookie and API key to access token
+- Routing by path, for browsers, agents, apps and services alike
+- Cookie and API key to access token; service and delegated tokens passed through
 - Combined OpenAPI and MCP
 - Rate limits, Origin check, request IDs
 - Platform health
@@ -82,11 +82,11 @@ With an API key from the account page.
 
 Base address: `https://01scale.com/api`
 
-| Method | Path | Access | Purpose |
-|---|---|---|---|
-| `GET` | `/health` | Public | Platform health |
-| `GET` | `/openapi.json` | Public | The whole platform's contract |
-| `POST` | `/mcp` | Signed in | The whole platform's MCP server |
+| Method | Path | Access | Scope | Purpose |
+|---|---|---|---|---|
+| `GET` | `/health` | Public | None | Platform health |
+| `GET` | `/openapi.json` | Public | None | The whole platform's contract |
+| `POST` | `/mcp` | Signed in | Per tool: each tool needs the scope of the endpoint it mirrors | The whole platform's MCP server |
 
 ## Configuration
 

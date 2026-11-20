@@ -118,14 +118,14 @@ import { ExtractionProgress } from "@01scale/ui-extraction";
 
 Base address: `https://01scale.com/api/extraction/v1`
 
-| Method | Path | Access | Purpose |
-|---|---|---|---|
-| `POST` | `/jobs` | Signed in | Start extracting a file |
-| `GET` | `/jobs/{jobId}` | Signed in | Check a job |
-| `GET` | `/jobs/{jobId}/fields` | Signed in | Get the extracted fields |
-| `POST` | `/validations` | Signed in | Check values against a schema's rules |
-| `GET` | `/admin/jobs` | Admin | Recent jobs with cost and timing |
-| `POST` | `/events` | Service | Receive platform events |
+| Method | Path | Access | Scope | Purpose |
+|---|---|---|---|---|
+| `POST` | `/jobs` | Signed in | `extraction:write` | Start extracting a file |
+| `GET` | `/jobs/{jobId}` | Signed in | `extraction:read` | Check a job |
+| `GET` | `/jobs/{jobId}/fields` | Signed in | `extraction:read` | Get the extracted fields |
+| `POST` | `/validations` | Signed in | `extraction:write` | Check values against a schema's rules |
+| `GET` | `/admin/jobs` | Admin | `is_admin` | Recent jobs with cost and timing |
+| `POST` | `/events` | Service | None: HMAC signature | Receive platform events |
 
 ## Configuration
 

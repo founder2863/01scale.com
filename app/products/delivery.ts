@@ -209,7 +209,8 @@ export const delivery = {
         }
       ],
       "request": "POST /api/delivery/v1/messages HTTP/1.1\nAuthorization: Bearer <DocFlow service token>\nIdempotency-Key: evt_order_paid_0193b120\nContent-Type: application/json\n\n{\n  \"user_id\": \"0193a5b2-7c1e-7a3f-9b2d-4e6f8a1c2d3e\",\n  \"template\": \"order_paid\",\n  \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n  \"data\": {\n    \"document_name\": \"acme-invoice-0042.pdf\",\n    \"amount\": 500,\n    \"currency\": \"USD\",\n    \"link_path\": \"/documents/0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c/success\"\n  }\n}",
-      "response": "HTTP/1.1 202 Accepted\nContent-Type: application/json\n\n{\n  \"message\": {\n    \"id\": \"0193b140-2b3c-7d4e-8f50-6172839a0b1c\",\n    \"app\": \"docflow\",\n    \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n    \"channel\": \"email\",\n    \"template\": \"order_paid\",\n    \"status\": \"queued\",\n    \"attempts\": 0,\n    \"last_error\": null,\n    \"sent_at\": null,\n    \"created_at\": \"2026-11-17T09:17:04Z\"\n  }\n}"
+      "response": "HTTP/1.1 202 Accepted\nContent-Type: application/json\n\n{\n  \"message\": {\n    \"id\": \"0193b140-2b3c-7d4e-8f50-6172839a0b1c\",\n    \"app\": \"docflow\",\n    \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n    \"channel\": \"email\",\n    \"template\": \"order_paid\",\n    \"status\": \"queued\",\n    \"attempts\": 0,\n    \"last_error\": null,\n    \"sent_at\": null,\n    \"created_at\": \"2026-11-17T09:17:04Z\"\n  }\n}",
+      "scope": "`delivery:write`"
     },
     {
       "id": "list-messages",
@@ -260,7 +261,8 @@ export const delivery = {
         }
       ],
       "request": "GET /api/delivery/v1/messages?reference=docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>",
-      "response": "{\n  \"data\": [\n    {\n      \"id\": \"0193b140-2b3c-7d4e-8f50-6172839a0b1c\",\n      \"app\": \"docflow\",\n      \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n      \"channel\": \"email\",\n      \"template\": \"order_paid\",\n      \"status\": \"sent\",\n      \"attempts\": 1,\n      \"last_error\": null,\n      \"sent_at\": \"2026-11-17T09:17:09Z\",\n      \"created_at\": \"2026-11-17T09:17:04Z\"\n    }\n  ],\n  \"next_cursor\": null\n}"
+      "response": "{\n  \"data\": [\n    {\n      \"id\": \"0193b140-2b3c-7d4e-8f50-6172839a0b1c\",\n      \"app\": \"docflow\",\n      \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n      \"channel\": \"email\",\n      \"template\": \"order_paid\",\n      \"status\": \"sent\",\n      \"attempts\": 1,\n      \"last_error\": null,\n      \"sent_at\": \"2026-11-17T09:17:09Z\",\n      \"created_at\": \"2026-11-17T09:17:04Z\"\n    }\n  ],\n  \"next_cursor\": null\n}",
+      "scope": "`delivery:read`"
     },
     {
       "id": "events",
@@ -306,7 +308,8 @@ export const delivery = {
         }
       ],
       "request": "POST /api/delivery/v1/events HTTP/1.1\nX-01scale-Signature: sha256=8c1f...\nContent-Type: application/json\n\n{\n  \"event_id\": \"0193b2aa-6f01-7c2d-9e3f-4a5b6c7d8e9f\",\n  \"type\": \"identity.user.deleted\",\n  \"occurred_at\": \"2026-11-17T10:00:00Z\",\n  \"data\": {\n    \"user_id\": \"0193a5b2-7c1e-7a3f-9b2d-4e6f8a1c2d3e\"\n  }\n}",
-      "response": "HTTP/1.1 200 OK"
+      "response": "HTTP/1.1 200 OK",
+      "scope": "None: HMAC signature"
     }
   ],
   "noEndpoint": [

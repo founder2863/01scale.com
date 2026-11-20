@@ -35,9 +35,12 @@ ENDPOINTS = [
              json.dumps({"jsonrpc": "2.0", "id": 1, "result": {"tools": [{"name": "upload.createFile"}, {"name": "docflow.listDocuments"}, {"name": "identity.getMe"}]}}, indent=2)),
 ]
 
+ENDPOINTS[2]["scope"] = "Per tool: each tool needs the scope of the endpoint it mirrors"
+
 NO_ENDPOINT = [
-    {"topic": "Routing (AC1)", "how": "`/api/{service}/…` is forwarded to that service's Vercel deployment, set by `GATEWAY_ROUTES`. Services accept requests only with the gateway's shared header (`X-01scale-Gateway`), so they cannot be reached at their own addresses from a browser."},
-    {"topic": "Who is calling (AC2, E1-06)", "how": "A session cookie or `Authorization: Bearer sk_01s_…` is exchanged at Identity's `POST /token` for a 5-minute access token, cached until 30 seconds before expiry, and forwarded as `Authorization: Bearer <access token>`. Cookies and API keys are removed before forwarding. Without either, public endpoints pass through and the rest answer `401`."},
+    {"topic": "Routing (AC1)", "how": "`/api/{service}/…` is forwarded to that service's Vercel deployment, set by `GATEWAY_ROUTES`. Services accept requests only with the gateway's shared header (`X-01scale-Gateway`), so they cannot be reached at their own addresses."},
+    {"topic": "Calls between services (decision on #21)", "how": "Services and apps call each other through the gateway, at the same public address as every other client, because each service's API is its product. One extra hop per call is the accepted cost; the gateway stays thin."},
+    {"topic": "Who is calling (AC2, E1-06)", "how": "A session cookie or `Authorization: Bearer sk_01s_…` is exchanged at Identity's `POST /token` for a 5-minute access token, cached until 30 seconds before expiry, and forwarded as `Authorization: Bearer <access token>`. Cookies and API keys are removed before forwarding. A request that already carries an access token (`Bearer eyJ…`: a service or delegated token from Identity) is checked for signature and expiry and passed on unchanged. Without any of these, public endpoints pass through and the rest answer `401`."},
     {"topic": "Pages (E1-06 AC1)", "how": "Middleware sends signed-out visitors of `/documents`, `/review`, `/pay`, `/success` and `/account` to `GET /api/identity/v1/auth/login?return_to=…`."},
     {"topic": "Origin check (AC4)", "how": "Writes made with a cookie need `Origin: https://01scale.com`; otherwise `403 origin_not_allowed`. Calls with an API key are not checked, as they come from no browser."},
     {"topic": "Rate limits (AC4)", "how": "Per user (Nikhil's decision on #64, because these are demo services with no batch or programmatic use yet): 10 requests a minute that change something (POST, PUT, PATCH, DELETE) and 60 reads a minute, so pages and progress checks keep working; with an API key, 10 requests a minute in total. Per IP: 300 a minute, so one address cannot exhaust the platform. Tighter limits on sign-in endpoints (set in Identity's spec). Over a limit: `429 rate_limited` with `Retry-After`. In MVP1 these are Vercel firewall rules; higher limits come with paid plans (`MVP2-E13-06`)."},
@@ -50,6 +53,10 @@ JOURNEYS = [
         ("Uses a page; the page calls `/api/upload/v1/files`.", "The gateway checks Origin and the rate limit, exchanges the cookie for an access token, and forwards."),
         ("Sees the result.", "The service verified the token itself and answered; the gateway added `X-Request-Id`."),
     ], "Services never saw the cookie."),
+    journey("A service calls another service", "DocFlow, acting for a user after an extraction", "Needs to create a Review task.", ["MVP1-E0-08", "MVP1-E1-03"], [
+        ("Gets a delegated token from Identity, through the gateway.", "Identity signs a 5-minute token for the user with `act: service:docflow`."),
+        ("Calls `https://01scale.com/api/review/v1/tasks` with it.", "The gateway checks the token's signature and expiry, adds `X-Request-Id`, and forwards it unchanged."),
+    ], "The same address, rules and logs as any other caller."),
     journey("An agent connects", "An AI agent with an API key", "Is set up with the platform's MCP address.", ["MVP1-E0-08", "MVP1-E0-06"], [
         ("Connects to `POST /api/mcp` and lists tools.", "The gateway exchanges the key, merges every service's tools."),
         ("Calls `docflow.listDocuments`.", "The gateway forwards to DocFlow's MCP server with an access token limited to the key's scopes."),
@@ -83,7 +90,7 @@ MODULE = {
             {"title": "Services never see cookies or keys", "text": "Only a 5-minute token reaches a service, so a leak from one service is short-lived."},
             {"title": "Agents discover everything at once", "text": "One OpenAPI document and one MCP server for the whole platform."},
         ],
-        "scope_in": ["Routing by path", "Cookie and API key to access token", "Combined OpenAPI and MCP", "Rate limits, Origin check, request IDs", "Platform health"],
+        "scope_in": ["Routing by path, for browsers, agents, apps and services alike", "Cookie and API key to access token; service and delegated tokens passed through", "Combined OpenAPI and MCP", "Rate limits, Origin check, request IDs", "Platform health"],
         "scope_out": ["Business logic or data: never", "OAuth for agents: later", "Caching responses: not planned"],
         "stories": ["MVP1-E0-08", "MVP1-E1-06"],
     },

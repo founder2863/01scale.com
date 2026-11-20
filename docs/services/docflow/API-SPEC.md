@@ -25,7 +25,7 @@ Every error uses `application/problem+json` with a stable `code`. Branch on `cod
 
 **Start a document.** Starts the DocFlow process for one invoice: creates the document and its upload in the Upload service with DocFlow's limits.
 
-Access: **Signed in** · Story: `MVP1-E2-02`
+Access: **Signed in** · Scope: `docflow:write` · Story: `MVP1-E2-02`
 
 **Inputs**
 
@@ -104,7 +104,7 @@ Content-Type: application/json
 
 **Confirm the upload and start extraction.** Called by the upload component when the bytes are sent.
 
-Access: **Signed in** · Story: `MVP1-E2-03`
+Access: **Signed in** · Scope: `docflow:write` · Story: `MVP1-E2-03`
 
 **Inputs**
 
@@ -164,7 +164,7 @@ Authorization: Bearer <access token>
 
 **List my documents.** The caller's documents, newest first, with a status and the next action for each.
 
-Access: **Signed in** · Story: `MVP1-E2-05`
+Access: **Signed in** · Scope: `docflow:read` · Story: `MVP1-E2-05`
 
 **Inputs**
 
@@ -223,7 +223,7 @@ Authorization: Bearer <access token>
 
 **Get one document.** A document, its status, and the IDs of its parts in each service.
 
-Access: **Signed in** · Story: `MVP1-E2-05`
+Access: **Signed in** · Scope: `docflow:read` · Story: `MVP1-E2-05`
 
 **Inputs**
 
@@ -279,7 +279,7 @@ Authorization: Bearer <access token>
 
 **Retry a failed extraction.** Starts a new extraction job after the last one failed.
 
-Access: **Signed in** · Story: `MVP1-E3-01`
+Access: **Signed in** · Scope: `docflow:write` · Story: `MVP1-E3-01`
 
 **Inputs**
 
@@ -337,7 +337,7 @@ Authorization: Bearer <access token>
 
 **Finish review and build the outputs.** Re-checks the corrected values, completes the review, and builds the JSON and CSV.
 
-Access: **Signed in** · Story: `MVP1-E4-03`
+Access: **Signed in** · Scope: `docflow:write` · Story: `MVP1-E4-03`
 
 **Inputs**
 
@@ -412,7 +412,7 @@ Content-Type: application/json
 
 **Which outputs exist.** The latest outputs and whether download is unlocked.
 
-Access: **Signed in** · Story: `MVP1-E5-01`
+Access: **Signed in** · Scope: `docflow:read` · Story: `MVP1-E5-01`
 
 **Inputs**
 
@@ -464,7 +464,7 @@ Authorization: Bearer <access token>
 
 **Preview the JSON or CSV.** The full output, shown on screen, before or after paying.
 
-Access: **Signed in** · Story: `MVP1-E5-01`
+Access: **Signed in** · Scope: `docflow:read` · Story: `MVP1-E5-01`
 
 **Inputs**
 
@@ -549,7 +549,7 @@ Authorization: Bearer <access token>
 
 **Download the JSON or CSV.** Locked until the order is paid, checked on the server every time.
 
-Access: **Signed in** · Story: `MVP1-E5-03`
+Access: **Signed in** · Scope: `docflow:read` · Story: `MVP1-E5-03`
 
 **Inputs**
 
@@ -598,7 +598,7 @@ Location: https://01scale-uploads.s3.us-east-1.amazonaws.com/users/…/original.
 
 **Start payment.** Sets the price and asks Payment for a checkout page.
 
-Access: **Signed in** · Story: `MVP1-E6-01`
+Access: **Signed in** · Scope: `docflow:write` · Story: `MVP1-E6-01`
 
 **Inputs**
 
@@ -648,7 +648,7 @@ Authorization: Bearer <access token>
 
 **My DocFlow totals.** For the account page.
 
-Access: **Signed in** · Story: `MVP1-E1-05`
+Access: **Signed in** · Scope: `docflow:read` · Story: `MVP1-E1-05`
 
 **Inputs:** none.
 
@@ -688,7 +688,7 @@ Authorization: Bearer <access token>
 
 **Receive service events.** Where platform services tell DocFlow that something finished, so the process moves on without the browser.
 
-Access: **Service** · Story: `MVP1-E0-09`
+Access: **Service** · Scope: None: HMAC signature · Story: `MVP1-E0-09`
 
 **Inputs**
 

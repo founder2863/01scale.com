@@ -25,7 +25,7 @@ Every error uses `application/problem+json` with a stable `code`. Branch on `cod
 
 **Send a templated email to a user.** An app's server asks Delivery to email one of its users. Delivery looks up the address, fills the template, sends it through Resend and retries if needed. Never callable from a browser, so nobody can send email in 01scale's name.
 
-Access: **Service** · Story: `MVP1-E7-03`
+Access: **Service** · Scope: `delivery:write` · Story: `MVP1-E7-03`
 
 **Inputs**
 
@@ -106,7 +106,7 @@ Content-Type: application/json
 
 **My messages and their status.** The signed-in person's messages, newest first. The success page uses it to show 'Email couldn't be sent' when a send failed.
 
-Access: **Signed in** · Story: `MVP1-E7-03`
+Access: **Signed in** · Scope: `delivery:read` · Story: `MVP1-E7-03`
 
 **Inputs**
 
@@ -166,7 +166,7 @@ Authorization: Bearer <access token>
 
 **Receive platform events.** Where other services' signed events arrive. In version 1 Delivery acts on one: a user's account was deleted.
 
-Access: **Service** · Story: `MVP1-E1-05`
+Access: **Service** · Scope: None: HMAC signature · Story: `MVP1-E1-05`
 
 **Inputs**
 

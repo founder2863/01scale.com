@@ -263,7 +263,8 @@ export const upload = {
         }
       ],
       "request": "POST /api/upload/v1/files HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>\nIdempotency-Key: 8b1f6c2e-upload-1\nContent-Type: application/json\n\n{\n  \"file_name\": \"acme-invoice-0042.pdf\",\n  \"mime\": \"application/pdf\",\n  \"size\": 248913,\n  \"accept\": {\n    \"mimes\": [\n      \"application/pdf\",\n      \"image/png\",\n      \"image/jpeg\"\n    ],\n    \"max_bytes\": 10485760,\n    \"max_pages\": 10\n  }\n}",
-      "response": "{\n  \"file\": {\n    \"id\": \"0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b\",\n    \"file_name\": \"acme-invoice-0042.pdf\",\n    \"mime\": \"application/pdf\",\n    \"size_bytes\": 248913,\n    \"pages\": null,\n    \"status\": \"pending_upload\",\n    \"rejection_reason\": null,\n    \"sha256\": null,\n    \"created_at\": \"2026-11-17T09:14:07Z\",\n    \"completed_at\": null,\n    \"expires_at\": \"2026-12-17T09:14:07Z\"\n  },\n  \"upload\": {\n    \"url\": \"https://01scale-uploads.s3.us-east-1.amazonaws.com/users/0193a5b2-7c1e-7a3f-9b2d-4e6f8a1c2d3e/0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b/original.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAEXAMPLE%2F20261117%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261117T091407Z&X-Amz-Expires=300&X-Amz-SignedHeaders=content-length%3Bcontent-type%3Bhost&X-Amz-Signature=5f2c...\",\n    \"method\": \"PUT\",\n    \"headers\": {\n      \"Content-Type\": \"application/pdf\",\n      \"Content-Length\": \"248913\"\n    },\n    \"expires_at\": \"2026-11-17T09:19:07Z\"\n  }\n}"
+      "response": "{\n  \"file\": {\n    \"id\": \"0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b\",\n    \"file_name\": \"acme-invoice-0042.pdf\",\n    \"mime\": \"application/pdf\",\n    \"size_bytes\": 248913,\n    \"pages\": null,\n    \"status\": \"pending_upload\",\n    \"rejection_reason\": null,\n    \"sha256\": null,\n    \"created_at\": \"2026-11-17T09:14:07Z\",\n    \"completed_at\": null,\n    \"expires_at\": \"2026-12-17T09:14:07Z\"\n  },\n  \"upload\": {\n    \"url\": \"https://01scale-uploads.s3.us-east-1.amazonaws.com/users/0193a5b2-7c1e-7a3f-9b2d-4e6f8a1c2d3e/0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b/original.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAEXAMPLE%2F20261117%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261117T091407Z&X-Amz-Expires=300&X-Amz-SignedHeaders=content-length%3Bcontent-type%3Bhost&X-Amz-Signature=5f2c...\",\n    \"method\": \"PUT\",\n    \"headers\": {\n      \"Content-Type\": \"application/pdf\",\n      \"Content-Length\": \"248913\"\n    },\n    \"expires_at\": \"2026-11-17T09:19:07Z\"\n  }\n}",
+      "scope": "`upload:write`"
     },
     {
       "id": "complete-upload",
@@ -331,7 +332,8 @@ export const upload = {
         }
       ],
       "request": "POST /api/upload/v1/files/0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b/complete HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>",
-      "response": "{\n  \"file\": {\n    \"id\": \"0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b\",\n    \"file_name\": \"acme-invoice-0042.pdf\",\n    \"mime\": \"application/pdf\",\n    \"size_bytes\": 248913,\n    \"pages\": 2,\n    \"status\": \"ready\",\n    \"rejection_reason\": null,\n    \"sha256\": \"3a7bd3e2360a3d29eea436fcfb7e44c735d117c42d1c1835420b6b9942dd4f1b\",\n    \"created_at\": \"2026-11-17T09:14:07Z\",\n    \"completed_at\": \"2026-11-17T09:14:11Z\",\n    \"expires_at\": \"2026-12-17T09:14:07Z\"\n  }\n}"
+      "response": "{\n  \"file\": {\n    \"id\": \"0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b\",\n    \"file_name\": \"acme-invoice-0042.pdf\",\n    \"mime\": \"application/pdf\",\n    \"size_bytes\": 248913,\n    \"pages\": 2,\n    \"status\": \"ready\",\n    \"rejection_reason\": null,\n    \"sha256\": \"3a7bd3e2360a3d29eea436fcfb7e44c735d117c42d1c1835420b6b9942dd4f1b\",\n    \"created_at\": \"2026-11-17T09:14:07Z\",\n    \"completed_at\": \"2026-11-17T09:14:11Z\",\n    \"expires_at\": \"2026-12-17T09:14:07Z\"\n  }\n}",
+      "scope": "`upload:write`"
     },
     {
       "id": "get-file",
@@ -374,7 +376,8 @@ export const upload = {
         }
       ],
       "request": "GET /api/upload/v1/files/0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>",
-      "response": "{\n  \"file\": {\n    \"id\": \"0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b\",\n    \"file_name\": \"acme-invoice-0042.pdf\",\n    \"mime\": \"application/pdf\",\n    \"size_bytes\": 248913,\n    \"pages\": 2,\n    \"status\": \"ready\",\n    \"rejection_reason\": null,\n    \"sha256\": \"3a7bd3e2360a3d29eea436fcfb7e44c735d117c42d1c1835420b6b9942dd4f1b\",\n    \"created_at\": \"2026-11-17T09:14:07Z\",\n    \"completed_at\": \"2026-11-17T09:14:11Z\",\n    \"expires_at\": \"2026-12-17T09:14:07Z\"\n  }\n}"
+      "response": "{\n  \"file\": {\n    \"id\": \"0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b\",\n    \"file_name\": \"acme-invoice-0042.pdf\",\n    \"mime\": \"application/pdf\",\n    \"size_bytes\": 248913,\n    \"pages\": 2,\n    \"status\": \"ready\",\n    \"rejection_reason\": null,\n    \"sha256\": \"3a7bd3e2360a3d29eea436fcfb7e44c735d117c42d1c1835420b6b9942dd4f1b\",\n    \"created_at\": \"2026-11-17T09:14:07Z\",\n    \"completed_at\": \"2026-11-17T09:14:11Z\",\n    \"expires_at\": \"2026-12-17T09:14:07Z\"\n  }\n}",
+      "scope": "`upload:read`"
     },
     {
       "id": "list-files",
@@ -433,7 +436,8 @@ export const upload = {
         }
       ],
       "request": "GET /api/upload/v1/files?status=ready&limit=2 HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>",
-      "response": "{\n  \"data\": [\n    {\n      \"id\": \"0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b\",\n      \"file_name\": \"acme-invoice-0042.pdf\",\n      \"mime\": \"application/pdf\",\n      \"size_bytes\": 248913,\n      \"pages\": 2,\n      \"status\": \"ready\",\n      \"rejection_reason\": null,\n      \"sha256\": \"3a7bd3e2360a3d29eea436fcfb7e44c735d117c42d1c1835420b6b9942dd4f1b\",\n      \"created_at\": \"2026-11-17T09:14:07Z\",\n      \"completed_at\": \"2026-11-17T09:14:11Z\",\n      \"expires_at\": \"2026-12-17T09:14:07Z\"\n    }\n  ],\n  \"next_cursor\": null\n}"
+      "response": "{\n  \"data\": [\n    {\n      \"id\": \"0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b\",\n      \"file_name\": \"acme-invoice-0042.pdf\",\n      \"mime\": \"application/pdf\",\n      \"size_bytes\": 248913,\n      \"pages\": 2,\n      \"status\": \"ready\",\n      \"rejection_reason\": null,\n      \"sha256\": \"3a7bd3e2360a3d29eea436fcfb7e44c735d117c42d1c1835420b6b9942dd4f1b\",\n      \"created_at\": \"2026-11-17T09:14:07Z\",\n      \"completed_at\": \"2026-11-17T09:14:11Z\",\n      \"expires_at\": \"2026-12-17T09:14:07Z\"\n    }\n  ],\n  \"next_cursor\": null\n}",
+      "scope": "`upload:read`"
     },
     {
       "id": "download-url",
@@ -508,7 +512,8 @@ export const upload = {
         }
       ],
       "request": "GET /api/upload/v1/files/0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b/download-url?disposition=attachment HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>",
-      "response": "{\n  \"url\": \"https://01scale-uploads.s3.us-east-1.amazonaws.com/users/0193a5b2-7c1e-7a3f-9b2d-4e6f8a1c2d3e/0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b/original.pdf?response-content-disposition=attachment%3B%20filename%3D%22acme-invoice-0042.pdf%22&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAEXAMPLE%2F20261117%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261117T091407Z&X-Amz-Expires=300&X-Amz-SignedHeaders=host&X-Amz-Signature=5f2c...\",\n  \"expires_at\": \"2026-11-17T09:25:00Z\"\n}"
+      "response": "{\n  \"url\": \"https://01scale-uploads.s3.us-east-1.amazonaws.com/users/0193a5b2-7c1e-7a3f-9b2d-4e6f8a1c2d3e/0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b/original.pdf?response-content-disposition=attachment%3B%20filename%3D%22acme-invoice-0042.pdf%22&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAEXAMPLE%2F20261117%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261117T091407Z&X-Amz-Expires=300&X-Amz-SignedHeaders=host&X-Amz-Signature=5f2c...\",\n  \"expires_at\": \"2026-11-17T09:25:00Z\"\n}",
+      "scope": "`upload:read`"
     },
     {
       "id": "delete-file",
@@ -557,7 +562,8 @@ export const upload = {
         }
       ],
       "request": "DELETE /api/upload/v1/files/0193b0c9-5f22-7a08-9e44-1a2b3c4d5e6f HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>",
-      "response": "HTTP/1.1 204 No Content"
+      "response": "HTTP/1.1 204 No Content",
+      "scope": "`upload:write`"
     },
     {
       "id": "events",
@@ -619,7 +625,8 @@ export const upload = {
         }
       ],
       "request": "POST /api/upload/v1/events HTTP/1.1\nX-01scale-Signature: sha256=8c1f...\nContent-Type: application/json\n\n{\n  \"event_id\": \"0193b2aa-6f01-7c2d-9e3f-4a5b6c7d8e9f\",\n  \"type\": \"identity.user.deleted\",\n  \"occurred_at\": \"2026-11-17T10:00:00Z\",\n  \"data\": {\n    \"user_id\": \"0193a5b2-7c1e-7a3f-9b2d-4e6f8a1c2d3e\"\n  }\n}",
-      "response": "HTTP/1.1 200 OK"
+      "response": "HTTP/1.1 200 OK",
+      "scope": "None: HMAC signature"
     }
   ],
   "noEndpoint": [

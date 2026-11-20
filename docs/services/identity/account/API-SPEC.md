@@ -35,7 +35,7 @@ Claims added to Login's access token when the caller used an API key.
 
 **My account.** The signed-in person's email and when they joined.
 
-Access: **Signed in** · Story: `MVP1-E1-05`
+Access: **Signed in** · Scope: Any: a session, an API key or a delegated token · Story: `MVP1-E1-05`
 
 **Inputs:** none.
 
@@ -77,7 +77,7 @@ Authorization: Bearer <access token>
 
 **Start a password change.** Sends the person to Cognito's hosted page to set a new password, and back to the account page afterwards.
 
-Access: **Signed in** · Story: `MVP1-E1-05`
+Access: **Signed in** · Scope: Session only: refused for API keys and service tokens · Story: `MVP1-E1-05`
 
 **Inputs:** none.
 
@@ -122,7 +122,7 @@ Origin: https://01scale.com
 
 **Delete my account.** Deletes the person's account; every service then deletes that person's data.
 
-Access: **Signed in** · Story: `MVP1-E1-05`
+Access: **Signed in** · Scope: Session only: refused for API keys and service tokens · Story: `MVP1-E1-05`
 
 **Inputs**
 
@@ -178,7 +178,7 @@ Content-Type: application/json
 
 **List my API keys.** The person's keys with name, prefix, scopes and when each was last used. Never the secret.
 
-Access: **Signed in** · Story: `MVP1-E0-06`
+Access: **Signed in** · Scope: Session only: refused for API keys and service tokens · Story: `MVP1-E0-06`
 
 **Inputs:** none.
 
@@ -235,7 +235,7 @@ Origin: https://01scale.com
 
 **Create an API key.** A key an agent or script uses instead of a browser. The secret is shown once.
 
-Access: **Signed in** · Story: `MVP1-E0-06`
+Access: **Signed in** · Scope: Session only: refused for API keys and service tokens · Story: `MVP1-E0-06`
 
 **Inputs**
 
@@ -316,7 +316,7 @@ Idempotency-Key: 6f1c2a9e-key-create
 
 **Revoke an API key.** Stops a key working at once.
 
-Access: **Signed in** · Story: `MVP1-E0-06`
+Access: **Signed in** · Scope: Session only: refused for API keys and service tokens · Story: `MVP1-E0-06`
 
 **Inputs**
 
@@ -363,7 +363,7 @@ HTTP/1.1 204 No Content
 
 **Exchange an API key for an access token.** Login's `POST /token`, extended: the gateway sends either a session token or an API key.
 
-Access: **Service** · Story: `MVP1-E0-06`
+Access: **Service** · Scope: None: the gateway's service credential · Story: `MVP1-E0-06`
 
 **Inputs**
 
@@ -417,7 +417,7 @@ Content-Type: application/json
 
 **Look up a user's email.** For services that write to a person, such as Delivery's emails. New: no story lists it yet.
 
-Access: **Service** · Story: `MVP1-E7-01`
+Access: **Service** · Scope: `identity:users.read`, on a service token · Story: `MVP1-E7-01`
 
 **Inputs**
 

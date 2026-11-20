@@ -82,20 +82,20 @@ if (order.status !== "paid") return problem(402, "payment_required");
 
 Base address: `https://01scale.com/api/docflow/v1`
 
-| Method | Path | Access | Purpose |
-|---|---|---|---|
-| `POST` | `/documents` | Signed in | Start a document |
-| `POST` | `/documents/{documentId}/upload-complete` | Signed in | Confirm the upload and start extraction |
-| `GET` | `/documents` | Signed in | List my documents |
-| `GET` | `/documents/{documentId}` | Signed in | Get one document |
-| `POST` | `/documents/{documentId}/retry-extraction` | Signed in | Retry a failed extraction |
-| `POST` | `/documents/{documentId}/complete-review` | Signed in | Finish review and build the outputs |
-| `GET` | `/documents/{documentId}/outputs` | Signed in | Which outputs exist |
-| `GET` | `/documents/{documentId}/outputs/{format}/preview` | Signed in | Preview the JSON or CSV |
-| `GET` | `/documents/{documentId}/outputs/{format}/download` | Signed in | Download the JSON or CSV |
-| `POST` | `/documents/{documentId}/checkout` | Signed in | Start payment |
-| `GET` | `/stats` | Signed in | My DocFlow totals |
-| `POST` | `/webhooks/{service}` | Service | Receive service events |
+| Method | Path | Access | Scope | Purpose |
+|---|---|---|---|---|
+| `POST` | `/documents` | Signed in | `docflow:write` | Start a document |
+| `POST` | `/documents/{documentId}/upload-complete` | Signed in | `docflow:write` | Confirm the upload and start extraction |
+| `GET` | `/documents` | Signed in | `docflow:read` | List my documents |
+| `GET` | `/documents/{documentId}` | Signed in | `docflow:read` | Get one document |
+| `POST` | `/documents/{documentId}/retry-extraction` | Signed in | `docflow:write` | Retry a failed extraction |
+| `POST` | `/documents/{documentId}/complete-review` | Signed in | `docflow:write` | Finish review and build the outputs |
+| `GET` | `/documents/{documentId}/outputs` | Signed in | `docflow:read` | Which outputs exist |
+| `GET` | `/documents/{documentId}/outputs/{format}/preview` | Signed in | `docflow:read` | Preview the JSON or CSV |
+| `GET` | `/documents/{documentId}/outputs/{format}/download` | Signed in | `docflow:read` | Download the JSON or CSV |
+| `POST` | `/documents/{documentId}/checkout` | Signed in | `docflow:write` | Start payment |
+| `GET` | `/stats` | Signed in | `docflow:read` | My DocFlow totals |
+| `POST` | `/webhooks/{service}` | Service | None: HMAC signature | Receive service events |
 
 ## Configuration
 

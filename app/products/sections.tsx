@@ -493,6 +493,9 @@ function ApiSpec({ product }: { product: Product }) {
             <p>
               {endpoint.summary} <span className="access">{endpoint.access}</span>
             </p>
+            {"scope" in endpoint && (
+              <p className="note">Scope: {rich(String((endpoint as { scope?: string }).scope))}</p>
+            )}
 
             <h4>Inputs</h4>
             {endpoint.params.length === 0 ? (

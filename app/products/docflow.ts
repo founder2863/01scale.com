@@ -209,7 +209,8 @@ export const docflow = {
         }
       ],
       "request": "POST /api/docflow/v1/documents HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>\nContent-Type: application/json\n\n{\n  \"file_name\": \"acme-invoice-0042.pdf\",\n  \"mime\": \"application/pdf\",\n  \"size\": 248913\n}",
-      "response": "{\n  \"document\": {\n    \"id\": \"0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n    \"file_name\": \"acme-invoice-0042.pdf\",\n    \"status\": \"pending_upload\",\n    \"next_action\": \"upload\",\n    \"file_id\": \"0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b\",\n    \"job_id\": null,\n    \"review_task_id\": null,\n    \"order_id\": null,\n    \"created_at\": \"2026-11-17T09:14:07Z\",\n    \"updated_at\": \"2026-11-17T09:17:03Z\"\n  },\n  \"upload\": {\n    \"url\": \"https://01scale-uploads.s3.us-east-1.amazonaws.com/users/\\u2026/original.pdf?X-Amz-Signature=\\u2026\",\n    \"method\": \"PUT\",\n    \"headers\": {\n      \"Content-Type\": \"application/pdf\",\n      \"Content-Length\": \"248913\"\n    },\n    \"expires_at\": \"2026-11-17T09:19:07Z\"\n  }\n}"
+      "response": "{\n  \"document\": {\n    \"id\": \"0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n    \"file_name\": \"acme-invoice-0042.pdf\",\n    \"status\": \"pending_upload\",\n    \"next_action\": \"upload\",\n    \"file_id\": \"0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b\",\n    \"job_id\": null,\n    \"review_task_id\": null,\n    \"order_id\": null,\n    \"created_at\": \"2026-11-17T09:14:07Z\",\n    \"updated_at\": \"2026-11-17T09:17:03Z\"\n  },\n  \"upload\": {\n    \"url\": \"https://01scale-uploads.s3.us-east-1.amazonaws.com/users/\\u2026/original.pdf?X-Amz-Signature=\\u2026\",\n    \"method\": \"PUT\",\n    \"headers\": {\n      \"Content-Type\": \"application/pdf\",\n      \"Content-Length\": \"248913\"\n    },\n    \"expires_at\": \"2026-11-17T09:19:07Z\"\n  }\n}",
+      "scope": "`docflow:write`"
     },
     {
       "id": "upload-complete",
@@ -264,7 +265,8 @@ export const docflow = {
         }
       ],
       "request": "POST /api/docflow/v1/documents/0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c/upload-complete HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>",
-      "response": "{\n  \"document\": {\n    \"id\": \"0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n    \"file_name\": \"acme-invoice-0042.pdf\",\n    \"status\": \"extracting\",\n    \"next_action\": \"extract\",\n    \"file_id\": \"0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b\",\n    \"job_id\": \"0193b0d1-4b2c-7d10-9a8b-1c2d3e4f5a6b\",\n    \"review_task_id\": null,\n    \"order_id\": null,\n    \"created_at\": \"2026-11-17T09:14:07Z\",\n    \"updated_at\": \"2026-11-17T09:17:03Z\"\n  }\n}"
+      "response": "{\n  \"document\": {\n    \"id\": \"0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n    \"file_name\": \"acme-invoice-0042.pdf\",\n    \"status\": \"extracting\",\n    \"next_action\": \"extract\",\n    \"file_id\": \"0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b\",\n    \"job_id\": \"0193b0d1-4b2c-7d10-9a8b-1c2d3e4f5a6b\",\n    \"review_task_id\": null,\n    \"order_id\": null,\n    \"created_at\": \"2026-11-17T09:14:07Z\",\n    \"updated_at\": \"2026-11-17T09:17:03Z\"\n  }\n}",
+      "scope": "`docflow:write`"
     },
     {
       "id": "list-documents",
@@ -310,7 +312,8 @@ export const docflow = {
         }
       ],
       "request": "GET /api/docflow/v1/documents HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>",
-      "response": "{\n  \"data\": [\n    {\n      \"id\": \"0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n      \"file_name\": \"acme-invoice-0042.pdf\",\n      \"status\": \"paid\",\n      \"next_action\": \"download\",\n      \"file_id\": \"0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b\",\n      \"job_id\": \"0193b0d1-4b2c-7d10-9a8b-1c2d3e4f5a6b\",\n      \"review_task_id\": \"0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a2b\",\n      \"order_id\": \"0193b120-5a6b-7c7d-8e8f-9a0b1c2d3e4f\",\n      \"created_at\": \"2026-11-17T09:14:07Z\",\n      \"updated_at\": \"2026-11-17T09:17:03Z\"\n    }\n  ],\n  \"next_cursor\": null\n}"
+      "response": "{\n  \"data\": [\n    {\n      \"id\": \"0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n      \"file_name\": \"acme-invoice-0042.pdf\",\n      \"status\": \"paid\",\n      \"next_action\": \"download\",\n      \"file_id\": \"0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b\",\n      \"job_id\": \"0193b0d1-4b2c-7d10-9a8b-1c2d3e4f5a6b\",\n      \"review_task_id\": \"0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a2b\",\n      \"order_id\": \"0193b120-5a6b-7c7d-8e8f-9a0b1c2d3e4f\",\n      \"created_at\": \"2026-11-17T09:14:07Z\",\n      \"updated_at\": \"2026-11-17T09:17:03Z\"\n    }\n  ],\n  \"next_cursor\": null\n}",
+      "scope": "`docflow:read`"
     },
     {
       "id": "get-document",
@@ -353,7 +356,8 @@ export const docflow = {
         }
       ],
       "request": "GET /api/docflow/v1/documents/0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>",
-      "response": "{\n  \"document\": {\n    \"id\": \"0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n    \"file_name\": \"acme-invoice-0042.pdf\",\n    \"status\": \"paid\",\n    \"next_action\": \"download\",\n    \"file_id\": \"0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b\",\n    \"job_id\": \"0193b0d1-4b2c-7d10-9a8b-1c2d3e4f5a6b\",\n    \"review_task_id\": \"0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a2b\",\n    \"order_id\": \"0193b120-5a6b-7c7d-8e8f-9a0b1c2d3e4f\",\n    \"created_at\": \"2026-11-17T09:14:07Z\",\n    \"updated_at\": \"2026-11-17T09:17:03Z\"\n  }\n}"
+      "response": "{\n  \"document\": {\n    \"id\": \"0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n    \"file_name\": \"acme-invoice-0042.pdf\",\n    \"status\": \"paid\",\n    \"next_action\": \"download\",\n    \"file_id\": \"0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b\",\n    \"job_id\": \"0193b0d1-4b2c-7d10-9a8b-1c2d3e4f5a6b\",\n    \"review_task_id\": \"0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a2b\",\n    \"order_id\": \"0193b120-5a6b-7c7d-8e8f-9a0b1c2d3e4f\",\n    \"created_at\": \"2026-11-17T09:14:07Z\",\n    \"updated_at\": \"2026-11-17T09:17:03Z\"\n  }\n}",
+      "scope": "`docflow:read`"
     },
     {
       "id": "retry-extraction",
@@ -406,7 +410,8 @@ export const docflow = {
         }
       ],
       "request": "POST /api/docflow/v1/documents/0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c/retry-extraction HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>",
-      "response": "{\n  \"document\": {\n    \"id\": \"0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n    \"file_name\": \"acme-invoice-0042.pdf\",\n    \"status\": \"extracting\",\n    \"next_action\": \"extract\",\n    \"file_id\": \"0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b\",\n    \"job_id\": \"0193b0d1-4b2c-7d10-9a8b-1c2d3e4f5a6b\",\n    \"review_task_id\": null,\n    \"order_id\": null,\n    \"created_at\": \"2026-11-17T09:14:07Z\",\n    \"updated_at\": \"2026-11-17T09:17:03Z\"\n  }\n}"
+      "response": "{\n  \"document\": {\n    \"id\": \"0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n    \"file_name\": \"acme-invoice-0042.pdf\",\n    \"status\": \"extracting\",\n    \"next_action\": \"extract\",\n    \"file_id\": \"0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b\",\n    \"job_id\": \"0193b0d1-4b2c-7d10-9a8b-1c2d3e4f5a6b\",\n    \"review_task_id\": null,\n    \"order_id\": null,\n    \"created_at\": \"2026-11-17T09:14:07Z\",\n    \"updated_at\": \"2026-11-17T09:17:03Z\"\n  }\n}",
+      "scope": "`docflow:write`"
     },
     {
       "id": "complete-review",
@@ -474,7 +479,8 @@ export const docflow = {
         }
       ],
       "request": "POST /api/docflow/v1/documents/0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c/complete-review HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>\nContent-Type: application/json\n\n{\n  \"confirm_failed_checks\": false\n}",
-      "response": "{\n  \"document\": {\n    \"id\": \"0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n    \"file_name\": \"acme-invoice-0042.pdf\",\n    \"status\": \"reviewed\",\n    \"next_action\": \"pay\",\n    \"file_id\": \"0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b\",\n    \"job_id\": \"0193b0d1-4b2c-7d10-9a8b-1c2d3e4f5a6b\",\n    \"review_task_id\": \"0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a2b\",\n    \"order_id\": null,\n    \"created_at\": \"2026-11-17T09:14:07Z\",\n    \"updated_at\": \"2026-11-17T09:17:03Z\"\n  },\n  \"outputs\": {\n    \"version\": 1,\n    \"locked\": true,\n    \"formats\": [\n      \"json\",\n      \"csv\"\n    ]\n  }\n}"
+      "response": "{\n  \"document\": {\n    \"id\": \"0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n    \"file_name\": \"acme-invoice-0042.pdf\",\n    \"status\": \"reviewed\",\n    \"next_action\": \"pay\",\n    \"file_id\": \"0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b\",\n    \"job_id\": \"0193b0d1-4b2c-7d10-9a8b-1c2d3e4f5a6b\",\n    \"review_task_id\": \"0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a2b\",\n    \"order_id\": null,\n    \"created_at\": \"2026-11-17T09:14:07Z\",\n    \"updated_at\": \"2026-11-17T09:17:03Z\"\n  },\n  \"outputs\": {\n    \"version\": 1,\n    \"locked\": true,\n    \"formats\": [\n      \"json\",\n      \"csv\"\n    ]\n  }\n}",
+      "scope": "`docflow:write`"
     },
     {
       "id": "get-outputs",
@@ -522,7 +528,8 @@ export const docflow = {
         }
       ],
       "request": "GET /api/docflow/v1/documents/0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c/outputs HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>",
-      "response": "{\n  \"version\": 1,\n  \"locked\": false,\n  \"formats\": [\n    \"json\",\n    \"csv\"\n  ],\n  \"generated_at\": \"2026-11-17T09:16:03Z\"\n}"
+      "response": "{\n  \"version\": 1,\n  \"locked\": false,\n  \"formats\": [\n    \"json\",\n    \"csv\"\n  ],\n  \"generated_at\": \"2026-11-17T09:16:03Z\"\n}",
+      "scope": "`docflow:read`"
     },
     {
       "id": "preview-output",
@@ -578,7 +585,8 @@ export const docflow = {
         }
       ],
       "request": "GET /api/docflow/v1/documents/0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c/outputs/json/preview HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>",
-      "response": "{\n  \"data\": {\n    \"vendor_name\": \"Acme Supplies Ltd\",\n    \"invoice_number\": \"INV-0042\",\n    \"invoice_date\": \"2026-11-02\",\n    \"currency\": \"USD\",\n    \"subtotal\": \"1150.00\",\n    \"tax_total\": \"80.00\",\n    \"total\": \"1230.00\",\n    \"line_items\": [\n      {\n        \"description\": \"Paper, A4\",\n        \"quantity\": \"10\",\n        \"unit_price\": \"115.00\",\n        \"amount\": \"1150.00\"\n      }\n    ]\n  },\n  \"metadata\": {\n    \"document_id\": \"0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n    \"file_name\": \"acme-invoice-0042.pdf\",\n    \"pages\": 2,\n    \"model\": \"claude-sonnet-5-5\",\n    \"prompt_version\": \"extract-invoice/v1\",\n    \"extracted_at\": \"2026-11-17T09:14:41Z\",\n    \"reviewed_at\": \"2026-11-17T09:16:02Z\",\n    \"reviewed_by\": \"0193a5b2-7c1e-7a3f-9b2d-4e6f8a1c2d3e\",\n    \"fields_flagged\": 3,\n    \"fields_corrected\": 1,\n    \"fields\": {\n      \"total\": {\n        \"confidence\": 0.3,\n        \"corrected\": true\n      },\n      \"vendor_name\": {\n        \"confidence\": 0.97,\n        \"corrected\": false\n      }\n    }\n  }\n}"
+      "response": "{\n  \"data\": {\n    \"vendor_name\": \"Acme Supplies Ltd\",\n    \"invoice_number\": \"INV-0042\",\n    \"invoice_date\": \"2026-11-02\",\n    \"currency\": \"USD\",\n    \"subtotal\": \"1150.00\",\n    \"tax_total\": \"80.00\",\n    \"total\": \"1230.00\",\n    \"line_items\": [\n      {\n        \"description\": \"Paper, A4\",\n        \"quantity\": \"10\",\n        \"unit_price\": \"115.00\",\n        \"amount\": \"1150.00\"\n      }\n    ]\n  },\n  \"metadata\": {\n    \"document_id\": \"0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n    \"file_name\": \"acme-invoice-0042.pdf\",\n    \"pages\": 2,\n    \"model\": \"claude-sonnet-5-5\",\n    \"prompt_version\": \"extract-invoice/v1\",\n    \"extracted_at\": \"2026-11-17T09:14:41Z\",\n    \"reviewed_at\": \"2026-11-17T09:16:02Z\",\n    \"reviewed_by\": \"0193a5b2-7c1e-7a3f-9b2d-4e6f8a1c2d3e\",\n    \"fields_flagged\": 3,\n    \"fields_corrected\": 1,\n    \"fields\": {\n      \"total\": {\n        \"confidence\": 0.3,\n        \"corrected\": true\n      },\n      \"vendor_name\": {\n        \"confidence\": 0.97,\n        \"corrected\": false\n      }\n    }\n  }\n}",
+      "scope": "`docflow:read`"
     },
     {
       "id": "download-output",
@@ -645,7 +653,8 @@ export const docflow = {
         }
       ],
       "request": "GET /api/docflow/v1/documents/0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c/outputs/csv/download HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>",
-      "response": "HTTP/1.1 302 Found\nLocation: https://01scale-uploads.s3.us-east-1.amazonaws.com/users/…/original.csv?response-content-disposition=attachment…&X-Amz-Signature=…"
+      "response": "HTTP/1.1 302 Found\nLocation: https://01scale-uploads.s3.us-east-1.amazonaws.com/users/…/original.csv?response-content-disposition=attachment…&X-Amz-Signature=…",
+      "scope": "`docflow:read`"
     },
     {
       "id": "checkout",
@@ -704,7 +713,8 @@ export const docflow = {
         }
       ],
       "request": "POST /api/docflow/v1/documents/0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c/checkout HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>",
-      "response": "{\n  \"order_id\": \"0193b120-5a6b-7c7d-8e8f-9a0b1c2d3e4f\",\n  \"checkout_url\": \"https://checkout.stripe.com/c/pay/cs_test_\\u2026\"\n}"
+      "response": "{\n  \"order_id\": \"0193b120-5a6b-7c7d-8e8f-9a0b1c2d3e4f\",\n  \"checkout_url\": \"https://checkout.stripe.com/c/pay/cs_test_\\u2026\"\n}",
+      "scope": "`docflow:write`"
     },
     {
       "id": "stats",
@@ -733,7 +743,8 @@ export const docflow = {
         }
       ],
       "request": "GET /api/docflow/v1/stats HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>",
-      "response": "{\n  \"documents_processed\": 4\n}"
+      "response": "{\n  \"documents_processed\": 4\n}",
+      "scope": "`docflow:read`"
     },
     {
       "id": "webhooks",
@@ -792,7 +803,8 @@ export const docflow = {
         }
       ],
       "request": "POST /api/docflow/v1/webhooks/payment HTTP/1.1\nX-01scale-Signature: sha256=8c1f...\nContent-Type: application/json\n\n{\n  \"event_id\": \"0193b121-0000-7000-8000-00000000aaaa\",\n  \"type\": \"payment.order.paid\",\n  \"data\": {\n    \"order_id\": \"0193b120-5a6b-7c7d-8e8f-9a0b1c2d3e4f\",\n    \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\"\n  }\n}",
-      "response": "HTTP/1.1 200 OK"
+      "response": "HTTP/1.1 200 OK",
+      "scope": "None: HMAC signature"
     }
   ],
   "noEndpoint": [

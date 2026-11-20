@@ -25,7 +25,7 @@ Every error uses `application/problem+json` with a stable `code`. Branch on `cod
 
 **Create a file and get an upload link.** Records a new file and returns a link the browser uses to send the file straight to private storage. The file itself never passes through the API.
 
-Access: **Signed in** · Story: `MVP1-E2-02`
+Access: **Signed in** · Scope: `upload:write` · Story: `MVP1-E2-02`
 
 **Inputs**
 
@@ -121,7 +121,7 @@ Content-Type: application/json
 
 **Confirm the upload and check the file.** Called after the browser has sent the file. Upload checks what actually arrived in storage and marks the file ready or rejected. Safe to call more than once.
 
-Access: **Signed in** · Story: `MVP1-E2-03`
+Access: **Signed in** · Scope: `upload:write` · Story: `MVP1-E2-03`
 
 **Inputs**
 
@@ -187,7 +187,7 @@ Authorization: Bearer <access token>
 
 **Get one file.** A file's details and status.
 
-Access: **Signed in** · Story: `MVP1-E2-02`
+Access: **Signed in** · Scope: `upload:read` · Story: `MVP1-E2-02`
 
 **Inputs**
 
@@ -244,7 +244,7 @@ Authorization: Bearer <access token>
 
 **List my files.** The caller's files, newest first.
 
-Access: **Signed in** · Story: `MVP1-E2-05`
+Access: **Signed in** · Scope: `upload:read` · Story: `MVP1-E2-05`
 
 **Inputs**
 
@@ -306,7 +306,7 @@ Authorization: Bearer <access token>
 
 **Get a link to read the file.** A link valid for 5 minutes that opens or downloads the file directly from storage.
 
-Access: **Signed in** · Story: `MVP1-E2-03`
+Access: **Signed in** · Scope: `upload:read` · Story: `MVP1-E2-03`
 
 **Inputs**
 
@@ -358,7 +358,7 @@ Authorization: Bearer <access token>
 
 **Delete a file.** Removes the stored object and marks the file deleted. Safe to call more than once.
 
-Access: **Signed in** · Story: `MVP1-E2-02`
+Access: **Signed in** · Scope: `upload:write` · Story: `MVP1-E2-02`
 
 **Inputs**
 
@@ -403,7 +403,7 @@ HTTP/1.1 204 No Content
 
 **Receive platform events.** Where other services' signed events arrive. In version 1 Upload acts on one: a user's account was deleted, so their files go too.
 
-Access: **Service** · Story: `MVP1-E1-05`
+Access: **Service** · Scope: None: HMAC signature · Story: `MVP1-E1-05`
 
 **Inputs**
 

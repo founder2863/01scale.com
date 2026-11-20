@@ -82,13 +82,13 @@ await emit(tx, "identity.user.deleted", { user_id }, subscribers);
 
 Base address: `https://01scale.com/api/{service}/v1`
 
-| Method | Path | Access | Purpose |
-|---|---|---|---|
-| `GET` | `/health` | Public | Is the service up |
-| `GET` | `/openapi.json` | Public | The service's contract |
-| `GET` | `/audit-events` | Signed in | My audit events in this service |
-| `POST` | `/events` | Service | Receive platform events |
-| `POST` | `/api/{service}/mcp` | Signed in | The service's MCP server |
+| Method | Path | Access | Scope | Purpose |
+|---|---|---|---|---|
+| `GET` | `/health` | Public | None | Is the service up |
+| `GET` | `/openapi.json` | Public | None | The service's contract |
+| `GET` | `/audit-events` | Signed in | `{service}:read` | My audit events in this service |
+| `POST` | `/events` | Service | None: HMAC signature | Receive platform events |
+| `POST` | `/api/{service}/mcp` | Signed in | Per tool: each tool needs the scope of the endpoint it mirrors | The service's MCP server |
 
 ## Configuration
 
@@ -99,8 +99,11 @@ Environment variables on the service's own deployment. Secrets are never committ
 | `<SERVICE>_DATABASE_URL` | Neon connection string for that service's role | Yes |
 | `IDENTITY_JWKS_URL` | `https://01scale.com/api/identity/v1/jwks` | No |
 | `EVENTS_SIGNING_KEY` | 32 random bytes, base64; shared by the platform's services | Yes |
+| `EVENT_ROUTES` | JSON: reference prefix → app's event address, for example `{"docflow": "https://01scale.com/api/docflow/v1/webhooks"}` | No |
+| `<SERVICE>_CLIENT_SECRET` | The service's client secret for Identity's `POST /token` (Service access) | Yes |
 
 ## Open questions
 
 - One signing key for all events is simplest; a key per sender would limit what one leaked key can forge. I chose one key for MVP1.
+- Decided: events go only to the app that started the work, by `reference` prefix, and the app is the orchestrator (#13). Calls between services go through the gateway (#21). Services act for users with delegated tokens (#24).
 - How the outbox delivery job runs on Vercel: a cron every minute plus an immediate attempt after the transaction commits.

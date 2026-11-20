@@ -36,7 +36,7 @@ Claims added to Login's access token by this part.
 
 **Sign in as a service.** A service or app proves who it is with its client ID and secret, and gets a 5-minute service token.
 
-Access: **Public (client credentials)** · Story: `MVP1-E1-03`
+Access: **Public (client credentials)** · Scope: None: the client secret · Story: `MVP1-E1-03`
 
 **Inputs**
 
@@ -97,7 +97,7 @@ Content-Type: application/json
 
 **Act for a user.** A service that may act for users exchanges its service token for a 5-minute token for one user, so the work it does with no person present is still that user's.
 
-Access: **Service** · Story: `MVP1-E1-03`
+Access: **Service** · Scope: A service token from a client with `act_scopes`; grants a subset of them · Story: `MVP1-E1-03`
 
 **Inputs**
 

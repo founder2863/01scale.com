@@ -25,7 +25,7 @@ Every error uses `application/problem+json` with a stable `code`. Branch on `cod
 
 **Start extracting a file.** Starts reading a ready file into structured fields. Returns at once; the work continues in the background. Calling it again for the same file while a job is running returns that job instead of starting another.
 
-Access: **Signed in** · Story: `MVP1-E3-01`
+Access: **Signed in** · Scope: `extraction:write` · Story: `MVP1-E3-01`
 
 **Inputs**
 
@@ -126,7 +126,7 @@ Content-Type: application/json
 
 **Check a job.** Where a job is, step by step. A page polls this every 2 seconds while the job runs.
 
-Access: **Signed in** · Story: `MVP1-E3-01`
+Access: **Signed in** · Scope: `extraction:read` · Story: `MVP1-E3-01`
 
 **Inputs**
 
@@ -205,7 +205,7 @@ Authorization: Bearer <access token>
 
 **Get the extracted fields.** Every field the job extracted, with its value, how confident the system is, and the exact text it was read from.
 
-Access: **Signed in** · Story: `MVP1-E3-02`
+Access: **Signed in** · Scope: `extraction:read` · Story: `MVP1-E3-02`
 
 **Inputs**
 
@@ -269,7 +269,7 @@ Authorization: Bearer <access token>
 
 **Check values against a schema's rules.** Runs the same rule checks the job runs, on any set of values. An app uses it to re-check values after a person has corrected them.
 
-Access: **Signed in** · Story: `MVP1-E3-03`
+Access: **Signed in** · Scope: `extraction:write` · Story: `MVP1-E3-03`
 
 **Inputs**
 
@@ -391,7 +391,7 @@ Content-Type: application/json
 
 **Recent jobs with cost and timing.** The last 100 jobs across all users, with tokens, cost and duration, and the failure rate. For the owner, to watch quality and spend.
 
-Access: **Admin** · Story: `MVP1-E3-05`
+Access: **Admin** · Scope: `is_admin` · Story: `MVP1-E3-05`
 
 **Inputs**
 
@@ -456,7 +456,7 @@ Authorization: Bearer <access token>
 
 **Receive platform events.** Where other services' signed events arrive. In version 1 Extraction acts on one: a user's account was deleted, so their jobs and the values read from their documents go too.
 
-Access: **Service** · Story: `MVP1-E1-05`
+Access: **Service** · Scope: None: HMAC signature · Story: `MVP1-E1-05`
 
 **Inputs**
 
