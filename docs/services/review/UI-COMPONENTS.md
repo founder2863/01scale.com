@@ -22,7 +22,7 @@ What the Human Review service ships for apps to use, as the package `packages/ui
 | `taskId` | string | The task. |
 | `showAll` | boolean, optional | Include unflagged fields. Default false; a 'Show all fields' toggle is built in. |
 
-**States:** Loading: placeholder rows; Open: fields with their status; All resolved: a short 'All checked' message; Completed: read-only values; Failed: 'Couldn't load this review.' and Retry.
+**States:** Loading: placeholder rows; Open: fields with their status; All resolved: a short 'All checked' message; Completed: marked 'Finished', values still editable; Failed: 'Couldn't load this review.' and Retry.
 
 **Calls:** `GET /tasks/{taskId}`.
 
@@ -67,12 +67,24 @@ What the Human Review service ships for apps to use, as the package `packages/ui
 
 ## EvalCandidatesTable
 
-*Component.* For an admin: corrections with both values, Approve and Reject, and Export for the approved ones.
+*Component.* For an admin, inside the app: corrections with both values, Approve and Reject.
 
 | Input | Type | Meaning |
 |---|---|---|
 | `status` | string, optional | Which candidates to show. Default `candidate`. |
 
-**States:** Loading; Empty: 'No corrections waiting.'; Loaded; Exporting; Exported: links to the files; Not an admin: 'Not found'; Failed: Retry.
+**States:** Loading; Empty: 'No corrections waiting.'; Loaded; Deciding; Not an admin: 'Not found'; Failed: Retry.
 
-**Calls:** `GET /admin/eval-candidates`, `PATCH /admin/eval-candidates/{candidateId}`, `POST /admin/eval-candidates/export`.
+**Calls:** `GET /admin/eval-candidates`, `PATCH /admin/eval-candidates/{candidateId}`.
+
+## AccuracyReport
+
+*Component.* For an admin: per field, how often people corrected it and how well flagging caught it, as numbers only.
+
+| Input | Type | Meaning |
+|---|---|---|
+| `since` | date, optional | Start of the period. Default 30 days ago. |
+
+**States:** Loading; Shown; Empty: 'No reviews in this period.'; Not an admin: 'Not found'; Failed: Retry.
+
+**Calls:** `GET /admin/accuracy`.

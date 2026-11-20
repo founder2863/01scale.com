@@ -85,7 +85,7 @@ create index field_changes_field_id_idx on review.field_changes (field_id, creat
 
 create table review.eval_candidates (
   id          uuid        primary key,
-  task_id     uuid,
+  task_id     uuid        not null,
   reference   text        not null,
   field_name  text        not null,
   line_index  smallint,
@@ -97,7 +97,9 @@ create table review.eval_candidates (
   created_at  timestamptz not null default now(),
 
   constraint eval_candidates_reference_check check (length(reference) between 1 and 200 and length(field_name) between 1 and 64),
-  constraint eval_candidates_status_check check (status in ('candidate', 'approved', 'rejected', 'exported')),
+  constraint eval_candidates_task_id_fkey foreign key (task_id)
+    references review.tasks (id) on delete cascade,
+  constraint eval_candidates_status_check check (status in ('candidate', 'approved', 'rejected')),
   constraint eval_candidates_changed_check check (human_value is distinct from model_value),
   constraint eval_candidates_decided_check check (
     (status <> 'candidate') = (decided_at is not null)
@@ -107,8 +109,7 @@ create table review.eval_candidates (
 
 -- One candidate per corrected field of a task; the admin list by status.
 create unique index eval_candidates_task_field_idx
-  on review.eval_candidates (task_id, field_name, line_index) nulls not distinct
-  where task_id is not null;
+  on review.eval_candidates (task_id, field_name, line_index) nulls not distinct;
 create index eval_candidates_status_idx on review.eval_candidates (status, created_at);
 
 create table review.inbound_events (

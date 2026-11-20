@@ -1028,6 +1028,10 @@ export const products = [
           {
             "label": "AC3",
             "text": "On desktop: Enter accepts, E edits, ↓ moves to the next field. On mobile: large tap targets."
+          },
+          {
+            "label": "AC4",
+            "text": "Fields can still be corrected after the review is completed, including after payment; each change is recorded the same way, and the latest values are the final document (Nikhil's decision on #45)."
           }
         ],
         "evals": "",
@@ -1098,7 +1102,7 @@ export const products = [
         "path": "/api/review/v1/tasks/{taskId}/fields/{fieldId}",
         "access": "Signed in",
         "summary": "Accept, edit or mark a field as not on the document.",
-        "detail": "Body `{action: accept|edit|not_present, value?}` → `200 {field}`. Errors: `422` invalid date, number or currency; `409` if the task is locked.",
+        "detail": "Body `{action: accept|edit|not_present, value?}` → `200 {field}`. Errors: `422` invalid date, number or currency. Allowed after completion (decision on #45).",
         "story": "MVP1-E4-02"
       },
       {
@@ -1126,11 +1130,11 @@ export const products = [
         "story": "MVP1-E4-04"
       },
       {
-        "method": "POST",
-        "path": "/api/review/v1/admin/eval-candidates/export",
+        "method": "GET",
+        "path": "/api/review/v1/admin/accuracy",
         "access": "Admin",
-        "summary": "Export approved corrections as ground-truth files.",
-        "detail": "Body `{candidate_ids[]}` → `200 {files: [{name, url}]}`. Only candidates with status `approved` are exported.",
+        "summary": "How often people correct each field, as counts and rates only, seen by the admin alone (every count shown as it is, decided on #81).",
+        "detail": "Query `since`, `source` → `200 {since, totals, fields[]}`. Replaces the export of corrections (decision on #41).",
         "story": "MVP1-E4-04"
       }
     ],
@@ -1154,7 +1158,7 @@ export const products = [
       {
         "story": "MVP1-E4-04",
         "title": "Corrections feed the eval set",
-        "text": "`review.eval_candidates` (id, task_id, reference, field_name, model_value jsonb, human_value jsonb, status `candidate|approved|rejected|exported`, created_at)."
+        "text": "`review.eval_candidates` (id, task_id, reference, field_name, model_value jsonb, human_value jsonb, status `candidate|approved|rejected`, created_at). `task_id` references `review.tasks` with delete cascade, so candidates are deleted with the task and the account (decision on #41)."
       }
     ]
   },
@@ -2527,11 +2531,38 @@ export const products = [
         "acs": [
           {
             "label": "AC1",
-            "text": "`/admin/quality` shows, for the last 30 days: judge agreement with human decisions, the confusion matrix and the fields the judge most often gets wrong."
+            "text": "`/admin/quality` shows, for the last 30 days, **numbers only**: judge agreement with human decisions, the confusion matrix and the fields the judge most often gets wrong. No field value, document or user appears (Nikhil's rule on #41; small-group rules in `MVP2-E10-04`)."
           },
           {
             "label": "AC2",
-            "text": "Cases where the judge and the human disagree can be exported as eval candidates."
+            "text": "The admin can add the cases where the judge and the human disagree to Review's eval candidates, **inside Review's database**, for the admin to approve as in `MVP1-E4-04`. Nothing is exported to files or to the repository, and the candidates are deleted with their owner's account (decisions on #41)."
+          }
+        ],
+        "evals": "",
+        "service": "Human Review"
+      },
+      {
+        "id": "MVP2-E10-04",
+        "title": "Privacy rules for small groups in reports",
+        "size": "S",
+        "pending": "",
+        "story": "Decided by Nikhil on 20 Nov 2026 (PR #81): MVP1's accuracy report shows every count as it is, so it can be tested with few users; MVP2 adds rules so a small count can never point to one person. As the owner, I want reports built from real users' work to stay anonymous as the number of testers grows, so a number can never reveal something about one person's document.",
+        "acs": [
+          {
+            "label": "AC1",
+            "text": "In every admin report built from users' data (the accuracy report of `MVP1-E4-04` and the judge vs human dashboard of `MVP2-E10-03`), a row whose numbers come from **fewer than 2 different people** is hidden or merged into \"Other\". The threshold is configuration."
+          },
+          {
+            "label": "AC2",
+            "text": "A count from enough people is shown as it is, however small, so the report stays useful with few testers."
+          },
+          {
+            "label": "AC3",
+            "text": "Hidden rows are still counted in the totals, and the report says how many rows were hidden and why."
+          },
+          {
+            "label": "AC4",
+            "text": "Unit tests cover the edge cases: one person with many corrections, many people with one each, and a total that would let a hidden row be worked out by subtraction."
           }
         ],
         "evals": "",
@@ -2549,10 +2580,10 @@ export const products = [
       },
       {
         "method": "POST",
-        "path": "/api/review/v1/admin/quality/export",
-        "access": "Admin",
-        "summary": "Export judge/human disagreements as eval candidates.",
-        "detail": "→ `201 {created}` rows in `review.eval_candidates`.",
+        "path": "/api/review/v1/admin/quality/candidates",
+        "access": "Admin, session only",
+        "summary": "Add judge/human disagreements to `review.eval_candidates`, inside Review's database.",
+        "detail": "→ `201 {created}`: a count only, no values. Nothing leaves the service.",
         "story": "MVP2-E10-03"
       }
     ],
@@ -2568,6 +2599,10 @@ export const products = [
       {
         "story": "MVP2-E10-03",
         "text": "Review can compare judge and human because each review field stores the judge verdict it was created with."
+      },
+      {
+        "story": "MVP2-E10-04",
+        "text": "No new endpoints. `GET /api/review/v1/admin/accuracy` and the judge vs human report add `hidden_rows` and apply the rule."
       }
     ],
     "dbNotes": [
@@ -2585,6 +2620,11 @@ export const products = [
         "story": "MVP2-E10-03",
         "title": "Judge vs human dashboard",
         "text": "No new tables; aggregates `review.fields.judge_verdict` against `review.field_changes`."
+      },
+      {
+        "story": "MVP2-E10-04",
+        "title": "Privacy rules for small groups in reports",
+        "text": "No schema change; the rule counts distinct `review.tasks.owner_id` per row."
       }
     ]
   },

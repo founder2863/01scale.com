@@ -400,9 +400,10 @@ As Priya, I want to drag and drop or pick a file on my phone and see progress.
 - **AC1:** Per field, I can accept, edit (with input checks: dates, numbers, currency code) or mark "Not on document".
 - **AC2:** Every change stores the original value, the new value, who changed it and when, and audits `review.field_updated`.
 - **AC3:** On desktop: Enter accepts, E edits, ↓ moves to the next field. On mobile: large tap targets.
+- **AC4:** Fields can still be corrected after the review is completed, including after payment; each change is recorded the same way, and the latest values are the final document (Nikhil's decision on #45).
 - **Service:** Human Review
 - **API design:**
-  - `PATCH /api/review/v1/tasks/{taskId}/fields/{fieldId}` (signed in) — Accept, edit or mark a field as not on the document. Body `{action: accept|edit|not_present, value?}` → `200 {field}`. Errors: `422` invalid date, number or currency; `409` if the task is locked.
+  - `PATCH /api/review/v1/tasks/{taskId}/fields/{fieldId}` (signed in) — Accept, edit or mark a field as not on the document. Body `{action: accept|edit|not_present, value?}` → `200 {field}`. Errors: `422` invalid date, number or currency. Allowed after completion (decision on #45).
 - **Database design:** `review.field_changes` (id, field_id → fields, old_value jsonb, new_value jsonb, action, source `review|chat`, changed_by, created_at) keeps the full history so any change can be traced or undone.
 
 ### MVP1-E4-03 · Complete review — S
@@ -421,8 +422,8 @@ As Priya, I want to drag and drop or pick a file on my phone and see progress.
 - **Service:** Human Review
 - **API design:**
   - `GET /api/review/v1/admin/eval-candidates` (admin) — Human corrections waiting for approval as eval cases. Query `status`, `cursor` → `200 {data: [EvalCandidate], next_cursor}`.
-  - `POST /api/review/v1/admin/eval-candidates/export` (admin) — Export approved corrections as ground-truth files. Body `{candidate_ids[]}` → `200 {files: [{name, url}]}`. Only candidates with status `approved` are exported.
-- **Database design:** `review.eval_candidates` (id, task_id, reference, field_name, model_value jsonb, human_value jsonb, status `candidate|approved|rejected|exported`, created_at).
+  - `GET /api/review/v1/admin/accuracy` (admin) — How often people correct each field, as counts and rates only, seen by the admin alone (every count shown as it is, decided on #81). Query `since`, `source` → `200 {since, totals, fields[]}`. Replaces the export of corrections (decision on #41).
+- **Database design:** `review.eval_candidates` (id, task_id, reference, field_name, model_value jsonb, human_value jsonb, status `candidate|approved|rejected`, created_at). `task_id` references `review.tasks` with delete cascade, so candidates are deleted with the task and the account (decision on #41).
 
 ---
 
