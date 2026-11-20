@@ -43,6 +43,7 @@ Neon Postgres, defined in Drizzle and changed only through migrations. **Each se
 | identity | `sessions` | Browser sessions; only a hash of the token is stored. | `MVP1-E1-03` |
 | identity | `signing_keys` | Keys that sign access tokens. | `MVP1-E1-03` |
 | identity | `api_keys` | Keys for agents and scripts; hash only. | `MVP1-E0-06` |
+| identity | `service_clients` | Services and apps allowed to get tokens, and what they may do for users; secret hash only. | `MVP1-E1-03` |
 | identity | `auth_identities` | How a user can sign in (email, passkey). | `MVP2-E8-01` |
 | identity | `login_tokens` | Magic links and one-time codes; hash only. | `MVP2-E8-01` |
 | identity | `passkeys` | WebAuthn credentials. | `MVP2-E8-01` |

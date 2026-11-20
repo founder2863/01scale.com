@@ -88,7 +88,7 @@ CLAIMS = [
     ("`iat`, `exp`", "Unix seconds; `exp` = `iat` + 300", "Issued at and expiry (5 minutes)"),
     ("`jti`", "A UUID", "Unique ID of this token, for logs"),
     ("`sid`", f"`{S1}`", "The session it came from"),
-    ("`auth`", "`session`", "How the user authenticated (`api_key` arrives with story MVP1-E0-06)"),
+    ("`auth`", "`session`", "How the caller authenticated: `session` here; `api_key` (Account management), `service` and `delegated` (Service access, `docs/services/identity/service-access`)"),
     ("`scopes`", '`["*"]`', "What the caller may do; a browser session has full access to the user's own data"),
     ("`is_admin`", "`false`", "Whether admin-only endpoints are allowed"),
 ]

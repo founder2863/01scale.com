@@ -325,7 +325,7 @@ export const account = {
           "in": "body",
           "type": "string[]",
           "required": "Yes",
-          "constraints": "1 or more of: `upload:read`, `upload:write`, `extraction:read`, `extraction:write`, `review:read`, `review:write`, `payment:read`, `payment:write`, `delivery:read`, `docflow:read`, `docflow:write`. No duplicates.",
+          "constraints": "1 or more of: `upload:read`, `upload:write`, `extraction:read`, `extraction:write`, `review:read`, `review:write`, `payment:read`, `delivery:read`, `docflow:read`, `docflow:write`. No duplicates.",
           "meaning": "What the key may do."
         },
         {
@@ -479,7 +479,7 @@ export const account = {
         },
         {
           "status": "401",
-          "code": "`invalid_service_key`",
+          "code": "`invalid_service_credential`",
           "when": "The caller is not the gateway."
         }
       ],
@@ -513,7 +513,8 @@ export const account = {
         }
       ],
       "behaviour": [
-        "Read only. Records nothing: the calling service audits its own use."
+        "Read only. Records nothing: the calling service audits its own use.",
+        "The caller gets its service token by signing in as a client (Service access, `docs/services/identity/service-access`)."
       ],
       "responses": [
         {
@@ -756,6 +757,7 @@ export const account = {
     "Decided (#70): the key prefix is the first 8 characters after `sk_01s_`, since every key starts with `sk_01s_`.",
     "Decided (#70): `GET /users/{userId}` is listed in `MVP1-E1-05` (Identity, which owns it) and `MVP1-E7-03` (Delivery, which calls it).",
     "Decided by Nikhil on 20 Nov 2026 (#70): in MVP1, deleting an account deletes it at once, as designed here. Deactivation with a 30-day restore window is MVP2 story `MVP2-E8-11`, and only Identity changes.",
+    "API keys have no `payment:write` scope: only a person, through Stripe's page, completes a payment (`MVP1-E0-06` AC5).",
     "`docs/infra/cognito.md` needs a step for the IAM user that may call `AdminDeleteUser`.",
     "Starting limits: 10 active keys per person, 90-day default expiry, 1 year at most."
   ],
@@ -1037,7 +1039,7 @@ export const account = {
       "text": "Cognito user deleted → user row deleted with its sessions and keys → `auth.account_deleted` kept without the email → `identity.user.deleted` sent to every service."
     }
   ],
-  "ddl": "-- Identity service, version 1, Account management. Schema: identity.\n-- Loaded after Login's schema (docs/services/identity/schema.sql), which creates identity.users.\n-- Checked with `npm run schema:check`: runs on PGlite, and every sample row passes every constraint.\n\ncreate table identity.api_keys (\n  id           uuid        primary key,\n  user_id      uuid        not null,\n  name         text        not null,\n  prefix       text        not null,\n  key_hash     text        not null,\n  scopes       text[]      not null,\n  last_used_at timestamptz,\n  expires_at   timestamptz not null,\n  revoked_at   timestamptz,\n  created_at   timestamptz not null default now(),\n\n  constraint api_keys_user_id_fkey foreign key (user_id)\n    references identity.users (id) on delete cascade,\n  constraint api_keys_key_hash_key unique (key_hash),\n  constraint api_keys_name_check check (length(name) between 1 and 100),\n  constraint api_keys_prefix_check check (prefix ~ '^[A-Za-z0-9_-]{8}$'),\n  constraint api_keys_key_hash_check check (key_hash ~ '^[0-9a-f]{64}$'),\n  constraint api_keys_scopes_check check (\n    cardinality(scopes) >= 1\n    and scopes <@ array['upload:read', 'upload:write', 'extraction:read', 'extraction:write', 'review:read', 'review:write', 'payment:read', 'payment:write', 'delivery:read', 'docflow:read', 'docflow:write']::text[]\n  ),\n  constraint api_keys_dates_check check (\n    expires_at > created_at\n    and expires_at <= created_at + interval '1 year'\n    and (revoked_at is null or revoked_at >= created_at)\n  )\n);\n\ncreate index api_keys_user_id_idx on identity.api_keys (user_id, created_at desc);\n\ngrant select, insert, update, delete on identity.api_keys to identity_service;\n",
+  "ddl": "-- Identity service, version 1, Account management. Schema: identity.\n-- Loaded after Login's schema (docs/services/identity/schema.sql), which creates identity.users.\n-- Checked with `npm run schema:check`: runs on PGlite, and every sample row passes every constraint.\n\ncreate table identity.api_keys (\n  id           uuid        primary key,\n  user_id      uuid        not null,\n  name         text        not null,\n  prefix       text        not null,\n  key_hash     text        not null,\n  scopes       text[]      not null,\n  last_used_at timestamptz,\n  expires_at   timestamptz not null,\n  revoked_at   timestamptz,\n  created_at   timestamptz not null default now(),\n\n  constraint api_keys_user_id_fkey foreign key (user_id)\n    references identity.users (id) on delete cascade,\n  constraint api_keys_key_hash_key unique (key_hash),\n  constraint api_keys_name_check check (length(name) between 1 and 100),\n  constraint api_keys_prefix_check check (prefix ~ '^[A-Za-z0-9_-]{8}$'),\n  constraint api_keys_key_hash_check check (key_hash ~ '^[0-9a-f]{64}$'),\n  constraint api_keys_scopes_check check (\n    cardinality(scopes) >= 1\n    and scopes <@ array['upload:read', 'upload:write', 'extraction:read', 'extraction:write', 'review:read', 'review:write', 'payment:read', 'delivery:read', 'docflow:read', 'docflow:write']::text[]\n  ),\n  constraint api_keys_dates_check check (\n    expires_at > created_at\n    and expires_at <= created_at + interval '1 year'\n    and (revoked_at is null or revoked_at >= created_at)\n  )\n);\n\ncreate index api_keys_user_id_idx on identity.api_keys (user_id, created_at desc);\n\ngrant select, insert, update, delete on identity.api_keys to identity_service;\n",
   "queries": [
     {
       "title": "Exchange a key",

@@ -121,5 +121,6 @@ Environment variables on the service's own deployment. Secrets are never committ
 - Decided (#70): the key prefix is the first 8 characters after `sk_01s_`, since every key starts with `sk_01s_`.
 - Decided (#70): `GET /users/{userId}` is listed in `MVP1-E1-05` (Identity, which owns it) and `MVP1-E7-03` (Delivery, which calls it).
 - Decided by Nikhil on 20 Nov 2026 (#70): in MVP1, deleting an account deletes it at once, as designed here. Deactivation with a 30-day restore window is MVP2 story `MVP2-E8-11`, and only Identity changes.
+- API keys have no `payment:write` scope: only a person, through Stripe's page, completes a payment (`MVP1-E0-06` AC5).
 - `docs/infra/cognito.md` needs a step for the IAM user that may call `AdminDeleteUser`.
 - Starting limits: 10 active keys per person, 90-day default expiry, 1 year at most.

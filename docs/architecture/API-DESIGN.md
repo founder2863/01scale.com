@@ -66,6 +66,8 @@ Services never see cookies or API keys, and they do not call Identity on each re
 - **Services are app-agnostic.** Upload knows about files, not invoices. Payment knows about orders with an opaque `reference`, not documents. That is what lets a second app reuse them.
 - **Apps hold the process.** DocFlow's own API under `/api/docflow/v1` owns the invoice process: which file, which job, which review task and which order belong together, and what the next step is. It calls the services in a fixed order.
 - **Prices and entitlements are app decisions.** Only an app's server can create a Payment order or send a Delivery message (Service access), so a browser can never set an amount.
+- **Services acting for a user** (decision on #24): a step with no person present (for example DocFlow after an extraction finishes) uses a delegated token from Identity: the user's token, marked with the acting service in `act`. Every service keeps one ownership rule, and audit records both.
+- **Every call goes through the gateway** (decision on #21): services and apps call each other at `01scale.com/api/{service}/v1/…`, like any client.
 
 ## Agent access
 
@@ -111,6 +113,8 @@ Sign-in, sessions, accounts, API keys and the tokens every other service trusts.
 | `POST` | `/api/identity/v1/auth/logout` | Signed in | End the current session and sign out of the identity provider. | `MVP1-E1-03` |
 | `GET` | `/api/identity/v1/session` | Signed in | Who am I: the current session and user, or 401. | `MVP1-E1-03` |
 | `POST` | `/api/identity/v1/token` | Service | Exchange a session cookie or API key for a short-lived access token (called by the gateway). | `MVP1-E1-03` |
+| `POST` | `/api/identity/v1/token` (client credentials, token exchange) | Service | A service signs in as itself; a service allowed to act for users gets a 5-minute delegated token for one user (`act` claim). | `MVP1-E1-03` |
+| `GET` | `/api/identity/v1/users/{userId}` | Service | A user's verified email, for services that write to them (Delivery). | `MVP1-E7-01` |
 | `GET` | `/api/identity/v1/jwks` | Public | The public keys services use to verify access tokens. | `MVP1-E1-03` |
 | `GET` | `/api/identity/v1/me` | Signed in | My account: email and joined date. | `MVP1-E1-05` |
 | `POST` | `/api/identity/v1/me/password-change` | Signed in | Start a password change through the identity provider. | `MVP1-E1-05` |

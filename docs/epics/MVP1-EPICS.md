@@ -195,14 +195,15 @@ As a new user, I want to sign up with my email and password so I can use DocFlow
 - **AC2:** After sign-in, the app creates its own session cookie (HttpOnly, Secure, SameSite=Lax). Cognito tokens stay on the server and never reach browser JavaScript.
 - **AC3:** Sign-out clears the app session and calls Cognito's logout endpoint, so the next sign-in shows the login form.
 - **AC4:** `auth.signin` and `auth.signout` are audited.
+- **AC5:** A registered service or app can sign in as itself with a client secret, and a service allowed to act for users can exchange its token for a 5-minute token for one user, carrying `act` (decision on #24, `docs/decisions/MVP1-E1.md`). Delegated tokens never carry Identity scopes.
 - **Service:** Identity
 - **API design:**
   - `GET /api/identity/v1/auth/callback` (public) — OIDC redirect target: exchanges the code and creates the session. Query `code`, `state` → `302` to `return_to` with the session cookie set. Errors: `400` on `state`/`nonce` mismatch or unverified email.
   - `POST /api/identity/v1/auth/logout` (signed in) — End the current session and sign out of the identity provider. → `200 {logout_url}` (the client follows it to clear the provider session).
   - `GET /api/identity/v1/session` (signed in) — Who am I: the current session and user, or 401. → `200 {user: {id, email}, session: {expires_at}, auth: "session"|"api_key", scopes[]}`. Errors: `401`.
-  - `POST /api/identity/v1/token` (service) — Exchange a session cookie or API key for a short-lived access token (called by the gateway). → `200 {access_token, expires_in: 300}`. The token is a signed JWT with `sub`, `scopes`, `is_admin` and `aud`. Errors: `401`.
+  - `POST /api/identity/v1/token` (service) — Exchange a session cookie or API key for a short-lived access token (called by the gateway). → `200 {access_token, expires_in: 300}`. The token is a signed JWT with `sub`, `scopes`, `is_admin`, `aud` and `auth` (`session`, `api_key`, `service` or `delegated`). Also: `grant_type: client_credentials` (`client_id`, `client_secret`) → a service token with `app`; and `grant_type: urn:ietf:params:oauth:grant-type:token-exchange` with a service token and `on_behalf_of` → a delegated token with `act`. Errors: `401`, `403 delegation_not_allowed`, `404 user_not_found`.
   - `GET /api/identity/v1/jwks` (public) — The public keys services use to verify access tokens. → `200` JWKS. Cacheable; keys rotate with overlap so old tokens stay valid until they expire.
-- **Database design:** `identity.sessions` (id, user_id → users, token_hash unique, created_at, expires_at, revoked_at). `identity.signing_keys` (kid, public_jwk, private_key_encrypted, created_at, retired_at) for access tokens. The cookie holds a random token; only its SHA-256 hash is stored. Cognito tokens are not stored.
+- **Database design:** `identity.sessions` (id, user_id → users, token_hash unique, created_at, expires_at, revoked_at). `identity.signing_keys` (kid, public_jwk, private_key_encrypted, created_at, retired_at) for access tokens. The cookie holds a random token; only its SHA-256 hash is stored. Cognito tokens are not stored. `identity.service_clients` (id, secret_hash unique, scopes, act_scopes, created_at, rotated_at, revoked_at): registered services and apps, added only by migrations.
 
 ### MVP1-E1-04 · Forgot and reset password — S
 - **AC1:** Given I choose "Forgot password", when I enter my email, then Cognito sends a reset code. The page says the same thing whether or not the account exists.
