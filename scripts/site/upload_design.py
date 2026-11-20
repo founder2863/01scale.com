@@ -381,7 +381,7 @@ JOURNEYS = [
             ("Sees the file name and a progress bar starting at 0%.", "Upload records the file as `pending_upload` and returns a link valid for 5 minutes."),
             ("Watches the bar fill.", "The browser sends the file straight to private storage with that link. Upload never handles the bytes."),
             ("Sees 'Checking your file…' for a moment.", "Upload confirms the file arrived at the declared size, checks its first bytes match its type, and counts its pages."),
-            ("Sees 'Uploaded' and is taken to the next step.", "The file is `ready`. The app that uses Upload moves on; in DocFlow, the extraction page opens."),
+            ("Sees 'Uploaded' and a preview of the file, then continues.", "The file is `ready`. The app shows Upload's `FilePreview` for it and moves on when the person continues; in DocFlow, to the extraction page."),
         ],
         "The file is stored privately, checked and ready to use. Only its owner can read it, through links that last 5 minutes.",
     ),
@@ -455,6 +455,7 @@ UI_RULES = [
     "Components call only the Upload API, plus the storage link that API hands out. They never call another service.",
     "An app can supply its own `create` and `complete` functions to wrap Upload in its own process (DocFlow does, to record the document as well). The components still know nothing about the app.",
     "They ship as the package `packages/ui-upload` and work in any app.",
+    "Each component works on its own, given its inputs and a signed-in person. It may depend on Identity's login component and on nothing else from another service (Nikhil's decision on #36). Pages place components side by side and pass values between them.",
     "No tokens in browser JavaScript: requests carry the HttpOnly session cookie and the gateway does the rest. Upload and download links are short-lived and fixed to one file.",
     "Every action works without dragging: a phone uses the file picker or the camera.",
     "Every request has a loading state that keeps the layout still, and a failure state with a plain-language message and a way to retry.",
@@ -529,6 +530,24 @@ COMPONENTS = [
         ],
         ["Default", "Working: disabled while the link is fetched", "Failed: the message (still uploading, expired, not found) next to the button"],
         ["`GET /files/{fileId}/download-url`"],
+    ),
+    component(
+        "FilePreview", "Component",
+        "Shows a stored PDF page by page, or an image, inside the page, so a person can read the document beside other information. New: decided on #36 and confirmed on PR #65, used on DocFlow's upload screen (`MVP1-E2-04`) and extraction page (`MVP1-E3-04`), and by any other app.",
+        [
+            ("fileId", "string", "The file."),
+            ("page", "number, optional", "The page to show; changing it scrolls to that page. Default 1."),
+            ("onPageChange", "(page) => void, optional", "Called when the person moves to another page."),
+            ("highlight", "string, optional", "Text to mark on the shown page, for example a field's source quote. Ignored if not found."),
+        ],
+        [
+            "Loading: a placeholder of the document's shape",
+            "Shown: one page at a time with page number, previous and next, and zoom; an image fits the width",
+            "Link expired: fetches a new 5-minute link without a reload",
+            "Not available: 'This document is no longer available' when the file was deleted or expired after 30 days",
+            "Failed: the message and Retry",
+        ],
+        ["`GET /files/{fileId}/download-url?disposition=inline`"],
     ),
     component(
         "DeleteFileButton", "Component",
@@ -673,5 +692,6 @@ MODULE = {
         "Decided by Nikhil on 17 Nov 2026 (#64): these are demo services, with no batch or programmatic use yet. Each user may make 10 requests a minute that change something, on any service, and 60 reads a minute so pages and progress checks keep working; calls with an API key are limited to 10 a minute in total. Higher limits come with paid plans (`MVP2-E13-06`).",
         "Decided (#64): files are deleted after 30 days with no notice beforehand. The upload story says so, and each file's `expires_at` is returned with it.",
         "Decided (#64): each uploaded file is its own file. Several photos of the pages of one invoice are several files, and several documents; joining them into one is not in this version.",
+        "`FilePreview` renders PDFs in the browser (for example with PDF.js) from the 5-minute inline link; the file never passes through Upload's API. Which library is chosen when the component is built.",
     ],
 }

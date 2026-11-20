@@ -591,7 +591,7 @@ export const products = [
           },
           {
             "label": "AC3",
-            "text": "After upload, I'm taken to the document's extraction page automatically."
+            "text": "Once the file is uploaded and checked, the upload screen shows its preview (Upload's `FilePreview` component) while extraction starts in the background; \"Continue\" takes me to the document's extraction page, which shows the same preview beside the fields (Nikhil's decision on PR #65)."
           }
         ],
         "evals": "",
@@ -842,7 +842,7 @@ export const products = [
           },
           {
             "label": "AC2",
-            "text": "When done, the document preview (rendered PDF page or image) is on the left and the fields on the right, with confidence badges (green ≥ 0.85, amber 0.6–0.85, red < 0.6) and flagged fields highlighted."
+            "text": "When done, the document preview (rendered PDF page or image, Upload's `FilePreview` component, decided on #36) is on the left and the fields on the right, with confidence badges (green ≥ 0.85, amber 0.6–0.85, red < 0.6) and flagged fields highlighted."
           },
           {
             "label": "AC3",
