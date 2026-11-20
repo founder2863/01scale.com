@@ -356,8 +356,8 @@ MODULE = {
         {"name": "EVENT_SUBSCRIBERS", "value": "The webhook addresses that receive Payment's events, for example DocFlow's", "secret": "No"},
     ],
     "openQuestions": [
-        "Stripe Checkout pages are kept open for 1 hour here (Stripe allows 30 minutes to 24 hours). Is an hour right?",
-        "Refunds are not designed. In test mode they matter only for the demo; should the admin be able to refund?",
+        "Decided by Nikhil on 20 Nov 2026 (#67): a Stripe Checkout page stays open for 1 hour (Stripe allows 30 minutes to 24 hours).",
+        "Refunds are pending: story `MVP1-E6-04` (decided on #67). This version has no refund endpoint; a refund made in Stripe's dashboard is not reflected on the order.",
         "Rate limits are starting values.",
     ],
     "errorSample": problem("already_paid", "Already paid", 409, "This item is already paid for."),
