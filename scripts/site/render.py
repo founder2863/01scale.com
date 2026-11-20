@@ -228,8 +228,46 @@ def write_sql(m):
     open(os.path.join(folder, "sample-data.sql"), "w").write("\n".join(lines) + "\n")
 
 
+# The order in which a module's documents are written. Setting the environment
+# variable DESIGN_STAGE_<KEY> (for example DESIGN_STAGE_PAYMENT=2) publishes only
+# the first N documents, so a finished design can be committed one document at a time.
+STAGES = [
+    ("API spec", ["endpoints", "noEndpoint", "errorSample", "cookies", "claims"]),
+    ("Data model", ["tables", "entities", "lifecycles", "otherTables", "notStored"]),
+    ("Schema", ["ddl", "queries"]),
+    ("User journeys", ["journeys", "edgeCases"]),
+    ("UI components", ["uiRules", "components", "hostedPages"]),
+    ("Read Me", ["flow", "concepts", "quickstart", "env", "decisions", "openQuestions"]),
+]
+
+
+def staged(module, key):
+    """Return (module limited to its published stage, whether every stage is published)."""
+    stage = os.environ.get(f"DESIGN_STAGE_{key.upper()}")
+    if not stage:
+        return module, True
+    upto = int(stage)
+    m = json.loads(json.dumps(module))
+    for i, (_, keys) in enumerate(STAGES, start=1):
+        if i <= upto:
+            continue
+        for k in keys:
+            m.pop(k, None)
+        if i == 2:
+            m.get("rules", [{}, {}, {}])[2]["items"] = []
+        if i == 3:
+            m.get("rules", [{}, {}, {}])[1]["items"] = []
+            for t in m.get("tables", []):
+                t["constraints"], t["sampleCols"], t["sampleRows"] = [], [], []
+        if i == 6:
+            o = m.setdefault("overview", {})
+            o.update(what=[], why=[], scope_in=[], scope_out=[], status="In design")
+    return m, upto >= len(STAGES)
+
+
 def render(module, key):
     """Write the module's documents, and its page data if it has a product page."""
+    module, _ = staged(module, key)
     m = complete(module)
     folder = m["docsPath"]
     os.makedirs(folder, exist_ok=True)

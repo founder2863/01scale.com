@@ -1304,8 +1304,8 @@ export const products = [
     "group": "MVP1",
     "service": "Payment",
     "description": "A one-time payment with Stripe Checkout in test mode.",
-    "status": "Planned",
-    "detailed": false,
+    "status": "Designed",
+    "detailed": true,
     "epic": {
       "id": "E6",
       "title": "Payment",
@@ -1384,6 +1384,41 @@ export const products = [
         ],
         "evals": "",
         "service": "Payment (UI component), used by the DocFlow app"
+      },
+      {
+        "id": "MVP1-E6-04",
+        "title": "Refunds",
+        "size": "S",
+        "pending": "Decided on PR #67: refunds are not in the first version of Payment; this story adds them.",
+        "story": "As the owner, I want to refund a paid order in full, so a demo user who was charged by mistake (in test mode) can be put right, and the platform shows how a refund flows through every service.",
+        "acs": [
+          {
+            "label": "AC1",
+            "text": "An admin can refund a paid order in full from the admin page, with a reason. A person always does this: it is session only and never available to API keys or agents."
+          },
+          {
+            "label": "AC2",
+            "text": "Payment creates the refund in Stripe with the order's ID as the idempotency key, so a repeated request never refunds twice. The order becomes `refunded` when Stripe's webhook confirms it (`charge.refunded`), not when the request is sent."
+          },
+          {
+            "label": "AC3",
+            "text": "Payment announces `payment.order.refunded` to the app that created the order (routed by reference, decision on #13). In DocFlow, the document's downloads lock again and its status shows \"Refunded\"; the reviewed data stays."
+          },
+          {
+            "label": "AC4",
+            "text": "The person who paid is emailed through Delivery that the refund was made, with the amount; Stripe's own refund receipt still applies."
+          },
+          {
+            "label": "AC5",
+            "text": "A refund is audited (`order.refunded`) with the admin, the reason and the amount. Partial refunds are not in this version."
+          },
+          {
+            "label": "AC6",
+            "text": "Refunding an order that is not paid answers `409 not_paid`; refunding it again answers `409 already_refunded`."
+          }
+        ],
+        "evals": "",
+        "service": "Payment; DocFlow reacts to the event; Delivery sends the email"
       }
     ],
     "endpoints": [
@@ -1426,12 +1461,28 @@ export const products = [
         "summary": "Get one order, for payment and success pages to poll.",
         "detail": "→ `200 {order: {id, reference, description, amount, currency, status: pending|paid|expired|failed}}`.",
         "story": "MVP1-E6-03"
+      },
+      {
+        "method": "POST",
+        "path": "/api/payment/v1/orders/{orderId}/refund",
+        "access": "Admin, session only",
+        "summary": "Refund a paid order in full.",
+        "detail": "Body `{reason}` + `Idempotency-Key` → `202 {order}` with status `refund_pending`. Errors: `409 not_paid`, `409 already_refunded`, `503 stripe_unavailable`.",
+        "story": "MVP1-E6-04"
       }
     ],
     "apiNotes": [
       {
         "story": "MVP1-E6-03",
         "text": "The page also calls DocFlow `POST …/checkout` (E6-01)."
+      },
+      {
+        "story": "MVP1-E6-04",
+        "text": "The Stripe webhook (`MVP1-E6-02`) also handles `charge.refunded`."
+      },
+      {
+        "story": "MVP1-E6-04",
+        "text": "DocFlow's webhook handles `payment.order.refunded`."
       }
     ],
     "dbNotes": [
@@ -1449,6 +1500,11 @@ export const products = [
         "story": "MVP1-E6-03",
         "title": "Payment page and states",
         "text": "No schema change."
+      },
+      {
+        "story": "MVP1-E6-04",
+        "title": "Refunds",
+        "text": "`payment.orders.status` adds `refund_pending` and `refunded`; the order adds `refund_reason`, `stripe_refund_id` (unique) and `refunded_at`. `docflow.documents.status` adds `refunded`."
       }
     ]
   },
