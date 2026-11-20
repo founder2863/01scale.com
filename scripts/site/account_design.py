@@ -291,7 +291,7 @@ MODULE = {
     "env": [
         {"name": "COGNITO_USER_POOL_ID", "value": "From the Cognito setup, for `AdminDeleteUser`", "secret": "No"},
         {"name": "AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY", "value": "An IAM user allowed only `cognito-idp:AdminDeleteUser` on the pool", "secret": "Yes"},
-        {"name": "IDENTITY_EVENT_SUBSCRIBERS", "value": "The services' event addresses, comma-separated", "secret": "No"},
+        {"name": "EVENT_ROUTES", "value": "From the service template; `identity.user.deleted` is platform-wide, so it goes to every service and app", "secret": "No"},
         {"name": "EVENTS_SIGNING_KEY", "value": "32 random bytes, base64", "secret": "Yes"},
     ],
     "openQuestions": [

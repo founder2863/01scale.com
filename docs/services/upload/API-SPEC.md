@@ -35,7 +35,6 @@ Access: **Signed in** · Scope: `upload:write` · Story: `MVP1-E2-02`
 | `mime` | body | string | Yes | One of `application/pdf`, `image/png`, `image/jpeg`, `application/json`, `text/csv`, and allowed by `accept` if given. | The file type the browser reports. Checked again against the real bytes on completion. |
 | `size` | body | integer | Yes | 1 to 10,485,760 (10 MB), and at most `accept.max_bytes` if given. | The exact size in bytes. The upload link only accepts this size. |
 | `accept` | body | object | No | `{mimes[], max_bytes, max_pages}`; each value may only narrow the service's limits, never widen them. `max_pages` 1 to 10, PDFs only. | The calling app's own limits. DocFlow sends PDF, PNG and JPEG, 10 MB and 10 pages. |
-| `owner_id` | body | uuid | Only with Service access | Rejected unless the caller has the `service` role. | Lets an app's server store a file for a user, for example DocFlow saving the JSON and CSV results (MVP1-E5-04). |
 | `Idempotency-Key` | header | string | No | 1 to 255 characters. Same key and same body within 24 hours returns the first response. | Makes a retried request safe. |
 
 **Behaviour**
@@ -59,7 +58,6 @@ Access: **Signed in** · Scope: `upload:write` · Story: `MVP1-E2-02`
 | `415` | `unsupported_file_type` | `mime` is not one of the allowed types, or not allowed by `accept`. |
 | `422` | `validation_failed` | Another input is missing or malformed; `errors[]` lists each field. |
 | `422` | `idempotency_key_reused` | The same `Idempotency-Key` was sent with a different body. |
-| `403` | `service_only` | `owner_id` was sent without the `service` role. |
 | `401` | `not_authenticated` | No valid access token. |
 | `503` | `storage_unavailable` | AWS S3 could not be reached. Nothing was changed; safe to retry. |
 
@@ -470,7 +468,7 @@ HTTP/1.1 200 OK
 - `size` must be between 1 byte and 10 MB, and within `accept.max_bytes`.
 - `accept` can only narrow the service's limits, never widen them.
 - `file_name` is 1 to 255 characters, with no path separators or control characters; it is never used to build the storage key.
-- `owner_id` is accepted only from a caller with the `service` role.
+- The owner is always the token's user; an app storing a file for a user uses a delegated token (decision on #24).
 - Another user's file always answers `404 file_not_found`, never `403`.
 - Upload and download links last 5 minutes, and fix the type and size (upload) or type and filename (download) in their signature.
 - `POST /files` accepts `Idempotency-Key`; `complete` and `DELETE` are idempotent by design.

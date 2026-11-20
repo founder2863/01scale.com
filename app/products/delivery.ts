@@ -110,7 +110,7 @@ export const delivery = {
       "title": "Send an email from an app's server",
       "text": "Name the user and the template; never an address.",
       "lang": "ts",
-      "code": "await serviceApi.post(\"/api/delivery/v1/messages\", {\n  user_id: userId, template: \"order_paid\", reference: `docflow:${documentId}`,\n  data: { document_name: \"invoice.pdf\", amount: 500, currency: \"USD\", link_path: `/documents/${documentId}/success` },\n}, { headers: { \"Idempotency-Key\": paymentEventId } });"
+      "code": "await callService(\"/api/delivery/v1/messages\", { onBehalfOf: userId }, {\n  template: \"order_paid\", reference: `docflow:${documentId}`,\n  data: { document_name: \"invoice.pdf\", amount: 500, currency: \"USD\", link_path: `/documents/${documentId}/success` },\n}, { headers: { \"Idempotency-Key\": paymentEventId } });"
     },
     {
       "title": "Show the email's status",
@@ -130,15 +130,15 @@ export const delivery = {
       "access": "Service",
       "story": "MVP1-E7-03",
       "title": "Send a templated email to a user",
-      "summary": "An app's server asks Delivery to email one of its users. Delivery looks up the address, fills the template, sends it through Resend and retries if needed. Never callable from a browser, so nobody can send email in 01scale's name.",
+      "summary": "An app's server asks Delivery to email one of its users, acting for that user. Delivery looks up the address, fills the template, sends it through Resend and retries if needed. Only a delegated token is accepted, so a browser can never send email in 01scale's name.",
       "params": [
         {
-          "name": "user_id",
-          "in": "body",
-          "type": "uuid",
+          "name": "Authorization",
+          "in": "header",
+          "type": "string",
           "required": "Yes",
-          "constraints": "An existing user.",
-          "meaning": "Who receives it. Delivery looks up their verified email from Identity at send time; apps never pass addresses."
+          "constraints": "`Bearer <delegated token>` with `delivery:write` and `act`.",
+          "meaning": "Who receives it is the token's `sub`. Delivery looks up their verified email from Identity at send time; apps never pass addresses."
         },
         {
           "name": "template",
@@ -175,7 +175,7 @@ export const delivery = {
       ],
       "behaviour": [
         "Validates the template's data and records the message as `queued`; answers `202` at once.",
-        "In the background: looks up the user's email through Identity `GET /api/identity/v1/users/{userId}`, renders the template, and sends it through Resend from `receipts@01scale.com`.",
+        "In the background: looks up the user's email through Identity `GET /api/identity/v1/users/{userId}` with Delivery's own service token (`identity:users.read`), renders the template, and sends it through Resend from `receipts@01scale.com`.",
         "On a failure Resend says is temporary, retries 3 times, after 1, 5 and 25 seconds. Then the message is `failed` with the reason, and Delivery announces `delivery.message.failed`.",
         "On success the message is `sent` with Resend's message ID, and `delivery.message.sent` is recorded in the audit log."
       ],
@@ -205,12 +205,12 @@ export const delivery = {
         {
           "status": "403",
           "code": "`service_only`",
-          "when": "The caller is not an app's server."
+          "when": "The token is not a delegated token: a browser session, an API key or a service acting as itself."
         }
       ],
-      "request": "POST /api/delivery/v1/messages HTTP/1.1\nAuthorization: Bearer <DocFlow service token>\nIdempotency-Key: evt_order_paid_0193b120\nContent-Type: application/json\n\n{\n  \"user_id\": \"0193a5b2-7c1e-7a3f-9b2d-4e6f8a1c2d3e\",\n  \"template\": \"order_paid\",\n  \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n  \"data\": {\n    \"document_name\": \"acme-invoice-0042.pdf\",\n    \"amount\": 500,\n    \"currency\": \"USD\",\n    \"link_path\": \"/documents/0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c/success\"\n  }\n}",
+      "request": "POST /api/delivery/v1/messages HTTP/1.1\nAuthorization: Bearer <delegated token: the user, act service:docflow>\nIdempotency-Key: evt_order_paid_0193b120\nContent-Type: application/json\n\n{\n  \"template\": \"order_paid\",\n  \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n  \"data\": {\n    \"document_name\": \"acme-invoice-0042.pdf\",\n    \"amount\": 500,\n    \"currency\": \"USD\",\n    \"link_path\": \"/documents/0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c/success\"\n  }\n}",
       "response": "HTTP/1.1 202 Accepted\nContent-Type: application/json\n\n{\n  \"message\": {\n    \"id\": \"0193b140-2b3c-7d4e-8f50-6172839a0b1c\",\n    \"app\": \"docflow\",\n    \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n    \"channel\": \"email\",\n    \"template\": \"order_paid\",\n    \"status\": \"queued\",\n    \"attempts\": 0,\n    \"last_error\": null,\n    \"sent_at\": null,\n    \"created_at\": \"2026-11-17T09:17:04Z\"\n  }\n}",
-      "scope": "`delivery:write`"
+      "scope": "`delivery:write`, on a delegated token only"
     },
     {
       "id": "list-messages",
@@ -364,7 +364,7 @@ export const delivery = {
           "type": "text",
           "nullable": "No",
           "default": "",
-          "constraints": "1 to 50 characters, from the app's service token",
+          "constraints": "1 to 50 characters, from the `app` claim of the delegated token",
           "meaning": "Which app asked."
         },
         {

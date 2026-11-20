@@ -25,7 +25,7 @@ One row per email asked for. It records what was sent and whether it arrived at 
 |---|---|---|---|---|---|
 | `id` | `uuid` | No |  | Primary key. UUIDv7 | The message's ID. |
 | `owner_id` | `uuid` | No |  |  | The user it is for. A plain ID; the address is looked up at send time, never stored. |
-| `app` | `text` | No |  | 1 to 50 characters, from the app's service token | Which app asked. |
+| `app` | `text` | No |  | 1 to 50 characters, from the `app` claim of the delegated token | Which app asked. |
 | `reference` | `text` | No |  | 1 to 200 characters | The app's label. |
 | `idempotency_key` | `text` | No |  | 1 to 255 characters; unique per app | The key that stops a second send. |
 | `channel` | `text` | No | 'email' | `email` in version 1 | How it is sent. SMS and push arrive in MVP2. |

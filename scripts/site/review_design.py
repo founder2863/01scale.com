@@ -605,7 +605,7 @@ ENV = [
     {"name": "REVIEW_DATABASE_URL", "value": "Neon connection string for the `review_service` role", "secret": "Yes"},
     {"name": "IDENTITY_JWKS_URL", "value": "`https://01scale.com/api/identity/v1/jwks`", "secret": "No"},
     {"name": "EVENTS_SIGNING_KEY", "value": "32 random bytes, base64: signs and verifies platform events", "secret": "Yes"},
-    {"name": "EVENT_SUBSCRIBERS", "value": "The webhook addresses that receive Review's events", "secret": "No"},
+    {"name": "EVENT_ROUTES", "value": "From the service template: reference prefix → the app's event address (decision on #13)", "secret": "No"},
     {"name": "EXPORT_BUCKET", "value": "Where ground-truth exports are written, with 5-minute links", "secret": "No"},
 ]
 
@@ -643,7 +643,7 @@ MODULE = {
     "components": COMPONENTS,
     "queries": QUERIES,
     "noEndpoint": [
-        {"topic": "Re-checking corrected values (MVP1-E4-03)", "how": "The rule checks belong to the LLM Extraction service. The app calls its `POST /validations` with the corrected values before completing the task here, and passes `checks_overridden` if the person confirms values that still fail. Review itself knows no document rules."},
+        {"topic": "Re-checking corrected values (MVP1-E4-03)", "how": "The rule checks belong to the LLM Extraction service. The app calls LLM Extraction `POST /validations` with the corrected values before completing the task here, and passes `checks_overridden` if the person confirms values that still fail. Review itself knows no document rules."},
         {"topic": "Keyboard and touch (MVP1-E4-02 AC3)", "how": "A design rule of the components: Enter accepts, E edits, ↓ moves to the next field; on phones every action is a large button."},
         {"topic": "Events Review announces", "how": "`review.task.completed` with `{task_id, reference}`, signed and delivered with retries from the outbox."},
         {"topic": "DocFlow's endpoint", "how": "`POST /api/docflow/v1/documents/{documentId}/complete-review` belongs to the DocFlow app, which calls Extraction's checks and then this service. It is designed with the DocFlow app shell (`MVP1-E0-09`)."},

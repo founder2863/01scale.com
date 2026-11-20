@@ -749,8 +749,8 @@ export const account = {
       "secret": "Yes"
     },
     {
-      "name": "IDENTITY_EVENT_SUBSCRIBERS",
-      "value": "The services' event addresses, comma-separated",
+      "name": "EVENT_ROUTES",
+      "value": "From the service template; `identity.user.deleted` is platform-wide, so it goes to every service and app",
       "secret": "No"
     },
     {

@@ -69,8 +69,8 @@ These examples work once the service is built and deployed behind the gateway.
 Set the price on the server and send the person to the returned address.
 
 ```ts
-const { order, checkout_url } = await serviceApi.post("/api/payment/v1/orders", {
-  user_id: userId, reference: `myapp:${itemId}`, description: "Report export",
+const { order, checkout_url } = await callService("/api/payment/v1/orders", { onBehalfOf: userId }, {
+  reference: `myapp:${itemId}`, description: "Report export",
   amount: 500, currency: "USD",
   success_url: `https://01scale.com/items/${itemId}/paid?order={ORDER_ID}`,
   cancel_url: `https://01scale.com/items/${itemId}`,
@@ -103,8 +103,8 @@ Base address: `https://01scale.com/api/payment/v1`
 
 | Method | Path | Access | Scope | Purpose |
 |---|---|---|---|---|
-| `POST` | `/orders` | Service | `payment:write` | Create an order and a checkout page |
-| `POST` | `/webhooks/stripe` | Service | None: HMAC signature | Receive Stripe's events |
+| `POST` | `/orders` | Service | `payment:write`, on a delegated token only | Create an order and a checkout page |
+| `POST` | `/webhooks/stripe` | Service | None: Stripe signature | Receive Stripe's events |
 | `GET` | `/orders/{orderId}` | Signed in | `payment:read` | Get one order |
 | `GET` | `/orders` | Signed in | `payment:read` | List my orders |
 | `POST` | `/events` | Service | None: HMAC signature | Receive platform events |
@@ -120,7 +120,7 @@ Environment variables on the service's own deployment. Secrets are never committ
 | `STRIPE_WEBHOOK_SECRET` | The signing secret of the webhook endpoint (`whsec_…`) | Yes |
 | `IDENTITY_JWKS_URL` | `https://01scale.com/api/identity/v1/jwks` | No |
 | `EVENTS_SIGNING_KEY` | 32 random bytes, base64: signs and verifies platform events | Yes |
-| `EVENT_SUBSCRIBERS` | The webhook addresses that receive Payment's events, for example DocFlow's | No |
+| `EVENT_ROUTES` | From the service template: reference prefix → the app's event address (decision on #13) | No |
 
 ## Open questions
 

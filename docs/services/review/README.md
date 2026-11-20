@@ -125,7 +125,7 @@ Environment variables on the service's own deployment. Secrets are never committ
 | `REVIEW_DATABASE_URL` | Neon connection string for the `review_service` role | Yes |
 | `IDENTITY_JWKS_URL` | `https://01scale.com/api/identity/v1/jwks` | No |
 | `EVENTS_SIGNING_KEY` | 32 random bytes, base64: signs and verifies platform events | Yes |
-| `EVENT_SUBSCRIBERS` | The webhook addresses that receive Review's events | No |
+| `EVENT_ROUTES` | From the service template: reference prefix → the app's event address (decision on #13) | No |
 | `EXPORT_BUCKET` | Where ground-truth exports are written, with 5-minute links | No |
 
 ## Open questions

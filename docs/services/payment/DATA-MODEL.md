@@ -27,7 +27,7 @@ One row per request for payment. The order, not Stripe, is the record an app che
 |---|---|---|---|---|---|
 | `id` | `uuid` | No |  | Primary key. UUIDv7 | The order's ID; also Stripe's `client_reference_id` and idempotency key. |
 | `owner_id` | `uuid` | Yes |  | Empty only after the owner's account is deleted | Who pays. A plain ID. |
-| `app` | `text` | No |  | 1 to 50 characters, from the calling app's service token | Which app asked for payment, for example `docflow`. |
+| `app` | `text` | No |  | 1 to 50 characters, from the `app` claim of the delegated token | Which app asked for payment, for example `docflow`. |
 | `reference` | `text` | No |  | 1 to 200 characters | What is paid for, in the app's terms. |
 | `description` | `text` | No |  | 1 to 200 characters | Shown on the checkout page and the receipt. |
 | `amount` | `integer` | No |  | 50 to 100,000 | The price in minor units (cents). Never a decimal. |

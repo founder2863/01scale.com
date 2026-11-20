@@ -60,4 +60,4 @@ What a person sees and what the system does when paying, in version 1 (Stripe te
 | Stripe is unavailable when starting | 'Payments are unavailable for a moment. You haven't been charged.' | `stripe_unavailable` |
 | Stripe's confirmation is slow to arrive | 'Confirming payment…' for a few seconds (the success page's job, `MVP1-E7-01`). | Order still `pending` |
 | Follows a link to someone else's order | 'Not found.' | `order_not_found` |
-| A forged or replayed Stripe event | Nothing: it is rejected and changes no order. | `invalid_signature` |
+| A forged or replayed Stripe event | Nothing: it is rejected and changes no order. | `invalid_stripe_signature` |

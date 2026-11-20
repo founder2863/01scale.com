@@ -65,8 +65,8 @@ These examples work once the service is built and deployed behind the gateway.
 Name the user and the template; never an address.
 
 ```ts
-await serviceApi.post("/api/delivery/v1/messages", {
-  user_id: userId, template: "order_paid", reference: `docflow:${documentId}`,
+await callService("/api/delivery/v1/messages", { onBehalfOf: userId }, {
+  template: "order_paid", reference: `docflow:${documentId}`,
   data: { document_name: "invoice.pdf", amount: 500, currency: "USD", link_path: `/documents/${documentId}/success` },
 }, { headers: { "Idempotency-Key": paymentEventId } });
 ```
@@ -87,7 +87,7 @@ Base address: `https://01scale.com/api/delivery/v1`
 
 | Method | Path | Access | Scope | Purpose |
 |---|---|---|---|---|
-| `POST` | `/messages` | Service | `delivery:write` | Send a templated email to a user |
+| `POST` | `/messages` | Service | `delivery:write`, on a delegated token only | Send a templated email to a user |
 | `GET` | `/messages` | Signed in | `delivery:read` | My messages and their status |
 | `POST` | `/events` | Service | None: HMAC signature | Receive platform events |
 
