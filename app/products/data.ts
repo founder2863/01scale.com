@@ -1057,7 +1057,7 @@ export const products = [
           },
           {
             "label": "AC2",
-            "text": "An admin export produces new ground-truth files for `evals/datasets/` after manual approval. Customer documents are never added automatically."
+            "text": "Approved corrections stay in Review's database; they are never exported to files or to the repository (Nikhil's decision on #41: the repository is public and one user's data must never be seen by another). Reports built from them show aggregates only, never values. Evals that test new prompts use only the synthetic and licensed datasets in `evals/`."
           }
         ],
         "evals": "",
@@ -1890,6 +1890,29 @@ export const products = [
         "service": "Identity and service template"
       },
       {
+        "id": "MVP2-E8-10",
+        "title": "Account security on our own screens",
+        "size": "S",
+        "pending": "",
+        "story": "Decided by Nikhil on 17 Nov 2026 (issue #26): in MVP1, \"Change password\" uses Cognito's hosted forgot-password page; our own screens come with hand-built identity. As a user, I want to manage how I sign in on 01scale's own account page, without being sent to another site.",
+        "acs": [
+          {
+            "label": "AC1",
+            "text": "`/account/security` replaces MVP1's \"Change password\" button. MVP2 sign-in is passwordless, so there is no password to change: the page lists my sign-in methods (my email for magic links and codes, and my passkeys), and I can add a passkey, remove one (with re-authentication, `MVP2-E8-07`) or change my email."
+          },
+          {
+            "label": "AC2",
+            "text": "No step sends me to an outside page. Every action is an Identity endpoint with its UI component in `packages/ui-identity`."
+          },
+          {
+            "label": "AC3",
+            "text": "An MVP1 user who signed in with a password and has not yet set up a passkey sees a prompt to add one."
+          }
+        ],
+        "evals": "",
+        "service": "Identity"
+      },
+      {
         "id": "MVP2-E8-11",
         "title": "Deactivate first, delete after 30 days",
         "size": "S",
@@ -2156,6 +2179,10 @@ export const products = [
         "text": "No new endpoints. The gateway checks the `Origin` header on cookie-authenticated writes; API-key requests are exempt from CSRF checks because they carry no ambient credentials."
       },
       {
+        "story": "MVP2-E8-10",
+        "text": "No new endpoints: composes `GET /api/identity/v1/passkeys` and `DELETE …/passkeys/{passkeyId}` (`MVP2-E8-04`), `POST /api/identity/v1/me/email-change` (`MVP2-E8-07`) and `GET /api/identity/v1/sessions` (`MVP2-E8-06`). Removes `POST /api/identity/v1/me/password-change` (MVP1), with a deprecation note in the changelog."
+      },
+      {
         "story": "MVP2-E8-11",
         "text": "`DELETE /api/identity/v1/me` (signed in, session only) now deactivates. Body `{confirm: \"DELETE\"}` → `202 {deletes_at}`. With `{confirm: \"DELETE\", now: true}` it deletes at once, as in MVP1."
       }
@@ -2204,6 +2231,11 @@ export const products = [
       {
         "story": "MVP2-E8-09",
         "title": "Auth security hardening",
+        "text": "No schema change."
+      },
+      {
+        "story": "MVP2-E8-10",
+        "title": "Account security on our own screens",
         "text": "No schema change."
       },
       {
@@ -2301,6 +2333,33 @@ export const products = [
         ],
         "evals": "MD-1 batch completeness, MD-2 batch latency, MD-3 accuracy in batch vs alone.",
         "service": "DocFlow app"
+      },
+      {
+        "id": "MVP2-E9-04",
+        "title": "Keep original documents beyond 30 days",
+        "size": "S",
+        "pending": "",
+        "story": "Decided by Nikhil on 17 Nov 2026 (ARCHITECTURE.md §12.8): in MVP1, originals are deleted after 30 days; keeping them longer is for MVP2. As a user, I want to see the original invoice beside its results months later, so I can check a value against the document.",
+        "acs": [
+          {
+            "label": "AC1",
+            "text": "An app can ask Upload to keep a file until the owner deletes it or their account (`retention: until_deleted`), instead of the default 30 days."
+          },
+          {
+            "label": "AC2",
+            "text": "DocFlow keeps the originals of documents whose review is complete; files never completed still expire after 30 days."
+          },
+          {
+            "label": "AC3",
+            "text": "The S3 lifecycle rule applies only to files tagged for expiry, so kept files are not removed. Storage cost per user is shown on the admin page."
+          },
+          {
+            "label": "AC4",
+            "text": "Deleting a document or the account deletes its original at once, as today."
+          }
+        ],
+        "evals": "",
+        "service": "Upload (provider), then DocFlow"
       }
     ],
     "endpoints": [
@@ -2351,6 +2410,14 @@ export const products = [
         "summary": "Batch status with each document's step and status.",
         "detail": "→ `200 {batch, documents: [{id, file_name, step, status}], summary: {extracted, needs_review, failed}}`.",
         "story": "MVP2-E9-03"
+      },
+      {
+        "method": "PATCH",
+        "path": "/api/upload/v1/files/{fileId}",
+        "access": "Signed in",
+        "summary": "change a file's retention.",
+        "detail": "Body `{retention: \"30_days\"|\"until_deleted\"}` → `200 {file}`.",
+        "story": "MVP2-E9-04"
       }
     ],
     "apiNotes": [
@@ -2374,6 +2441,11 @@ export const products = [
         "story": "MVP2-E9-03",
         "title": "Batch status page",
         "text": "No schema change."
+      },
+      {
+        "story": "MVP2-E9-04",
+        "title": "Keep original documents beyond 30 days",
+        "text": "`upload.files.expires_at` becomes nullable: empty means kept until deleted."
       }
     ]
   },

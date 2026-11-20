@@ -256,6 +256,7 @@ These ladders are the direction; the exact steps for each are decided in that co
 | Ships alone | Its own version, changelog, release and rollback. |
 | Shows its work | Its own page on 01scale.com: try-it demo, API reference, MCP tools, spec and decisions. |
 | Fails politely | Callers set timeouts and retry safely; one service being down degrades the app, it does not corrupt it. |
+| Keeps user data private | A user's data is never seen by another user and never written to the public repository: not in code, docs, datasets, fixtures, eval reports, logs, issues or PR comments. Anything published from real usage is an aggregate, never a value. I decided this on 17 November 2026 (issue #41), because external users will test the platform and the repository is public. |
 
 Apps (DocFlow first) call the components' APIs in a fixed order. A service tells an app that something finished (a job completed, an order was paid) with a signed event over HTTP. A message queue between services is added only when a second consumer needs it.
 
@@ -482,4 +483,29 @@ I will move from orchestration towards event-driven communication when one of th
 | **Scale** | A durable workflow engine replaces the hand-built process record; a database per service | Automatic retries, timeouts and compensation defined per workflow; real failure isolation | The process survives any single part being down |
 
 Two things stay fixed through all of it: a service's API contract, and the rule that only the owning service writes its data. That is what lets the communication style change underneath without the apps noticing.
+
+### 12.8 Where each stage's data lives, and how long
+
+I decided this on 17 November 2026, while settling the open questions on the DocFlow results (issues #45 and #40).
+
+**Each service keeps its own stage of the document, in its own database:**
+
+| Stage | Owner | What it keeps | How long |
+|---|---|---|---|
+| Original document | Upload | The PDF or photo, a file in S3 | 30 days (S3 lifecycle rule); longer retention is `MVP2-E9-04` |
+| Extracted data | LLM Extraction | Every field with value, confidence and source quote, linked to the user and the original file ID | Until the user deletes their account |
+| Reviewed data | Human Review | The final value of every field, and every change with who made it and when | Until the user deletes their account |
+| Results (JSON and CSV) | DocFlow | Nothing stored: built on demand from Review's final values plus Extraction's metadata | Always reflects the latest reviewed values |
+
+**My decisions, and why:**
+
+1. **The app hands the extracted fields to Review; Review never fetches from Extraction.** If Review called Extraction itself, Review would only work for documents that came through Extraction. A Procure-to-Pay app reviewing a typed-in purchase order, or a customer feeding Review from their own OCR tool, could not use it. Because DocFlow passes a plain list of fields, Review does not know or care where they came from. This keeps each component plug-and-play, and it follows §12.2: the app orchestrates, and services do not call each other to drive the process.
+2. **The final document is Review's data, and results are built when they are downloaded.** DocFlow keeps no result files. A download reads the final values from Review and the model and prompt version from Extraction, then builds `result.json` (validated against `schemas/invoice-v1.json`) and `result.csv` on the spot. Nothing expires after 30 days, and there is no copy that can fall out of date.
+3. **The person can edit fields after the review is completed, including after paying.** Edits are saved in Review like any correction, and the latest values are the final document. Payment is for the document, not for one version of it, so editing never asks for a new payment.
+4. **Extracted and reviewed data are kept until the user deletes their account.** The original document keeps the 30-day limit for now, because keeping it longer costs storage and holds more personal data. Keeping it longer, so it can be shown beside old results, is backlog story `MVP2-E9-04`.
+
+**What this keeps true for every component:**
+- Each service is deployed on its own and holds only its own stage's data.
+- No platform service calls another to move the process forward; only the app does.
+- The one thing DocFlow owns is the invoice-specific output format (the JSON shape, the CSV columns and the metadata that combines two services), which is business logic of that app, not of the platform.
 

@@ -414,7 +414,7 @@ As Priya, I want to drag and drop or pick a file on my phone and see progress.
 
 ### MVP1-E4-04 · Corrections feed the eval set — S
 - **AC1:** Each human correction is saved as a candidate eval case (document reference, field, model value, human value) in `eval_candidates`.
-- **AC2:** An admin export produces new ground-truth files for `evals/datasets/` after manual approval. Customer documents are never added automatically.
+- **AC2:** Approved corrections stay in Review's database; they are never exported to files or to the repository (Nikhil's decision on #41: the repository is public and one user's data must never be seen by another). Reports built from them show aggregates only, never values. Evals that test new prompts use only the synthetic and licensed datasets in `evals/`.
 - **Service:** Human Review
 - **API design:**
   - `GET /api/review/v1/admin/eval-candidates` (admin) — Human corrections waiting for approval as eval cases. Query `status`, `cursor` → `200 {data: [EvalCandidate], next_cursor}`.
