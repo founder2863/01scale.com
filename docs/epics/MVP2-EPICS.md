@@ -193,6 +193,17 @@ As a user, I want to see the original invoice beside its results months later, s
   - Review can compare judge and human because each review field stores the judge verdict it was created with.
 - **Database design:** No new tables; aggregates `review.fields.judge_verdict` against `review.field_changes`.
 
+### MVP2-E10-04 · Privacy rules for small groups in reports — S
+Decided by Nikhil on 20 Nov 2026 (PR #81): MVP1's accuracy report shows every count as it is, so it can be tested with few users; MVP2 adds rules so a small count can never point to one person.
+As the owner, I want reports built from real users' work to stay anonymous as the number of testers grows, so a number can never reveal something about one person's document.
+- **AC1:** In every admin report built from users' data (the accuracy report of `MVP1-E4-04` and the judge vs human dashboard of `MVP2-E10-03`), a row whose numbers come from **fewer than 2 different people** is hidden or merged into "Other". The threshold is configuration.
+- **AC2:** A count from enough people is shown as it is, however small, so the report stays useful with few testers.
+- **AC3:** Hidden rows are still counted in the totals, and the report says how many rows were hidden and why.
+- **AC4:** Unit tests cover the edge cases: one person with many corrections, many people with one each, and a total that would let a hidden row be worked out by subtraction.
+- **Service:** Human Review
+- **API design:** No new endpoints. `GET /api/review/v1/admin/accuracy` and the judge vs human report add `hidden_rows` and apply the rule.
+- **Database design:** No schema change; the rule counts distinct `review.tasks.owner_id` per row.
+
 ---
 
 ## E11 · Metadata enrichment and chat correction (MVP2 "d") — `llm`

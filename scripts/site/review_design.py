@@ -150,13 +150,13 @@ ENDPOINTS = [
         [param("since", "query", "date", "No", "Default: 30 days ago.", "Start of the period."),
          param("source", "query", "string", "No", "`all` (default) or `approved`.", "All corrections, or only those the admin approved as real model mistakes.")],
         ["Read only. Counts per field name over the period: fields reviewed, flagged, corrected, marked not present, and approved mistakes; with the correction rate and the share of corrections that had been flagged (how well flagging catches mistakes).",
-         "Groups smaller than 5 are shown as `<5`, so a count can never point to one person's document."],
+         "Every count is shown as it is, however small (Nikhil's decision on #81: hiding small counts would make the report hard to test with few users). Rules that hide small groups come in MVP2 (`MVP2-E10-04`)."],
         [response("200", "The caller is an admin", "`since`, `totals` and `fields[]`, each with its counts and rates.")],
         [error("404", "not_found", "The caller is not an admin."), error("422", "validation_failed", "`since` is not a date."), NOT_AUTH],
         f"GET /api/review/v1/admin/accuracy?since=2026-11-01 HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>",
         json.dumps({"since": "2026-11-01", "totals": {"tasks": 42, "fields_reviewed": 798, "corrected": 37, "correction_rate": 0.046, "corrections_flagged": 0.92},
                     "fields": [{"name": "total", "reviewed": 42, "flagged": 9, "corrected": 6, "not_present": 0, "approved_mistakes": 5, "correction_rate": 0.143},
-                               {"name": "vendor_tax_id", "reviewed": 42, "flagged": 11, "corrected": "<5", "not_present": 8, "approved_mistakes": "<5", "correction_rate": None}]}, indent=2),
+                               {"name": "vendor_tax_id", "reviewed": 42, "flagged": 11, "corrected": 3, "not_present": 8, "approved_mistakes": 2, "correction_rate": 0.071}]}, indent=2),
     ),
     endpoint(
         "events", "POST", f"{BASE}/events", "Service", "MVP1-E1-05",
@@ -242,7 +242,7 @@ DATA_MODEL_RULES = [
     "Every decision writes a history row in the same transaction; history rows are never edited.",
     "A task can be completed only when no flagged field is `pending`. After completion its values can still be corrected; every change is recorded, and the latest values are the final document.",
     "A correction (a final value different from the original) creates exactly one eval candidate per field, updated if the person changes it again.",
-    "Candidates never leave this database. Reports built from them show counts and rates only, with groups under 5 hidden.",
+    "Candidates never leave this database. Reports built from them show counts and rates only, seen by the admin alone.",
     "Deleting a user's account deletes their tasks, fields, history and eval candidates, approved ones included.",
 ]
 
@@ -511,7 +511,7 @@ JOURNEYS = [
         [
             ("Sees each correction: the field, what the system said and what the person changed it to.", "Review lists candidates waiting for a decision."),
             ("Approves the ones that are real model mistakes and rejects the rest.", "Each decision is recorded with who and when."),
-            ("Opens the accuracy report: per field, how often people corrected it and how many corrections had been flagged, as numbers only.", "Review counts its own records. No value, reference or user ID leaves the service, and groups under 5 are hidden."),
+            ("Opens the accuracy report: per field, how often people corrected it and how many corrections had been flagged, as numbers only.", "Review counts its own records. No value, reference or user ID leaves the service."),
         ],
         "The owner sees where the model makes real mistakes, without any user's data leaving their account. New prompts are tested on the synthetic eval set.",
     ),
@@ -559,7 +559,7 @@ COMPONENTS = [
         ["`GET /admin/eval-candidates`", "`PATCH /admin/eval-candidates/{candidateId}`"]),
     component("AccuracyReport", "Component", "For an admin: per field, how often people corrected it and how well flagging caught it, as numbers only.",
         [("since", "date, optional", "Start of the period. Default 30 days ago.")],
-        ["Loading", "Shown, with small groups as '<5'", "Empty: 'No reviews in this period.'", "Not an admin: 'Not found'", "Failed: Retry"],
+        ["Loading", "Shown", "Empty: 'No reviews in this period.'", "Not an admin: 'Not found'", "Failed: Retry"],
         ["`GET /admin/accuracy`"]),
 ]
 
@@ -668,7 +668,7 @@ MODULE = {
             "A completed task's values can still be corrected; every change is recorded.",
             "A task completes only when no flagged field is `pending`.",
             "Another user's task answers `404 task_not_found`; admin endpoints answer `404 not_found` to anyone else.",
-            "Admin reports show counts and rates only, with groups under 5 hidden; no correction is ever exported.",
+            "Admin reports show counts and rates only, to the admin alone; no correction is ever exported.",
             "`POST /tasks` accepts `Idempotency-Key`; `complete` is idempotent by design.",
         ]},
         {"level": "Schema level: enforced by the database, whatever the code does", "items": SCHEMA_RULES},
@@ -676,6 +676,6 @@ MODULE = {
     ],
     "openQuestions": [
         "Decided by Nikhil on 17 Nov 2026: values can be corrected after completion and after payment, and the latest values are final (#45, #40); corrections are never exported, only counted, and are deleted with the account (#41).",
-        "The accuracy report hides groups under 5. Is that the right threshold once there are external testers?",
+        "Decided by Nikhil on 20 Nov 2026 (#81): the accuracy report shows every count as it is in MVP1, so it can be tested with few users; it is seen only by the admin. Rules that hide small groups are MVP2 story `MVP2-E10-04`.",
     ],
 }

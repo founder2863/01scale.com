@@ -62,7 +62,7 @@ What a person sees and what the system does while checking flagged values, in ve
 |---|---|---|
 | 1 | Sees each correction: the field, what the system said and what the person changed it to. | Review lists candidates waiting for a decision. |
 | 2 | Approves the ones that are real model mistakes and rejects the rest. | Each decision is recorded with who and when. |
-| 3 | Opens the accuracy report: per field, how often people corrected it and how many corrections had been flagged, as numbers only. | Review counts its own records. No value, reference or user ID leaves the service, and groups under 5 are hidden. |
+| 3 | Opens the accuracy report: per field, how often people corrected it and how many corrections had been flagged, as numbers only. | Review counts its own records. No value, reference or user ID leaves the service. |
 
 **Result:** The owner sees where the model makes real mistakes, without any user's data leaving their account. New prompts are tested on the synthetic eval set.
 

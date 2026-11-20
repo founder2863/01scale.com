@@ -421,7 +421,7 @@ As Priya, I want to drag and drop or pick a file on my phone and see progress.
 - **Service:** Human Review
 - **API design:**
   - `GET /api/review/v1/admin/eval-candidates` (admin) — Human corrections waiting for approval as eval cases. Query `status`, `cursor` → `200 {data: [EvalCandidate], next_cursor}`.
-  - `GET /api/review/v1/admin/accuracy` (admin) — How often people correct each field, as counts and rates only (groups under 5 hidden). Query `since`, `source` → `200 {since, totals, fields[]}`. Replaces the export of corrections (decision on #41).
+  - `GET /api/review/v1/admin/accuracy` (admin) — How often people correct each field, as counts and rates only, seen by the admin alone (every count shown as it is, decided on #81). Query `since`, `source` → `200 {since, totals, fields[]}`. Replaces the export of corrections (decision on #41).
 - **Database design:** `review.eval_candidates` (id, task_id, reference, field_name, model_value jsonb, human_value jsonb, status `candidate|approved|rejected`, created_at). `task_id` references `review.tasks` with delete cascade, so candidates are deleted with the task and the account (decision on #41).
 
 ---

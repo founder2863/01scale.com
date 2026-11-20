@@ -85,6 +85,6 @@ What the Human Review service ships for apps to use, as the package `packages/ui
 |---|---|---|
 | `since` | date, optional | Start of the period. Default 30 days ago. |
 
-**States:** Loading; Shown, with small groups as '<5'; Empty: 'No reviews in this period.'; Not an admin: 'Not found'; Failed: Retry.
+**States:** Loading; Shown; Empty: 'No reviews in this period.'; Not an admin: 'Not found'; Failed: Retry.
 
 **Calls:** `GET /admin/accuracy`.

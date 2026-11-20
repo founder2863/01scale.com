@@ -130,4 +130,4 @@ Environment variables on the service's own deployment. Secrets are never committ
 ## Open questions
 
 - Decided by Nikhil on 17 Nov 2026: values can be corrected after completion and after payment, and the latest values are final (#45, #40); corrections are never exported, only counted, and are deleted with the account (#41).
-- The accuracy report hides groups under 5. Is that the right threshold once there are external testers?
+- Decided by Nikhil on 20 Nov 2026 (#81): the accuracy report shows every count as it is in MVP1, so it can be tested with few users; it is seen only by the admin. Rules that hide small groups are MVP2 story `MVP2-E10-04`.

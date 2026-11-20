@@ -113,7 +113,7 @@ The service template also gives Review `audit_events`, `idempotency_keys` and `o
 - Every decision writes a history row in the same transaction; history rows are never edited.
 - A task can be completed only when no flagged field is `pending`. After completion its values can still be corrected; every change is recorded, and the latest values are the final document.
 - A correction (a final value different from the original) creates exactly one eval candidate per field, updated if the person changes it again.
-- Candidates never leave this database. Reports built from them show counts and rates only, with groups under 5 hidden.
+- Candidates never leave this database. Reports built from them show counts and rates only, seen by the admin alone.
 - Deleting a user's account deletes their tasks, fields, history and eval candidates, approved ones included.
 
 ## What is deliberately not stored

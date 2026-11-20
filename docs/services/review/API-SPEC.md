@@ -498,7 +498,7 @@ Access: **Admin** · Scope: `is_admin` · Story: `MVP1-E4-04`
 **Behaviour**
 
 - Read only. Counts per field name over the period: fields reviewed, flagged, corrected, marked not present, and approved mistakes; with the correction rate and the share of corrections that had been flagged (how well flagging catches mistakes).
-- Groups smaller than 5 are shown as `<5`, so a count can never point to one person's document.
+- Every count is shown as it is, however small (Nikhil's decision on #81: hiding small counts would make the report hard to test with few users). Rules that hide small groups come in MVP2 (`MVP2-E10-04`).
 
 **Responses**
 
@@ -548,10 +548,10 @@ Authorization: Bearer <access token>
       "name": "vendor_tax_id",
       "reviewed": 42,
       "flagged": 11,
-      "corrected": "<5",
+      "corrected": 3,
       "not_present": 8,
-      "approved_mistakes": "<5",
-      "correction_rate": null
+      "approved_mistakes": 2,
+      "correction_rate": 0.071
     }
   ]
 }
@@ -627,5 +627,5 @@ HTTP/1.1 200 OK
 - A completed task's values can still be corrected; every change is recorded.
 - A task completes only when no flagged field is `pending`.
 - Another user's task answers `404 task_not_found`; admin endpoints answer `404 not_found` to anyone else.
-- Admin reports show counts and rates only, with groups under 5 hidden; no correction is ever exported.
+- Admin reports show counts and rates only, to the admin alone; no correction is ever exported.
 - `POST /tasks` accepts `Idempotency-Key`; `complete` is idempotent by design.

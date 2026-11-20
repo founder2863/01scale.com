@@ -593,7 +593,7 @@ export const review = {
       ],
       "behaviour": [
         "Read only. Counts per field name over the period: fields reviewed, flagged, corrected, marked not present, and approved mistakes; with the correction rate and the share of corrections that had been flagged (how well flagging catches mistakes).",
-        "Groups smaller than 5 are shown as `<5`, so a count can never point to one person's document."
+        "Every count is shown as it is, however small (Nikhil's decision on #81: hiding small counts would make the report hard to test with few users). Rules that hide small groups come in MVP2 (`MVP2-E10-04`)."
       ],
       "responses": [
         {
@@ -620,7 +620,7 @@ export const review = {
         }
       ],
       "request": "GET /api/review/v1/admin/accuracy?since=2026-11-01 HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>",
-      "response": "{\n  \"since\": \"2026-11-01\",\n  \"totals\": {\n    \"tasks\": 42,\n    \"fields_reviewed\": 798,\n    \"corrected\": 37,\n    \"correction_rate\": 0.046,\n    \"corrections_flagged\": 0.92\n  },\n  \"fields\": [\n    {\n      \"name\": \"total\",\n      \"reviewed\": 42,\n      \"flagged\": 9,\n      \"corrected\": 6,\n      \"not_present\": 0,\n      \"approved_mistakes\": 5,\n      \"correction_rate\": 0.143\n    },\n    {\n      \"name\": \"vendor_tax_id\",\n      \"reviewed\": 42,\n      \"flagged\": 11,\n      \"corrected\": \"<5\",\n      \"not_present\": 8,\n      \"approved_mistakes\": \"<5\",\n      \"correction_rate\": null\n    }\n  ]\n}",
+      "response": "{\n  \"since\": \"2026-11-01\",\n  \"totals\": {\n    \"tasks\": 42,\n    \"fields_reviewed\": 798,\n    \"corrected\": 37,\n    \"correction_rate\": 0.046,\n    \"corrections_flagged\": 0.92\n  },\n  \"fields\": [\n    {\n      \"name\": \"total\",\n      \"reviewed\": 42,\n      \"flagged\": 9,\n      \"corrected\": 6,\n      \"not_present\": 0,\n      \"approved_mistakes\": 5,\n      \"correction_rate\": 0.143\n    },\n    {\n      \"name\": \"vendor_tax_id\",\n      \"reviewed\": 42,\n      \"flagged\": 11,\n      \"corrected\": 3,\n      \"not_present\": 8,\n      \"approved_mistakes\": 2,\n      \"correction_rate\": 0.071\n    }\n  ]\n}",
       "scope": "`is_admin`"
     },
     {
@@ -1290,7 +1290,7 @@ export const review = {
         "A completed task's values can still be corrected; every change is recorded.",
         "A task completes only when no flagged field is `pending`.",
         "Another user's task answers `404 task_not_found`; admin endpoints answer `404 not_found` to anyone else.",
-        "Admin reports show counts and rates only, with groups under 5 hidden; no correction is ever exported.",
+        "Admin reports show counts and rates only, to the admin alone; no correction is ever exported.",
         "`POST /tasks` accepts `Idempotency-Key`; `complete` is idempotent by design."
       ]
     },
@@ -1313,7 +1313,7 @@ export const review = {
         "Every decision writes a history row in the same transaction; history rows are never edited.",
         "A task can be completed only when no flagged field is `pending`. After completion its values can still be corrected; every change is recorded, and the latest values are the final document.",
         "A correction (a final value different from the original) creates exactly one eval candidate per field, updated if the person changes it again.",
-        "Candidates never leave this database. Reports built from them show counts and rates only, with groups under 5 hidden.",
+        "Candidates never leave this database. Reports built from them show counts and rates only, seen by the admin alone.",
         "Deleting a user's account deletes their tasks, fields, history and eval candidates, approved ones included."
       ]
     }
@@ -1342,7 +1342,7 @@ export const review = {
   ],
   "openQuestions": [
     "Decided by Nikhil on 17 Nov 2026: values can be corrected after completion and after payment, and the latest values are final (#45, #40); corrections are never exported, only counted, and are deleted with the account (#41).",
-    "The accuracy report hides groups under 5. Is that the right threshold once there are external testers?"
+    "Decided by Nikhil on 20 Nov 2026 (#81): the accuracy report shows every count as it is in MVP1, so it can be tested with few users; it is seen only by the admin. Rules that hide small groups are MVP2 story `MVP2-E10-04`."
   ],
   "decisions": [],
   "journeys": [
@@ -1466,7 +1466,7 @@ export const review = {
         },
         {
           "person": "Opens the accuracy report: per field, how often people corrected it and how many corrections had been flagged, as numbers only.",
-          "system": "Review counts its own records. No value, reference or user ID leaves the service, and groups under 5 are hidden."
+          "system": "Review counts its own records. No value, reference or user ID leaves the service."
         }
       ],
       "outcome": "The owner sees where the model makes real mistakes, without any user's data leaving their account. New prompts are tested on the synthetic eval set."
@@ -1648,7 +1648,7 @@ export const review = {
       ],
       "states": [
         "Loading",
-        "Shown, with small groups as '<5'",
+        "Shown",
         "Empty: 'No reviews in this period.'",
         "Not an admin: 'Not found'",
         "Failed: Retry"
