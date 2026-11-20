@@ -106,5 +106,5 @@ Environment variables on the service's own deployment. Secrets are never committ
 
 ## Open questions
 
-- Delivery looks up a user's email from Identity, but Identity has no endpoint for a service to read another user's email. Identity needs `GET /api/identity/v1/users/{userId}` (service access only), or the event that triggers the email must carry the address.
+- Decided by Nikhil on 20 Nov 2026 (#68): Delivery reads the verified address with Identity `GET /api/identity/v1/users/{userId}`, a service-only endpoint that needs the scope `identity:users.read`. It is designed with Account management (`MVP1-E1-05`, PR #70). The event that triggers an email never carries the address.
 - Resend can report bounces and complaints by webhook. Version 1 records only whether Resend accepted the email; should a later bounce mark it failed?
