@@ -1894,3 +1894,80 @@ section[id] {
   background: var(--brand);
   color: #ffffff;
 }
+
+/* Token yield: the formula on one line; selecting it opens how it is calculated (MVP1-E0-17). */
+.yield-explainer {
+  margin: 16px 0 28px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.yield-explainer summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 14px;
+  padding: 14px 16px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.yield-explainer summary::-webkit-details-marker {
+  display: none;
+}
+
+.yield-explainer summary:focus-visible {
+  outline: 2px solid var(--link);
+  outline-offset: 2px;
+  border-radius: 12px;
+}
+
+.yield-formula {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  /* One line on every screen: the size follows the screen width on phones. */
+  font-size: clamp(0.68rem, 3.4vw, 0.95rem);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.yield-hint {
+  color: var(--link);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.yield-hint::after {
+  content: " ▾";
+}
+
+.yield-explainer[open] .yield-hint::after {
+  content: " ▴";
+}
+
+.yield-body {
+  padding: 0 16px 16px;
+  border-top: 1px solid var(--border);
+}
+
+.yield-body p,
+.yield-body li {
+  line-height: 1.55;
+}
+
+.yield-steps,
+.yield-caveats {
+  padding-left: 1.25rem;
+}
+
+.yield-steps li + li,
+.yield-caveats li + li {
+  margin-top: 8px;
+}
+
+.yield-example {
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--bg);
+  font-variant-numeric: tabular-nums;
+}

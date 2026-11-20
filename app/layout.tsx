@@ -1,3 +1,4 @@
+import { Analytics } from "@vercel/analytics/next";
 import type { Metadata } from "next";
 import Link from "next/link";
 import type { ReactNode } from "react";
@@ -31,6 +32,8 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           </div>
         </header>
         <main>{children}</main>
+        {/* Vercel Web Analytics: anonymous, cookie-free page views and referrers. */}
+        <Analytics />
       </body>
     </html>
   );
