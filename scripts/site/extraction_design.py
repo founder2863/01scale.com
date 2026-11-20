@@ -22,14 +22,14 @@ D1 = "0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c"   # DocFlow's document, as an opaque
 JOB_EXTRACTED = {
     "id": J1, "file_id": F1, "schema": "invoice-v1", "reference": f"docflow:{D1}", "status": "extracted",
     "steps": [
-        {"name": "fetching_file", "state": "done"}, {"name": "reading_document", "state": "done"},
-        {"name": "checking_rules", "state": "done"}, {"name": "saving", "state": "done"},
+        {"name": "fetching_file", "state": "done"}, {"name": "reading_text", "state": "done"},
+        {"name": "reading_document", "state": "done"}, {"name": "checking_rules", "state": "done"}, {"name": "saving", "state": "done"},
     ],
     "fields_total": 19, "fields_flagged": 3, "error_code": None, "error_message": None, "retryable": False,
     "created_at": "2026-11-17T09:14:12Z", "finished_at": "2026-11-17T09:14:41Z",
 }
 JOB_RUNNING = {**JOB_EXTRACTED, "status": "processing", "fields_total": None, "fields_flagged": None, "finished_at": None,
-               "steps": [{"name": "fetching_file", "state": "done"}, {"name": "reading_document", "state": "running"},
+               "steps": [{"name": "fetching_file", "state": "done"}, {"name": "reading_text", "state": "done"}, {"name": "reading_document", "state": "running"},
                          {"name": "checking_rules", "state": "waiting"}, {"name": "saving", "state": "waiting"}]}
 
 FIELD_TOTAL = {
@@ -60,7 +60,9 @@ ENDPOINTS = [
             "Checks the file through Upload, forwarding the caller's access token, so only the caller's own ready files can be read.",
             "If a job for this file and schema is `queued` or `processing`, returns it with `200`. Nothing new is started or charged.",
             "Otherwise records a job as `queued`, with the model ID and prompt version from configuration, and returns `202`.",
-            "The job then runs in the background: with a delegated token for the owner, fetch the file through a 5-minute Upload link, send it to Claude, check the answer, apply the rule checks, and save the fields.",
+            "The job then runs in the background: with a delegated token for the owner, fetch the file through a 5-minute Upload link, and read its text. A PDF with a text layer gives its text directly; a scanned PDF or a photo is read by OCR (Claude transcribing each page, in a call separate from extraction so the quote check stays independent). Each page's text is saved for the quote check.",
+            "If no text is found on any page, the job fails with `no_text_found` and the message 'No text found'. It is not retryable: the same file would give the same result.",
+            "Otherwise it sends the document to Claude with the versioned prompt, checks the answer against the schema, applies the rule checks (including every quote against the saved text, for photos and scans too), and saves the fields.",
             "Temporary failures (rate limit, timeout, overload) are retried up to 2 times, after 2 and then 8 seconds. After that the job is `failed`.",
             "When the job ends, announces `extraction.job.completed` or `extraction.job.failed` to subscribed apps, and records `job.completed` or `job.failed` in the audit log.",
         ],
@@ -89,7 +91,7 @@ ENDPOINTS = [
         [param("jobId", "path", "uuid", "Yes", "A UUID.", "The job.")],
         [
             "Read only.",
-            "`steps[]` lists `fetching_file`, `reading_document`, `checking_rules`, `saving`, each `waiting`, `running`, `done` or `failed`.",
+            "`steps[]` lists `fetching_file`, `reading_text`, `reading_document`, `checking_rules`, `saving`, each `waiting`, `running`, `done` or `failed`.",
             "A failed job has `error_code`, a plain-language `error_message`, and `retryable`: true when starting a new job may succeed.",
             "Sends `Retry-After: 2` while the job is `queued` or `processing`.",
         ],
@@ -123,7 +125,7 @@ ENDPOINTS = [
         [
             param("schema", "body", "string", "Yes", "`invoice-v1`.", "Which rules to apply."),
             param("values", "body", "object", "Yes", "The schema's fields by name; `line_items` as an array of objects. Amounts as decimal strings.", "The values to check."),
-            param("file_id", "body", "uuid", "No", "A ready file of the caller's.", "When given, also checks that each `source_quote` in `values` appears in the file's text."),
+            param("job_id", "body", "uuid", "No", "A job of the caller's that read text.", "When given, also checks that each `source_quote` in `values` appears in that job's saved page text, for scans and photos as well as text PDFs. Nothing is read again."),
         ],
         [
             "Runs every rule for the schema and reports each one. Stores nothing.",
@@ -150,7 +152,7 @@ ENDPOINTS = [
         [response("200", "The caller is an admin", "`data[]` of jobs and `summary`: `failure_rate`, `avg_cost_usd`, `p95_duration_ms`, `jobs`.")],
         [error("404", "not_found", "The caller is not an admin. The endpoint does not reveal that it exists."), NOT_AUTH],
         f"GET /api/extraction/v1/admin/jobs?limit=1 HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>",
-        json.dumps({"data": [{"id": J1, "status": "extracted", "model": "claude-sonnet-5-5", "prompt_version": "extract-invoice/v1", "pages": 2, "tokens_in": 6210, "tokens_out": 1480, "cost_usd": "0.040830", "duration_ms": 28900, "error_code": None, "created_at": "2026-11-17T09:14:12Z"}],
+        json.dumps({"data": [{"id": J1, "status": "extracted", "model": "claude-opus-5-5", "prompt_version": "extract-invoice/v1", "pages": 2, "tokens_in": 6210, "tokens_out": 1480, "cost_usd": "0.040830", "duration_ms": 28900, "error_code": None, "created_at": "2026-11-17T09:14:12Z"}],
                     "summary": {"jobs": 100, "failure_rate": 0.02, "avg_cost_usd": "0.0412", "p95_duration_ms": 41200}}, indent=2),
     ),
     endpoint(
@@ -178,7 +180,7 @@ EVENTS_OUT = [
 
 # ------------------------------------------------------------------ data model
 JOB_STATUSES = "`queued`, `processing`, `extracted`, `failed`"
-ERROR_CODES = "`file_unavailable`, `document_unreadable`, `model_unavailable`, `output_invalid`, `timed_out`"
+ERROR_CODES = "`file_unavailable`, `document_unreadable`, `no_text_found`, `model_unavailable`, `output_invalid`, `timed_out`"
 
 JOBS = {
     "name": "extraction.jobs",
@@ -190,7 +192,7 @@ JOBS = {
         column("schema", "text", "No", "", "`invoice-v1` in version 1", "Which fields were extracted, and so which prompt and rules applied."),
         column("reference", "text", "Yes", "", "1 to 200 characters", "The caller's own label, returned in events. Opaque to Extraction."),
         column("status", "text", "No", "'queued'", f"One of {JOB_STATUSES}", "Where the job is."),
-        column("step", "text", "Yes", "", "One of `fetching_file`, `reading_document`, `checking_rules`, `saving`", "The step running now, or the step that failed. Empty while queued and after success."),
+        column("step", "text", "Yes", "", "One of `fetching_file`, `reading_text`, `reading_document`, `checking_rules`, `saving`", "The step running now, or the step that failed. Empty while queued and after success."),
         column("attempt", "smallint", "No", "1", "1 to 3", "Which try this is within the job: the first, or one of the 2 retries after a temporary failure."),
         column("model", "text", "No", "", "1 to 100 characters", "The Claude model used, from configuration at the time (`MVP1-E3-02` AC3)."),
         column("prompt_version", "text", "No", "", "Like `extract-invoice/v1`", "The versioned prompt used, so a result can always be traced to its prompt."),
@@ -230,6 +232,21 @@ FIELDS = {
     "constraints": [], "sampleCols": [], "sampleRows": [],
 }
 
+PAGE_TEXTS = {
+    "name": "extraction.page_texts",
+    "purpose": "The text of each page a job read: from the PDF's text layer, or by OCR for scans and photos. Used to check that every quote is really in the document.",
+    "columns": [
+        column("job_id", "uuid", "No", "", "Part of the primary key; foreign key to `extraction.jobs`, delete cascades", "Which job read it."),
+        column("page", "smallint", "No", "", "1 to 10; part of the primary key", "Which page."),
+        column("source", "text", "No", "", "`text_layer` or `ocr`", "Where the text came from. OCR text can contain reading mistakes, which the eval set measures."),
+        column("text", "text", "No", "", "Up to 100,000 characters; may be empty for a blank page", "The page's text."),
+        column("created_at", "timestamptz", "No", "now()", "", "When it was read."),
+    ],
+    "constraints": ["`page_texts_pkey`: primary key (`job_id`, `page`)", "`page_texts_job_id_fkey`: foreign key to `extraction.jobs`, delete cascades", "`page_texts_page_check`, `page_texts_source_check`, `page_texts_text_check`"],
+    "sampleCols": ["job_id", "page", "source", "text", "created_at"],
+    "sampleRows": [[J1, "2", "text_layer", "Subtotal 1,150.00  Tax 80.00  TOTAL DUE  $1,240.00", "2026-11-17 09:14:15+00"]],
+}
+
 INBOUND = {
     "name": "extraction.inbound_events",
     "purpose": "One row per platform event Extraction has acted on, so a repeated delivery has no effect.",
@@ -263,10 +280,11 @@ DATA_MODEL = {
     "lifecycles": [
         {"name": "Job", "text": "`queued` when asked for → `processing` when the background work starts → `extracted` when its fields are saved, or `failed` after the last retry. A job left `queued` for a minute is picked up by the sweep."},
         {"name": "Field", "text": "Created with all its job's fields in one step → never changed → deleted only with its job or its owner's account."},
-        {"name": "The document's content", "text": "Fetched through a 5-minute Upload link into memory for the model call, then dropped. Never written to disk or to the database."},
+        {"name": "The document's content", "text": "Fetched through a 5-minute Upload link into memory, then dropped. Only each page's text is saved (`extraction.page_texts`), for the quote check."},
+        {"name": "Page text", "text": "Saved when the job reads the document → never changed → deleted with its job or its owner's account. It stays inside the owner's account like every other record (privacy rule on #41)."},
     ],
     "notStored": [
-        "The document itself: it stays in the Upload service.",
+        "The document itself: it stays in the Upload service. Only its page text is kept, for the quote check.",
         "The model's raw answer: only the validated fields are saved, so invalid output is never kept.",
         "The prompt text on each job: only its version; the text lives in `prompts/`.",
         "Document content in logs: logs carry IDs, counts and timings only.",
@@ -292,8 +310,8 @@ JOBS["constraints"] = [
 ]
 JOBS["sampleCols"] = ["id", "owner_id", "file_id", "schema", "reference", "status", "step", "attempt", "model", "prompt_version", "pages", "fields_total", "fields_flagged", "tokens_in", "tokens_out", "cost_usd", "duration_ms", "error_code", "error_message", "created_at", "started_at", "finished_at"]
 JOBS["sampleRows"] = [
-    [J1, U1, F1, "invoice-v1", f"docflow:{D1}", "extracted", "(empty)", "1", "claude-sonnet-5-5", "extract-invoice/v1", "2", "19", "3", "6210", "1480", "0.040830", "28900", "(empty)", "(empty)", "2026-11-17 09:14:12+00", "2026-11-17 09:14:12+00", "2026-11-17 09:14:41+00"],
-    [J2, U1, "0193b0e6-77aa-7b11-9c22-3d4e5f6a7b8c", "invoice-v1", "(empty)", "failed", "reading_document", "3", "claude-sonnet-5-5", "extract-invoice/v1", "1", "(empty)", "(empty)", "(empty)", "(empty)", "(empty)", "(empty)", "model_unavailable", "Reading this document is taking longer than usual. Try again in a few minutes.", "2026-11-17 09:30:00+00", "2026-11-17 09:30:01+00", "2026-11-17 09:30:22+00"],
+    [J1, U1, F1, "invoice-v1", f"docflow:{D1}", "extracted", "(empty)", "1", "claude-opus-5-5", "extract-invoice/v1", "2", "19", "3", "6210", "1480", "0.040830", "28900", "(empty)", "(empty)", "2026-11-17 09:14:12+00", "2026-11-17 09:14:12+00", "2026-11-17 09:14:41+00"],
+    [J2, U1, "0193b0e6-77aa-7b11-9c22-3d4e5f6a7b8c", "invoice-v1", "(empty)", "failed", "reading_document", "3", "claude-opus-5-5", "extract-invoice/v1", "1", "(empty)", "(empty)", "(empty)", "(empty)", "(empty)", "(empty)", "model_unavailable", "Reading this document is taking longer than usual. Try again in a few minutes.", "2026-11-17 09:30:00+00", "2026-11-17 09:30:01+00", "2026-11-17 09:30:22+00"],
 ]
 FIELDS["constraints"] = [
     "`fields_pkey`: primary key (`id`)",
@@ -355,11 +373,11 @@ create table extraction.jobs (
   constraint jobs_reference_check check (length(reference) between 1 and 200),
   constraint jobs_status_check check (status in ('queued', 'processing', 'extracted', 'failed')),
   constraint jobs_step_check
-    check (step in ('fetching_file', 'reading_document', 'checking_rules', 'saving')),
+    check (step in ('fetching_file', 'reading_text', 'reading_document', 'checking_rules', 'saving')),
   constraint jobs_attempt_check check (attempt between 1 and 3),
   constraint jobs_model_check check (length(model) between 1 and 100 and length(prompt_version) between 1 and 100),
   constraint jobs_error_code_check check (error_code in
-    ('file_unavailable', 'document_unreadable', 'model_unavailable', 'output_invalid', 'timed_out')),
+    ('file_unavailable', 'document_unreadable', 'no_text_found', 'model_unavailable', 'output_invalid', 'timed_out')),
   constraint jobs_failed_check check (
     (status = 'failed') = (error_code is not null)
     and (error_code is null) = (error_message is null)
@@ -429,6 +447,22 @@ create table extraction.fields (
 -- The fields a person must check, for the review queue.
 create index fields_flagged_idx on extraction.fields (job_id) where flagged;
 
+-- The text of each page, for the quote check. Deleted with the job.
+create table extraction.page_texts (
+  job_id     uuid        not null,
+  page       smallint    not null,
+  source     text        not null,
+  text       text        not null,
+  created_at timestamptz not null default now(),
+
+  constraint page_texts_pkey primary key (job_id, page),
+  constraint page_texts_job_id_fkey foreign key (job_id)
+    references extraction.jobs (id) on delete cascade,
+  constraint page_texts_page_check check (page between 1 and 10),
+  constraint page_texts_source_check check (source in ('text_layer', 'ocr')),
+  constraint page_texts_text_check check (length(text) <= 100000)
+);
+
 create table extraction.inbound_events (
   event_id   uuid        primary key,
   type       text        not null,
@@ -441,7 +475,7 @@ create table extraction.inbound_events (
 -- with their owner's account; audit events can be added and read, never changed.
 grant usage on schema extraction to extraction_service;
 grant select, insert, update on extraction.jobs to extraction_service;
-grant select, insert, delete on extraction.fields to extraction_service;
+grant select, insert, delete on extraction.fields, extraction.page_texts to extraction_service;
 grant select, insert on extraction.inbound_events to extraction_service;
 grant select, insert on extraction.audit_events to extraction_service;
 """
@@ -509,7 +543,8 @@ JOURNEYS = [
 EDGE_CASES = [
     {"situation": "The model is overloaded or rate-limited after both retries", "sees": "'Reading this document is taking longer than usual. Try again in a few minutes.' with Retry.", "code": "`model_unavailable`"},
     {"situation": "The model's answer does not fit the schema, even after one repair", "sees": "'We couldn't read this document reliably. Try again, or upload a clearer copy.'", "code": "`output_invalid`"},
-    {"situation": "The document cannot be read, for example a blank or very blurred photo", "sees": "'We couldn't read this document. Upload a clearer copy.'", "code": "`document_unreadable`"},
+    {"situation": "The file cannot be opened, for example a damaged or password-protected PDF", "sees": "'We couldn't open this document. Upload another copy.'", "code": "`document_unreadable`"},
+    {"situation": "No text is found, even by OCR: a blank page, or a photo too blurred or dark to read", "sees": "'No text found' and Choose another file. No Retry: the same file would give the same result.", "code": "`no_text_found`"},
     {"situation": "The job takes longer than its limit", "sees": "'Reading took too long. Try again.' with Retry.", "code": "`timed_out`"},
     {"situation": "The file was deleted or expired before it could be read", "sees": "'This file is no longer available. Upload it again.'", "code": "`file_unavailable`"},
     {"situation": "Starts extraction on a file still uploading", "sees": "'This file is still uploading.'", "code": "`file_not_ready`"},
@@ -603,7 +638,8 @@ OVERVIEW_WHY = [
 ]
 
 SCOPE_IN = [
-    "Read one document of up to 10 pages (PDF, PNG or JPEG) into the invoice v1 fields",
+    "Read one document of up to 10 pages (PDF, PNG or JPEG) into the invoice v1 fields, including scanned PDFs and photos, which are read by OCR",
+    "'No text found' when a document has no readable text",
     "A confidence score, page and quote for every value",
     "Rule checks: amounts, dates, currency, required fields and quotes",
     "Flag fields below the threshold or failing a check, with reasons",
@@ -654,7 +690,7 @@ QUICKSTART = [
 ENV = [
     {"name": "EXTRACTION_DATABASE_URL", "value": "Neon connection string for the `extraction_service` role", "secret": "Yes"},
     {"name": "ANTHROPIC_API_KEY", "value": "The Claude API key", "secret": "Yes"},
-    {"name": "EXTRACTION_MODEL", "value": "The Claude model ID, for example `claude-sonnet-5-5`. Saved on each job.", "secret": "No"},
+    {"name": "EXTRACTION_MODEL", "value": "The Claude model ID; default `claude-opus-5-5` (Nikhil's decision on #34). Used for OCR and extraction, and saved on each job. A change needs an eval report.", "secret": "No"},
     {"name": "EXTRACTION_PROMPT_VERSION", "value": "`extract-invoice/v1`: a file in `prompts/`. Saved on each job.", "secret": "No"},
     {"name": "MODEL_PRICE_INPUT_PER_MTOK, MODEL_PRICE_OUTPUT_PER_MTOK", "value": "The model's price per million tokens, from Anthropic's price list, for the cost estimate", "secret": "No"},
     {"name": "FLAG_THRESHOLD", "value": "`0.85`: fields below it are flagged. Tuned with the eval set.", "secret": "No"},
@@ -686,7 +722,7 @@ MODULE = {
     "env": ENV,
     "errorSample": problem("file_not_ready", "File not ready", 409, "This file is still uploading. Try again when the upload has finished."),
     "endpoints": ENDPOINTS,
-    "tables": [JOBS, FIELDS, INBOUND],
+    "tables": [JOBS, FIELDS, PAGE_TEXTS, INBOUND],
     "entities": DATA_MODEL["entities"],
     "lifecycles": DATA_MODEL["lifecycles"],
     "otherTables": DATA_MODEL["otherTables"],
@@ -721,8 +757,9 @@ MODULE = {
     ],
     "openQuestions": [
         "Rate limits are starting values to be tuned once there is real traffic.",
+        "Decided by Nikhil on 17 Nov 2026: Claude Opus 5.5 is the default model (#34); scans and photos are in scope, read by OCR, with 'No text found' when there is no text (#34, #35); Upload ships the preview the extraction page uses (#36).",
+        "OCR uses Claude itself, so no second vendor is needed. AWS Textract is the alternative if OCR accuracy or cost on the eval set's scanned cases misses its targets.",
+        "Opus 5.5 costs more per token than the earlier sample model; the eval set measures whether it stays within $0.10 per document.",
         "Decided by Nikhil on 17 Nov 2026 (#65): photo values are not capped. A person can always see every value, flagged or not, through 'Show all fields' in review, so the minimal implementation is kept. (Later, #80 adds OCR, which lets the quote check run on photos as well.)",
-        "The extraction page shows the document beside the fields (`MVP1-E3-04`). Upload ships no inline preview component, only a link that opens the file. Either Upload gains a preview component, or the app renders one from the download link.",
-        "Which model is the default is a cost and accuracy choice to settle with the eval set (targets: at most $0.10 and 60 seconds per document).",
     ],
 }

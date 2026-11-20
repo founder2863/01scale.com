@@ -25,7 +25,8 @@ It does not trust the model on its own word. The answer must fit the schema, the
 
 **In scope**
 
-- Read one document of up to 10 pages (PDF, PNG or JPEG) into the invoice v1 fields
+- Read one document of up to 10 pages (PDF, PNG or JPEG) into the invoice v1 fields, including scanned PDFs and photos, which are read by OCR
+- 'No text found' when a document has no readable text
 - A confidence score, page and quote for every value
 - Rule checks: amounts, dates, currency, required fields and quotes
 - Flag fields below the threshold or failing a check, with reasons
@@ -135,7 +136,7 @@ Environment variables on the service's own deployment. Secrets are never committ
 |---|---|---|
 | `EXTRACTION_DATABASE_URL` | Neon connection string for the `extraction_service` role | Yes |
 | `ANTHROPIC_API_KEY` | The Claude API key | Yes |
-| `EXTRACTION_MODEL` | The Claude model ID, for example `claude-sonnet-5-5`. Saved on each job. | No |
+| `EXTRACTION_MODEL` | The Claude model ID; default `claude-opus-5-5` (Nikhil's decision on #34). Used for OCR and extraction, and saved on each job. A change needs an eval report. | No |
 | `EXTRACTION_PROMPT_VERSION` | `extract-invoice/v1`: a file in `prompts/`. Saved on each job. | No |
 | `MODEL_PRICE_INPUT_PER_MTOK, MODEL_PRICE_OUTPUT_PER_MTOK` | The model's price per million tokens, from Anthropic's price list, for the cost estimate | No |
 | `FLAG_THRESHOLD` | `0.85`: fields below it are flagged. Tuned with the eval set. | No |
@@ -147,6 +148,7 @@ Environment variables on the service's own deployment. Secrets are never committ
 ## Open questions
 
 - Rate limits are starting values to be tuned once there is real traffic.
+- Decided by Nikhil on 17 Nov 2026: Claude Opus 5.5 is the default model (#34); scans and photos are in scope, read by OCR, with 'No text found' when there is no text (#34, #35); Upload ships the preview the extraction page uses (#36).
+- OCR uses Claude itself, so no second vendor is needed. AWS Textract is the alternative if OCR accuracy or cost on the eval set's scanned cases misses its targets.
+- Opus 5.5 costs more per token than the earlier sample model; the eval set measures whether it stays within $0.10 per document.
 - Decided by Nikhil on 17 Nov 2026 (#65): photo values are not capped. A person can always see every value, flagged or not, through 'Show all fields' in review, so the minimal implementation is kept. (Later, #80 adds OCR, which lets the quote check run on photos as well.)
-- The extraction page shows the document beside the fields (`MVP1-E3-04`). Upload ships no inline preview component, only a link that opens the file. Either Upload gains a preview component, or the app renders one from the download link.
-- Which model is the default is a cost and accuracy choice to settle with the eval set (targets: at most $0.10 and 60 seconds per document).

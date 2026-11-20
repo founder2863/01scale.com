@@ -797,6 +797,14 @@ export const products = [
           {
             "label": "AC4",
             "text": "The response is validated with zod. A schema failure triggers one repair attempt and then fails the job; invalid JSON is never stored."
+          },
+          {
+            "label": "AC5",
+            "text": "Scanned PDFs and photos are in scope. Before extraction, the job reads each page's text: the PDF's text layer, or OCR by Claude when there is none or the file is an image. If no text is found, the job fails with `no_text_found` and the person sees \"No text found\" (Nikhil's decision on #34)."
+          },
+          {
+            "label": "AC6",
+            "text": "The default model is `claude-opus-5-5` (Nikhil's decision on #34)."
           }
         ],
         "evals": "EXT-1 schema validity, EXT-2 header field accuracy, EXT-3 line item F1, EXT-4 hallucination rate, EXT-7 latency, EXT-8 cost (see `EVALS.md`).",
@@ -824,6 +832,10 @@ export const products = [
           {
             "label": "AC4",
             "text": "Unit tests cover every rule check, including rounding and missing-tax cases."
+          },
+          {
+            "label": "AC5",
+            "text": "The source-quote check runs for scans and photos too, against the OCR text (decision on #35)."
           }
         ],
         "evals": "EXT-5 routing recall, EXT-6 flag rate.",
@@ -914,7 +926,7 @@ export const products = [
         "path": "/api/extraction/v1/validations",
         "access": "Signed in",
         "summary": "Run the rule checks for a schema on a set of values.",
-        "detail": "Body `{schema, values, file_id?}` → `200 {passed, checks: [{name, passed, fields[], message}]}`. Used after extraction and again on corrected data.",
+        "detail": "Body `{schema, values, job_id?}` → `200 {passed, checks: [{name, passed, fields[], message}]}`. Used after extraction and again on corrected data.",
         "story": "MVP1-E3-03"
       },
       {
@@ -929,7 +941,7 @@ export const products = [
     "apiNotes": [
       {
         "story": "MVP1-E3-02",
-        "text": "Extraction itself has no endpoint: it runs inside the job started in E3-01. The job reads the file through Upload `GET /files/{fileId}/download-url`, forwarding the user's access token."
+        "text": "Extraction itself has no endpoint: it runs inside the job started in E3-01. The job reads the file through Upload `GET /files/{fileId}/download-url` with a delegated token for the owner (decision on #24)."
       },
       {
         "story": "MVP1-E3-04",
@@ -950,7 +962,7 @@ export const products = [
       {
         "story": "MVP1-E3-03",
         "title": "Rule checks and final confidence",
-        "text": "`extraction.fields` adds confidence numeric(3,2), flagged boolean, flag_reasons text[]. Index `extraction.fields(job_id) where flagged`."
+        "text": "`extraction.fields` adds confidence numeric(3,2), flagged boolean, flag_reasons text[]. Index `extraction.fields(job_id) where flagged`. `extraction.page_texts` (job_id → jobs, page, source `text_layer|ocr`, text, created_at): each page's text, for the quote check; deleted with the job."
       },
       {
         "story": "MVP1-E3-04",
