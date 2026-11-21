@@ -172,7 +172,7 @@ As a hiring manager, I want to see what each story cost to build with AI, includ
 
 ### MVP1-E0-14 · Market Outlook section on every module page — M
 As a hiring manager, I want to see why each platform component matters in the market, so I can judge the product thinking behind it, not only the build.
-- **AC1:** Every module page has a **Market Outlook** section in its navigation, right after Read Me. It covers four things: **how big the market is**, **why I am building this component**, **where I have used it** in my own work, and **the key market players**.
+- **AC1:** Every module page has a **Market Outlook** section, the first in its navigation, before Read Me (Nikhil's decision on PR #87). It covers four things: **how big the market is**, **why I am building this component**, **where I have used it** in my own work, and **the key market players**.
 - **AC2:** Market size gives a figure, the year it refers to, and its source with a link (an analyst report, a public filing or a company's own statement). A figure without a source is not shown. Where sources disagree, the range is shown with each source.
 - **AC3:** Key market players are listed with one line each on how they approach the problem (for Identity, for example, a managed service such as AWS Cognito, an identity platform such as Okta or Auth0, and a developer-first product such as Clerk), and where this component sits against them.
 - **AC4:** "Why I am building this" and "Where I have used it" are Nikhil's own words, written in the first person. Claude may draft the research parts but never invents personal experience; until Nikhil writes those two parts, they show "Coming Soon...".
@@ -184,7 +184,7 @@ As a hiring manager, I want to see why each platform component matters in the ma
 
 ### MVP1-E0-15 · PRD Reference section on every module page — S
 As a hiring manager, I want to trace each module back to the product requirements, so I can see that what was designed is what the product needed.
-- **AC1:** Every module page has a **PRD Reference** section in its navigation, after Market Outlook. It lists the PRD sections the module implements (for example MVP1 PRD §8 Functional requirements and §12 Non-functional requirements for Upload), each with a link to that section of `docs/prd/MVP1-PRD.md` or `docs/prd/MVP2-PRD.md`.
+- **AC1:** Every module page has a **PRD Reference** section in its navigation, after Read Me. It lists the PRD sections the module implements (for example MVP1 PRD §8 Functional requirements and §12 Non-functional requirements for Upload), each with a link to that section of `docs/prd/MVP1-PRD.md` or `docs/prd/MVP2-PRD.md`.
 - **AC2:** Each referenced requirement shows the stories that deliver it, so the trace runs PRD → story → design on one screen.
 - **AC3:** A requirement the module's stories do not cover yet is listed as a gap, not hidden.
 - **AC4:** The mapping is kept in one place per module and generated into the page with `npm run site:data`. When a PRD section or a story changes, the page data changes in the same PR.
@@ -205,7 +205,7 @@ As a developer or an AI agent, I want to see each module's MCP tools on its page
 - **API design:** No new endpoints. Reads each service's API spec now, and its `GET /api/{service}/v1/openapi.json` once built.
 - **Database design:** No tables.
 
-**Order of sections on a module page after these three stories:** Read Me, Market Outlook, PRD Reference, Requirement EPIC, User Journey, UI Components, API Spec, MCP, Data Model, Schema.
+**Order and grouping of sections on a module page:** see `MVP1-E0-21`.
 
 ### MVP1-E0-17 · Explain how token yield is calculated on the Token Costs dashboard — S
 As a hiring manager, I want the Token Costs dashboard to explain how token yield is worked out, so I can trust the number and understand what a low yield means.
@@ -216,6 +216,60 @@ As a hiring manager, I want the Token Costs dashboard to explain how token yield
 - **AC5:** It states the caveats: yield is on tokens, not dollars, and most tokens are cheap cache re-reads (the cost-based yield is shown beside it for comparison); the build/rework/scaffolding labels are my judgement, listed row by row in the ledger with a link to it; a request after a break of more than an hour carries the cost of reloading the conversation; and a low yield means a decision changed after work was done, not that the work was poor.
 - **AC6:** The panel works from 320 to 1920 pixels wide, in light and dark mode, and its numbers come from `app/how-its-built/costs.ts`, never typed into the page.
 - **Service:** Site (`apps/web`) and repository tooling (`scripts/costs/build_costs.py`)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+
+### MVP1-E0-18 · A working journey on every module page ("Try it") — L
+As a hiring manager, I want to click through a module's journey with its real screens, not only read about it, so I can judge the product experience in a minute.
+- **AC1:** The User Journey section has a **Try it** mode beside the written journey. Each step is the module's real UI component, which I can click and type into; the written step for where I am is highlighted beside it.
+- **AC2:** Before a service is built, Try it runs against a **mock of the service's API**, generated from its API spec and sample responses, with synthetic data only. Once the service is live, the same journey runs against the real API with test data, and the page says which.
+- **AC3:** Try it covers the main journey and at least one failure from the journey's "When something goes wrong" table (for example an unsupported file, or a payment that's declined).
+- **AC4:** No sign-up is needed, nothing is stored between visits, a **Reset** button starts again, and no real user's data is ever used (Nikhil's privacy rule).
+- **AC5:** It works with touch and keyboard, from 320 to 1920 pixels wide, in light and dark mode. Where a step happens on an outside page (Cognito sign-in, Stripe Checkout), Try it shows a clearly labelled stand-in.
+- **Service:** Site (`apps/web`) and each service's UI package; uses the design system (`MVP1-E0-19`)
+- **API design:** No new endpoints. The mock answers exactly as each service's API spec says, and once live the page calls the gateway like any client.
+- **Database design:** No tables.
+
+### MVP1-E0-19 · Design system: shared tokens and base components (`packages/ui-core`) — M
+As the owner, I want every service's screens to share one look and one set of base components, so the platform looks like one product while each service stays independent.
+- **AC1:** `packages/ui-core` holds the **design tokens** (brand colours including `#0b00bf`, type, spacing, radius, shadows, light and dark themes) and **base components**: button, input, select, checkbox, card, badge, dialog, tabs, toast and form-field errors.
+- **AC2:** Every base component is keyboard reachable, has visible focus, labelled controls and WCAG AA contrast, and works at 320 pixels wide in both themes, so every service gets accessibility for free.
+- **AC3:** It contains **no business logic and no calls to any service**. Each service's UI package (`packages/ui-<service>`) builds on it and pins its version, so services stay independent and update on their own schedule.
+- **AC4:** The site itself uses the same tokens, so the site and the services' components look the same.
+- **AC5:** The UI Components section of every module page shows each component **live, in each of its states** (loading, empty, error, success), from the same packages, as a component gallery.
+- **AC6:** The design rules in `docs/process/DESIGN-RULES.md` and the `design-ui-components` skill say to build on `ui-core` and never restyle its base components inside a service.
+- **Service:** Platform (`packages/ui-core`); every service's UI package; Site
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E0-20 · Architecture & System Design section for every service and app — M
+As a hiring manager or an engineer, I want each service and app to show its own architecture and system design, so I can judge the engineering behind it, not only its API.
+- **AC1:** Every module page, including the DocFlow app's, has an **Architecture & System Design** section with:
+  - a **context diagram:** who calls it and what it calls, always through the gateway;
+  - its **inside:** API routes, service functions, database schema, outbox and inbox, background jobs, and outside providers (Cognito, S3, Claude, Stripe, Resend);
+  - **sequence diagrams** for its two or three key flows;
+  - **deployment:** its Vercel project, environment variables by name, and later changes such as AWS Lambda for Extraction;
+  - **non-functional design:** latency and availability targets, scaling and limits, failure modes and what the person sees, security, and cost per use;
+  - its **decisions** (links to the decision log) and how it evolves from version 1 to version 2.
+- **AC2:** Diagrams are written as text (Mermaid) in the module's design source and generated into the page and the docs, like every other section; nothing is drawn by hand.
+- **AC3:** A new skill, `design-system-architecture`, says how to write the section; `design-module` runs it, and `review-architecture` checks that every module's section agrees with its API spec, its data model and `ARCHITECTURE.md`.
+- **AC4:** A module whose section is not designed yet shows "Coming Soon...". The section works from 320 to 1920 pixels wide, in light and dark mode, and diagrams stay readable on a phone.
+- **Service:** Site (`apps/web`) and design tooling (skills and `scripts/site/`)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E0-21 · Module page: section order and grouped navigation — S
+As a visitor, I want the eleven sections of a module page in a logical order and grouped, so I can find what I care about quickly, including on a phone.
+- **AC1:** The sections are in this order, under four headings (Nikhil's decision on PR #87, Market Outlook first):
+  - **Product:** Market Outlook, Read Me, PRD Reference, Requirement EPIC;
+  - **Design:** Architecture & System Design, User Journey (with Try it), UI Components (live);
+  - **Interfaces:** API Spec, MCP;
+  - **Data:** Data Model, Schema.
+- **AC2:** On a desktop the headings appear in the left menu. On a phone or tablet, the sideways-scrolling bar keeps the same order, with each group's first section marking where the group starts.
+- **AC3:** `/products/<module>` opens **Market Outlook**. Every section keeps its own address, and the old addresses keep working (the Read Me moves from `/products/<module>` to `/products/<module>/readme`, with a redirect).
+- **AC4:** `CLAUDE.md` and story `MVP1-E0-10` are updated to describe the new order.
+- **Service:** Site (`apps/web`)
 - **API design:** No endpoints.
 - **Database design:** No tables.
 
