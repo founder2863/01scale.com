@@ -854,6 +854,62 @@ function Schema({ product }: { product: Product }) {
   );
 }
 
+// Sections whose stories are written but not built yet (MVP1-E0-21 AC1). Each says what will
+// appear and which story brings it; nothing is invented to fill it.
+const PLANNED: Partial<Record<TabSlug, { title: string; what: string; story: string }>> = {
+  "market-outlook": {
+    title: "Market Outlook",
+    what: "How big the market is, with sourced figures; why I am building this component; where I have used it in my own work; and the key market players and where this component sits against them.",
+    story: "MVP1-E0-14",
+  },
+  "prd-reference": {
+    title: "PRD Reference",
+    what: "The sections of the product requirements this module implements, each with the stories that deliver it, and any requirement not covered yet.",
+    story: "MVP1-E0-15",
+  },
+  metrics: {
+    title: "Metrics",
+    what: "The one metric that defines success and the few that drive it, service health against its targets, quality from the evals and cost per use, with live numbers once the module ships.",
+    story: "MVP1-E0-27",
+  },
+  monetization: {
+    title: "Monetization",
+    what: "The pricing model and price, the cost of one use broken down by provider, the margin, and a comparison with the public prices of the market players.",
+    story: "MVP1-E0-28",
+  },
+  gtm: {
+    title: "GTM",
+    what: "Who buys and who uses it, how it is positioned against the market players, how developers and agents find and adopt it, and the launch plan.",
+    story: "MVP1-E0-29",
+  },
+  support: {
+    title: "Support",
+    what: "An FAQ, a guide to every error code and how to fix it, live status, how to get help, and the support level of this demo.",
+    story: "MVP1-E0-30",
+  },
+  architecture: {
+    title: "Architecture & System Design",
+    what: "Who calls this module and what it calls, its inside, sequence diagrams of its key flows, how it is deployed, its targets for speed and availability, and its decisions and how it evolves.",
+    story: "MVP1-E0-20",
+  },
+  mcp: {
+    title: "MCP",
+    what: "The MCP tools this module exposes to AI agents, each with its inputs and outputs, matching the API one for one.",
+    story: "MVP1-E0-16",
+  },
+};
+
+function Planned({ tab }: { tab: TabSlug }) {
+  const section = PLANNED[tab];
+  if (!section) return null;
+  return (
+    <>
+      <h2>{section.title}</h2>
+      <ComingSoon what={`${section.what} (story ${section.story})`} />
+    </>
+  );
+}
+
 export function TabContent({ product, tab }: { product: Product; tab: TabSlug }) {
   switch (tab) {
     case "readme":
@@ -870,5 +926,7 @@ export function TabContent({ product, tab }: { product: Product; tab: TabSlug })
       return <DataModel product={product} />;
     case "schema":
       return <Schema product={product} />;
+    default:
+      return <Planned tab={tab} />;
   }
 }

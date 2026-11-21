@@ -202,9 +202,9 @@ export default function Architecture() {
         <section>
           <h2 className="group-title">The services, one by one</h2>
           <p className="note">
-            Each service&apos;s own design is on its module pages. Its
-            Architecture &amp; System Design section (story MVP1-E0-20) will
-            appear there.
+            Each link opens the Architecture &amp; System Design section of
+            that module&apos;s page. The sections are filled in module by
+            module (story MVP1-E0-20).
           </p>
           <dl className="decisions">
             {serviceNames.map((service) => (
@@ -216,7 +216,7 @@ export default function Architecture() {
                       .filter((product) => product.service === service)
                       .map((product) => (
                         <li key={product.slug}>
-                          <Link href={`/products/${product.slug}`}>
+                          <Link href={`/products/${product.slug}/architecture`}>
                             {product.title} ({product.group})
                           </Link>
                         </li>

@@ -5,7 +5,7 @@ import { products } from "../../data";
 import { Flow, PRODUCT_NAME, VISION_HREF } from "../../flow";
 import { details } from "../../details";
 import { TabContent } from "../../sections";
-import { tabHref, tabs, type TabSlug } from "../../tabs";
+import { DEFAULT_TAB, tabGroups, tabHref, tabs, type TabSlug } from "../../tabs";
 
 type Params = { module: string; tab?: string[] };
 
@@ -14,16 +14,18 @@ export const dynamicParams = false;
 export function generateStaticParams(): Params[] {
   return products.flatMap((product) => [
     { module: product.slug, tab: [] },
-    ...tabs.slice(1).map((tab) => ({ module: product.slug, tab: [tab.slug] })),
+    ...tabs
+      .filter((tab) => tab.slug !== DEFAULT_TAB)
+      .map((tab) => ({ module: product.slug, tab: [tab.slug] })),
   ]);
 }
 
 function resolve(params: Params) {
   const product = products.find((item) => item.slug === params.module);
-  const slug = params.tab?.[0] ?? "readme";
+  const slug = params.tab?.[0] ?? DEFAULT_TAB;
   const tab = tabs.find((item) => item.slug === slug);
-  // "/products/x/readme" is not a real address: the Read Me lives at "/products/x".
-  if (!product || !tab || (params.tab?.[0] === "readme") || (params.tab?.length ?? 0) > 1) {
+  // "/products/x/market-outlook" is not a real address: Market Outlook lives at "/products/x".
+  if (!product || !tab || params.tab?.[0] === DEFAULT_TAB || (params.tab?.length ?? 0) > 1) {
     return null;
   }
   return { product, tab };
@@ -81,14 +83,19 @@ export default async function ProductPage({ params }: { params: Promise<Params> 
 
       <div className="container product-layout">
         <nav className="side-tabs" aria-label={`${product.title} sections`}>
-          {tabs.map((item) => (
-            <Link
-              key={item.slug}
-              href={tabHref(product.slug, item.slug as TabSlug)}
-              aria-current={item.slug === tab.slug ? "page" : undefined}
-            >
-              {item.label}
-            </Link>
+          {tabGroups.map((group) => (
+            <div className="side-tabs-group" key={group.heading}>
+              <span className="side-tabs-heading">{group.heading}</span>
+              {group.tabs.map((item) => (
+                <Link
+                  key={item.slug}
+                  href={tabHref(product.slug, item.slug as TabSlug)}
+                  aria-current={item.slug === tab.slug ? "page" : undefined}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </div>
           ))}
         </nav>
 
