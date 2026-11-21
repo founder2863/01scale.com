@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import HowItsBuiltMenu from "./how-its-built/menu";
+import PlatformMenu from "./platform/menu";
 import ProductsMenu from "./products/menu";
 import "./globals.css";
 
@@ -26,7 +27,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                 Home
               </Link>
               <ProductsMenu />
-              <Link href="/architecture">Architecture</Link>
+              <PlatformMenu />
               <HowItsBuiltMenu />
             </nav>
           </div>

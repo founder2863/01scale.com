@@ -489,3 +489,6 @@ with open("app/products/details.generated.ts", "w") as f:
 
 # Identity's SQL, for `npm run schema:check` (the other modules' is written by render.py).
 render.write_sql(guide)
+
+# Platform Core pages (MVP1-E0-22).
+exec(open(os.path.join(HERE, "platform_core.py")).read(), {"__name__": "platform_core"})

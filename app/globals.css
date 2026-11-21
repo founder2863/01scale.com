@@ -1986,3 +1986,61 @@ section[id] {
   background: var(--bg);
   font-variant-numeric: tabular-nums;
 }
+
+/* Platform Core catalogue (MVP1-E0-22): one card per shared component. */
+.core-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.core-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: 100%;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+  color: inherit;
+  text-decoration: none;
+}
+
+.core-card:hover,
+.core-card:focus-visible {
+  border-color: var(--link);
+}
+
+.core-card-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px 10px;
+  font-size: 1.05rem;
+}
+
+.core-card-purpose {
+  color: var(--muted);
+}
+
+.core-card-meta {
+  margin-top: auto;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.75rem;
+}
+
+/* Links in a list of services or modules (Platform Architecture, Apps Architecture). */
+.link-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
