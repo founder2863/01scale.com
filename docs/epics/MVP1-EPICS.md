@@ -404,7 +404,7 @@ As a visitor, I want the Products menu to list the apps and the services by name
 As a visitor, I want one page per app with a tab for each version, so I can see what each version does and which service versions it is built on.
 - **AC1:** Each app has a page, `/products/<app>`, with a tab per version and its own address: `/products/docflow` (V1) and `/products/docflow/v2` (Nikhil's decision on PR #117: separate addresses, so a version can be linked directly).
 - **AC2:** DocFlow V1 shows the product vision content. DocFlow V2 and AutoRep V1 show an introduction, the flow and the modules in it. AutoRep V2 and both P2PFlow versions show "Coming Soon..." with one line on what will appear.
-- **AC3:** Each version tab has a **Built on** table: every service it uses and **which version** of that service, each linking to that service's page at that version. The service versions are set per app version in `apps.ts`, so a V2 app can use a V1 service (DocFlow V2 keeps Upload V1).
+- **AC3:** Each version tab has a **Built on** table: every service it uses and **which version** of that service, each linking to that service's page at that version. The service versions are set per app version in `apps.ts`, so a V2 app can use a V1 service. A service version not decided yet shows **TBD**, the default; it is never assumed (Nikhil's decision on PR #118). DocFlow V1 and AutoRep V1 are built on V1 services; DocFlow V2's versions are TBD.
 - **AC4:** The Products page (`/products`) lists the same apps and services as the menu.
 - **AC5:** It works from 320 to 1920 pixels wide, in light and dark mode.
 - **Service:** Site (`apps/web`)

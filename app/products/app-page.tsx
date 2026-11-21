@@ -93,7 +93,7 @@ function BuiltOn({ app, version }: { app: AppKey; version: Version }) {
       <p className="note">
         The platform services {appLabel(app, version)} uses, and which version of each. App
         versions and service versions are independent: an app can move to a new version while
-        keeping a service at an earlier one.
+        keeping a service at an earlier one. TBD means the version is not decided yet.
       </p>
       <table className="cost-table cost-table-text">
         <thead>
@@ -107,9 +107,13 @@ function BuiltOn({ app, version }: { app: AppKey; version: Version }) {
             <tr key={service}>
               <th scope="row">{SERVICES[service].name}</th>
               <td data-label="Version">
-                <Link href={serviceHref(service, builtOn[service])}>
-                  {serviceLabel(service, builtOn[service]!)}
-                </Link>
+                {builtOn[service] === "TBD" ? (
+                  <span className="status">TBD</span>
+                ) : (
+                  <Link href={serviceHref(service, builtOn[service] as Version)}>
+                    {serviceLabel(service, builtOn[service] as Version)}
+                  </Link>
+                )}
               </td>
             </tr>
           ))}

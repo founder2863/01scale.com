@@ -66,3 +66,5 @@
 **Why.** An app's versions and a service's versions are independent: a V2 app can use a V1 service. A menu built on one shared V1/V2 implies they move together, and a "Services V1" bucket hides each service's own evolution. Listing products by name keeps the menu to nine items, and each page shows its versions, with a **Built on** table on app pages and **Used by** on service pages.
 
 **What stays.** Products is the only header item for products. Phases stay MVP1 and MVP2 in story IDs, epics, labels and `CLAUDE.md`. P2PFlow stays in the menu, marked "Coming soon". Each version has its own address (`/products/docflow/v2`).
+
+**Default is TBD (PR #118).** An app version's service versions are never assumed. Until a version is decided, Built on shows TBD, and that app version is not listed under Used by on any service. DocFlow V1 and AutoRep V1 are built on V1 services; DocFlow V2's are TBD.

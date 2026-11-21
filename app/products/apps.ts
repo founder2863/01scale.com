@@ -128,6 +128,17 @@ export const APPS = {
 export type AppKey = keyof typeof APPS;
 export const APP_ORDER: readonly AppKey[] = ["docflow", "autorep", "p2pflow"];
 
+export type ServiceVersion = Version | "TBD";
+
+const ALL_TBD: Record<ServiceKey, ServiceVersion> = {
+  identity: "TBD",
+  upload: "TBD",
+  extraction: "TBD",
+  review: "TBD",
+  payment: "TBD",
+  delivery: "TBD",
+};
+
 type AppVersion = {
   app: AppKey;
   version: Version;
@@ -137,7 +148,8 @@ type AppVersion = {
   comingSoon?: string;
   docs?: readonly { label: string; href: string }[];
   // Which version of each service this app version is built on (MVP1-E0-33 AC3).
-  builtOn: Partial<Record<ServiceKey, Version>>;
+  // "TBD" until it is decided: never assumed (Nikhil's decision on PR #118).
+  builtOn: Partial<Record<ServiceKey, ServiceVersion>>;
 };
 
 const ALL_V1: Record<ServiceKey, Version> = {
@@ -157,8 +169,8 @@ export const appVersions: readonly AppVersion[] = [
     status: "Planned",
     summary:
       "Batches of documents, a second model that judges the first, web enrichment with sources, fixes by chat, saved cards, notifications, and sign-in rebuilt by hand with passkeys.",
-    // Upload has no V2 yet, so DocFlow V2 keeps Upload V1.
-    builtOn: { identity: "V2", upload: "V1", extraction: "V2", review: "V2", payment: "V2", delivery: "V2" },
+    // Not decided yet, so every service version is TBD (Nikhil's decision on PR #118).
+    builtOn: ALL_TBD,
   },
   {
     app: "autorep",
