@@ -260,7 +260,10 @@ export async function ServicePage({ params }: { params: Promise<ServiceParams> }
           <p className="lead">{info.tagline}</p>
           <p className="hero-meta">
             <span>{serviceLabel(service, version)}</span>
-            <span>{serviceModules(service, version).length} modules</span>
+            <span>
+              {serviceModules(service, version).length}{" "}
+              {serviceModules(service, version).length === 1 ? "module" : "modules"}
+            </span>
           </p>
         </div>
       </section>
@@ -284,7 +287,9 @@ export async function ServicePage({ params }: { params: Promise<ServiceParams> }
               ))}
             </ul>
           ) : (
-            <p className="note">No app uses {serviceLabel(service, version)} yet.</p>
+            <p className="note">
+              <span className="status">TBD</span> No app is built on {serviceLabel(service, version)} yet.
+            </p>
           )}
         </section>
 

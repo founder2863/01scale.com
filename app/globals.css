@@ -1487,6 +1487,16 @@ section[id] {
   font-weight: 500;
 }
 
+.flow-band-title.flow-band-tbd {
+  align-items: center;
+  margin: 0;
+}
+
+.flow-band-title .status {
+  color: var(--chip-text);
+  font-weight: 600;
+}
+
 /* A row of steps joined by arrows. It scrolls sideways on narrow screens. */
 
 .product-flow {

@@ -80,6 +80,18 @@ export default async function ProductPage({ params }: { params: Promise<Params> 
         </div>
       </section>
 
+      {/* No app is built on this module's service version yet: say TBD (Nikhil's decision on PR #118). */}
+      {appsUsing(product.slug).length === 0 && (
+        <section className="flow-band" aria-label="Apps that use this component">
+          <div className="container">
+            <p className="flow-band-title flow-band-tbd">
+              Used by <span className="status">TBD</span>
+              <span>No app is built on this version of the service yet.</span>
+            </p>
+          </div>
+        </section>
+      )}
+
       {/* One band per app that uses this module, its step highlighted in each (MVP1-E0-35). */}
       {appsUsing(product.slug).map(({ app, version }) => (
         <section

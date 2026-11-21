@@ -427,7 +427,7 @@ As a developer, I want one page per platform service with its versions, so I can
 As a visitor on a module page, I want to see every app that uses this module and where, so reuse across apps is visible.
 - **AC1:** `app/products/flow.tsx` holds a flow per app, not only DocFlow's: each app's steps and which modules belong to each step. AutoRep's flow follows its PRD; P2PFlow has none until it is designed.
 - **AC2:** A module page shows the flow of every app that uses the module, with the module's step highlighted in each. For example Human Review is highlighted in DocFlow and in AutoRep.
-- **AC3:** A module that no app uses yet shows no flow band, rather than an empty one.
+- **AC3:** A module that no app is built on yet (for example every V2 module today) shows **Used by: TBD** in place of a flow band, and so does a service version's **Used by** on its service page (Nikhil's decision on PR #118).
 - **AC4:** `CLAUDE.md` (workflow item 5) says a new module must be added to a step in the flow of every app that uses it.
 - **AC5:** It works from 320 to 1920 pixels wide, in light and dark mode.
 - **Service:** Site (`apps/web`)
