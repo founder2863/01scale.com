@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { costs } from "../costs";
+import { constraints, paid, perExtraction, providers } from "../running-costs";
 import { designSkillCount, rulesHref, skillOrder, skills } from "../skills";
 import { builtTabs, type BuiltTab } from "../tabs";
 import YieldExplainer from "../yield-explainer";
@@ -24,7 +25,7 @@ const RATES = [
   { model: "Claude Fable 5.2", input: "$8", output: "$40", cacheRead: "$0.20", cacheWrite: "$16" },
 ];
 
-// Three addresses: /how-its-built (Skills, the default), /token-costs and /agents.
+// Four addresses: /how-its-built (Skills, the default), /token-costs, /agents and /costs.
 export const dynamicParams = false;
 
 export function generateStaticParams(): Params[] {
@@ -338,6 +339,115 @@ export default async function HowItsBuilt({ params }: { params: Promise<Params> 
               build 01scale, and what each one caught, will appear here.
             </p>
           </div>
+        </section>
+        )}
+
+        {tab === "costs" && (
+        <section id="costs">
+          <h2 className="group-title">
+            Costs <span className="status">Designed</span>
+          </h2>
+          <p className="note">
+            What 01scale cost to build, what it costs to run, and the limits
+            that keep it cheap. Visitors pay nothing: every cost lands on me,
+            so every service has a ceiling. The limits below are decided in
+            the stories; the services that enforce them are not built yet.
+          </p>
+
+          <h3 className="section-subtitle">Development cost</h3>
+          <div className="stat-row">
+            <div className="stat">
+              <span className="stat-value">{usd(costs.totals.cost)}</span>
+              <span className="stat-label">Tokens so far, at API rates</span>
+            </div>
+            <div className="stat">
+              <span className="stat-value">{costs.totals.storyYield}%</span>
+              <span className="stat-label">Token yield across stories</span>
+            </div>
+          </div>
+          <p className="note">
+            This is what the tokens Claude Code used would cost an API
+            customer. It is not what I pay: building runs on my Claude Pro
+            subscription. The breakdown by story is in{" "}
+            <Link href="/how-its-built/token-costs">Token Costs</Link>.
+          </p>
+
+          <h3 className="section-subtitle">What I actually pay</h3>
+          <dl className="decisions cost-paid">
+            {paid.map((row) => (
+              <div key={row.item}>
+                <dt>
+                  {row.item} · {row.amount}
+                </dt>
+                <dd>{row.covers}</dd>
+              </div>
+            ))}
+          </dl>
+
+          <h3 className="section-subtitle">Usage cost, by provider</h3>
+          <table className="cost-table cost-table-text">
+            <thead>
+              <tr>
+                <th scope="col">Provider</th>
+                <th scope="col">Bills for</th>
+                <th scope="col">Covered by</th>
+                <th scope="col">Most it can cost a month</th>
+              </tr>
+            </thead>
+            <tbody>
+              {providers.map((row) => (
+                <tr key={row.name}>
+                  <th scope="row">{row.name}</th>
+                  <td data-label="Bills for">{row.billsFor}</td>
+                  <td data-label="Covered by">{row.coveredBy}</td>
+                  <td data-label="Most a month">{row.ceiling}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          <h3 className="section-subtitle">Cost of reading one document</h3>
+          <div className="cards">
+            {perExtraction.map((row) => (
+              <div className="card" key={row.model}>
+                <p className="card-title">
+                  {row.model} · {row.cost}
+                </p>
+                <p>
+                  {row.detail}. That is {row.perMonth}.
+                </p>
+              </div>
+            ))}
+          </div>
+          <p className="note">
+            Estimates until the Extraction service is built and measures every
+            job. The month starts on Opus 5.5; when its $5 is used, Haiku 5.5
+            takes over and the extraction page says so.
+          </p>
+
+          <h3 className="section-subtitle">Constraints</h3>
+          <table className="cost-table cost-table-text">
+            <thead>
+              <tr>
+                <th scope="col">Limit</th>
+                <th scope="col">Value</th>
+                <th scope="col">Why</th>
+                <th scope="col">Story</th>
+              </tr>
+            </thead>
+            <tbody>
+              {constraints.map((row) => (
+                <tr key={row.limit}>
+                  <th scope="row">{row.limit}</th>
+                  <td data-label="Value">{row.value}</td>
+                  <td data-label="Why">{row.why}</td>
+                  <td data-label="Story">
+                    <code>{row.story}</code>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </section>
         )}
       </div>
