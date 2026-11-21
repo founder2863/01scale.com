@@ -244,57 +244,6 @@ p {
   color: var(--link);
 }
 
-/* Services submenu (MVP1-E0-34): opens on click or tap, an accordion inside the list. */
-.menu-sub-toggle {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  width: 100%;
-  padding: 9px 8px;
-  border: 0;
-  border-radius: 8px;
-  background: none;
-  color: var(--text);
-  font: inherit;
-  text-align: left;
-  cursor: pointer;
-}
-
-.menu-sub-toggle:hover,
-.menu-sub-toggle[aria-expanded="true"] {
-  background: var(--surface);
-  color: var(--link);
-}
-
-.menu-sub {
-  margin: 2px 0 6px 8px;
-  padding: 0 0 0 10px;
-  border-left: 2px solid var(--border);
-  list-style: none;
-}
-
-.menu-sub ul {
-  margin: 0 0 6px;
-  padding: 0;
-  list-style: none;
-}
-
-.menu-sub-service {
-  display: block;
-  padding: 8px 8px 2px;
-  color: var(--muted);
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.menu-items .menu-sub a {
-  padding: 6px 8px;
-  font-size: 0.95rem;
-}
-
 .menu-number {
   flex: 0 0 1.75rem;
   color: var(--link);
@@ -2197,13 +2146,8 @@ section[id] {
   list-style: none;
 }
 
-/* Products page (MVP1-E0-33, E0-34): one heading per service under Services. */
-.services-heading {
-  margin: 20px 0 8px;
-  color: var(--muted);
-  font-size: 0.8rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  scroll-margin-top: calc(var(--header-height) + 16px);
+/* Products menu items with a "Coming soon" chip (MVP1-E0-32 AC3). */
+.menu-panel-products .menu-items a {
+  justify-content: space-between;
+  align-items: center;
 }

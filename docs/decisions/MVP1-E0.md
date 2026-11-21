@@ -53,3 +53,16 @@
 **What stays.** Phases remain the way the work is organised: story IDs, epics files, issue labels and `CLAUDE.md`. Only the user-facing menu and pages use V1 and V2. DocFlow keeps its name (a rename to DocEx was considered and skipped); P2P is shown as P2PFlow; Order-to-Cash stays only in the architecture vision.
 
 **Services, not "SysApp".** The platform services are listed as **Services**. They are products a developer or an app uses, but not apps: in the architecture, apps orchestrate services. Services (under Products) and Platform Core (under Platform) stay separate and link to each other.
+
+## 2026-11-21 · Products menu: apps and services, with versions on their pages
+
+**Decided by:** Nikhil, on PR #117, replacing the menu by app and version from the same day.
+
+**Options.**
+- **By version (merged in #117):** DocFlow V1 · AutoRep V1 · P2PFlow V1 · Services V1, then V2.
+- **V1 and V2 as header items:** versions in the primary navigation.
+- **Apps and services by name, versions on their pages (chosen).**
+
+**Why.** An app's versions and a service's versions are independent: a V2 app can use a V1 service. A menu built on one shared V1/V2 implies they move together, and a "Services V1" bucket hides each service's own evolution. Listing products by name keeps the menu to nine items, and each page shows its versions, with a **Built on** table on app pages and **Used by** on service pages.
+
+**What stays.** Products is the only header item for products. Phases stay MVP1 and MVP2 in story IDs, epics, labels and `CLAUDE.md`. P2PFlow stays in the menu, marked "Coming soon". Each version has its own address (`/products/docflow/v2`).

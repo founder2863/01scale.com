@@ -388,36 +388,37 @@ As a hiring manager, I want to see what the platform cost to build, what it cost
 - **Database design:** No tables.
 
 
-### MVP1-E0-32 · Products menu by app and version — M
-As a visitor, I want the Products menu to list each app and its versions, so I see what 01scale offers as products rather than as build phases.
-- **AC1:** The header stays Home, Products, Platform, How It's Built, and the Platform menu is unchanged. Products lists, in this order: **DocFlow V1 · AutoRep V1 · P2PFlow V1 · Services V1 · DocFlow V2 · AutoRep V2 · P2PFlow V2 · Services V2** (Nikhil's decisions, 21 Nov 2026). On wide screens the menu has two columns, V1 and V2; on a phone, one list.
-- **AC2:** The version labels are for visitors only. Phases stay as they are everywhere else: story IDs (`MVP1-…`, `MVP2-…`), the epics files, issue labels and `CLAUDE.md`. V1 shows what is in MVP1 and V2 what is in MVP2.
-- **AC3:** Each app name is defined once in code, like `PRODUCT_NAME` in `app/products/flow.tsx` today, so renaming an app is one edit. DocFlow keeps its name; P2P is shown as **P2PFlow**.
-- **AC4:** Each app item opens that app version's page (`MVP1-E0-33`). **Services V1** and **Services V2** open a submenu of the platform services, each listing its modules (`MVP1-E0-34`).
-- **AC5:** Every module keeps its address, `/products/<module>`, so no link breaks. `/products/vision` redirects to `/products/docflow-v1`.
-- **AC6:** The menu opens on click or tap; hover is only an extra on a desktop. It works with the keyboard, from 320 to 1920 pixels wide, in light and dark mode.
+### MVP1-E0-32 · Products menu: apps and services — M
+As a visitor, I want the Products menu to list the apps and the services by name, so I can open any product in one tap and find its versions on its page.
+- **AC1:** The header stays Home, Products, Platform, How It's Built, and the Platform menu is unchanged. The Products menu has two lists: **Apps** (DocFlow, AutoRep, P2PFlow) and **Services** (Identity, Upload, LLM Extraction, Human Review, Payment, Delivery). Two columns on wide screens; one list on a phone, Apps first (Nikhil's decision on PR #117, which replaced the menu by version).
+- **AC2:** The menu shows no versions. An app's versions and a service's versions are independent: a V2 app can use a V1 service. Versions appear only on each app's and service's page (`MVP1-E0-33`, `E0-34`).
+- **AC3:** An app or service not designed yet stays in the menu, marked "Coming soon" (P2PFlow today).
+- **AC4:** Each name is defined once in code (`app/products/apps.ts`), so a rename is one edit. Phases (MVP1, MVP2) stay as they are in story IDs, epics, labels and `CLAUDE.md`.
+- **AC5:** Every module keeps its address, `/products/<module>`. The earlier addresses redirect: `/products/vision` and `/products/docflow-v1` to `/products/docflow`, `/products/docflow-v2` to `/products/docflow/v2`, and the same for AutoRep and P2PFlow.
+- **AC6:** The menu opens on click or tap and works with the keyboard, from 320 to 1920 pixels wide, in light and dark mode.
 - **Service:** Site (`apps/web`)
 - **API design:** No endpoints.
 - **Database design:** No tables.
 
-### MVP1-E0-33 · A page for each app version — M
-As a visitor, I want one page per app version that explains it and lists its modules, so I can understand an app before opening its parts.
-- **AC1:** `/products/docflow-v1` shows today's product vision content: the DocFlow flow and its MVP1 modules. `/products/docflow-v2` shows the flow and DocFlow's MVP2 modules.
-- **AC2:** `/products/autorep-v1` shows AutoRep's summary and flow from `docs/prd/AUTOREP-PRD.md` and links to its design as it is written (`docs/epics/AUTOREP-EPICS.md`). `/products/autorep-v2`, `/products/p2pflow-v1` and `/products/p2pflow-v2` show "Coming Soon..." with one line on what will appear. Nothing is invented to fill them.
-- **AC3:** App pages are simpler than module pages: an introduction, the app's flow, its modules (each linking to its module page) and the services it uses (each linking to its Services entry). They do not have the fifteen module sections.
-- **AC4:** The Products page (`/products`) lists the same apps and versions as the menu.
+### MVP1-E0-33 · A page for each app, with its versions — M
+As a visitor, I want one page per app with a tab for each version, so I can see what each version does and which service versions it is built on.
+- **AC1:** Each app has a page, `/products/<app>`, with a tab per version and its own address: `/products/docflow` (V1) and `/products/docflow/v2` (Nikhil's decision on PR #117: separate addresses, so a version can be linked directly).
+- **AC2:** DocFlow V1 shows the product vision content. DocFlow V2 and AutoRep V1 show an introduction, the flow and the modules in it. AutoRep V2 and both P2PFlow versions show "Coming Soon..." with one line on what will appear.
+- **AC3:** Each version tab has a **Built on** table: every service it uses and **which version** of that service, each linking to that service's page at that version. The service versions are set per app version in `apps.ts`, so a V2 app can use a V1 service (DocFlow V2 keeps Upload V1).
+- **AC4:** The Products page (`/products`) lists the same apps and services as the menu.
 - **AC5:** It works from 320 to 1920 pixels wide, in light and dark mode.
 - **Service:** Site (`apps/web`)
 - **API design:** No endpoints.
 - **Database design:** No tables.
 
-### MVP1-E0-34 · Services in the Products menu — M
-As a developer, I want the platform services listed as products I can use on their own, so I can find a capability (sign-in, upload, extraction, review, payment, delivery) without going through an app.
-- **AC1:** **Services V1** opens a submenu of the platform services in MVP1, each with its modules: for example Identity → Login using AWS, Account management. **Services V2** does the same for MVP2 (for example Identity → Passwordless login, built by hand; Payment → Saved payment methods; Delivery → Notifications), so platform modules are never shown as an app's features (Nikhil's decision, 21 Nov 2026: the name is **Services**).
-- **AC2:** The submenu opens on click or tap, with hover only as a desktop extra; on a phone it is an accordion. Each module links to its existing page.
-- **AC3:** Services and Platform Core stay separate and link to each other: **Services** (under Products) are the six platform services as products a developer or an app uses, with an API, UI components and MCP tools; **Platform Core** (under Platform) is the shared building blocks the services are built on (gateway, service template, design system, standards). A service never appears in Platform Core, and a Core component never appears in Services.
-- **AC4:** The list is built from `app/products/data.ts` (each module's service and phase), so a new module appears without editing the menu.
-- **AC5:** It works from 320 to 1920 pixels wide, in light and dark mode.
+### MVP1-E0-34 · A page for each service, with its versions — M
+As a developer, I want one page per platform service with its versions, so I can see what each version offers, which apps use it, and how it evolves.
+- **AC1:** Each of the six services has a page, `/products/services/<service>`, with a tab per version that has modules: `/products/services/identity` (V1) and `/products/services/identity/v2`. A service with no V2 module yet (Upload) has only V1. A service's version is its modules' phase: MVP1 is V1, MVP2 is V2.
+- **AC2:** Each version tab lists its modules, each linking to its module page, and **Used by**: the app versions that use this version of the service.
+- **AC3:** The page shows the service's evolution path from ARCHITECTURE.md §8, and says in one line that a new product version keeps the same API contract (for example Identity V2 still answers on `/api/identity/v1`). The steps of the path are numbered as steps, not versions, so they are not confused with the V1 and V2 tabs.
+- **AC4:** Services and Platform Core stay separate and link to each other: Services are the products a developer or an app uses; Platform Core is what they are built on.
+- **AC5:** Module pages show their service and version in the header ("Identity V1"), linking to that service page.
+- **AC6:** It works from 320 to 1920 pixels wide, in light and dark mode.
 - **Service:** Site (`apps/web`)
 - **API design:** No endpoints.
 - **Database design:** No tables.

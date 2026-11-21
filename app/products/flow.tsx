@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { APPS, appHref, type AppKey, type Version } from "./apps";
+import { APPS, appHref, appVersions, serviceKeysOf, versionOf, type AppKey, type Version } from "./apps";
+import { products } from "./data";
 
 // DocFlow's name, kept here for the pages that still say "the product"; it comes from apps.ts.
 export const PRODUCT_NAME = APPS.docflow.name;
@@ -142,11 +143,20 @@ export const flows: Partial<Record<AppKey, readonly FlowStep[]>> = {
 // Kept for the DocFlow V1 page, which lists what each step adds over time.
 export const flowSteps = docflowSteps;
 
-// The apps whose flow includes a module, in menu order (MVP1-E0-35 AC2).
-export function appsUsing(module: string): AppKey[] {
-  return (Object.keys(flows) as AppKey[]).filter((app) =>
-    flows[app]!.some((step) => step.modules.includes(module)),
-  );
+// The app versions that use a module (MVP1-E0-35 AC2): the module is in the app's flow, and that
+// app version is built on the module's service at the module's version.
+export function appsUsing(module: string): { app: AppKey; version: Version }[] {
+  const product = products.find((item) => item.slug === module);
+  if (!product) return [];
+  const version = versionOf(product.group);
+  const services = serviceKeysOf(product);
+  return appVersions
+    .filter(
+      (entry) =>
+        flows[entry.app]?.some((step) => step.modules.includes(module)) &&
+        services.some((service) => entry.builtOn[service] === version),
+    )
+    .map((entry) => ({ app: entry.app, version: entry.version }));
 }
 
 /**
