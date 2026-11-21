@@ -443,6 +443,18 @@ As the owner, I want rate limits that are part of the platform's own code, so th
 - **API design:** No new endpoints. Adds the `RateLimit-*` response headers and `429 rate_limited` to every route.
 - **Database design:** No tables: the gateway holds no data. Counters live in a shared key-value store (for example Upstash Redis); the store is chosen in the story, with its trade-offs in the decision log.
 
+### MVP2-E15-02 · AI usage and budget as a platform component — M
+Decided by Nikhil on 21 Nov 2026: in MVP1 each app counts its own Claude budget ($5 on Opus 5.5, then $5 on Haiku 5.5, a month); MVP2 moves the counting into the platform.
+As the owner, I want one place that counts every Claude call from every service and app, so budgets are enforced the same way everywhere and no app has to build its own counter.
+- **AC1:** A Platform Core component records each Claude call (app, service, model, tokens in and out, cost) and answers, before a call, which model the caller may use: Opus until its budget is used, then Haiku, then none until next month.
+- **AC2:** Budgets are configuration per app, not code. The MVP1 values carry over: $5 on Opus and $5 on Haiku a month for each app.
+- **AC3:** Extraction (`MVP1-E3-02` AC7) and AutoRep (`AUTOREP-E6-02`) stop counting their own spend and use this component; their behaviour for a person does not change.
+- **AC4:** It records numbers only, never prompts, documents, reviews or replies (Nikhil's privacy rule).
+- **AC5:** The Costs page shows each app's spend this month against its budget.
+- **Service:** Platform (service template and a shared usage store)
+- **API design:** Designed in the story when it is picked up: a check before a call and a record after it, callable only with a service token.
+- **Database design:** Designed in the story: one table of usage rows (app, service, model, tokens, cost, created_at) in the component's own schema.
+
 ---
 
 ## E16 · Agents: roles, groups and permissions (MVP2 "i")

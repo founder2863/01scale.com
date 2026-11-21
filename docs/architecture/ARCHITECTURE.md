@@ -509,3 +509,13 @@ I decided this on 17 November 2026, while settling the open questions on the Doc
 - No platform service calls another to move the process forward; only the app does.
 - The one thing DocFlow owns is the invoice-specific output format (the JSON shape, the CSV columns and the metadata that combines two services), which is business logic of that app, not of the platform.
 
+## 13. AutoRep: a second app, with its own agents
+
+AutoRep drafts replies to Google reviews with a team of AI agents (`docs/prd/AUTOREP-PRD.md`). It reuses Identity, Human Review and Delivery unchanged, through the gateway, like DocFlow.
+
+I bent one rule on purpose. Apps are meant to be thin, and logic that a second app could use belongs in a service. For AutoRep V1, I keep the agent graph inside the app: the agents exist to answer reviews, and no other app would reuse them today. When a second app needs agents, the shared parts move into a service. The Google Business Profile code also stays in AutoRep; only a generic OAuth connection could become a platform service later.
+
+AutoRep runs as Python LangGraph on AWS Lambda, with its checkpoints in its own `autorep` schema in Neon, because a run can take minutes and then wait days for the owner's approval. The decisions and their trade-offs are in `docs/decisions/AUTOREP-E1.md`.
+
+Still open: §12.6 names the second app as the trigger to move to an event-driven architecture. AutoRep consumes no other app's events, so V1 does not need a broker; whether to move now is my decision to take.
+

@@ -39,3 +39,17 @@
 **Consequences.**
 1. The template's outbox routes by prefix (`EVENT_ROUTES`).
 2. ARCHITECTURE.md §12.6 records the second app as the trigger for moving to events.
+
+## 2026-11-21 · Products menu by app and version
+
+**Decided by:** Nikhil (stories `MVP1-E0-32` to `E0-35`).
+
+**Options.**
+- **By build phase (before):** MVP1 and MVP2, with the modules under each.
+- **By app and version (chosen):** DocFlow V1 · AutoRep V1 · P2PFlow V1 · Services V1 · DocFlow V2 · AutoRep V2 · P2PFlow V2 · Services V2.
+
+**Why.** Visitors look for products, not build phases. A version per app shows that 01scale has several apps, and that the services are products in their own right.
+
+**What stays.** Phases remain the way the work is organised: story IDs, epics files, issue labels and `CLAUDE.md`. Only the user-facing menu and pages use V1 and V2. DocFlow keeps its name (a rename to DocEx was considered and skipped); P2P is shown as P2PFlow; Order-to-Cash stays only in the architecture vision.
+
+**Services, not "SysApp".** The platform services are listed as **Services**. They are products a developer or an app uses, but not apps: in the architecture, apps orchestrate services. Services (under Products) and Platform Core (under Platform) stay separate and link to each other.

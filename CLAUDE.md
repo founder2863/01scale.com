@@ -23,6 +23,7 @@ Nikhil is a platform & AI product leader (17+ years: identity, payments, integra
 | MVP2 PRD | `docs/prd/MVP2-PRD.md` |
 | MVP1 epics & issues | `docs/epics/MVP1-EPICS.md` |
 | MVP2 epics & issues | `docs/epics/MVP2-EPICS.md` |
+| AutoRep PRD and epics (stories in the file only, no issues) | `docs/prd/AUTOREP-PRD.md`, `docs/epics/AUTOREP-EPICS.md` |
 | Architecture: options, Nikhil's decision and why, service evolution | `docs/architecture/ARCHITECTURE.md` |
 | API rules + endpoint index by service | `docs/architecture/API-DESIGN.md` |
 | Database rules + table index by service | `docs/architecture/DATABASE-DESIGN.md` |

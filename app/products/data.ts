@@ -808,7 +808,7 @@ export const products = [
           },
           {
             "label": "AC7",
-            "text": "**Demo budget (Nikhil's decision on PR #87):** each calendar month (UTC), jobs use `claude-opus-5-5` until $5 of Opus cost is used, then `claude-haiku-5-5` until $5 of Haiku cost is used. When both are used, a new job is refused with `503 demo_budget_reached` and `Retry-After` set to the start of next month. Spend is the sum of `cost_usd` on the month's jobs, per model. The hard backstop is outside the code: prepaid API credit with auto-reload off and a $10 monthly spend limit on the Anthropic workspace, so the bill can never exceed $10."
+            "text": "**Demo budget (Nikhil's decision on PR #87):** each calendar month (UTC), jobs use `claude-opus-5-5` until $5 of Opus cost is used, then `claude-haiku-5-5` until $5 of Haiku cost is used. When both are used, a new job is refused with `503 demo_budget_reached` and `Retry-After` set to the start of next month. Spend is the sum of `cost_usd` on the month's jobs, per model and **per app**, found from each job's `reference` prefix: every app has its own budget of this size (Nikhil's decision, 21 Nov 2026), and AutoRep counts its own (`AUTOREP-E6-02`). The hard backstop is outside the code: prepaid API credit with auto-reload off and a $20 monthly spend limit on the Anthropic workspace (DocFlow's $10 and AutoRep's $10), so the bill can never exceed $20. Moving the budget into one platform component is `MVP2-E15-02`."
           },
           {
             "label": "AC8",
