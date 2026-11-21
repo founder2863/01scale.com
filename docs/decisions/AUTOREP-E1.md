@@ -56,6 +56,24 @@
 
 **Why.** Each app counts its own Claude spend for now: $5 a month on Opus 5.5, then $5 on Haiku 5.5. With DocFlow and AutoRep, the most Claude can cost is $20 a month, and the Anthropic workspace limit is set to $20. Moving the counting into one platform component is `MVP2-E15-02`.
 
-## Open: does AutoRep trigger the move to event-driven?
+## 2026-11-21 · AutoRep keeps orchestration; the move to events waits for a shared consumer
 
-On #13 (`docs/decisions/MVP1-E0.md`, ARCHITECTURE.md §12.6), Nikhil decided that the second app on the platform is the trigger to move from orchestration to an event-driven architecture. AutoRep is the second app. As designed, AutoRep consumes no other app's events and no service's event except `identity.user.deleted`, which already goes to everyone, so nothing in V1 needs a broker. **Decision for Nikhil:** keep orchestration for AutoRep V1 and move when two apps consume the same events, or move now.
+**Decided by:** Nikhil, on PR #112 ("keep it simple for now").
+
+**Context.** On #13 (`docs/decisions/MVP1-E0.md`, ARCHITECTURE.md §12.6), the second app on the platform was named as the trigger to move from orchestration to an event-driven architecture. AutoRep is the second app.
+
+**Options.**
+- **Keep orchestration (chosen):** AutoRep, like DocFlow, calls the services in order and receives only the events about work it started.
+- **Move to a broker now:** services publish to a broker and apps subscribe.
+
+**Why.** AutoRep consumes no other app's events, and no service event except `identity.user.deleted`, which already goes to everyone. Nothing in V1 needs a broker, so adding one would be cost without a consumer.
+
+**New trigger.** The move to events happens when two apps consume the same events, not when a second app exists. ARCHITECTURE.md §12.6 and §13 say so.
+
+## 2026-11-21 · Answers on PR #112
+
+**Decided by:** Nikhil ("sounds good" to the proposals):
+- Human Review is reused as designed; `AUTOREP-E3-02` checks its task screen without a document when picked up.
+- Delivery gains the `reply_needs_approval` template first, as the provider's change (`AUTOREP-E3-03`).
+- `AUTOREP-E1-01` chooses the Python libraries until a Python service template exists.
+- Services V2 stays in the Products menu, for the MVP2 platform modules.
