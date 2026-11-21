@@ -1,12 +1,22 @@
 import Link from "next/link";
+import { APPS, appHref, type AppKey, type Version } from "./apps";
 
-// The product's working name lives here so a rename is one edit.
-export const PRODUCT_NAME = "DocFlow";
-export const VISION_HREF = "/products/vision";
+// DocFlow's name, kept here for the pages that still say "the product"; it comes from apps.ts.
+export const PRODUCT_NAME = APPS.docflow.name;
 
-// The end-to-end flow. Each step is one platform component; `modules` lists the
+type FlowStep = {
+  key: string;
+  label: string;
+  service: string;
+  does: string;
+  later?: string;
+  // The module pages that belong to this step; empty for a step the app does itself.
+  modules: readonly string[];
+};
+
+// DocFlow's end-to-end flow. Each step is one platform component; `modules` lists the
 // product pages that belong to the step (the MVP1 module first, then MVP2 additions).
-export const flowSteps = [
+const docflowSteps: readonly FlowStep[] = [
   {
     key: "sign-in",
     label: "Sign in",
@@ -47,7 +57,7 @@ export const flowSteps = [
   {
     key: "results",
     label: "Results",
-    service: `${PRODUCT_NAME} app`,
+    service: `${APPS.docflow.name} app`,
     does: "The final JSON and CSV are previewed before paying.",
     later: "Combined outputs for a batch.",
     modules: ["json-and-csv-output", "multi-document-review"],
@@ -68,26 +78,106 @@ export const flowSteps = [
     later: "SMS and push notifications.",
     modules: ["download-and-email-delivery", "notifications"],
   },
-] as const;
+];
+
+// AutoRep's flow, from docs/prd/AUTOREP-PRD.md (MVP1-E0-35). Steps the app does itself have no module page.
+const autorepSteps: readonly FlowStep[] = [
+  {
+    key: "sign-in",
+    label: "Sign in",
+    service: "Identity",
+    does: "The business owner signs in.",
+    modules: ["login-using-aws", "account-management"],
+  },
+  {
+    key: "ingest",
+    label: "Ingest",
+    service: `${APPS.autorep.name} app`,
+    does: "New reviews come from Google Business Profile, or from recorded reviews in demo mode.",
+    modules: [],
+  },
+  {
+    key: "analyse",
+    label: "Analyse ‖ Research",
+    service: `${APPS.autorep.name} agents`,
+    does: "The Analyst reads the review while the Researcher gathers sourced facts with its tools.",
+    modules: [],
+  },
+  {
+    key: "draft",
+    label: "Draft and critique",
+    service: `${APPS.autorep.name} agents`,
+    does: "The Writer drafts a reply; the Critic checks it against fixed rules, up to two revisions.",
+    modules: [],
+  },
+  {
+    key: "approve",
+    label: "Approve",
+    service: "Human Review",
+    does: "Below 4★ or flagged risky, the owner approves or edits the reply.",
+    modules: ["human-review"],
+  },
+  {
+    key: "notify",
+    label: "Notify",
+    service: "Delivery",
+    does: "The owner is emailed when a reply needs approval.",
+    modules: ["download-and-email-delivery"],
+  },
+  {
+    key: "publish",
+    label: "Publish",
+    service: `${APPS.autorep.name} app`,
+    does: "The reply is posted once, whatever retries happen.",
+    modules: [],
+  },
+];
+
+// One flow per app. P2PFlow has none until it is designed.
+export const flows: Partial<Record<AppKey, readonly FlowStep[]>> = {
+  docflow: docflowSteps,
+  autorep: autorepSteps,
+};
+
+// Kept for the DocFlow V1 page, which lists what each step adds over time.
+export const flowSteps = docflowSteps;
+
+// The apps whose flow includes a module, in menu order (MVP1-E0-35 AC2).
+export function appsUsing(module: string): AppKey[] {
+  return (Object.keys(flows) as AppKey[]).filter((app) =>
+    flows[app]!.some((step) => step.modules.includes(module)),
+  );
+}
 
 /**
- * The flow as a row of steps. With `current` set to a module, the steps that
+ * An app's flow as a row of steps. With `current` set to a module, the steps that
  * module belongs to are highlighted and the rest are greyed out.
  */
-export function Flow({ current, detailed = false }: { current?: string; detailed?: boolean }) {
+export function Flow({
+  app = "docflow",
+  version = "V1",
+  current,
+  detailed = false,
+}: {
+  app?: AppKey;
+  version?: Version;
+  current?: string;
+  detailed?: boolean;
+}) {
+  const steps = flows[app] ?? [];
   return (
     <ol className={detailed ? "product-flow product-flow-detailed" : "product-flow"}>
-      {flowSteps.map((step, index) => {
-        const modules: readonly string[] = step.modules;
-        const active = current === undefined || modules.includes(current);
+      {steps.map((step, index) => {
+        const active = current === undefined || step.modules.includes(current);
         const here = current !== undefined && active;
+        const href = step.modules.length > 0 ? `/products/${step.modules[0]}` : appHref(app, version);
         return (
           <li
             key={step.key}
             className={active ? "flow-step" : "flow-step is-dimmed"}
             aria-current={here ? "step" : undefined}
           >
-            <Link href={`/products/${step.modules[0]}`}>
+            <Link href={href}>
               <span className="flow-step-number">{index + 1}</span>
               <span className="flow-step-label">{step.label}</span>
               <span className="flow-step-service">{step.service}</span>

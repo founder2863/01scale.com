@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { products } from "../../data";
-import { Flow, PRODUCT_NAME, VISION_HREF } from "../../flow";
+import { APPS, appHref, appLabel, versionOf } from "../../apps";
+import { appsUsing, Flow } from "../../flow";
 import { details } from "../../details";
 import { TabContent } from "../../sections";
 import { DEFAULT_TAB, tabGroups, tabHref, tabs, type TabSlug } from "../../tabs";
@@ -55,7 +56,7 @@ export default async function ProductPage({ params }: { params: Promise<Params> 
       <section className="hero hero-small">
         <div className="container">
           <p className="eyebrow">
-            <Link href="/products">Products</Link> · {product.group} · {product.service}
+            <Link href="/products">Products</Link> · {versionOf(product.group)} · {product.service}
           </p>
           <h1>{product.title}</h1>
           <p className="lead">{product.description}</p>
@@ -69,17 +70,24 @@ export default async function ProductPage({ params }: { params: Promise<Params> 
         </div>
       </section>
 
-      <section className="flow-band" aria-label={`Where this component sits in ${PRODUCT_NAME}`}>
-        <div className="container">
-          <p className="flow-band-title">
-            <Link href={VISION_HREF}>
-              {PRODUCT_NAME} Platform {product.group}
-            </Link>
-            <span>Where this component sits in the flow</span>
-          </p>
-          <Flow current={product.slug} />
-        </div>
-      </section>
+      {/* One band per app that uses this module, its step highlighted in each (MVP1-E0-35). */}
+      {appsUsing(product.slug).map((app) => (
+        <section
+          className="flow-band"
+          key={app}
+          aria-label={`Where this component sits in ${APPS[app].name}`}
+        >
+          <div className="container">
+            <p className="flow-band-title">
+              <Link href={appHref(app, versionOf(product.group))}>
+                {appLabel(app, versionOf(product.group))}
+              </Link>
+              <span>Where this component sits in the flow</span>
+            </p>
+            <Flow app={app} version={versionOf(product.group)} current={product.slug} />
+          </div>
+        </section>
+      ))}
 
       <div className="container product-layout">
         <nav className="side-tabs" aria-label={`${product.title} sections`}>

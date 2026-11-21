@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { APPS } from "../../products/apps";
 import { products } from "../../products/data";
 import { coreComponents } from "../core";
 
@@ -13,8 +14,9 @@ const DOC_URL =
   "https://github.com/founder2863/01scale.com/blob/main/docs/architecture/ARCHITECTURE.md";
 
 const apps = [
-  { name: "DocFlow", note: "First app" },
-  { name: "Procure-to-Pay", note: "Future" },
+  { name: APPS.docflow.name, note: "First app" },
+  { name: APPS.autorep.name, note: "Designed" },
+  { name: APPS.p2pflow.name, note: "Future" },
   { name: "Order-to-Cash", note: "Future" },
 ];
 
