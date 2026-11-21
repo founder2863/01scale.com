@@ -2,14 +2,12 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { APP_ORDER, appHref, appLabel, SERVICES_NAME, servicesFor, VERSIONS, type Version } from "./apps";
+import { APP_ORDER, APPS, appHref, appStatus, SERVICE_ORDER, SERVICES, serviceHref } from "./apps";
 
-// The header's Products menu (MVP1-E0-32): each app by version, then Services. Two columns, V1 and V2,
-// on wide screens; one list on a phone. Services opens a submenu of the platform services and
-// their modules (MVP1-E0-34), on click or tap.
+// The header's Products menu (MVP1-E0-32): Apps and Services by name, two columns on wide screens
+// and one list on a phone. No versions here: each app's and service's versions are on its page.
 export default function ProductsMenu() {
   const [open, setOpen] = useState(false);
-  const [services, setServices] = useState<Version | null>(null);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -44,61 +42,39 @@ export default function ProductsMenu() {
         Products <span aria-hidden="true">▾</span>
       </button>
       {open && (
-        <div className="menu-panel" id="products-menu">
+        <div className="menu-panel menu-panel-products" id="products-menu">
           <div className="menu-groups">
-            {VERSIONS.map(({ version }) => {
-              const isOpen = services === version;
-              return (
-                <div className="menu-group" key={version}>
-                  <div className="menu-group-title">
-                    <span className="menu-group-link">
-                      <span className="group-tag">{version}</span>
-                    </span>
-                  </div>
-                  <ul className="menu-items is-open">
-                    {APP_ORDER.map((app) => (
-                      <li key={app}>
-                        <Link href={appHref(app, version)} onClick={close}>
-                          <span>{appLabel(app, version)}</span>
-                        </Link>
-                      </li>
-                    ))}
-                    <li>
-                      <button
-                        type="button"
-                        className="menu-sub-toggle"
-                        aria-expanded={isOpen}
-                        aria-controls={`services-${version}`}
-                        onClick={() => setServices(isOpen ? null : version)}
-                      >
-                        <span>
-                          {SERVICES_NAME} {version}
-                        </span>
-                        <span aria-hidden="true">{isOpen ? "−" : "+"}</span>
-                      </button>
-                      {isOpen && (
-                        <ul className="menu-sub" id={`services-${version}`}>
-                          {servicesFor(version).map(({ service, modules }) => (
-                            <li key={service}>
-                              <span className="menu-sub-service">{service}</span>
-                              <ul>
-                                {modules.map((product) => (
-                                  <li key={product.slug}>
-                                    <Link href={`/products/${product.slug}`} onClick={close}>
-                                      {product.title}
-                                    </Link>
-                                  </li>
-                                ))}
-                              </ul>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                    </li>
-                  </ul>
-                </div>
-              );
-            })}
+            <div className="menu-group">
+              <div className="menu-group-title">
+                <span className="menu-group-link">Apps</span>
+                <span className="menu-group-heading">Assembled from the services</span>
+              </div>
+              <ul className="menu-items is-open">
+                {APP_ORDER.map((app) => (
+                  <li key={app}>
+                    <Link href={appHref(app)} onClick={close}>
+                      <span>{APPS[app].name}</span>
+                      {appStatus(app) === "Coming soon" && <span className="status">Coming soon</span>}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="menu-group">
+              <div className="menu-group-title">
+                <span className="menu-group-link">Services</span>
+                <span className="menu-group-heading">Platform services, each a product</span>
+              </div>
+              <ul className="menu-items is-open">
+                {SERVICE_ORDER.map((service) => (
+                  <li key={service}>
+                    <Link href={serviceHref(service)} onClick={close}>
+                      <span>{SERVICES[service].name}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
           <Link className="menu-all" href="/products" onClick={close}>
             See all products →

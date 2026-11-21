@@ -4,26 +4,19 @@ import {
   APP_ORDER,
   APPS,
   appHref,
-  appLabel,
-  findAppVersion,
-  SERVICES_NAME,
-  servicesFor,
-  servicesHref,
-  VERSIONS,
+  appStatus,
+  SERVICE_ORDER,
+  SERVICES,
+  serviceHref,
+  serviceVersions,
 } from "./apps";
 
 export const metadata: Metadata = {
   title: "Products — 01scale",
-  description:
-    "The apps built on the 01scale platform, by version, and the platform services each one is assembled from.",
+  description: "The apps built on the 01scale platform, and the platform services they are assembled from.",
 };
 
-function anchorOf(href: string) {
-  return href.split("#")[1];
-}
-
-// The same apps and versions as the Products menu (MVP1-E0-33 AC4), and the Services
-// grouped by service, each with an address the app pages and the menu link to.
+// The same apps and services as the Products menu (MVP1-E0-32, E0-33 AC4). Versions are on each page.
 export default function Products() {
   return (
     <>
@@ -34,68 +27,54 @@ export default function Products() {
           <p className="lead">
             Apps assembled from independent platform services. Each service is
             a product of its own, with an API, UI components and tools for AI
-            agents.
+            agents, and its own versions.
           </p>
         </div>
       </section>
 
       <div className="container content">
-        {VERSIONS.map(({ version }) => (
-          <section key={version} id={version.toLowerCase()}>
-            <h2 className="group-title">
-              <span className="group-tag">{version}</span>
-              Apps
-            </h2>
-            <ul className="product-grid">
-              {APP_ORDER.map((app) => {
-                const entry = findAppVersion(app, version);
-                return (
-                  <li key={app}>
-                    <Link className="product-card" href={appHref(app, version)}>
-                      <span className="module-body">
-                        <span className="module-title">
-                          {appLabel(app, version)}
-                          <span className="status">{entry.status}</span>
-                        </span>
-                        <span className="product-card-text">{APPS[app].tagline}</span>
-                      </span>
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-
-            <h3 className="section-subtitle" id={anchorOf(servicesHref(version))}>
-              {SERVICES_NAME} {version}
-            </h3>
-            <p className="note">
-              The platform services as products a developer or an app uses on
-              their own. What they are built on is in{" "}
-              <Link href="/platform/core">Platform Core</Link>.
-            </p>
-            {servicesFor(version).map(({ service, modules }) => (
-              <div key={service} id={anchorOf(servicesHref(version, service))}>
-                <p className="services-heading">{service}</p>
-                <ul className="product-grid">
-                  {modules.map((product) => (
-                    <li key={product.slug}>
-                      <Link className="product-card" href={`/products/${product.slug}`}>
-                        <span className="module-number">{product.number}</span>
-                        <span className="module-body">
-                          <span className="module-title">
-                            {product.title}
-                            <span className="status">{product.status}</span>
-                          </span>
-                          <span className="product-card-text">{product.description}</span>
-                        </span>
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+        <section id="apps">
+          <h2 className="group-title">Apps</h2>
+          <ul className="product-grid">
+            {APP_ORDER.map((app) => (
+              <li key={app}>
+                <Link className="product-card" href={appHref(app)}>
+                  <span className="module-body">
+                    <span className="module-title">
+                      {APPS[app].name}
+                      <span className="status">{appStatus(app)}</span>
+                    </span>
+                    <span className="product-card-text">{APPS[app].tagline}</span>
+                  </span>
+                </Link>
+              </li>
             ))}
-          </section>
-        ))}
+          </ul>
+        </section>
+
+        <section id="services">
+          <h2 className="group-title">Services</h2>
+          <p className="note">
+            The platform services, as products a developer or an app uses on
+            their own. What they are built on is in{" "}
+            <Link href="/platform/core">Platform Core</Link>.
+          </p>
+          <ul className="product-grid">
+            {SERVICE_ORDER.map((service) => (
+              <li key={service}>
+                <Link className="product-card" href={serviceHref(service)}>
+                  <span className="module-body">
+                    <span className="module-title">
+                      {SERVICES[service].name}
+                      <span className="status">{serviceVersions(service).join(" · ")}</span>
+                    </span>
+                    <span className="product-card-text">{SERVICES[service].tagline}</span>
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
 
         <section>
           <p className="note">

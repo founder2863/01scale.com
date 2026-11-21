@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { products } from "../../data";
-import { APPS, appHref, appLabel, versionOf } from "../../apps";
+import { APPS, appHref, appLabel, serviceHref, serviceKeysOf, serviceLabel, versionOf } from "../../apps";
 import { appsUsing, Flow } from "../../flow";
 import { details } from "../../details";
 import { TabContent } from "../../sections";
@@ -56,7 +56,17 @@ export default async function ProductPage({ params }: { params: Promise<Params> 
       <section className="hero hero-small">
         <div className="container">
           <p className="eyebrow">
-            <Link href="/products">Products</Link> · {versionOf(product.group)} · {product.service}
+            <Link href="/products">Products</Link> ·{" "}
+            {serviceKeysOf(product).length > 0
+              ? serviceKeysOf(product).map((service, index) => (
+                  <span key={service}>
+                    {index > 0 && " · "}
+                    <Link href={serviceHref(service, versionOf(product.group))}>
+                      {serviceLabel(service, versionOf(product.group))}
+                    </Link>
+                  </span>
+                ))
+              : product.service}
           </p>
           <h1>{product.title}</h1>
           <p className="lead">{product.description}</p>
@@ -70,21 +80,31 @@ export default async function ProductPage({ params }: { params: Promise<Params> 
         </div>
       </section>
 
+      {/* No app is built on this module's service version yet: say TBD (Nikhil's decision on PR #118). */}
+      {appsUsing(product.slug).length === 0 && (
+        <section className="flow-band" aria-label="Apps that use this component">
+          <div className="container">
+            <p className="flow-band-title flow-band-tbd">
+              Used by <span className="status">TBD</span>
+              <span>No app is built on this version of the service yet.</span>
+            </p>
+          </div>
+        </section>
+      )}
+
       {/* One band per app that uses this module, its step highlighted in each (MVP1-E0-35). */}
-      {appsUsing(product.slug).map((app) => (
+      {appsUsing(product.slug).map(({ app, version }) => (
         <section
           className="flow-band"
-          key={app}
+          key={`${app}-${version}`}
           aria-label={`Where this component sits in ${APPS[app].name}`}
         >
           <div className="container">
             <p className="flow-band-title">
-              <Link href={appHref(app, versionOf(product.group))}>
-                {appLabel(app, versionOf(product.group))}
-              </Link>
+              <Link href={appHref(app, version)}>{appLabel(app, version)}</Link>
               <span>Where this component sits in the flow</span>
             </p>
-            <Flow app={app} version={versionOf(product.group)} current={product.slug} />
+            <Flow app={app} version={version} current={product.slug} />
           </div>
         </section>
       ))}

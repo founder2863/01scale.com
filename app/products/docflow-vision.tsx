@@ -1,14 +1,8 @@
-import type { Metadata } from "next";
 import Link from "next/link";
-import { AppServices } from "../app-page";
-import { appHref, appLabel } from "../apps";
-import { products } from "../data";
-import { Flow, flowSteps, PRODUCT_NAME } from "../flow";
-
-export const metadata: Metadata = {
-  title: `${appLabel("docflow", "V1")} — 01scale`,
-  description: `What ${PRODUCT_NAME} is, why I am building it, why it is built from platform components, and the whole flow from sign-in to delivery.`,
-};
+import type { ReactNode } from "react";
+import { appHref, appLabel } from "./apps";
+import { products } from "./data";
+import { Flow, flowSteps, PRODUCT_NAME } from "./flow";
 
 const whyBuild = [
   {
@@ -58,27 +52,10 @@ const endProduct = [
   },
 ];
 
-export default function Vision() {
+// DocFlow V1's tab: the product vision (MVP1-E0-33 AC2). The app page provides the hero and the tabs.
+export function DocflowVision({ children }: { children?: ReactNode }) {
   return (
     <>
-      <section className="hero">
-        <div className="container">
-          <p className="eyebrow">
-            <Link href="/products">Products</Link> · Product vision
-          </p>
-          <h1>{appLabel("docflow", "V1")}</h1>
-          <p className="lead">
-            Turn a document into structured data you can trust: AI does the
-            reading, a person checks only what the AI is unsure about, and the
-            result arrives as clean JSON and CSV.
-          </p>
-          <p className="hero-meta">
-            <span>Working name</span>
-            <span>V1 in design</span>
-            <span>{products.filter((product) => product.group === "MVP1").length} modules</span>
-          </p>
-        </div>
-      </section>
 
       <div className="container content">
         <section id="what">
@@ -221,7 +198,7 @@ export default function Vision() {
           </p>
         </section>
 
-        <AppServices app="docflow" version="V1" />
+        {children}
       </div>
     </>
   );
