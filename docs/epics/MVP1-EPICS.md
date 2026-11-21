@@ -314,7 +314,7 @@ As the owner, I want to follow one request through every service and know when s
 - **AC2:** Logs are structured JSON with a fixed set of fields. They never contain document contents, field values, tokens, secrets or personal data (CLAUDE.md, secure by default); a test fails the pipeline if a log call includes a field outside the allowed list.
 - **AC3:** Each service reports, per endpoint: request count, error rate and p95 latency. Each service states its targets (SLOs) in its Architecture & System Design section.
 - **AC4:** Nikhil is alerted when a service's `/api/health` fails, when its error rate or latency breaks its target, or when spending crosses a budget (`MVP1-E0-26`).
-- **AC5:** Monitoring is part of `service-kit`, so a new service gets it without extra work. The tool (for example Vercel Observability, or OpenTelemetry to a hosted backend) is an open question for Nikhil.
+- **AC5:** Monitoring is part of `service-kit`, so a new service gets it without extra work. It uses **Vercel's built-in monitoring** (Observability, logs and Web Analytics), with no extra vendor (Nikhil's decision on PR #87).
 - **Service:** Platform (`service-kit` and gateway)
 - **API design:** No new endpoints; uses `GET /api/health` (`MVP1-E0-08`).
 - **Database design:** No tables.
@@ -325,7 +325,7 @@ As the owner of a public repository, I want visitors to use the real functionali
 - **AC2:** **Secrets never touch the repository.** They live only in Vercel environment variables (marked Sensitive) and AWS. The repository has a `.env.example` per service with names only. GitHub secret scanning with push protection is on, and CI runs a secret scan on every pull request. Pull requests from forks get no secrets.
 - **AC3:** **Secrets never reach a browser.** Only a service's server uses them, so visitors use the live site without seeing any key.
 - **AC4:** **Environments:** local, preview and production each have their own keys. Outside providers run in test or sandbox mode for the demo (Stripe test mode, so no real money moves). Anyone who forks the repository runs it with their own keys.
-- **AC5:** **Safe live demo:** per-user limits (`MVP1-E0-08`) plus a daily cap on costly actions such as extractions; a monthly spend limit on the Anthropic account and budget alerts in AWS and Vercel; bot protection on sign-up; files deleted after 30 days as decided. The daily cap and budget values are open questions for Nikhil.
+- **AC5:** **Safe live demo:** per-user limits (`MVP1-E0-08`) plus a daily cap of **20 extractions per user** (Nikhil's decision on PR #87); a monthly spend limit on the Anthropic account and budget alerts in AWS and Vercel; bot protection on sign-up; files deleted after 30 days as decided. The monthly budget values are an open question for Nikhil.
 - **AC6:** The page says how each secret is rotated (client secret rotation: `MVP2-E8-12`).
 - **Service:** Platform (all services) and Site (`apps/web`)
 - **API design:** No new endpoints. Over a daily cap: `429 daily_limit_reached` with `Retry-After`.
@@ -366,7 +366,7 @@ As a user or a developer of a module, I want to know how to get help and fix com
 - **AC1:** Every service and app page has a **Support** section, the last in the Product group. It has: an FAQ; an **error guide** listing every error code in the module's API spec with what it means and how to fix it, generated from the design source so it never drifts; a link to live status (`GET /api/health`); and how to contact the owner.
 - **AC2:** It states the support level honestly: a demo, best effort, no SLA.
 - **AC3:** It states the API versioning and deprecation policy (`docs/architecture/API-DESIGN.md`) and how a user asks for their data to be deleted (account deletion, `MVP1-E1`).
-- **AC4:** The contact channel is Nikhil's choice (open question), and never shows his personal email. A support request never asks for document contents in a public channel (Nikhil's privacy rule).
+- **AC4:** The contact address is **support@demystifysystems.com** (Nikhil's decision on PR #87); no personal address is shown. A support request never asks for document contents in a public channel (Nikhil's privacy rule).
 - **Service:** Site (`apps/web`) and design tooling
 - **API design:** No endpoints.
 - **Database design:** No tables.
