@@ -87,6 +87,7 @@ As the owner, I want one template every service is built from, so each new servi
 - **AC7:** Every call to another service has a timeout and a safe retry; a service being down returns a clear `503` problem response, never corrupt data.
 - **AC8:** Calls to other services go through the gateway (decision on #21), with the caller's token, a service token or a delegated token (decision on #24). Every endpoint states the scope it needs.
 - **AC9:** An event goes only to the app that started the work, found by its `reference` prefix (`EVENT_ROUTES`); platform-wide events such as `identity.user.deleted` go to every service and app (decision on #13).
+- **AC10:** `service-kit` includes a **mock generator**: given a service's OpenAPI contract and sample responses, it serves a mock of that service's API. The tool is shared; each service keeps its own mock data, synthetic only, in its own folder. Try it (`MVP1-E0-18`) and apps building against a service before it ships use it (Nikhil's decision on PR #87).
 - **Service:** Platform (service template)
 - **API design:** No endpoints of its own. The template gives every service the endpoints in E0-02, E0-05 and E0-06, access-token verification, the error format, and signed outbound events: `POST <subscriber_url>` with `{event_id, type, occurred_at, data}` and an `X-01scale-Signature` HMAC header, retried with backoff.
 - **Database design:** In every service's schema: `outbound_events` (id, type, payload jsonb, subscriber, status `pending|delivered|failed`, attempts, next_attempt_at, created_at). Events are written in the same transaction as the change they describe, then delivered (outbox pattern), so an event is never lost or sent for a change that rolled back.
@@ -260,9 +261,9 @@ As a hiring manager or an engineer, I want each service and app to show its own 
 - **Database design:** No tables.
 
 ### MVP1-E0-21 · Module page: section order and grouped navigation — S
-As a visitor, I want the eleven sections of a module page in a logical order and grouped, so I can find what I care about quickly, including on a phone.
+As a visitor, I want the fifteen sections of a module page in a logical order and grouped, so I can find what I care about quickly, including on a phone.
 - **AC1:** The sections are in this order, under four headings (Nikhil's decision on PR #87, Market Outlook first):
-  - **Product:** Market Outlook, Read Me, PRD Reference, Requirement EPIC;
+  - **Product:** Market Outlook, Read Me, PRD Reference, Requirement EPIC, Metrics, Monetization, GTM, Support (the last four from `MVP1-E0-27` to `E0-30`);
   - **Design:** Architecture & System Design, User Journey (with Try it), UI Components (live);
   - **Interfaces:** API Spec, MCP;
   - **Data:** Data Model, Schema.
@@ -272,6 +273,105 @@ As a visitor, I want the eleven sections of a module page in a logical order and
 - **Service:** Site (`apps/web`)
 - **API design:** No endpoints.
 - **Database design:** No tables.
+
+
+### MVP1-E0-22 · Platform menu and Platform Core section — M
+As a platform engineer or developer landing on any service, I want to see the shared components I have at my disposal, so I never rebuild what the platform already gives me.
+- **AC1:** The site keeps four navigation items: **Home, Products, Platform, How It's Built**. Architecture is renamed **Platform** (`/architecture` redirects), with three items: **Platform Core**, **Platform Architecture** and **Apps Architecture** (`MVP1-E0-23`). Platform Core is not on the home page (Nikhil's decision on PR #87).
+- **AC2:** **Platform Core** opens a catalogue of the shared components, each a submenu item: Gateway, Service template, Design system, API standards, Data standards, Agent access, Audit log, Monitoring, CI & deployment, Eval harness, Security baseline, and Site & docs template.
+- **AC3:** Each card and page shows: its purpose, **what a service gets without rebuilding it**, how to use it (one short snippet), its version, its status, and the stories that build it. A component not designed yet shows "Coming Soon...".
+- **AC4:** **API standards** and **Data standards** hold only the shared rules and tooling (error format, paging, idempotency, versioning, the generated OpenAPI contract and catalogue; one Neon project with a schema and role per service, the grants that stop cross-schema access, migrations, the PGlite test helper, ID, money and time conventions). They never list a service's own endpoints or tables; they link to them.
+- **AC5:** Platform Core components have no Market Outlook, Monetization, GTM or Support sections: they are internal to the platform.
+- **AC6:** Content is kept in a design source per component and generated with `npm run site:data`, like the module pages. `CLAUDE.md` (workflow item 5) and story `MVP1-E0-10` are updated to describe the new menu.
+- **AC7:** It works from 320 to 1920 pixels wide, in light and dark mode.
+- **Service:** Site (`apps/web`) and design tooling
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E0-23 · Platform Architecture and Apps Architecture pages — S
+As a hiring manager or an engineer, I want the architecture split into the platform and the apps built on it, so I can start from the whole and go down to any one service.
+- **AC1:** **Platform Architecture** shows the overview from `docs/architecture/ARCHITECTURE.md`: the gateway, how services call each other, events, service identity and the key decisions. Below it, it links to the architecture of each Platform Core component and to each service's Architecture & System Design section (`/products/<service>/architecture`, `MVP1-E0-20`).
+- **AC2:** **Apps Architecture** lists the apps built from the services. For DocFlow it shows the order in which it calls the services, its process record and the end-to-end sequence diagrams, and links to DocFlow's own architecture section. Later apps (for example Procure-to-Pay, Order-to-Cash) show "Coming Soon...".
+- **AC3:** Diagrams are generated from text, as in `MVP1-E0-20`; nothing is drawn by hand.
+- **AC4:** It works from 320 to 1920 pixels wide, in light and dark mode, and diagrams stay readable on a phone.
+- **Service:** Site (`apps/web`)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E0-24 · "Built on" panel on every service and app page — S
+As a developer, I want each service's page to show which Platform Core components it uses, so I can see at a glance what it gets for free and what it built itself.
+- **AC1:** Every service and app page shows a **Built on** panel listing the Platform Core components it uses, each with the version it pins and a link to that component's page.
+- **AC2:** Before a service is built, the list comes from its design source; once built, from its package manifest, so the panel cannot drift from the code.
+- **AC3:** Each Platform Core page shows the reverse list: which services and apps use it, and at which version.
+- **AC4:** It works from 320 to 1920 pixels wide, in light and dark mode.
+- **Service:** Site (`apps/web`)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E0-25 · Monitoring — M
+As the owner, I want to follow one request through every service and know when something is broken, so I can fix problems before a visitor reports them.
+- **AC1:** The gateway gives every request an `X-Request-Id` (and a W3C `traceparent`); every service passes them on to each call and event it makes, and every log line carries them, so one request can be followed across services.
+- **AC2:** Logs are structured JSON with a fixed set of fields. They never contain document contents, field values, tokens, secrets or personal data (CLAUDE.md, secure by default); a test fails the pipeline if a log call includes a field outside the allowed list.
+- **AC3:** Each service reports, per endpoint: request count, error rate and p95 latency. Each service states its targets (SLOs) in its Architecture & System Design section.
+- **AC4:** Nikhil is alerted when a service's `/api/health` fails, when its error rate or latency breaks its target, or when spending crosses a budget (`MVP1-E0-26`).
+- **AC5:** Monitoring is part of `service-kit`, so a new service gets it without extra work. The tool (for example Vercel Observability, or OpenTelemetry to a hosted backend) is an open question for Nikhil.
+- **Service:** Platform (`service-kit` and gateway)
+- **API design:** No new endpoints; uses `GET /api/health` (`MVP1-E0-08`).
+- **Database design:** No tables.
+
+### MVP1-E0-26 · Security baseline, secrets and a safe live demo — M
+As the owner of a public repository, I want visitors to use the real functionality while no one can see my secrets or run up my bills, and every service to meet the same security bar.
+- **AC1:** A **Security baseline** page in Platform Core lists the OWASP ASVS checks every service meets, the user-data privacy rule, and the rate limits (`MVP1-E0-08`), with each service's status against them.
+- **AC2:** **Secrets never touch the repository.** They live only in Vercel environment variables (marked Sensitive) and AWS. The repository has a `.env.example` per service with names only. GitHub secret scanning with push protection is on, and CI runs a secret scan on every pull request. Pull requests from forks get no secrets.
+- **AC3:** **Secrets never reach a browser.** Only a service's server uses them, so visitors use the live site without seeing any key.
+- **AC4:** **Environments:** local, preview and production each have their own keys. Outside providers run in test or sandbox mode for the demo (Stripe test mode, so no real money moves). Anyone who forks the repository runs it with their own keys.
+- **AC5:** **Safe live demo:** per-user limits (`MVP1-E0-08`) plus a daily cap on costly actions such as extractions; a monthly spend limit on the Anthropic account and budget alerts in AWS and Vercel; bot protection on sign-up; files deleted after 30 days as decided. The daily cap and budget values are open questions for Nikhil.
+- **AC6:** The page says how each secret is rotated (client secret rotation: `MVP2-E8-12`).
+- **Service:** Platform (all services) and Site (`apps/web`)
+- **API design:** No new endpoints. Over a daily cap: `429 daily_limit_reached` with `Retry-After`.
+- **Database design:** No new tables; daily caps are counted by the owning service.
+
+### MVP1-E0-27 · Metrics section on every module page — M
+As a hiring manager, I want to see how each module's success is measured, and how it is doing, so I can judge whether I think in outcomes.
+- **AC1:** Every service and app page has a **Metrics** section in the Product group, after Requirement EPIC. It names one **north-star metric** and the few input metrics that drive it (for DocFlow, for example, the funnel: signed up → uploaded → extracted → reviewed → paid → delivered).
+- **AC2:** It also shows service health (availability, error rate, p95 latency against the targets from `MVP1-E0-25`), LLM quality where it applies (from the evals, `docs/evals/EVALS.md`) and cost per unit (from Monetization).
+- **AC3:** Each metric shows its target and, once the module is live, its actual value and the date. Numbers are aggregate counts only, never a user's data (Nikhil's rule; counts as decided on #81). Before launch, actual values show "Coming Soon...".
+- **AC4:** The choice of metrics and targets is Nikhil's. Claude may draft them; they are marked as a proposal until he approves.
+- **Service:** Site (`apps/web`) and design tooling
+- **API design:** No new endpoints in this story. Live numbers come from Monitoring (`MVP1-E0-25`) and Vercel Web Analytics; how they reach the page is an open question.
+- **Database design:** No tables.
+
+### MVP1-E0-28 · Monetization section on every module page — M
+As a hiring manager, I want to see how each module would make money and what it costs to run, so I can judge the business thinking behind it.
+- **AC1:** Every service and app page has a **Monetization** section, after Metrics. It shows the **pricing model** (for example per document, per API call, per seat, with or without a free tier) and the price.
+- **AC2:** It shows the **unit cost**, broken down (Claude tokens, AWS, Stripe fees, Vercel), and the margin. Measured costs come from the token ledger and provider bills; anything else is marked as an estimate with its assumption.
+- **AC3:** It compares the price with the public pricing of the market players named in Market Outlook, each with a source link and the date it was checked.
+- **AC4:** It says plainly that the demo runs in Stripe test mode, so no real money moves.
+- **AC5:** Prices are Nikhil's decision. Claude may draft a proposal; it is marked as such until he approves. A price already decided in a story (Payment) is shown, not changed.
+- **Service:** Site (`apps/web`) and design tooling
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E0-29 · GTM section on every module page — M
+As a hiring manager, I want to see how each module would reach its customers, so I can judge the go-to-market thinking, not only the build.
+- **AC1:** Every service and app page has a **GTM** section, after Monetization. It covers: the **target customer** (who buys and who uses it), the **positioning** against the players in Market Outlook, how developers and agents **find and adopt** it (docs, the API catalogue, MCP registries, marketplaces), and the **launch plan** and channels.
+- **AC2:** It links its adoption steps to the Metrics funnel, so each GTM step has a number to watch.
+- **AC3:** The positioning and launch plan are Nikhil's, written in the first person. Claude may draft research parts but never invents claims; until Nikhil writes them, they show "Coming Soon...".
+- **Service:** Site (`apps/web`) and design tooling
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E0-30 · Support section on every module page — S
+As a user or a developer of a module, I want to know how to get help and fix common problems myself.
+- **AC1:** Every service and app page has a **Support** section, the last in the Product group. It has: an FAQ; an **error guide** listing every error code in the module's API spec with what it means and how to fix it, generated from the design source so it never drifts; a link to live status (`GET /api/health`); and how to contact the owner.
+- **AC2:** It states the support level honestly: a demo, best effort, no SLA.
+- **AC3:** It states the API versioning and deprecation policy (`docs/architecture/API-DESIGN.md`) and how a user asks for their data to be deleted (account deletion, `MVP1-E1`).
+- **AC4:** The contact channel is Nikhil's choice (open question), and never shows his personal email. A support request never asks for document contents in a public channel (Nikhil's privacy rule).
+- **Service:** Site (`apps/web`) and design tooling
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+**Design skill for the four Product sections:** a skill (`design-product-business`) states how to write Metrics, Monetization, GTM and Support: sources to prefer, how to cite, what is an estimate, and what never to invent.
 
 ---
 
