@@ -413,7 +413,7 @@ As Priya, I want to drag and drop or pick a file on my phone and see progress.
 - **Service:** Human Review; composed by the DocFlow app
 - **API design:**
   - `POST /api/review/v1/tasks/{taskId}/complete` (signed in) — Complete the task once every flagged field is resolved. Body `{checks_overridden?: boolean}` → `200 {task, final_values}`. Emits `review.task.completed`. Errors: `409` with `unresolved_fields[]`.
-  - `POST /api/docflow/v1/documents/{documentId}/complete-review` (signed in) — Finish review for a document: re-checks the corrected data and builds the outputs. Body `{confirm_failed_checks?: boolean}` → `200 {document}`. Calls Extraction `POST /validations`, then Review `complete`. Errors: `409` with `unresolved_fields[]` or `failed_checks[]`.
+  - `POST /api/docflow/v1/documents/{documentId}/complete-review` (signed in) — Finish review for a document: re-checks the corrected data and completes the Review task; results are built on demand afterwards (ARCHITECTURE.md §12.8). Body `{confirm_failed_checks?: boolean}` → `200 {document}`. Calls Extraction `POST /validations`, then Review `complete`. Errors: `409` with `unresolved_fields[]` or `failed_checks[]`.
 - **Database design:** Sets `review.tasks.status`, `completed_at`, `completed_by`, `checks_overridden` and `docflow.documents.status`.
 
 ### MVP1-E4-04 · Corrections feed the eval set — S
@@ -436,7 +436,7 @@ As Priya, I want to drag and drop or pick a file on my phone and see progress.
 - **AC3:** The JSON preview has syntax highlighting and folding, and works on mobile.
 - **Service:** DocFlow app
 - **API design:**
-  - `GET /api/docflow/v1/documents/{documentId}/outputs` (signed in) — The outputs available for a document, and whether download is unlocked. → `200 {version, locked, formats: ["json", "csv"], generated_at}`.
+  - `GET /api/docflow/v1/documents/{documentId}/outputs` (signed in) — Results status: whether download is unlocked and whether the current values pass every check. → `200 {locked, formats: ["json", "csv"], checks: {passed, failed[]}, last_changed_at}`.
   - `GET /api/docflow/v1/documents/{documentId}/outputs/{format}/preview` (signed in) — Preview the JSON or CSV on screen before paying. `format = json|csv` → `200` with `application/json` (`{data, metadata}`) or `text/csv`, sent `Content-Disposition: inline`.
 - **Database design:** No new tables; the JSON is built from the review task's final values and the job's metadata, both read through their APIs.
 
@@ -454,15 +454,15 @@ As Priya, I want to drag and drop or pick a file on my phone and see progress.
 - **AC2:** The download endpoints return 402 until the order is paid, enforced on the server.
 - **Service:** DocFlow app
 - **API design:**
-  - `GET /api/docflow/v1/documents/{documentId}/outputs/{format}/download` (signed in) — Download an output. Locked until the order is paid. → `302` to an Upload `download-url` (5 minutes, correct filename). Errors: `402` until the Payment order is `paid`, `404`.
+  - `GET /api/docflow/v1/documents/{documentId}/outputs/{format}/download` (signed in) — Download an output, built from Review's latest values. Locked until the order is paid. → `200` with the file as an attachment (`{document}-result.{format}`, `Cache-Control: no-store`). Errors: `402 payment_required`, `409 outputs_not_ready`.
 - **Database design:** No schema change; entitlement = the Payment order referenced by `docflow.documents.order_id` has status `paid`.
 
-### MVP1-E5-04 · Store outputs — S
-- **AC1:** On review completion, `result.json` and `result.csv` are written to `users/{userId}/{docId}/outputs/`.
-- **AC2:** If the user later edits fields, the outputs are regenerated and the version increments.
-- **Service:** DocFlow app (files stored through Upload)
-- **API design:** No new endpoints. DocFlow builds the files and stores them through Upload `POST /files` with a delegated token for the document's owner (decision on #24); `version` in `GET …/outputs` increments when they are regenerated.
-- **Database design:** `docflow.outputs` (id, document_id → documents, version, json_file_id, csv_file_id, created_at); unique `(document_id, version)`. The files themselves are `upload.files` rows owned by the user.
+### MVP1-E5-04 · Build outputs on demand — S
+- **AC1:** `result.json` and `result.csv` are never stored. Every preview and download builds them from Review's latest values and Extraction's metadata, so they always reflect the final document (Nikhil's decision on #45, ARCHITECTURE.md §12.8).
+- **AC2:** The person can correct values on the results page, before or after paying. Corrections are saved in Review with their history, the checks re-run, and the next preview or download shows them. No new payment is asked for.
+- **Service:** DocFlow app (values from Human Review, metadata from LLM Extraction)
+- **API design:** No new endpoints. Uses `GET …/outputs`, `…/preview` and `…/download` (E5-01, E5-03), which read Review `GET /tasks/{taskId}?all=true` and Extraction `GET /jobs/{jobId}`; corrections use Review `PATCH /tasks/{taskId}/fields/{fieldId}` through Review's component.
+- **Database design:** No tables: nothing is stored. The final values stay in `review.fields`, kept until the user deletes their account.
 
 ---
 
@@ -530,10 +530,10 @@ As the owner, I want to refund a paid order in full, so a demo user who was char
 - **Database design:** No schema change.
 
 ### MVP1-E7-02 · Secure downloads — S
-- **AC1:** Each download checks on the server that the user owns the document and the order is paid, then redirects to a presigned GET URL valid for 5 minutes, with the right filename.
+- **AC1:** Each download checks on the server that the user owns the document and the order is paid, then returns the file built from Review's latest values, with the right filename and `Cache-Control: no-store`. A generated result is a few kilobytes and never stored, so it is returned directly; stored files such as uploads still move only by short-lived presigned links.
 - **AC2:** `delivery.downloaded` is audited.
-- **Service:** DocFlow app (links from Upload)
-- **API design:** Uses DocFlow `GET …/outputs/{format}/download` (E5-03), which checks the Payment order and redirects to an Upload `download-url`.
+- **Service:** DocFlow app
+- **API design:** Uses DocFlow `GET …/outputs/{format}/download` (E5-03), which checks the Payment order and returns the file.
 - **Database design:** No schema change.
 
 ### MVP1-E7-03 · Email delivery — M

@@ -45,6 +45,19 @@ DocFlow's own page sections. Everything else on DocFlow's pages comes from the s
 
 **Calls:** `GET /documents/{documentId}/outputs/csv/preview`.
 
+## ResultsFieldEditor
+
+*Page section.* The results page's Edit beside each value. It places Review's `FieldDecision` component for that field, then refreshes the previews and checks. DocFlow adds no editing logic of its own.
+
+| Input | Type | Meaning |
+|---|---|---|
+| `documentId` | string | The document. |
+| `taskId` | string | Its Review task. |
+
+**States:** Viewing; Editing (Review's component); Saved: previews refreshed; Check failed after saving: the warning; Failed: Retry.
+
+**Calls:** `GET /documents/{documentId}/outputs`, Review `PATCH /tasks/{taskId}/fields/{fieldId}`, through Review's component.
+
 ## DownloadButtons
 
 *Component.* Download JSON and Download CSV; 'Pay to download' while locked.

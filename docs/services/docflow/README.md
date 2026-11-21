@@ -26,8 +26,9 @@ This page covers DocFlow's own parts: the documents list, the JSON and CSV outpu
 
 - The documents list with status and next action
 - Starting each service at the right moment, and reacting to their events
-- Building `result.json` (with metadata) and `result.csv`, stored through Upload
+- Building `result.json` (with metadata) and `result.csv` on demand from Review's latest values, nothing stored
 - Locked preview; downloads only after payment, checked on the server
+- Correcting values on the results page, before or after paying
 - Checkout at $5.00 and the success page
 - Asking Delivery to email when paid
 
@@ -44,10 +45,11 @@ This page covers DocFlow's own parts: the documents list, the JSON and CSV outpu
 | 1 | DocFlow | Creates the document and Upload's file; after the upload, starts Extraction. |
 | 2 | Extraction | Tells DocFlow the job finished (`extraction.job.completed`). |
 | 3 | DocFlow | Sends the fields to Review as a task. |
-| 4 | DocFlow | When the person completes review: re-checks values with Extraction, completes the Review task, builds the JSON and CSV and stores them through Upload. |
-| 5 | DocFlow | At checkout, asks Payment for an order at $5.00. |
-| 6 | Payment | Tells DocFlow the order is paid (`payment.order.paid`). |
-| 7 | DocFlow | Marks the document paid, asks Delivery for the email, and unlocks downloads. |
+| 4 | DocFlow | When the person completes review: re-checks values with Extraction and completes the Review task. |
+| 5 | DocFlow | Whenever results are previewed or downloaded: builds the JSON and CSV from Review's latest values and Extraction's metadata. Nothing is stored. |
+| 6 | DocFlow | At checkout, asks Payment for an order at $5.00. |
+| 7 | Payment | Tells DocFlow the order is paid (`payment.order.paid`). |
+| 8 | DocFlow | Marks the document paid, asks Delivery for the email, and unlocks downloads. |
 
 ## Words used in this guide
 
@@ -89,8 +91,8 @@ Base address: `https://01scale.com/api/docflow/v1`
 | `GET` | `/documents` | Signed in | `docflow:read` | List my documents |
 | `GET` | `/documents/{documentId}` | Signed in | `docflow:read` | Get one document |
 | `POST` | `/documents/{documentId}/retry-extraction` | Signed in | `docflow:write` | Retry a failed extraction |
-| `POST` | `/documents/{documentId}/complete-review` | Signed in | `docflow:write` | Finish review and build the outputs |
-| `GET` | `/documents/{documentId}/outputs` | Signed in | `docflow:read` | Which outputs exist |
+| `POST` | `/documents/{documentId}/complete-review` | Signed in | `docflow:write` | Finish review |
+| `GET` | `/documents/{documentId}/outputs` | Signed in | `docflow:read` | Results status |
 | `GET` | `/documents/{documentId}/outputs/{format}/preview` | Signed in | `docflow:read` | Preview the JSON or CSV |
 | `GET` | `/documents/{documentId}/outputs/{format}/download` | Signed in | `docflow:read` | Download the JSON or CSV |
 | `POST` | `/documents/{documentId}/checkout` | Signed in | `docflow:write` | Start payment |
@@ -111,6 +113,5 @@ Environment variables on the service's own deployment. Secrets are never committ
 
 ## Open questions
 
-- `MVP1-E5-04` stores outputs under `users/{userId}/{docId}/outputs/`. Through Upload, every key is `users/{owner}/{fileId}/original.{ext}`, built from IDs; the story's path cannot be kept without breaking that rule. I propose changing the story.
-- `MVP1-E5-04` AC2 rebuilds outputs 'if the user later edits fields', but Human Review locks values when a review completes. Either reviews can be reopened, or AC2 belongs with the chat corrections of MVP2.
-- Where the JSON Schema `schemas/invoice-v1.json` is published (a file in the repository, or also served at an address) is not decided.
+- Decided by Nikhil on 17 Nov 2026 (ARCHITECTURE.md §12.8, #45): results are built on demand from Review's data and never stored; corrections are allowed after review and after payment; the JSON Schema is a file in the repository (`schemas/invoice-v1.json`), and serving it at a public address is nice to have, not required.
+- Returning a generated result directly (a few kilobytes) instead of through a storage link is a narrow exception to 'files never pass through the API', which is about stored files. Story `MVP1-E7-02` AC1 is changed to match.

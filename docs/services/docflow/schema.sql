@@ -30,21 +30,6 @@ create table docflow.documents (
 
 create index documents_owner_idx on docflow.documents (owner_id, created_at desc);
 
-create table docflow.outputs (
-  id             uuid        primary key,
-  document_id    uuid        not null,
-  version        smallint    not null,
-  json_file_id   uuid        not null,
-  csv_file_id    uuid        not null,
-  schema_version text        not null,
-  created_at     timestamptz not null default now(),
-
-  constraint outputs_document_id_fkey foreign key (document_id)
-    references docflow.documents (id) on delete cascade,
-  constraint outputs_document_version_key unique (document_id, version),
-  constraint outputs_version_check check (version >= 1 and schema_version in ('invoice-v1'))
-);
-
 create table docflow.inbound_events (
   event_id   uuid        primary key,
   type       text        not null,
@@ -52,5 +37,5 @@ create table docflow.inbound_events (
 );
 
 grant usage on schema docflow to docflow_service;
-grant select, insert, update, delete on docflow.documents, docflow.outputs to docflow_service;
+grant select, insert, update, delete on docflow.documents to docflow_service;
 grant select, insert on docflow.inbound_events, docflow.audit_events to docflow_service;

@@ -76,7 +76,6 @@ Neon Postgres, defined in Drizzle and changed only through migrations. **Each se
 | delivery | `notifications` | Every notification attempt per channel. | `MVP2-E14-04` |
 | docflow | `documents` | The process record: IDs of the file, job, review task and order for one invoice. | `MVP1-E0-09` |
 | docflow | `inbound_events` | Processed service event IDs. | `MVP1-E0-09` |
-| docflow | `outputs` | Generated JSON and CSV file IDs, versioned. | `MVP1-E5-04` |
 | docflow | `batches` | A group of documents processed together. | `MVP2-E9-01` |
 
 ## How records link across services

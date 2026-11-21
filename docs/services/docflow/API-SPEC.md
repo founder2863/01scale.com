@@ -335,7 +335,7 @@ Authorization: Bearer <access token>
 
 ### POST /documents/{documentId}/complete-review
 
-**Finish review and build the outputs.** Re-checks the corrected values, completes the review, and builds the JSON and CSV.
+**Finish review.** Re-checks the corrected values and completes the review. The results are built from Review's values whenever they are looked at; nothing is stored.
 
 Access: **Signed in** · Scope: `docflow:write` · Story: `MVP1-E4-03`
 
@@ -348,16 +348,16 @@ Access: **Signed in** · Scope: `docflow:write` · Story: `MVP1-E4-03`
 
 **Behaviour**
 
-- Reads the review task, then calls Extraction `POST /validations` with its values.
+- Reads the review task, then calls Extraction `POST /validations` with its values and the job's ID.
 - If a check fails and `confirm_failed_checks` is false, answers `409` with the failed checks; nothing changes.
-- Otherwise calls Review `POST /tasks/{taskId}/complete` (with `checks_overridden`), builds `result.json` and `result.csv`, stores each through Upload `POST /files` with the person's own token (Idempotency-Key `docflow:{documentId}:v{version}:{format}`), records the output version, and sets the document `reviewed`.
-- Safe to retry after a failure halfway: if Review answers `409 task_completed`, the review is already done, so DocFlow continues from building the outputs. The document stays `needs_review` until the outputs are stored, and repeated uploads return the same files.
+- Otherwise calls Review `POST /tasks/{taskId}/complete` (with `checks_overridden`) and sets the document `reviewed`.
+- Safe to retry: completing an already completed task returns it unchanged, and a document already `reviewed` or `paid` is returned as it is.
 
 **Responses**
 
 | Status | When | Body or headers |
 |---|---|---|
-| `200` | Review completed and outputs built | `document` (status `reviewed`) and `outputs`. |
+| `200` | Review completed | `document` (status `reviewed`). |
 
 **Errors**
 
@@ -397,21 +397,13 @@ Content-Type: application/json
     "order_id": null,
     "created_at": "2026-11-17T09:14:07Z",
     "updated_at": "2026-11-17T09:17:03Z"
-  },
-  "outputs": {
-    "version": 1,
-    "locked": true,
-    "formats": [
-      "json",
-      "csv"
-    ]
   }
 }
 ```
 
 ### GET /documents/{documentId}/outputs
 
-**Which outputs exist.** The latest outputs and whether download is unlocked.
+**Results status.** Whether results can be shown, whether download is unlocked, and whether the current values pass every check.
 
 Access: **Signed in** · Scope: `docflow:read` · Story: `MVP1-E5-01`
 
@@ -423,13 +415,14 @@ Access: **Signed in** · Scope: `docflow:read` · Story: `MVP1-E5-01`
 
 **Behaviour**
 
-- Read only. `locked` is true until the order is paid.
+- Read only. `locked` is true until the order is paid. `checks` comes from Extraction `POST /validations` on Review's current values, so a later correction that breaks a rule is shown at once.
+- `last_changed_at` is the latest correction in Review, after the review or after payment.
 
 **Responses**
 
 | Status | When | Body or headers |
 |---|---|---|
-| `200` | Outputs exist | `version`, `locked`, `formats`, `generated_at`. |
+| `200` | The review is complete | `locked`, `formats`, `checks` (`passed`, `failed[]`) and `last_changed_at`. |
 
 **Errors**
 
@@ -437,6 +430,7 @@ Access: **Signed in** · Scope: `docflow:read` · Story: `MVP1-E5-01`
 |---|---|---|
 | `404` | `document_not_found` | No such document, or it belongs to another user. The same answer in both cases. |
 | `409` | `outputs_not_ready` | The review is not complete. |
+| `503` | `dependency_unavailable` | A platform service could not be reached. Nothing was changed; safe to retry. |
 | `401` | `not_authenticated` | No valid access token. |
 
 **Sample request**
@@ -451,19 +445,22 @@ Authorization: Bearer <access token>
 
 ```json
 {
-  "version": 1,
   "locked": false,
   "formats": [
     "json",
     "csv"
   ],
-  "generated_at": "2026-11-17T09:16:03Z"
+  "checks": {
+    "passed": true,
+    "failed": []
+  },
+  "last_changed_at": "2026-11-17T09:21:40Z"
 }
 ```
 
 ### GET /documents/{documentId}/outputs/{format}/preview
 
-**Preview the JSON or CSV.** The full output, shown on screen, before or after paying.
+**Preview the JSON or CSV.** The full results, shown on screen, before or after paying.
 
 Access: **Signed in** · Scope: `docflow:read` · Story: `MVP1-E5-01`
 
@@ -476,13 +473,13 @@ Access: **Signed in** · Scope: `docflow:read` · Story: `MVP1-E5-01`
 
 **Behaviour**
 
-- Returns the stored output's content inline, read through Upload.
+- Builds it on demand: reads the final values from Review `GET /tasks/{taskId}?all=true` and the model, prompt version and page count from Extraction `GET /jobs/{jobId}`, re-runs Extraction `POST /validations` (with `job_id`) on the current values, then builds the format and validates the JSON against `schemas/invoice-v1.json`. Nothing is stored (ARCHITECTURE.md §12.8), so it always reflects the latest corrections.
 
 **Responses**
 
 | Status | When | Body or headers |
 |---|---|---|
-| `200` | Outputs exist | `application/json` or `text/csv` with `Content-Disposition: inline`. |
+| `200` | The review is complete | `application/json` or `text/csv` with `Content-Disposition: inline`. |
 
 **Errors**
 
@@ -490,6 +487,7 @@ Access: **Signed in** · Scope: `docflow:read` · Story: `MVP1-E5-01`
 |---|---|---|
 | `404` | `document_not_found` | No such document, or it belongs to another user. The same answer in both cases. |
 | `409` | `outputs_not_ready` | The review is not complete. |
+| `503` | `dependency_unavailable` | A platform service could not be reached. Nothing was changed; safe to retry. |
 | `401` | `not_authenticated` | No valid access token. |
 
 **Sample request**
@@ -525,11 +523,12 @@ Authorization: Bearer <access token>
     "document_id": "0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c",
     "file_name": "acme-invoice-0042.pdf",
     "pages": 2,
-    "model": "claude-sonnet-5-5",
+    "model": "claude-opus-5-5",
     "prompt_version": "extract-invoice/v1",
     "extracted_at": "2026-11-17T09:14:41Z",
     "reviewed_at": "2026-11-17T09:16:02Z",
     "reviewed_by": "0193a5b2-7c1e-7a3f-9b2d-4e6f8a1c2d3e",
+    "last_changed_at": "2026-11-17T09:21:40Z",
     "fields_flagged": 3,
     "fields_corrected": 1,
     "fields": {
@@ -562,13 +561,14 @@ Access: **Signed in** · Scope: `docflow:read` · Story: `MVP1-E5-03`
 **Behaviour**
 
 - Reads the order from Payment; if it is not `paid`, answers `402`.
-- Otherwise asks Upload for a 5-minute download link named `{document}-result.{format}`, redirects to it, and records `delivery.downloaded` (`MVP1-E7-02`).
+- Builds it on demand: reads the final values from Review `GET /tasks/{taskId}?all=true` and the model, prompt version and page count from Extraction `GET /jobs/{jobId}`, re-runs Extraction `POST /validations` (with `job_id`) on the current values, then builds the format and validates the JSON against `schemas/invoice-v1.json`. Nothing is stored (ARCHITECTURE.md §12.8), so it always reflects the latest corrections.
+- Returns the file itself as an attachment named `{document}-result.{format}`, and records `delivery.downloaded` (`MVP1-E7-02`). A generated result is a few kilobytes, so it is returned directly: no stored copy, no storage link. Stored files, like the original upload, still move only by short-lived links.
 
 **Responses**
 
 | Status | When | Body or headers |
 |---|---|---|
-| `302` | Paid | `Location`: the 5-minute Upload link. |
+| `200` | Paid | The file, with `Content-Disposition: attachment; filename="acme-invoice-0042-result.csv"` and `Cache-Control: no-store`. |
 
 **Errors**
 
@@ -591,8 +591,12 @@ Authorization: Bearer <access token>
 **Sample response**
 
 ```http
-HTTP/1.1 302 Found
-Location: https://01scale-uploads.s3.us-east-1.amazonaws.com/users/…/original.csv?response-content-disposition=attachment…&X-Amz-Signature=…
+HTTP/1.1 200 OK
+Content-Type: text/csv; charset=utf-8
+Content-Disposition: attachment; filename="acme-invoice-0042-result.csv"
+Cache-Control: no-store
+
+﻿document_id,vendor_name,…
 ```
 
 ### POST /documents/{documentId}/checkout
@@ -707,7 +711,7 @@ Access: **Service** · Scope: None: HMAC signature · Story: `MVP1-E0-09`
 - `extraction.job.failed`: sets `extraction_failed`.
 - `payment.order.paid`: sets `paid` and asks Delivery `POST /messages` for the `order_paid` email, keyed by the event's ID.
 - `payment.order.expired` or `failed`: clears the order so Pay starts a new one.
-- `identity.user.deleted`: deletes that user's documents and outputs records.
+- `identity.user.deleted`: deletes that user's documents. There are no stored results to delete: Extraction and Review delete their own data.
 - Other types are acknowledged and ignored.
 
 **Responses**
@@ -749,7 +753,7 @@ HTTP/1.1 200 OK
 
 | Topic | How it works |
 |---|---|
-| Building the JSON (MVP1-E5-01) | `data` holds the final values in the invoice v1 shape; `metadata` holds document_id, file_name, pages, model, prompt_version, extracted_at, reviewed_at, reviewed_by, fields_flagged, fields_corrected, and per field `confidence` and `corrected`. Validated against `schemas/invoice-v1.json` before it is stored. |
+| Building the JSON (MVP1-E5-01) | `data` holds the final values in the invoice v1 shape; `metadata` holds document_id, file_name, pages, model, prompt_version, extracted_at, reviewed_at, reviewed_by, fields_flagged, fields_corrected, and per field `confidence` and `corrected`. Built on each request and validated against `schemas/invoice-v1.json` before it is returned; `metadata.last_changed_at` is the latest correction in Review. |
 | Building the CSV (MVP1-E5-02) | Columns in this order: `document_id`, `vendor_name`, `vendor_address`, `vendor_tax_id`, `invoice_number`, `invoice_date`, `due_date`, `bill_to_name`, `bill_to_address`, `currency`, `subtotal`, `tax_total`, `total`, `payment_terms`, `line_number`, `line_description`, `line_quantity`, `line_unit_price`, `line_amount`. RFC 4180 quoting, UTF-8 with a byte-order mark, CRLF line ends; cells starting with `=`, `+`, `-`, `@`, tab or carriage return are prefixed with `'`. |
 | Success page (MVP1-E7-01) | Polls Payment `GET /orders/{orderId}` every 2 seconds for up to 30 seconds, then says 'We'll email you when it's ready'; shows the email's status from Delivery. |
 | Which token each step uses (decisions on #24 and #21) | Steps the person starts (upload, retry, complete review, checkout, preview, download) use their own token, except Payment and Delivery, which take only a delegated token. Steps after an event (create the review task, send the email) use a delegated token for the document's owner. Every call goes through `https://01scale.com/api/…`. |

@@ -27,7 +27,7 @@ description: Write the API specification for a 01scale service module - every en
 - A `POST` that creates something accepts `Idempotency-Key`, or is idempotent by design. Say which.
 - Lists use cursor pagination: `cursor`, `limit` → `{data, next_cursor}`.
 - Long work returns `202` and a job to poll, with `Retry-After`.
-- Files never pass through the API: issue a short-lived presigned URL.
+- Stored files never pass through the API: issue a short-lived presigned URL. A small result generated on each request from data (a few kilobytes, never stored) may be returned directly, with `Cache-Control: no-store`.
 - An endpoint that could reveal whether an account or record exists must answer the same way in both cases.
 - Only an app's server may call an endpoint that sets a price or sends a message.
 - State rate limits as starting values, and list them as an open question.

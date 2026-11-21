@@ -238,10 +238,10 @@ The first app: the invoice process assembled from the platform services.
 | `GET` | `/api/docflow/v1/documents` | Signed in | List my DocFlow documents with status and the next action. | `MVP1-E2-05` |
 | `GET` | `/api/docflow/v1/documents/{documentId}` | Signed in | Get one DocFlow document and the IDs of its parts in each service. | `MVP1-E2-05` |
 | `POST` | `/api/docflow/v1/documents/{documentId}/retry-extraction` | Signed in | Retry a failed extraction for a document. | `MVP1-E3-01` |
-| `POST` | `/api/docflow/v1/documents/{documentId}/complete-review` | Signed in | Finish review for a document: re-checks the corrected data and builds the outputs. | `MVP1-E4-03` |
-| `GET` | `/api/docflow/v1/documents/{documentId}/outputs` | Signed in | The outputs available for a document, and whether download is unlocked. | `MVP1-E5-01` |
+| `POST` | `/api/docflow/v1/documents/{documentId}/complete-review` | Signed in | Finish review for a document: re-checks the corrected data and completes the review. | `MVP1-E4-03` |
+| `GET` | `/api/docflow/v1/documents/{documentId}/outputs` | Signed in | Results status: whether download is unlocked and whether the current values pass every check. | `MVP1-E5-01` |
 | `GET` | `/api/docflow/v1/documents/{documentId}/outputs/{format}/preview` | Signed in | Preview the JSON or CSV on screen before paying. | `MVP1-E5-01` |
-| `GET` | `/api/docflow/v1/documents/{documentId}/outputs/{format}/download` | Signed in | Download an output. Locked until the order is paid. | `MVP1-E5-03` |
+| `GET` | `/api/docflow/v1/documents/{documentId}/outputs/{format}/download` | Signed in | Download an output, built from Review's latest values. Locked until the order is paid. | `MVP1-E5-03` |
 | `POST` | `/api/docflow/v1/documents/{documentId}/checkout` | Signed in | Start payment for a document. | `MVP1-E6-01` |
 | `POST` | `/api/docflow/v1/batches` | Signed in | Create a batch of up to 10 documents; each file is checked on its own. | `MVP2-E9-01` |
 | `POST` | `/api/docflow/v1/batches/{batchId}/process` | Signed in | Start extraction for the batch once the uploads are confirmed. | `MVP2-E9-01` |

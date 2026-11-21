@@ -293,7 +293,7 @@ As Priya, I want to type "line 3 quantity should be 12" and have it fixed.
   - `GET /api/docflow/v1/batches/{batchId}/outputs` (signed in) — The outputs available for a batch. → `200 {version, locked, formats: ["json", "csv", "zip"]}`.
   - `GET /api/docflow/v1/batches/{batchId}/outputs/{format}/preview` (signed in) — Preview the combined JSON or CSV. `format = json|csv` → `200` inline content.
   - `GET /api/docflow/v1/batches/{batchId}/outputs/{format}/download` (signed in) — Download batch.json, batch.csv or batch.zip. → `302` to an Upload `download-url`. Errors: `402` until paid.
-- **Database design:** `docflow.outputs` adds batch_id null, zip_file_id; a batch output row has `document_id` null.
+- **Database design:** No tables: like single documents, batch results (JSON, CSV and the zip) are built on demand from each document's Review values and never stored (ARCHITECTURE.md §12.8).
 
 ---
 
