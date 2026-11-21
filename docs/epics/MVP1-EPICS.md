@@ -327,7 +327,7 @@ As the owner of a public repository, I want visitors to use the real functionali
 - **AC2:** **Secrets never touch the repository.** They live only in Vercel environment variables (marked Sensitive) and AWS. The repository has a `.env.example` per service with names only. GitHub secret scanning with push protection is on, and CI runs a secret scan on every pull request. Pull requests from forks get no secrets.
 - **AC3:** **Secrets never reach a browser.** Only a service's server uses them, so visitors use the live site without seeing any key.
 - **AC4:** **Environments:** local, preview and production each have their own keys. Outside providers run in test or sandbox mode for the demo (Stripe test mode, so no real money moves). Anyone who forks the repository runs it with their own keys.
-- **AC5:** **Safe live demo:** per-user limits (`MVP1-E0-08`) plus a daily cap of **20 extractions per user**; the Claude API budget of **$5 a month on Opus 5.5, then $5 on Haiku 5.5** (`MVP1-E3-02` AC7); bot protection on sign-up; files deleted after 30 days as decided. Nothing else costs more than Nikhil's existing subscriptions: Vercel Pro ($20 a month, with spend management set to pause rather than charge more), AWS within its $10 credit with a budget alert, Neon and Resend on free plans, Stripe in test mode (Nikhil's decisions on PR #87).
+- **AC5:** **Safe live demo:** per-user limits (`MVP1-E0-08`) plus a daily cap of **20 extractions per user**; the Claude API budget of **$5 a month on Opus 5.5, then $5 on Haiku 5.5, for each app** (`MVP1-E3-02` AC7; $20 a month in all with DocFlow and AutoRep, Nikhil's decision on 21 Nov 2026); bot protection on sign-up; files deleted after 30 days as decided. Nothing else costs more than Nikhil's existing subscriptions: Vercel Pro ($20 a month, with spend management set to pause rather than charge more), AWS within its $10 credit with a budget alert, Neon and Resend on free plans, Stripe in test mode (Nikhil's decisions on PR #87).
 - **AC6:** The page says how each secret is rotated (client secret rotation: `MVP2-E8-12`).
 - **Service:** Platform (all services) and Site (`apps/web`)
 - **API design:** No new endpoints. Over a daily cap: `429 daily_limit_reached` with `Retry-After`.
@@ -383,6 +383,52 @@ As a hiring manager, I want to see what the platform cost to build, what it cost
 - **AC3:** **Usage cost:** for each provider, what it bills for, what covers it and the monthly ceiling; and the cost of one extraction per model. Estimates are labelled as estimates until measured (`MVP1-E3-05`).
 - **AC4:** **Constraints:** every limit that keeps the demo safe and cheap (rate limits, 20 extractions a day per user, the Claude budget and its fallback to Haiku, Stripe test mode, 30-day file retention), each with its reason and the story that sets it.
 - **AC5:** The numbers live in one data file; when a decision changes in a story, the page changes in the same PR. It works from 320 to 1920 pixels wide, in light and dark mode.
+- **Service:** Site (`apps/web`)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+
+### MVP1-E0-32 · Products menu by app and version — M
+As a visitor, I want the Products menu to list each app and its versions, so I see what 01scale offers as products rather than as build phases.
+- **AC1:** The header stays Home, Products, Platform, How It's Built, and the Platform menu is unchanged. Products lists, in this order: **DocFlow V1 · AutoRep V1 · P2PFlow V1 · Services V1 · DocFlow V2 · AutoRep V2 · P2PFlow V2 · Services V2** (Nikhil's decisions, 21 Nov 2026). On wide screens the menu has two columns, V1 and V2; on a phone, one list.
+- **AC2:** The version labels are for visitors only. Phases stay as they are everywhere else: story IDs (`MVP1-…`, `MVP2-…`), the epics files, issue labels and `CLAUDE.md`. V1 shows what is in MVP1 and V2 what is in MVP2.
+- **AC3:** Each app name is defined once in code, like `PRODUCT_NAME` in `app/products/flow.tsx` today, so renaming an app is one edit. DocFlow keeps its name; P2P is shown as **P2PFlow**.
+- **AC4:** Each app item opens that app version's page (`MVP1-E0-33`). **Services V1** and **Services V2** open a submenu of the platform services, each listing its modules (`MVP1-E0-34`).
+- **AC5:** Every module keeps its address, `/products/<module>`, so no link breaks. `/products/vision` redirects to `/products/docflow-v1`.
+- **AC6:** The menu opens on click or tap; hover is only an extra on a desktop. It works with the keyboard, from 320 to 1920 pixels wide, in light and dark mode.
+- **Service:** Site (`apps/web`)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E0-33 · A page for each app version — M
+As a visitor, I want one page per app version that explains it and lists its modules, so I can understand an app before opening its parts.
+- **AC1:** `/products/docflow-v1` shows today's product vision content: the DocFlow flow and its MVP1 modules. `/products/docflow-v2` shows the flow and DocFlow's MVP2 modules.
+- **AC2:** `/products/autorep-v1` shows AutoRep's summary and flow from `docs/prd/AUTOREP-PRD.md` and links to its design as it is written (`docs/epics/AUTOREP-EPICS.md`). `/products/autorep-v2`, `/products/p2pflow-v1` and `/products/p2pflow-v2` show "Coming Soon..." with one line on what will appear. Nothing is invented to fill them.
+- **AC3:** App pages are simpler than module pages: an introduction, the app's flow, its modules (each linking to its module page) and the services it uses (each linking to its Services entry). They do not have the fifteen module sections.
+- **AC4:** The Products page (`/products`) lists the same apps and versions as the menu.
+- **AC5:** It works from 320 to 1920 pixels wide, in light and dark mode.
+- **Service:** Site (`apps/web`)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E0-34 · Services in the Products menu — M
+As a developer, I want the platform services listed as products I can use on their own, so I can find a capability (sign-in, upload, extraction, review, payment, delivery) without going through an app.
+- **AC1:** **Services V1** opens a submenu of the platform services in MVP1, each with its modules: for example Identity → Login using AWS, Account management. **Services V2** does the same for MVP2 (for example Identity → Passwordless login, built by hand; Payment → Saved payment methods; Delivery → Notifications), so platform modules are never shown as an app's features (Nikhil's decision, 21 Nov 2026: the name is **Services**).
+- **AC2:** The submenu opens on click or tap, with hover only as a desktop extra; on a phone it is an accordion. Each module links to its existing page.
+- **AC3:** Services and Platform Core stay separate and link to each other: **Services** (under Products) are the six platform services as products a developer or an app uses, with an API, UI components and MCP tools; **Platform Core** (under Platform) is the shared building blocks the services are built on (gateway, service template, design system, standards). A service never appears in Platform Core, and a Core component never appears in Services.
+- **AC4:** The list is built from `app/products/data.ts` (each module's service and phase), so a new module appears without editing the menu.
+- **AC5:** It works from 320 to 1920 pixels wide, in light and dark mode.
+- **Service:** Site (`apps/web`)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E0-35 · A flow for each app, highlighted on every module that takes part — M
+As a visitor on a module page, I want to see every app that uses this module and where, so reuse across apps is visible.
+- **AC1:** `app/products/flow.tsx` holds a flow per app, not only DocFlow's: each app's steps and which modules belong to each step. AutoRep's flow follows its PRD; P2PFlow has none until it is designed.
+- **AC2:** A module page shows the flow of every app that uses the module, with the module's step highlighted in each. For example Human Review is highlighted in DocFlow and in AutoRep.
+- **AC3:** A module that no app uses yet shows no flow band, rather than an empty one.
+- **AC4:** `CLAUDE.md` (workflow item 5) says a new module must be added to a step in the flow of every app that uses it.
+- **AC5:** It works from 320 to 1920 pixels wide, in light and dark mode.
 - **Service:** Site (`apps/web`)
 - **API design:** No endpoints.
 - **Database design:** No tables.
@@ -564,7 +610,7 @@ As Priya, I want to drag and drop or pick a file on my phone and see progress.
 - **AC4:** The response is validated with zod. A schema failure triggers one repair attempt and then fails the job; invalid JSON is never stored.
 - **AC5:** Scanned PDFs and photos are in scope. Before extraction, the job reads each page's text: the PDF's text layer, or OCR by Claude when there is none or the file is an image. If no text is found, the job fails with `no_text_found` and the person sees "No text found" (Nikhil's decision on #34).
 - **AC6:** The default model is `claude-opus-5-5` (Nikhil's decision on #34).
-- **AC7:** **Demo budget (Nikhil's decision on PR #87):** each calendar month (UTC), jobs use `claude-opus-5-5` until $5 of Opus cost is used, then `claude-haiku-5-5` until $5 of Haiku cost is used. When both are used, a new job is refused with `503 demo_budget_reached` and `Retry-After` set to the start of next month. Spend is the sum of `cost_usd` on the month's jobs, per model. The hard backstop is outside the code: prepaid API credit with auto-reload off and a $10 monthly spend limit on the Anthropic workspace, so the bill can never exceed $10.
+- **AC7:** **Demo budget (Nikhil's decision on PR #87):** each calendar month (UTC), jobs use `claude-opus-5-5` until $5 of Opus cost is used, then `claude-haiku-5-5` until $5 of Haiku cost is used. When both are used, a new job is refused with `503 demo_budget_reached` and `Retry-After` set to the start of next month. Spend is the sum of `cost_usd` on the month's jobs, per model and **per app**, found from each job's `reference` prefix: every app has its own budget of this size (Nikhil's decision, 21 Nov 2026), and AutoRep counts its own (`AUTOREP-E6-02`). The hard backstop is outside the code: prepaid API credit with auto-reload off and a $20 monthly spend limit on the Anthropic workspace (DocFlow's $10 and AutoRep's $10), so the bill can never exceed $20. Moving the budget into one platform component is `MVP2-E15-02`.
 - **AC8:** The eval report covers both models. If Haiku scores below a threshold, it still runs: confidence routing sends more fields to human review, and the Costs page says so.
 - **Evals:** EXT-1 schema validity, EXT-2 header field accuracy, EXT-3 line item F1, EXT-4 hallucination rate, EXT-7 latency, EXT-8 cost (see `EVALS.md`).
 - **Service:** LLM Extraction

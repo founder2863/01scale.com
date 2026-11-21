@@ -466,7 +466,7 @@ I will move from orchestration towards event-driven communication when one of th
 
 | Trigger | Why it changes the answer |
 |---|---|
-| A second app, or a second consumer of the same event | Point-to-point webhooks mean the sender must know every receiver. A broker lets a new consumer subscribe without the sender changing. This is the trigger I expect first: I decided that when I build the next app on the platform, I build the event-driven architecture with it. Until then, events go only to the app that started the work, routed by its `reference` prefix. |
+| A second app, or a second consumer of the same event | Point-to-point webhooks mean the sender must know every receiver. A broker lets a new consumer subscribe without the sender changing. This is the trigger I expect first. I first decided to build the event-driven architecture with the next app; when that app turned out to be AutoRep, which consumes no other app's events, I changed the trigger to the second consumer of the same event (PR #112, §13). Until then, events go only to the app that started the work, routed by its `reference` prefix. |
 | Batches and long-running work (Extraction on AWS Lambda, 10 documents at once) | Work must queue, fan out and survive restarts. That is what a queue is for. |
 | A service that should react without being told | Example: Delivery sending a notification for any "order paid", whichever app caused it. The app should not have to remember to call it. |
 | Volume where synchronous chains hurt | Each synchronous hop adds latency and a failure point; a slow service would slow the whole process. |
@@ -508,4 +508,14 @@ I decided this on 17 November 2026, while settling the open questions on the Doc
 - Each service is deployed on its own and holds only its own stage's data.
 - No platform service calls another to move the process forward; only the app does.
 - The one thing DocFlow owns is the invoice-specific output format (the JSON shape, the CSV columns and the metadata that combines two services), which is business logic of that app, not of the platform.
+
+## 13. AutoRep: a second app, with its own agents
+
+AutoRep drafts replies to Google reviews with a team of AI agents (`docs/prd/AUTOREP-PRD.md`). It reuses Identity, Human Review and Delivery unchanged, through the gateway, like DocFlow.
+
+I bent one rule on purpose. Apps are meant to be thin, and logic that a second app could use belongs in a service. For AutoRep V1, I keep the agent graph inside the app: the agents exist to answer reviews, and no other app would reuse them today. When a second app needs agents, the shared parts move into a service. The Google Business Profile code also stays in AutoRep; only a generic OAuth connection could become a platform service later.
+
+AutoRep runs as Python LangGraph on AWS Lambda, with its checkpoints in its own `autorep` schema in Neon, because a run can take minutes and then wait days for the owner's approval. The decisions and their trade-offs are in `docs/decisions/AUTOREP-E1.md`.
+
+§12.6 named the second app as the trigger to move to an event-driven architecture. AutoRep is that app, but it consumes no other app's events, so I kept orchestration for it (PR #112). I now move to events when two apps consume the same events.
 
