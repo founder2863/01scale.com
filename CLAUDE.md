@@ -87,6 +87,7 @@ Nikhil is a platform & AI product leader (17+ years: identity, payments, integra
 8. Mark the story done in the epics file, close its GitHub issue and keep README.md's roadmap in sync when an epic ships.
 9. Run evals with `npm run eval` on demand and on PRs labelled `evals`, not on every PR (they cost money).
 10. Cloud sessions have limited network access: don't rely on reaching Neon, AWS, Stripe or Anthropic from the session. Use PGlite, mocks and recorded fixtures for tests.
+11. **Merge conflicts: ask Nikhil first (his rule).** When a PR or branch has a merge conflict, do not resolve it and do not merge. First explain briefly to Nikhil: which files conflict and why, what each side changed, and the past decisions involved (with their issue or PR numbers). Then ask how he wants it resolved, and act only on his answer.
 
 ## Current status
 - Phase 0 (foundation): site live at 01scale.com on Vercel, with Home, Products (a page per module) and Architecture.
