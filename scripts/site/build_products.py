@@ -348,7 +348,7 @@ MODULES = [
     ("human-review", "Human review", "MVP1", "Human Review", "Review only the fields the system is unsure about, with the evidence beside each one.", "E4", None),
     ("json-and-csv-output", "JSON and CSV output", "MVP1", "DocFlow app", "Preview the final JSON, metadata and CSV before paying.", "E5", None),
     ("payment", "Payment", "MVP1", "Payment", "A one-time payment with Stripe Checkout in test mode.", "E6", None),
-    ("download-and-email-delivery", "Download and email delivery", "MVP1", "Delivery", "Get the files immediately by secure download, with a copy by email.", "E7", None),
+    ("download-and-email-delivery", "Email delivery", "MVP1", "Delivery", "Get the files immediately by secure download, with a copy by email.", "E7", None),
     ("passwordless-login", "Passwordless login, built by hand", "MVP2", "Identity", "Magic links, passkeys and sessions on our own identity provider, replacing AWS Cognito.", "E8", None),
     ("multi-document-pipeline", "Multi-document pipeline", "MVP2", "LLM Extraction", "Process a batch of documents in parallel with LangGraph on AWS Lambda.", "E9", None),
     ("llm-as-judge", "LLM as judge", "MVP2", "LLM Extraction", "A second, independent model check that catches the extractor's mistakes.", "E10", None),

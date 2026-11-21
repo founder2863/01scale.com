@@ -44,6 +44,14 @@ As a business owner, I want AutoRep to read my Google reviews and post replies, 
   - `GET /api/autorep/v1/reviews` (signed in) — My reviews, newest first, with each one's run status. Query `cursor`, `limit` → `200 {data: [Review], next_cursor}`.
 - **Database design:** `autorep.connections` (id, owner_id, kind `demo|google`, location_id, location_name, refresh_token_encrypted null, created_at, revoked_at). `autorep.reviews` (id, owner_id, connection_id → connections, source_review_id, stars smallint 1–5, author_display_name, text, published_at, created_at); unique `(connection_id, source_review_id)`. Both are deleted with the owner's account (`identity.user.deleted`).
 
+### AUTOREP-E1-04 · AutoRep's own module page — M
+As a visitor, I want AutoRep's own parts (ingest, the agents, publishing) on a module page like every platform module, so its design is as visible as the services it reuses.
+- **AC1:** Once AutoRep's design is written with the design skills (`design-module`, from `scripts/site/autorep_design.py`), AutoRep gets a module page at `/products/<module>` with the fifteen sections (`MVP1-E0-21`), and joins the steps of its own flow in `app/products/flow.tsx` (Nikhil's decision on PR #117).
+- **AC2:** Until then, AutoRep's own steps open the AutoRep V1 page, and its design is linked from there (PRD, stories, decisions).
+- **Service:** Site (`apps/web`) and design tooling
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
 ---
 
 ## E2 · The agents
