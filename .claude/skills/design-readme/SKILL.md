@@ -24,6 +24,7 @@ The first page someone reads about a module. Write it last: it summarises the ot
 
 ## Rules that are easy to get wrong
 
+- The Read Me is the technical entry page. The site wraps it with **At a glance** (links to the Product sections) and **Go deeper** (links to the technical sections), so do not write those lists or repeat what the sections say. Technical links to a module (GitHub READMEs, the API catalogue) go to `/products/<module>/readme`; `/products/<module>` is Market Outlook, for market-facing visitors (`MVP1-E0-21`).
 - The first paragraph answers "what is this for" before any mechanism.
 - "Why it exists" gives reasons, not features.
 - Quick-start code uses only endpoints in the API spec, with the same paths and field names.

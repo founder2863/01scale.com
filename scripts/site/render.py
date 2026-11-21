@@ -118,7 +118,7 @@ def render_readme(m):
         ("USER-JOURNEYS.md", "user journeys"), ("UI-COMPONENTS.md", "UI components"),
         ("API-SPEC.md", "API specification"), ("DATA-MODEL.md", "data model"), ("SCHEMA.md", "schema")])
     parts = [header(m, "developer guide"),
-             f"The other documents for this service: {docs}. The same content is on the site at `/products/{m['slug']}`.\n" if m["slug"] else f"The other documents for this service: {docs}.\n",
+             f"The other documents for this service: {docs}. The same content is on the site at `/products/{m['slug']}/readme`.\n" if m["slug"] else f"The other documents for this service: {docs}.\n",
              "## What this service is\n", "\n\n".join(o["what"]) + "\n",
              "## Why it exists\n", table(["Reason", "In plain terms"], [(w["title"], w["text"]) for w in o["why"]]) + "\n",
              "## What is in this version\n", "**In scope**\n", "\n".join(f"- {x}" for x in o["scope_in"]) + "\n",

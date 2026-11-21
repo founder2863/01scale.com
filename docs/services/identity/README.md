@@ -2,7 +2,7 @@
 
 > **Version 1 · Login with AWS Cognito.** Status: designed, not built. Stories: `MVP1-E1-01`, `MVP1-E1-02`, `MVP1-E1-03`, `MVP1-E1-04`, `MVP1-E1-06`.
 
-This guide covers **login only**, as it works in version 1 with AWS Cognito. The other documents for this service: [user journeys](USER-JOURNEYS.md), [UI components](UI-COMPONENTS.md), [API specification](API-SPEC.md), [data model](DATA-MODEL.md), [schema](SCHEMA.md), and the [AWS setup](../../infra/cognito.md). The same content is on the site at `/products/login-using-aws`.
+This guide covers **login only**, as it works in version 1 with AWS Cognito. The other documents for this service: [user journeys](USER-JOURNEYS.md), [UI components](UI-COMPONENTS.md), [API specification](API-SPEC.md), [data model](DATA-MODEL.md), [schema](SCHEMA.md), and the [AWS setup](../../infra/cognito.md). The same content is on the site at `/products/login-using-aws/readme`.
 
 ## What this service is
 

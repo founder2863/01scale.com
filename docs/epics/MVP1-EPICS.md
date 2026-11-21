@@ -268,8 +268,10 @@ As a visitor, I want the fifteen sections of a module page in a logical order an
   - **Interfaces:** API Spec, MCP;
   - **Data:** Data Model, Schema.
 - **AC2:** On a desktop the headings appear in the left menu. On a phone or tablet, the sideways-scrolling bar keeps the same order, with each group's first section marking where the group starts.
-- **AC3:** `/products/<module>` opens **Market Outlook**. Every section keeps its own address, and the old addresses keep working (the Read Me moves from `/products/<module>` to `/products/<module>/readme`, with a redirect).
+- **AC3:** `/products/<module>` opens **Market Outlook**. Every section keeps its own address. The Read Me moves from `/products/<module>` to `/products/<module>/readme`, and `/products/<module>/market-outlook` redirects to `/products/<module>`.
 - **AC4:** `CLAUDE.md` and story `MVP1-E0-10` are updated to describe the new order.
+- **AC5:** **Two entry pages, one per audience (Nikhil's decision on PR #111).** `/products/<module>` (Market Outlook) is for market-facing visitors and is what the menu, the Products page, the vision page and the flow link to; it opens with one line for technical readers: "Building with this? Start with the Read Me →". The **Read Me** is the technical entry page: it opens with **At a glance**, a link to every Product section with one line each, and closes with **Go deeper**, a link to every Design, Interfaces and Data section. A section not written yet is still listed, marked "Coming soon". The Read Me links to these sections and never repeats their content.
+- **AC6:** Technical entry points link to the Read Me (`/products/<module>/readme`): each service's README on GitHub now, and the API catalogue and the "Built on" panel (`MVP1-E0-24`) when they link to a module. Both link blocks are built from the one list of sections in `app/products/tabs.ts`, so a new section appears in them without extra work. `docs/process/DESIGN-RULES.md` and the `design-readme` skill say so.
 - **Service:** Site (`apps/web`)
 - **API design:** No endpoints.
 - **Database design:** No tables.
