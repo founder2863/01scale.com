@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { AppServices } from "../app-page";
+import { appHref, appLabel } from "../apps";
 import { products } from "../data";
 import { Flow, flowSteps, PRODUCT_NAME } from "../flow";
-import { groups } from "../tabs";
 
 export const metadata: Metadata = {
-  title: `${PRODUCT_NAME} product vision — 01scale`,
+  title: `${appLabel("docflow", "V1")} — 01scale`,
   description: `What ${PRODUCT_NAME} is, why I am building it, why it is built from platform components, and the whole flow from sign-in to delivery.`,
 };
 
@@ -41,12 +42,12 @@ const whyComponents = [
 
 const endProduct = [
   {
-    phase: "MVP1",
+    phase: "V1",
     title: "One invoice, end to end",
     text: "Sign up, upload an invoice, watch it extracted, fix the few fields the system flags, preview the results, pay, and download JSON and CSV. Under three minutes on a phone.",
   },
   {
-    phase: "MVP2",
+    phase: "V2",
     title: "Many documents, more trust, own identity",
     text: "Batches of documents, a second model that judges the first, web enrichment with sources, fixes by chat, saved cards, notifications, and sign-in rebuilt by hand with passkeys.",
   },
@@ -65,7 +66,7 @@ export default function Vision() {
           <p className="eyebrow">
             <Link href="/products">Products</Link> · Product vision
           </p>
-          <h1>{PRODUCT_NAME} Platform</h1>
+          <h1>{appLabel("docflow", "V1")}</h1>
           <p className="lead">
             Turn a document into structured data you can trust: AI does the
             reading, a person checks only what the AI is unsure about, and the
@@ -73,8 +74,8 @@ export default function Vision() {
           </p>
           <p className="hero-meta">
             <span>Working name</span>
-            <span>MVP1 in design</span>
-            <span>{products.length} modules</span>
+            <span>V1 in design</span>
+            <span>{products.filter((product) => product.group === "MVP1").length} modules</span>
           </p>
         </div>
       </section>
@@ -120,7 +121,7 @@ export default function Vision() {
             Seven steps, each handled by one platform component. Choose a step
             to open that component.
           </p>
-          <Flow detailed />
+          <Flow app="docflow" version="V1" detailed />
           <p className="note flow-caption">
             {PRODUCT_NAME} itself is thin: it holds the order of the steps and
             the invoice-specific results. Everything else is a component it
@@ -182,42 +183,45 @@ export default function Vision() {
                   {index + 1}. {step.label} · {step.service}
                 </dt>
                 <dd>
-                  <strong>MVP1:</strong> {step.does}
+                  <strong>V1:</strong> {step.does}
                 </dd>
                 <dd>
-                  <strong>MVP2:</strong> {step.later}
+                  <strong>V2:</strong> {step.later}
                 </dd>
               </div>
             ))}
           </dl>
         </section>
 
-        {groups.map((group) => (
-          <section key={group.tag} id={group.tag.toLowerCase()}>
-            <h2 className="group-title">
-              <span className="group-tag">{group.tag}</span>
-              {group.heading}
-            </h2>
-            <ul className="product-grid">
-              {products
-                .filter((product) => product.group === group.tag)
-                .map((product) => (
-                  <li key={product.slug}>
-                    <Link className="product-card" href={`/products/${product.slug}`}>
-                      <span className="module-number">{product.number}</span>
-                      <span className="module-body">
-                        <span className="module-title">
-                          {product.title}
-                          <span className="status">{product.status}</span>
-                        </span>
-                        <span className="product-card-text">{product.description}</span>
+        <section id="modules">
+          <h2 className="group-title">
+            <span className="group-tag">V1</span>
+            The full journey, end to end
+          </h2>
+          <ul className="product-grid">
+            {products
+              .filter((product) => product.group === "MVP1")
+              .map((product) => (
+                <li key={product.slug}>
+                  <Link className="product-card" href={`/products/${product.slug}`}>
+                    <span className="module-number">{product.number}</span>
+                    <span className="module-body">
+                      <span className="module-title">
+                        {product.title}
+                        <span className="status">{product.status}</span>
                       </span>
-                    </Link>
-                  </li>
-                ))}
-            </ul>
-          </section>
-        ))}
+                      <span className="product-card-text">{product.description}</span>
+                    </span>
+                  </Link>
+                </li>
+              ))}
+          </ul>
+          <p className="doc-link">
+            <Link href={appHref("docflow", "V2")}>What {appLabel("docflow", "V2")} adds →</Link>
+          </p>
+        </section>
+
+        <AppServices app="docflow" version="V1" />
       </div>
     </>
   );

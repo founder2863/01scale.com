@@ -2,14 +2,14 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { products } from "./data";
-import { PRODUCT_NAME, VISION_HREF } from "./flow";
-import { groups } from "./tabs";
+import { APP_ORDER, appHref, appLabel, SERVICES_NAME, servicesFor, VERSIONS, type Version } from "./apps";
 
+// The header's Products menu (MVP1-E0-32): each app by version, then Services. Two columns, V1 and V2,
+// on wide screens; one list on a phone. Services opens a submenu of the platform services and
+// their modules (MVP1-E0-34), on click or tap.
 export default function ProductsMenu() {
   const [open, setOpen] = useState(false);
-  // On phones one group is expanded at a time; on wide screens both are shown.
-  const [expanded, setExpanded] = useState<string>(groups[0].tag);
+  const [services, setServices] = useState<Version | null>(null);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -30,6 +30,8 @@ export default function ProductsMenu() {
     };
   }, [open]);
 
+  const close = () => setOpen(false);
+
   return (
     <div className="menu" ref={ref}>
       <button
@@ -44,47 +46,61 @@ export default function ProductsMenu() {
       {open && (
         <div className="menu-panel" id="products-menu">
           <div className="menu-groups">
-            {groups.map((group) => {
-              const isExpanded = expanded === group.tag;
+            {VERSIONS.map(({ version }) => {
+              const isOpen = services === version;
               return (
-                <div className="menu-group" key={group.tag}>
+                <div className="menu-group" key={version}>
                   <div className="menu-group-title">
-                    <Link
-                      className="menu-group-link"
-                      href={VISION_HREF}
-                      onClick={() => setOpen(false)}
-                    >
-                      <span>{PRODUCT_NAME} Platform</span>
-                      <span className="group-tag">{group.tag}</span>
-                    </Link>
-                    <button
-                      type="button"
-                      className="menu-chevron"
-                      aria-expanded={isExpanded}
-                      aria-label={`${isExpanded ? "Hide" : "Show"} ${group.tag} modules`}
-                      onClick={() => setExpanded(isExpanded ? "" : group.tag)}
-                    >
-                      {isExpanded ? "−" : "+"}
-                    </button>
-                    <span className="menu-group-heading">{group.heading}</span>
+                    <span className="menu-group-link">
+                      <span className="group-tag">{version}</span>
+                    </span>
                   </div>
-                  <ul className={isExpanded ? "menu-items is-open" : "menu-items"}>
-                    {products
-                      .filter((product) => product.group === group.tag)
-                      .map((product) => (
-                        <li key={product.slug}>
-                          <Link href={`/products/${product.slug}`} onClick={() => setOpen(false)}>
-                            <span className="menu-number">{product.number}</span>
-                            <span>{product.title}</span>
-                          </Link>
-                        </li>
-                      ))}
+                  <ul className="menu-items is-open">
+                    {APP_ORDER.map((app) => (
+                      <li key={app}>
+                        <Link href={appHref(app, version)} onClick={close}>
+                          <span>{appLabel(app, version)}</span>
+                        </Link>
+                      </li>
+                    ))}
+                    <li>
+                      <button
+                        type="button"
+                        className="menu-sub-toggle"
+                        aria-expanded={isOpen}
+                        aria-controls={`services-${version}`}
+                        onClick={() => setServices(isOpen ? null : version)}
+                      >
+                        <span>
+                          {SERVICES_NAME} {version}
+                        </span>
+                        <span aria-hidden="true">{isOpen ? "−" : "+"}</span>
+                      </button>
+                      {isOpen && (
+                        <ul className="menu-sub" id={`services-${version}`}>
+                          {servicesFor(version).map(({ service, modules }) => (
+                            <li key={service}>
+                              <span className="menu-sub-service">{service}</span>
+                              <ul>
+                                {modules.map((product) => (
+                                  <li key={product.slug}>
+                                    <Link href={`/products/${product.slug}`} onClick={close}>
+                                      {product.title}
+                                    </Link>
+                                  </li>
+                                ))}
+                              </ul>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </li>
                   </ul>
                 </div>
               );
             })}
           </div>
-          <Link className="menu-all" href="/products" onClick={() => setOpen(false)}>
+          <Link className="menu-all" href="/products" onClick={close}>
             See all products →
           </Link>
         </div>

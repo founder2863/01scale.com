@@ -1603,7 +1603,7 @@ export const products = [
   {
     "slug": "download-and-email-delivery",
     "number": 8,
-    "title": "Download and email delivery",
+    "title": "Email delivery",
     "group": "MVP1",
     "service": "Delivery",
     "description": "Get the files immediately by secure download, with a copy by email.",

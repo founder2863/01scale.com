@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { APPS, appHref } from "../../products/apps";
 import { products } from "../../products/data";
 
 export const metadata: Metadata = {
@@ -62,9 +63,15 @@ const statuses = [
   "paid",
 ];
 
+// Later apps. AutoRep is designed (its PRD and stories); P2PFlow and Order-to-Cash are not yet.
 const futureApps = [
-  { name: "Procure-to-Pay", note: "Purchase orders, invoices and payments, reusing the same services." },
-  { name: "Order-to-Cash", note: "Orders, invoicing and collection, reusing the same services." },
+  {
+    name: APPS.autorep.name,
+    note: "AI-drafted replies to Google reviews, with its own agent graph (ARCHITECTURE.md §13). Designed; its Architecture & System Design comes with AUTOREP-E1-02.",
+    href: appHref("autorep", "V1"),
+  },
+  { name: `${APPS.p2pflow.name} (Procure-to-Pay)`, note: "Purchase orders, invoices and payments, reusing the same services.", href: null },
+  { name: "Order-to-Cash", note: "Orders, invoicing and collection, reusing the same services.", href: null },
 ];
 
 export default function AppsArchitecture() {
@@ -92,7 +99,7 @@ export default function AppsArchitecture() {
           <p className="note">
             A person signs in, uploads a document, Claude extracts the data, a
             person reviews what is uncertain, pays, and receives the results.
-            See the <Link href="/products/vision">product vision</Link> for the
+            See the <Link href={appHref("docflow", "V1")}>product vision</Link> for the
             whole journey, and{" "}
             <Link href="/platform/architecture">Platform Architecture</Link>{" "}
             for the services it calls.
@@ -168,7 +175,9 @@ export default function AppsArchitecture() {
           <div className="cards">
             {futureApps.map((app) => (
               <div className="card" key={app.name}>
-                <p className="card-title">{app.name}</p>
+                <p className="card-title">
+                  {app.href ? <Link href={app.href}>{app.name}</Link> : app.name}
+                </p>
                 <div className="coming-soon">
                   <p className="coming-soon-title">Coming Soon...</p>
                   <p>{app.note}</p>
