@@ -22,7 +22,7 @@ Every skill in `.claude/skills/design-*` and `publish-product-page` reads this f
 1. **API spec** and **data model** first. Everything else refers to them.
 2. **Schema** next. It must match the data model field for field.
 3. **User journeys** and **UI components**. Journeys use the API's error codes; components call the API's endpoints.
-4. **Read me** last. It summarises the others and must not say anything they do not.
+4. **Read me** last. It summarises the others and must not say anything they do not. On the site it is the technical entry page: the template wraps it with **At a glance** (links to the Product sections) and **Go deeper** (links to the Design, Interfaces and Data sections), built from `app/products/tabs.ts`. Write only the guide itself; link to the other sections, never repeat them. Market Outlook, at `/products/<module>`, is the page for market-facing visitors (`MVP1-E0-21`).
 5. **Product page**: assembly only, no new content.
 
 ## Rules for all documents

@@ -445,7 +445,7 @@ HEAD = f"> **{OVERVIEW['version']}.** Status: {OVERVIEW['status'].lower()}. Stor
 readme = f"""# Identity service — developer guide
 
 {HEAD}
-This guide covers **login only**, as it works in version 1 with AWS Cognito. The other documents for this service: [user journeys](USER-JOURNEYS.md), [UI components](UI-COMPONENTS.md), [API specification](API-SPEC.md), [data model](DATA-MODEL.md), [schema](SCHEMA.md), and the [AWS setup](../../infra/cognito.md). The same content is on the site at `/products/login-using-aws`.
+This guide covers **login only**, as it works in version 1 with AWS Cognito. The other documents for this service: [user journeys](USER-JOURNEYS.md), [UI components](UI-COMPONENTS.md), [API specification](API-SPEC.md), [data model](DATA-MODEL.md), [schema](SCHEMA.md), and the [AWS setup](../../infra/cognito.md). The same content is on the site at `/products/login-using-aws/readme`.
 
 ## What this service is
 

@@ -123,7 +123,7 @@ As the owner, I want DocFlow to be a thin app that only connects platform servic
 As a hiring manager, I want every module to have its own page laid out the same way, on any device, so I can judge the product thinking quickly.
 - **AC1:** The site has four navigation items: Home, Products, Platform and How It's Built (Platform replaced Architecture in `MVP1-E0-22`).
 - **AC2:** The Products menu is organized at two levels, MVP1 and MVP2, with the numbered modules under each. Every number is fully visible on a phone, including 10 to 15.
-- **AC3:** Choosing a module opens its own page in the same tab, with a service introduction at the top and seven sections: Read Me, Requirement EPIC, User Journey, UI Components, API Spec, Data Model and Schema. On a desktop the sections are a vertical list on the left; on a phone or tablet they are a bar that scrolls sideways and stays in view.
+- **AC3:** Choosing a module opens its own page in the same tab, with a service introduction at the top and its sections, in the order and groups of `MVP1-E0-21` (originally seven: Read Me, Requirement EPIC, User Journey, UI Components, API Spec, Data Model and Schema). On a desktop the sections are a vertical list on the left; on a phone or tablet they are a bar that scrolls sideways and stays in view.
 - **AC4:** Every module uses the same template. A section whose design is not finalized shows "Coming Soon..." and says what will appear there. Requirements, endpoints and data notes that already exist in the stories are shown.
 - **AC5:** All seven sections are filled for Login using AWS (Identity, version 1).
 - **AC6:** Pages use the full width of the screen and work at 320, 390, 768, 1024, 1440 and 1920 pixels wide, in light and dark mode, with no sideways scrolling of the page.
@@ -268,8 +268,10 @@ As a visitor, I want the fifteen sections of a module page in a logical order an
   - **Interfaces:** API Spec, MCP;
   - **Data:** Data Model, Schema.
 - **AC2:** On a desktop the headings appear in the left menu. On a phone or tablet, the sideways-scrolling bar keeps the same order, with each group's first section marking where the group starts.
-- **AC3:** `/products/<module>` opens **Market Outlook**. Every section keeps its own address, and the old addresses keep working (the Read Me moves from `/products/<module>` to `/products/<module>/readme`, with a redirect).
+- **AC3:** `/products/<module>` opens **Market Outlook**. Every section keeps its own address. The Read Me moves from `/products/<module>` to `/products/<module>/readme`, and `/products/<module>/market-outlook` redirects to `/products/<module>`.
 - **AC4:** `CLAUDE.md` and story `MVP1-E0-10` are updated to describe the new order.
+- **AC5:** **Two entry pages, one per audience (Nikhil's decision on PR #111).** `/products/<module>` (Market Outlook) is for market-facing visitors and is what the menu, the Products page, the vision page and the flow link to; it opens with one line for technical readers: "Building with this? Start with the Read Me →". The **Read Me** is the technical entry page: it opens with **At a glance**, a link to every Product section with one line each, and closes with **Go deeper**, a link to every Design, Interfaces and Data section. A section not written yet is still listed, marked "Coming soon". The Read Me links to these sections and never repeats their content.
+- **AC6:** Technical entry points link to the Read Me (`/products/<module>/readme`): each service's README on GitHub now, and the API catalogue and the "Built on" panel (`MVP1-E0-24`) when they link to a module. Both link blocks are built from the one list of sections in `app/products/tabs.ts`, so a new section appears in them without extra work. `docs/process/DESIGN-RULES.md` and the `design-readme` skill say so.
 - **Service:** Site (`apps/web`)
 - **API design:** No endpoints.
 - **Database design:** No tables.

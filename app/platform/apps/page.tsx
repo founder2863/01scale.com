@@ -153,7 +153,7 @@ export default function AppsArchitecture() {
               <ul className="link-list">
                 {docflowModules.map((product) => (
                   <li key={product.slug}>
-                    <Link href={`/products/${product.slug}`}>
+                    <Link href={`/products/${product.slug}/architecture`}>
                       {product.title} ({product.group})
                     </Link>
                   </li>

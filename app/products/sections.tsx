@@ -1,7 +1,8 @@
+import Link from "next/link";
 import type { ReactNode } from "react";
 import type { Product } from "./data";
 import { details } from "./details";
-import type { TabSlug } from "./tabs";
+import { DEFAULT_TAB, tabGroups, tabHref, type Tab, type TabSlug } from "./tabs";
 
 const REPO = "https://github.com/founder2863/01scale.com/blob/main";
 
@@ -48,7 +49,6 @@ function ReadMe({ product }: { product: Product }) {
   if (!detail || detail.overview.what.length === 0) {
     return (
       <>
-        <h2>Read Me</h2>
         <p>{product.description}</p>
         <dl className="decisions">
           <div>
@@ -78,7 +78,6 @@ function ReadMe({ product }: { product: Product }) {
   const { overview } = detail;
   return (
     <>
-      <h2>Read Me</h2>
       {overview.what.map((paragraph) => (
         <p key={paragraph}>{paragraph}</p>
       ))}
@@ -854,10 +853,125 @@ function Schema({ product }: { product: Product }) {
   );
 }
 
+// Sections whose stories are written but not built yet (MVP1-E0-21 AC1). Each says what will
+// appear and which story brings it; nothing is invented to fill it.
+const PLANNED: Partial<Record<TabSlug, { title: string; what: string; story: string }>> = {
+  "market-outlook": {
+    title: "Market Outlook",
+    what: "How big the market is, with sourced figures; why I am building this component; where I have used it in my own work; and the key market players and where this component sits against them.",
+    story: "MVP1-E0-14",
+  },
+  "prd-reference": {
+    title: "PRD Reference",
+    what: "The sections of the product requirements this module implements, each with the stories that deliver it, and any requirement not covered yet.",
+    story: "MVP1-E0-15",
+  },
+  metrics: {
+    title: "Metrics",
+    what: "The one metric that defines success and the few that drive it, service health against its targets, quality from the evals and cost per use, with live numbers once the module ships.",
+    story: "MVP1-E0-27",
+  },
+  monetization: {
+    title: "Monetization",
+    what: "The pricing model and price, the cost of one use broken down by provider, the margin, and a comparison with the public prices of the market players.",
+    story: "MVP1-E0-28",
+  },
+  gtm: {
+    title: "GTM",
+    what: "Who buys and who uses it, how it is positioned against the market players, how developers and agents find and adopt it, and the launch plan.",
+    story: "MVP1-E0-29",
+  },
+  support: {
+    title: "Support",
+    what: "An FAQ, a guide to every error code and how to fix it, live status, how to get help, and the support level of this demo.",
+    story: "MVP1-E0-30",
+  },
+  architecture: {
+    title: "Architecture & System Design",
+    what: "Who calls this module and what it calls, its inside, sequence diagrams of its key flows, how it is deployed, its targets for speed and availability, and its decisions and how it evolves.",
+    story: "MVP1-E0-20",
+  },
+  mcp: {
+    title: "MCP",
+    what: "The MCP tools this module exposes to AI agents, each with its inputs and outputs, matching the API one for one.",
+    story: "MVP1-E0-16",
+  },
+};
+
+function Planned({ product, tab }: { product: Product; tab: TabSlug }) {
+  const section = PLANNED[tab];
+  if (!section) return null;
+  return (
+    <>
+      <h2>{section.title}</h2>
+      {tab === DEFAULT_TAB && (
+        <p className="audience-link">
+          Building with this?{" "}
+          <Link href={tabHref(product.slug, "readme")}>Start with the Read Me →</Link>
+        </p>
+      )}
+      <ComingSoon what={`${section.what} (story ${section.story})`} />
+    </>
+  );
+}
+
+// One line per section, for the two link blocks on the Read Me (Nikhil's decision on PR #111).
+const SUMMARY: Record<TabSlug, string> = {
+  "market-outlook": "The market, why I am building this, and the players",
+  readme: "This guide",
+  "prd-reference": "The product requirements this module implements",
+  requirements: "The stories and their acceptance criteria",
+  metrics: "How success is measured, and how it is doing",
+  monetization: "Pricing, cost per use and margin",
+  gtm: "Who it is for and how it reaches them",
+  support: "Help, error codes and how to fix them",
+  architecture: "Context, internals, flows, deployment and decisions",
+  "user-journey": "What a person sees and does, step by step",
+  "ui-components": "The components this module ships for apps",
+  "api-spec": "Every endpoint, with inputs, errors and samples",
+  mcp: "The tools this module gives AI agents",
+  "data-model": "What it stores and why",
+  schema: "The SQL, constraints and indexes",
+};
+
+// The Read Me is the technical entry page: it opens with links to the product sections and
+// closes with links to the technical ones. It links, it never repeats their content.
+function SectionLinks({ product, headings, title }: { product: Product; headings: string[]; title: string }) {
+  const sections = tabGroups
+    .filter((group) => headings.includes(group.heading))
+    .flatMap((group): readonly Tab[] => group.tabs)
+    .filter((tab) => tab.slug !== "readme");
+  return (
+    <nav className="section-links" aria-label={title}>
+      <p className="section-links-title">{title}</p>
+      <ul>
+        {sections.map((tab) => (
+          <li key={tab.slug}>
+            <Link href={tabHref(product.slug, tab.slug)}>
+              <span className="section-links-name">
+                {tab.label}
+                {PLANNED[tab.slug] && <span className="status">Coming soon</span>}
+              </span>
+              <span className="section-links-summary">{SUMMARY[tab.slug]}</span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  );
+}
+
 export function TabContent({ product, tab }: { product: Product; tab: TabSlug }) {
   switch (tab) {
     case "readme":
-      return <ReadMe product={product} />;
+      return (
+        <>
+          <h2>Read Me</h2>
+          <SectionLinks product={product} headings={["Product"]} title="At a glance" />
+          <ReadMe product={product} />
+          <SectionLinks product={product} headings={["Design", "Interfaces", "Data"]} title="Go deeper" />
+        </>
+      );
     case "requirements":
       return <Requirements product={product} />;
     case "user-journey":
@@ -870,5 +984,7 @@ export function TabContent({ product, tab }: { product: Product; tab: TabSlug })
       return <DataModel product={product} />;
     case "schema":
       return <Schema product={product} />;
+    default:
+      return <Planned product={product} tab={tab} />;
   }
 }

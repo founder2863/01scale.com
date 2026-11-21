@@ -9,6 +9,8 @@ const nextConfig: NextConfig = {
       // Architecture moved under the Platform menu (MVP1-E0-22).
       { source: "/architecture", destination: "/platform/architecture", permanent: true },
       { source: "/platform", destination: "/platform/core", permanent: false },
+      // Market Outlook is the module page itself (MVP1-E0-21).
+      { source: "/products/:module/market-outlook", destination: "/products/:module", permanent: true },
     ];
   },
 };
