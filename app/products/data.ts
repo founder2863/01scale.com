@@ -805,6 +805,14 @@ export const products = [
           {
             "label": "AC6",
             "text": "The default model is `claude-opus-5-5` (Nikhil's decision on #34)."
+          },
+          {
+            "label": "AC7",
+            "text": "**Demo budget (Nikhil's decision on PR #87):** each calendar month (UTC), jobs use `claude-opus-5-5` until $5 of Opus cost is used, then `claude-haiku-5-5` until $5 of Haiku cost is used. When both are used, a new job is refused with `503 demo_budget_reached` and `Retry-After` set to the start of next month. Spend is the sum of `cost_usd` on the month's jobs, per model. The hard backstop is outside the code: prepaid API credit with auto-reload off and a $10 monthly spend limit on the Anthropic workspace, so the bill can never exceed $10."
+          },
+          {
+            "label": "AC8",
+            "text": "The eval report covers both models. If Haiku scores below a threshold, it still runs: confidence routing sends more fields to human review, and the Costs page says so."
           }
         ],
         "evals": "EXT-1 schema validity, EXT-2 header field accuracy, EXT-3 line item F1, EXT-4 hallucination rate, EXT-7 latency, EXT-8 cost (see `EVALS.md`).",
@@ -863,6 +871,10 @@ export const products = [
           {
             "label": "AC4",
             "text": "A \"Review N flagged fields\" button goes to E4. If nothing is flagged, \"Continue to results\" goes to E5."
+          },
+          {
+            "label": "AC5",
+            "text": "The page says which model read the document. When it was Claude Haiku 5.5, it shows: \"This month's demo budget for Claude Opus 5.5 is used, so this document was read by Claude Haiku 5.5, a faster, lower-cost model. More fields may be flagged for your review.\" When both budgets are used, the upload step shows: \"Demo capacity for this month is used up. Extraction is back on <date>.\" (Nikhil's decision on PR #87)."
           }
         ],
         "evals": "",
@@ -882,6 +894,10 @@ export const products = [
           {
             "label": "AC2",
             "text": "An admin-only page `/admin/jobs` shows the last 100 jobs with these numbers and the failure rate."
+          },
+          {
+            "label": "AC3",
+            "text": "The admin page also shows this month's spend per model against its $5 budget (`MVP1-E3-02` AC7)."
           }
         ],
         "evals": "",

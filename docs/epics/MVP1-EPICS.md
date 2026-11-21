@@ -325,7 +325,7 @@ As the owner of a public repository, I want visitors to use the real functionali
 - **AC2:** **Secrets never touch the repository.** They live only in Vercel environment variables (marked Sensitive) and AWS. The repository has a `.env.example` per service with names only. GitHub secret scanning with push protection is on, and CI runs a secret scan on every pull request. Pull requests from forks get no secrets.
 - **AC3:** **Secrets never reach a browser.** Only a service's server uses them, so visitors use the live site without seeing any key.
 - **AC4:** **Environments:** local, preview and production each have their own keys. Outside providers run in test or sandbox mode for the demo (Stripe test mode, so no real money moves). Anyone who forks the repository runs it with their own keys.
-- **AC5:** **Safe live demo:** per-user limits (`MVP1-E0-08`) plus a daily cap of **20 extractions per user** (Nikhil's decision on PR #87); a monthly spend limit on the Anthropic account and budget alerts in AWS and Vercel; bot protection on sign-up; files deleted after 30 days as decided. The monthly budget values are an open question for Nikhil.
+- **AC5:** **Safe live demo:** per-user limits (`MVP1-E0-08`) plus a daily cap of **20 extractions per user**; the Claude API budget of **$5 a month on Opus 5.5, then $5 on Haiku 5.5** (`MVP1-E3-02` AC7); bot protection on sign-up; files deleted after 30 days as decided. Nothing else costs more than Nikhil's existing subscriptions: Vercel Pro ($20 a month, with spend management set to pause rather than charge more), AWS within its $10 credit with a budget alert, Neon and Resend on free plans, Stripe in test mode (Nikhil's decisions on PR #87).
 - **AC6:** The page says how each secret is rotated (client secret rotation: `MVP2-E8-12`).
 - **Service:** Platform (all services) and Site (`apps/web`)
 - **API design:** No new endpoints. Over a daily cap: `429 daily_limit_reached` with `Retry-After`.
@@ -372,6 +372,18 @@ As a user or a developer of a module, I want to know how to get help and fix com
 - **Database design:** No tables.
 
 **Design skill for the four Product sections:** a skill (`design-product-business`) states how to write Metrics, Monetization, GTM and Support: sources to prefer, how to cite, what is an estimate, and what never to invent.
+
+
+### MVP1-E0-31 · Costs tab on How It's Built — S
+As a hiring manager, I want to see what the platform cost to build, what it costs to run, and the limits that keep it cheap, so I can judge its cost discipline.
+- **AC1:** How It's Built has a fourth tab, **Costs**, the last in its menu (after Agents), at `/how-its-built/costs` (Nikhil's decision on PR #87).
+- **AC2:** **Development cost:** the total from the token ledger at API rates, linking to Token Costs for the detail, and what is actually paid: Nikhil's subscriptions (Claude Pro, Vercel Pro, AWS credit). It says plainly that the ledger figure is what the tokens would cost at API rates, not what was paid.
+- **AC3:** **Usage cost:** for each provider, what it bills for, what covers it and the monthly ceiling; and the cost of one extraction per model. Estimates are labelled as estimates until measured (`MVP1-E3-05`).
+- **AC4:** **Constraints:** every limit that keeps the demo safe and cheap (rate limits, 20 extractions a day per user, the Claude budget and its fallback to Haiku, Stripe test mode, 30-day file retention), each with its reason and the story that sets it.
+- **AC5:** The numbers live in one data file; when a decision changes in a story, the page changes in the same PR. It works from 320 to 1920 pixels wide, in light and dark mode.
+- **Service:** Site (`apps/web`)
+- **API design:** No endpoints.
+- **Database design:** No tables.
 
 ---
 
@@ -550,6 +562,8 @@ As Priya, I want to drag and drop or pick a file on my phone and see progress.
 - **AC4:** The response is validated with zod. A schema failure triggers one repair attempt and then fails the job; invalid JSON is never stored.
 - **AC5:** Scanned PDFs and photos are in scope. Before extraction, the job reads each page's text: the PDF's text layer, or OCR by Claude when there is none or the file is an image. If no text is found, the job fails with `no_text_found` and the person sees "No text found" (Nikhil's decision on #34).
 - **AC6:** The default model is `claude-opus-5-5` (Nikhil's decision on #34).
+- **AC7:** **Demo budget (Nikhil's decision on PR #87):** each calendar month (UTC), jobs use `claude-opus-5-5` until $5 of Opus cost is used, then `claude-haiku-5-5` until $5 of Haiku cost is used. When both are used, a new job is refused with `503 demo_budget_reached` and `Retry-After` set to the start of next month. Spend is the sum of `cost_usd` on the month's jobs, per model. The hard backstop is outside the code: prepaid API credit with auto-reload off and a $10 monthly spend limit on the Anthropic workspace, so the bill can never exceed $10.
+- **AC8:** The eval report covers both models. If Haiku scores below a threshold, it still runs: confidence routing sends more fields to human review, and the Costs page says so.
 - **Evals:** EXT-1 schema validity, EXT-2 header field accuracy, EXT-3 line item F1, EXT-4 hallucination rate, EXT-7 latency, EXT-8 cost (see `EVALS.md`).
 - **Service:** LLM Extraction
 - **API design:**
@@ -574,6 +588,7 @@ As Priya, I want to drag and drop or pick a file on my phone and see progress.
 - **AC2:** When done, the document preview (rendered PDF page or image, Upload's `FilePreview` component, decided on #36) is on the left and the fields on the right, with confidence badges (green ≥ 0.85, amber 0.6–0.85, red < 0.6) and flagged fields highlighted.
 - **AC3:** Tapping a field shows its source quote and page. On desktop, the preview jumps to that page.
 - **AC4:** A "Review N flagged fields" button goes to E4. If nothing is flagged, "Continue to results" goes to E5.
+- **AC5:** The page says which model read the document. When it was Claude Haiku 5.5, it shows: "This month's demo budget for Claude Opus 5.5 is used, so this document was read by Claude Haiku 5.5, a faster, lower-cost model. More fields may be flagged for your review." When both budgets are used, the upload step shows: "Demo capacity for this month is used up. Extraction is back on <date>." (Nikhil's decision on PR #87).
 - **Service:** LLM Extraction (UI component), used by the DocFlow app
 - **API design:** No new endpoints. The component polls `GET /jobs/{jobId}`, reads `GET /jobs/{jobId}/fields`, and shows the file through Upload `download-url`.
 - **Database design:** No schema change.
@@ -584,6 +599,7 @@ As Priya, I want to drag and drop or pick a file on my phone and see progress.
 - **Service:** LLM Extraction
 - **API design:**
   - `GET /api/extraction/v1/admin/jobs` (admin) — Last 100 jobs with tokens, cost, duration and failure rate. → `200 {data: [Job], summary: {failure_rate, avg_cost_usd, p95_duration_ms}}`. Errors: `404` for non-admins.
+- **AC3:** The admin page also shows this month's spend per model against its $5 budget (`MVP1-E3-02` AC7).
 - **Database design:** `extraction.jobs` adds tokens_in, tokens_out, cost_usd numeric(10,6), duration_ms.
 
 ### MVP1-E3-06 · Ask questions about my documents (RAG) — L
