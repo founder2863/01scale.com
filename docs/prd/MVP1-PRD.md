@@ -45,7 +45,7 @@ One journey, assembled from independently released platform services, that shows
 
 ## 7. User journey
 1. **Sign up / sign in** with Cognito managed login (email + password, verified email). (E1)
-2. **Upload** an invoice from the Documents page; it goes straight from the browser to S3. (E2)
+2. **Upload** an invoice from the Documents page; it goes straight from the browser to S3. Once it is checked, the upload screen shows a preview of the file, and **Continue** opens the extraction page. (E2)
 3. **Extraction** runs automatically; the page shows progress, then the fields beside a preview of the document. (E3)
 4. **Review:** fields with low confidence or failed checks are highlighted; the user accepts, edits or marks each as "not present". (E4)
 5. **Results:** final JSON (with metadata) and CSV are shown as a preview; download is locked. (E5)

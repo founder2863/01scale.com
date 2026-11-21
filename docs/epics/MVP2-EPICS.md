@@ -104,6 +104,45 @@ As Priya, I want to sign in by clicking a link in my email.
 - **API design:** No new endpoints. The gateway checks the `Origin` header on cookie-authenticated writes; API-key requests are exempt from CSRF checks because they carry no ambient credentials.
 - **Database design:** No schema change.
 
+### MVP2-E8-10 · Account security on our own screens — S
+Decided by Nikhil on 17 Nov 2026 (issue #26): in MVP1, "Change password" uses Cognito's hosted forgot-password page; our own screens come with hand-built identity.
+As a user, I want to manage how I sign in on 01scale's own account page, without being sent to another site.
+- **AC1:** `/account/security` replaces MVP1's "Change password" button. MVP2 sign-in is passwordless, so there is no password to change: the page lists my sign-in methods (my email for magic links and codes, and my passkeys), and I can add a passkey, remove one (with re-authentication, `MVP2-E8-07`) or change my email.
+- **AC2:** No step sends me to an outside page. Every action is an Identity endpoint with its UI component in `packages/ui-identity`.
+- **AC3:** An MVP1 user who signed in with a password and has not yet set up a passkey sees a prompt to add one.
+- **Service:** Identity
+- **API design:** No new endpoints: composes `GET /api/identity/v1/passkeys` and `DELETE …/passkeys/{passkeyId}` (`MVP2-E8-04`), `POST /api/identity/v1/me/email-change` (`MVP2-E8-07`) and `GET /api/identity/v1/sessions` (`MVP2-E8-06`). Removes `POST /api/identity/v1/me/password-change` (MVP1), with a deprecation note in the changelog.
+- **Database design:** No schema change.
+
+### MVP2-E8-11 · Deactivate first, delete after 30 days — S
+Decided by Nikhil on 20 Nov 2026 (PR #70): MVP1 deletes an account at once; MVP2 adds a 30-day window to undo a deletion.
+As a user, I want a deleted account to stay recoverable for 30 days, so a mistake or a change of mind does not lose my work, while my data is still erased for good afterwards.
+- **AC1:** "Delete account" deactivates the account at once: I am signed out everywhere, my sessions, API keys and agents stop working, and no one can reach my data. I see the date it will be deleted for good.
+- **AC2:** Signing in within 30 days offers **Restore account**, which brings everything back as it was. After restoring, nothing has been deleted.
+- **AC3:** After 30 days, a daily job deletes the account for good through the existing `identity.user.deleted` event, so every service deletes or anonymizes its own data exactly as in MVP1. "Delete now" skips the wait for anyone who asks.
+- **AC4:** While deactivated, the account receives no emails, and `GET /api/identity/v1/users/{userId}` answers `404`, so no service writes to it.
+- **AC5:** Deactivation, restore and the final deletion are each audited. The consent line and the account page say that deletion completes 30 days after the request.
+- **Service:** Identity only: other services need no change, because a deactivated user cannot sign in and their data is reachable only by them.
+- **API design:**
+  - `DELETE /api/identity/v1/me` (signed in, session only) now deactivates. Body `{confirm: "DELETE"}` → `202 {deletes_at}`. With `{confirm: "DELETE", now: true}` it deletes at once, as in MVP1.
+  - `POST /api/identity/v1/me/restore` (signed in during the 30 days) — Restore my account. → `200 {user}`. Errors: `409 not_deactivated`.
+- **Database design:** `identity.users` adds `deactivated_at` and `deletes_at` (both empty unless deactivated). A partial index on `deletes_at` serves the daily job.
+
+### MVP2-E8-12 · Rotate service client secrets without downtime — S
+Decided by Nikhil on 20 Nov 2026 (PR #73): parked for MVP2. In MVP1 a client secret changes only with a database migration and a deployment.
+As the owner, I want to change a service's or app's client secret without any moment where its calls fail, so a leaked or old secret can be replaced at once and routinely.
+- **AC1:** Each client can hold two active secrets at the same time. Identity accepts either while both are active.
+- **AC2:** Rotating is three steps with no downtime: add a new secret; set it in the client's environment and redeploy; retire the old secret. Retiring it takes effect on the next sign-in; tokens already issued last at most 5 minutes.
+- **AC3:** A secret can also be retired at once in an emergency, for example after a leak, even if the client then fails until it has the new one.
+- **AC4:** The admin page shows, per client, when each secret was created and last used, so an unused old secret is easy to spot. Each secret is shown once at creation and stored only as a hash.
+- **AC5:** Adding and retiring secrets are admin and session-only actions, never available to API keys or agents, and are audited.
+- **Service:** Identity
+- **API design:**
+  - `POST /api/identity/v1/admin/service-clients/{clientId}/secrets` (admin, session only) — Add a secret. → `201 {secret_id, secret}`, the secret shown once. Errors: `409 too_many_secrets` when two are already active.
+  - `DELETE /api/identity/v1/admin/service-clients/{clientId}/secrets/{secretId}` (admin, session only) — Retire a secret. → `204`. Errors: `409 last_secret` unless `?emergency=true`.
+  - `GET /api/identity/v1/admin/service-clients` (admin) — Clients with their secrets' created and last-used dates. Never returns a secret.
+- **Database design:** `identity.service_client_secrets` (id, client_id → service_clients, secret_hash unique, created_at, last_used_at, retired_at), replacing `service_clients.secret_hash`. A partial unique rule allows at most two active secrets per client.
+
 ---
 
 ## E9 · Multi-document support (MVP2 "b") — `llm`
@@ -141,6 +180,17 @@ As Priya, I want to sign in by clicking a link in my email.
   - `GET /api/docflow/v1/batches/{batchId}` (signed in) — Batch status with each document's step and status. → `200 {batch, documents: [{id, file_name, step, status}], summary: {extracted, needs_review, failed}}`.
 - **Database design:** No schema change.
 
+### MVP2-E9-04 · Keep original documents beyond 30 days — S
+Decided by Nikhil on 17 Nov 2026 (ARCHITECTURE.md §12.8): in MVP1, originals are deleted after 30 days; keeping them longer is for MVP2.
+As a user, I want to see the original invoice beside its results months later, so I can check a value against the document.
+- **AC1:** An app can ask Upload to keep a file until the owner deletes it or their account (`retention: until_deleted`), instead of the default 30 days.
+- **AC2:** DocFlow keeps the originals of documents whose review is complete; files never completed still expire after 30 days.
+- **AC3:** The S3 lifecycle rule applies only to files tagged for expiry, so kept files are not removed. Storage cost per user is shown on the admin page.
+- **AC4:** Deleting a document or the account deletes its original at once, as today.
+- **Service:** Upload (provider), then DocFlow
+- **API design:** `PATCH /api/upload/v1/files/{fileId}` (signed in) — change a file's retention. Body `{retention: "30_days"|"until_deleted"}` → `200 {file}`.
+- **Database design:** `upload.files.expires_at` becomes nullable: empty means kept until deleted.
+
 ---
 
 ## E10 · LLM as judge on extraction (MVP2 "c") — `llm`
@@ -163,14 +213,25 @@ As Priya, I want to sign in by clicking a link in my email.
 - **Database design:** `extraction.fields` adds confidence_version; `confidence` now holds the combined score. `review.fields` adds judge_verdict, judge_reason (copied in when the task is created).
 
 ### MVP2-E10-03 · Judge vs human dashboard — S
-- **AC1:** `/admin/quality` shows, for the last 30 days: judge agreement with human decisions, the confusion matrix and the fields the judge most often gets wrong.
-- **AC2:** Cases where the judge and the human disagree can be exported as eval candidates.
+- **AC1:** `/admin/quality` shows, for the last 30 days, **numbers only**: judge agreement with human decisions, the confusion matrix and the fields the judge most often gets wrong. No field value, document or user appears (Nikhil's rule on #41; small-group rules in `MVP2-E10-04`).
+- **AC2:** The admin can add the cases where the judge and the human disagree to Review's eval candidates, **inside Review's database**, for the admin to approve as in `MVP1-E4-04`. Nothing is exported to files or to the repository, and the candidates are deleted with their owner's account (decisions on #41).
 - **Service:** Human Review
 - **API design:**
   - `GET /api/review/v1/admin/quality` (admin) — Judge vs human: agreement, confusion matrix, weakest fields (30 days). Query `days` → `200 {agreement_rate, confusion_matrix, worst_fields[]}`.
-  - `POST /api/review/v1/admin/quality/export` (admin) — Export judge/human disagreements as eval candidates. → `201 {created}` rows in `review.eval_candidates`.
+  - `POST /api/review/v1/admin/quality/candidates` (admin, session only) — Add judge/human disagreements to `review.eval_candidates`, inside Review's database. → `201 {created}`: a count only, no values. Nothing leaves the service.
   - Review can compare judge and human because each review field stores the judge verdict it was created with.
 - **Database design:** No new tables; aggregates `review.fields.judge_verdict` against `review.field_changes`.
+
+### MVP2-E10-04 · Privacy rules for small groups in reports — S
+Decided by Nikhil on 20 Nov 2026 (PR #81): MVP1's accuracy report shows every count as it is, so it can be tested with few users; MVP2 adds rules so a small count can never point to one person.
+As the owner, I want reports built from real users' work to stay anonymous as the number of testers grows, so a number can never reveal something about one person's document.
+- **AC1:** In every admin report built from users' data (the accuracy report of `MVP1-E4-04` and the judge vs human dashboard of `MVP2-E10-03`), a row whose numbers come from **fewer than 2 different people** is hidden or merged into "Other". The threshold is configuration.
+- **AC2:** A count from enough people is shown as it is, however small, so the report stays useful with few testers.
+- **AC3:** Hidden rows are still counted in the totals, and the report says how many rows were hidden and why.
+- **AC4:** Unit tests cover the edge cases: one person with many corrections, many people with one each, and a total that would let a hidden row be worked out by subtraction.
+- **Service:** Human Review
+- **API design:** No new endpoints. `GET /api/review/v1/admin/accuracy` and the judge vs human report add `hidden_rows` and apply the rule.
+- **Database design:** No schema change; the rule counts distinct `review.tasks.owner_id` per row.
 
 ---
 
@@ -232,7 +293,7 @@ As Priya, I want to type "line 3 quantity should be 12" and have it fixed.
   - `GET /api/docflow/v1/batches/{batchId}/outputs` (signed in) — The outputs available for a batch. → `200 {version, locked, formats: ["json", "csv", "zip"]}`.
   - `GET /api/docflow/v1/batches/{batchId}/outputs/{format}/preview` (signed in) — Preview the combined JSON or CSV. `format = json|csv` → `200` inline content.
   - `GET /api/docflow/v1/batches/{batchId}/outputs/{format}/download` (signed in) — Download batch.json, batch.csv or batch.zip. → `302` to an Upload `download-url`. Errors: `402` until paid.
-- **Database design:** `docflow.outputs` adds batch_id null, zip_file_id; a batch output row has `document_id` null.
+- **Database design:** No tables: like single documents, batch results (JSON, CSV and the zip) are built on demand from each document's Review values and never stored (ARCHITECTURE.md §12.8).
 
 ---
 
@@ -364,6 +425,23 @@ As a user, I want to choose the date a payment is taken, for example at the end 
   - `POST /api/delivery/v1/notifications` (service) — Notify a user about an event on every channel they have enabled. Called by an app's server. Body `{user_id, event, payload, reference}` + `Idempotency-Key` → `202 {notification}`. Replaces direct use of `POST /messages` by apps.
   - `GET /api/delivery/v1/notifications` (signed in) — My notification log: each attempt per channel. Query `cursor`, `limit` → `200 {data: [{event, channel, status: sent|failed|skipped, attempts, created_at}], next_cursor}`.
 - **Database design:** `delivery.notifications` (id, owner_id, app, reference, event, channel `email|sms|push`, status `sent|failed|skipped`, attempts, last_error, created_at). MVP1 `delivery.messages` rows are migrated into it.
+
+---
+
+## E15 · Platform gateway (MVP2 "h")
+**Goal:** move the platform's protections from hosting settings into the gateway service itself.
+
+### MVP2-E15-01 · Rate limiting built into the gateway — M
+Decided by Nikhil on 17 Nov 2026 (issue #21): MVP1 uses Vercel firewall rules; MVP2 builds rate limiting into the gateway service.
+As the owner, I want rate limits that are part of the platform's own code, so they are versioned, tested and the same wherever the gateway runs.
+- **AC1:** The gateway limits requests per IP (300 a minute), per user (10 changes and 60 reads a minute to begin with, decided on #64, and higher on paid plans, `MVP2-E13-06`) and per API key, with tighter limits on Identity's sign-in endpoints. Values are configuration, not code.
+- **AC2:** Over a limit, the answer is `429 rate_limited` with `Retry-After`, and every response carries `RateLimit-Limit`, `RateLimit-Remaining` and `RateLimit-Reset`.
+- **AC3:** Counters are shared by every running copy of the gateway, so a limit holds across instances.
+- **AC4:** The Vercel firewall rules from MVP1 are removed once the gateway's limits are live, and `docs/infra/` says so.
+- **AC5:** A test proves a burst over the limit is refused and the window resets.
+- **Service:** Gateway
+- **API design:** No new endpoints. Adds the `RateLimit-*` response headers and `429 rate_limited` to every route.
+- **Database design:** No tables: the gateway holds no data. Counters live in a shared key-value store (for example Upstash Redis); the store is chosen in the story, with its trade-offs in the decision log.
 
 ---
 

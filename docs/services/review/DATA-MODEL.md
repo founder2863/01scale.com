@@ -11,16 +11,16 @@ What the service keeps, how the pieces relate, and what every field means. The S
 | Task | `review.tasks` | A set of values one person checks together. | Belongs to one user by ID. Has many fields. |
 | Field | `review.fields` | One value under review, with its evidence and decision. | Belongs to one task. Has many changes. |
 | Change | `review.field_changes` | One decision on one field. | Belongs to one field. |
-| Eval candidate | `review.eval_candidates` | A correction that could become a test case. | Came from a task, by ID only. |
+| Eval candidate | `review.eval_candidates` | A correction that could become a test case. | Belongs to one task; deleted with it. |
 | Processed event | `review.inbound_events` | A platform event already acted on. | Stands alone. |
 
 ## Life of each record
 
 | Record | Life |
 |---|---|
-| Task | `open` when created → `completed` when the person finishes. Never reopened. |
-| Field | `pending` → `accepted`, `edited` or `not_present`, and can change between those until the task is completed. |
-| Eval candidate | `candidate` when a correction is made → `approved` or `rejected` by an admin → `exported` when written to a ground-truth file. |
+| Task | `open` when created → `completed` when the person finishes → kept until the owner deletes their account. Fields can still be corrected after completion. |
+| Field | `pending` → `accepted`, `edited` or `not_present`, and can change between those at any time, also after completion. Each change adds a history row. |
+| Eval candidate | `candidate` when a correction is made → `approved` or `rejected` by an admin → deleted with its task or the owner's account. |
 
 ## `review.tasks`
 
@@ -31,7 +31,7 @@ One row per set of values a person checks together, usually one document's field
 | `id` | `uuid` | No |  | Primary key. UUIDv7 | The task's ID. |
 | `owner_id` | `uuid` | No |  |  | The user who checks it, from the access token. A plain ID. |
 | `reference` | `text` | No |  | 1 to 200 characters | The caller's own label, returned in events. Opaque to Review. |
-| `status` | `text` | No | 'open' | `open` or `completed` | Whether values can still change. |
+| `status` | `text` | No | 'open' | `open` or `completed` | Whether the person has finished. Values can still be corrected after completion. |
 | `checks_overridden` | `boolean` | No | false |  | True when the person confirmed values that still fail a rule check, as printed on the document. |
 | `created_at` | `timestamptz` | No | now() |  | When the task was created. |
 | `completed_at` | `timestamptz` | Yes |  | Set exactly when completed | When the person finished. |
@@ -76,18 +76,18 @@ The full history of decisions on a field: one row per change, never edited. Any 
 
 ## `review.eval_candidates`
 
-One row per value a person corrected, kept so the owner can turn real mistakes into test cases. Never added to the eval set without approval.
+One row per value a person corrected, so the owner can see the model's real mistakes. It never leaves this database: reports show only counts (privacy rule on #41).
 
 | Field | Type | Empty allowed | Default | Constraints | What it means |
 |---|---|---|---|---|---|
 | `id` | `uuid` | No |  | Primary key. UUIDv7 | The candidate's ID. |
-| `task_id` | `uuid` | Yes |  | Empty after the owner's account is deleted | The task it came from; no foreign key, so an approved candidate can outlive it. |
+| `task_id` | `uuid` | No |  | Foreign key to `review.tasks`, delete cascades | The task it came from; deleted with it, so nothing outlives the owner's account. |
 | `reference` | `text` | No |  | 1 to 200 characters | The task's reference, which ties the ground truth to its document. |
 | `field_name` | `text` | No |  | 1 to 64 characters | Which field. |
 | `line_index` | `smallint` | Yes |  | 0 or more | Which line item. |
 | `model_value` | `jsonb` | Yes |  |  | What the system had. |
 | `human_value` | `jsonb` | Yes |  | Different from `model_value` | What the person corrected it to. |
-| `status` | `text` | No | 'candidate' | `candidate`, `approved`, `rejected` or `exported` | Where it is in the approval. |
+| `status` | `text` | No | 'candidate' | `candidate`, `approved` or `rejected` | Whether the admin judged it a real model mistake. |
 | `decided_by` | `uuid` | Yes |  | Set once approved or rejected | The admin who decided. |
 | `decided_at` | `timestamptz` | Yes |  | Set once approved or rejected | When. |
 | `created_at` | `timestamptz` | No | now() |  | When the correction was made. |
@@ -111,13 +111,13 @@ The service template also gives Review `audit_events`, `idempotency_keys` and `o
 - Review owns its copy of every value. It never reads another service's data, and never changes the original it was sent.
 - `original_value` never changes; `value` holds the decision. The difference between them is what a person corrected.
 - Every decision writes a history row in the same transaction; history rows are never edited.
-- A task can be completed only when no flagged field is `pending`, and once completed its values never change.
-- A correction (a final value different from the original) creates exactly one eval candidate per field, updated if the person changes it again before completing.
-- A candidate becomes ground truth only after an admin approves it; only approved candidates are exported.
-- Deleting a user's account deletes their tasks, fields and history. Approved or exported candidates stay, without the task's ID.
+- A task can be completed only when no flagged field is `pending`. After completion its values can still be corrected; every change is recorded, and the latest values are the final document.
+- A correction (a final value different from the original) creates exactly one eval candidate per field, updated if the person changes it again.
+- Candidates never leave this database. Reports built from them show counts and rates only, seen by the admin alone.
+- Deleting a user's account deletes their tasks, fields, history and eval candidates, approved ones included.
 
 ## What is deliberately not stored
 
 - The document itself: only the quotes sent with each field.
 - Document rules: re-checking values is the LLM Extraction service's job.
-- Ground-truth files: they are produced on export and handed over, not kept here.
+- Exports of corrections: there are none. Only counts and rates leave this service (privacy rule on #41).

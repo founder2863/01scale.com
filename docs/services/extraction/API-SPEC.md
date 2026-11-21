@@ -25,7 +25,7 @@ Every error uses `application/problem+json` with a stable `code`. Branch on `cod
 
 **Start extracting a file.** Starts reading a ready file into structured fields. Returns at once; the work continues in the background. Calling it again for the same file while a job is running returns that job instead of starting another.
 
-Access: **Signed in** · Story: `MVP1-E3-01`
+Access: **Signed in** · Scope: `extraction:write` · Story: `MVP1-E3-01`
 
 **Inputs**
 
@@ -40,7 +40,9 @@ Access: **Signed in** · Story: `MVP1-E3-01`
 - Checks the file through Upload, forwarding the caller's access token, so only the caller's own ready files can be read.
 - If a job for this file and schema is `queued` or `processing`, returns it with `200`. Nothing new is started or charged.
 - Otherwise records a job as `queued`, with the model ID and prompt version from configuration, and returns `202`.
-- The job then runs in the background: fetch the file through a 5-minute Upload link, send it to Claude, check the answer, apply the rule checks, and save the fields.
+- The job then runs in the background: with a delegated token for the owner, fetch the file through a 5-minute Upload link, and read its text. A PDF with a text layer gives its text directly; a scanned PDF or a photo is read by OCR (Claude transcribing each page, in a call separate from extraction so the quote check stays independent). Each page's text is saved for the quote check.
+- If no text is found on any page, the job fails with `no_text_found` and the message 'No text found'. It is not retryable: the same file would give the same result.
+- Otherwise it sends the document to Claude with the versioned prompt, checks the answer against the schema, applies the rule checks (including every quote against the saved text, for photos and scans too), and saves the fields.
 - Temporary failures (rate limit, timeout, overload) are retried up to 2 times, after 2 and then 8 seconds. After that the job is `failed`.
 - When the job ends, announces `extraction.job.completed` or `extraction.job.failed` to subscribed apps, and records `job.completed` or `job.failed` in the audit log.
 
@@ -99,6 +101,10 @@ Content-Type: application/json
         "state": "waiting"
       },
       {
+        "name": "reading_text",
+        "state": "waiting"
+      },
+      {
         "name": "reading_document",
         "state": "waiting"
       },
@@ -126,7 +132,7 @@ Content-Type: application/json
 
 **Check a job.** Where a job is, step by step. A page polls this every 2 seconds while the job runs.
 
-Access: **Signed in** · Story: `MVP1-E3-01`
+Access: **Signed in** · Scope: `extraction:read` · Story: `MVP1-E3-01`
 
 **Inputs**
 
@@ -137,7 +143,7 @@ Access: **Signed in** · Story: `MVP1-E3-01`
 **Behaviour**
 
 - Read only.
-- `steps[]` lists `fetching_file`, `reading_document`, `checking_rules`, `saving`, each `waiting`, `running`, `done` or `failed`.
+- `steps[]` lists `fetching_file`, `reading_text`, `reading_document`, `checking_rules`, `saving`, each `waiting`, `running`, `done` or `failed`.
 - A failed job has `error_code`, a plain-language `error_message`, and `retryable`: true when starting a new job may succeed.
 - Sends `Retry-After: 2` while the job is `queued` or `processing`.
 
@@ -178,6 +184,10 @@ Authorization: Bearer <access token>
         "state": "done"
       },
       {
+        "name": "reading_text",
+        "state": "done"
+      },
+      {
         "name": "reading_document",
         "state": "done"
       },
@@ -205,7 +215,7 @@ Authorization: Bearer <access token>
 
 **Get the extracted fields.** Every field the job extracted, with its value, how confident the system is, and the exact text it was read from.
 
-Access: **Signed in** · Story: `MVP1-E3-02`
+Access: **Signed in** · Scope: `extraction:read` · Story: `MVP1-E3-02`
 
 **Inputs**
 
@@ -269,7 +279,7 @@ Authorization: Bearer <access token>
 
 **Check values against a schema's rules.** Runs the same rule checks the job runs, on any set of values. An app uses it to re-check values after a person has corrected them.
 
-Access: **Signed in** · Story: `MVP1-E3-03`
+Access: **Signed in** · Scope: `extraction:write` · Story: `MVP1-E3-03`
 
 **Inputs**
 
@@ -277,7 +287,7 @@ Access: **Signed in** · Story: `MVP1-E3-03`
 |---|---|---|---|---|---|
 | `schema` | body | string | Yes | `invoice-v1`. | Which rules to apply. |
 | `values` | body | object | Yes | The schema's fields by name; `line_items` as an array of objects. Amounts as decimal strings. | The values to check. |
-| `file_id` | body | uuid | No | A ready file of the caller's. | When given, also checks that each `source_quote` in `values` appears in the file's text. |
+| `job_id` | body | uuid | No | A job of the caller's that read text. | When given, also checks that each `source_quote` in `values` appears in that job's saved page text, for scans and photos as well as text PDFs. Nothing is read again. |
 
 **Behaviour**
 
@@ -391,7 +401,7 @@ Content-Type: application/json
 
 **Recent jobs with cost and timing.** The last 100 jobs across all users, with tokens, cost and duration, and the failure rate. For the owner, to watch quality and spend.
 
-Access: **Admin** · Story: `MVP1-E3-05`
+Access: **Admin** · Scope: `is_admin` · Story: `MVP1-E3-05`
 
 **Inputs**
 
@@ -432,7 +442,7 @@ Authorization: Bearer <access token>
     {
       "id": "0193b0d1-4b2c-7d10-9a8b-1c2d3e4f5a6b",
       "status": "extracted",
-      "model": "claude-sonnet-5-5",
+      "model": "claude-opus-5-5",
       "prompt_version": "extract-invoice/v1",
       "pages": 2,
       "tokens_in": 6210,
@@ -456,7 +466,7 @@ Authorization: Bearer <access token>
 
 **Receive platform events.** Where other services' signed events arrive. In version 1 Extraction acts on one: a user's account was deleted, so their jobs and the values read from their documents go too.
 
-Access: **Service** · Story: `MVP1-E1-05`
+Access: **Service** · Scope: None: HMAC signature · Story: `MVP1-E1-05`
 
 **Inputs**
 

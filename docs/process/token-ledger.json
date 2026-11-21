@@ -1,38 +1,60 @@
 {
  "about": "One row per request (or part of a request, cut at a split time) in a Claude Code session. Tokens and cost are measured from the session transcript by scripts/costs/extract_session.py; the story, kind and summary are assigned by hand. A cost of null means the tool had not priced it yet. Each session's overhead is what the tool charged beyond the responses in the transcript.",
  "stories": {
-  "P0-SITE": "Phase 0 \u00b7 Site launch (home page, demos, theme)",
-  "DESIGN-ALL": "Design \u00b7 API and database for every story",
+  "P0-SITE": "Phase 0 · Site launch (home page, demos, theme)",
+  "DESIGN-ALL": "Design · API and database for every story",
   "ARCH": "Architecture decision and Architecture page",
-  "MVP1-E1": "MVP1-E1 \u00b7 Login design (Identity, version 1)",
-  "MVP1-E1-01": "MVP1-E1-01 \u00b7 Cognito setup guidance",
-  "MVP1-E0-10": "MVP1-E0-10 \u00b7 Products pages and navigation",
-  "MVP1-E0-11": "MVP1-E0-11 \u00b7 Product vision page",
-  "MVP1-E0-12": "MVP1-E0-12 \u00b7 Design skills and How It's Built",
-  "MVP1-E0-13": "MVP1-E0-13 \u00b7 Token cost tracking",
-  "MVP1-E2": "MVP1-E2 \u00b7 Upload design"
+  "MVP1-E1": "MVP1-E1 · Login design (Identity, version 1)",
+  "MVP1-E1-01": "MVP1-E1-01 · Cognito setup guidance",
+  "MVP1-E0-10": "MVP1-E0-10 · Products pages and navigation",
+  "MVP1-E0-11": "MVP1-E0-11 · Product vision page",
+  "MVP1-E0-12": "MVP1-E0-12 · Design skills and How It's Built",
+  "MVP1-E0-13": "MVP1-E0-13 · Token cost tracking",
+  "MVP1-E2": "MVP1-E2 · Upload design",
+  "MVP1-E3": "MVP1-E3 · Extraction design",
+  "MVP1-E4": "MVP1-E4 · Human Review design",
+  "MVP1-E5": "MVP1-E5 · DocFlow app design (JSON and CSV output)",
+  "MVP1-E6": "MVP1-E6 · Payment design",
+  "MVP1-E7": "MVP1-E7 · Delivery design",
+  "MVP1-E1-05": "MVP1-E1-05, E0-06 · Account management design",
+  "MVP1-E0-07": "MVP1-E0-07, E0-08 · Service template and gateway design",
+  "ARCH-REVIEW": "Architect skill and MVP1 architecture review"
  },
  "sessions": [
   {
    "id": "fdd431bb-4425-5e24-8859-562bd3231470",
-   "tool_total_usd": 92.9621,
+   "tool_total_usd": 116.4155,
    "rates_usd_per_million": {
     "claude-fable-5-2": {
      "input": 8.0,
      "output": 40.0,
      "cache_read": 0.2,
      "cache_write": 16.0
+    },
+    "claude-opus-5-5": {
+     "input": 4.0,
+     "output": 20.0,
+     "cache_read": 0.2,
+     "cache_write": 8.0
     }
    },
    "by_kind_usd": {
-    "input": 0.06,
-    "output": 15.57,
-    "cache_read": 13.59,
-    "cache_write": 55.62
+    "input": 0.08,
+    "output": 22.0,
+    "cache_read": 29.67,
+    "cache_write": 64.67
    },
-   "overhead_usd": 1.6455,
+   "overhead_usd": -2.4614,
    "splits": [
-    "2026-11-17T01:12:49Z"
+    "2026-11-17T01:12:49Z",
+    "2026-11-17T01:22:25Z",
+    "2026-11-17T01:31:21Z",
+    "2026-11-17T01:35:45Z",
+    "2026-11-17T01:39:37Z",
+    "2026-11-17T01:42:18Z",
+    "2026-11-17T01:45:23Z",
+    "2026-11-17T01:51:11Z",
+    "2026-11-17T01:55:33Z"
    ]
   }
  ],
@@ -695,7 +717,7 @@
    ],
    "tokens": 9488541,
    "output_tokens": 38191,
-   "cost_usd": 7.7346
+   "cost_usd": 7.3158
   },
   {
    "session": "fdd431bb",
@@ -709,7 +731,7 @@
    ],
    "tokens": 1320221,
    "output_tokens": 1588,
-   "cost_usd": 0.2017
+   "cost_usd": 0.2995
   },
   {
    "session": "fdd431bb",
@@ -723,7 +745,7 @@
    ],
    "tokens": 5404666,
    "output_tokens": 10549,
-   "cost_usd": null
+   "cost_usd": 1.4844
   },
   {
    "session": "fdd431bb",
@@ -735,9 +757,191 @@
    "models": [
     "claude-opus-5-5"
    ],
-   "tokens": 26957294,
-   "output_tokens": 70215,
-   "cost_usd": null
+   "tokens": 20858627,
+   "output_tokens": 58241,
+   "cost_usd": 5.8842
+  },
+  {
+   "session": "fdd431bb",
+   "n": 51,
+   "ts": "2026-11-17T01:22:25Z",
+   "area": "MVP1-E3",
+   "kind": "build",
+   "summary": "Extraction design: API spec, data model, schema, journeys, components, read me",
+   "models": [
+    "claude-opus-5-5"
+   ],
+   "tokens": 15653506,
+   "output_tokens": 50838,
+   "cost_usd": 4.6195
+  },
+  {
+   "session": "fdd431bb",
+   "n": 52,
+   "ts": "2026-11-17T01:31:21Z",
+   "area": "MVP1-E4",
+   "kind": "build",
+   "summary": "Human Review design: all six documents",
+   "models": [
+    "claude-opus-5-5"
+   ],
+   "tokens": 5810683,
+   "output_tokens": 26668,
+   "cost_usd": 1.8922
+  },
+  {
+   "session": "fdd431bb",
+   "n": 53,
+   "ts": "2026-11-17T01:35:45Z",
+   "area": "MVP1-E6",
+   "kind": "build",
+   "summary": "Payment design: all six documents, with a schema check fix",
+   "models": [
+    "claude-opus-5-5"
+   ],
+   "tokens": 5154747,
+   "output_tokens": 21440,
+   "cost_usd": 1.6607
+  },
+  {
+   "session": "fdd431bb",
+   "n": 54,
+   "ts": "2026-11-17T01:39:37Z",
+   "area": "MVP1-E7",
+   "kind": "build",
+   "summary": "Delivery design: all six documents",
+   "models": [
+    "claude-opus-5-5"
+   ],
+   "tokens": 3491642,
+   "output_tokens": 13548,
+   "cost_usd": 1.009
+  },
+  {
+   "session": "fdd431bb",
+   "n": 55,
+   "ts": "2026-11-17T01:42:18Z",
+   "area": "MVP1-E5",
+   "kind": "build",
+   "summary": "DocFlow app design (JSON and CSV output): all six documents",
+   "models": [
+    "claude-opus-5-5"
+   ],
+   "tokens": 2668470,
+   "output_tokens": 17297,
+   "cost_usd": 0.9813
+  },
+  {
+   "session": "fdd431bb",
+   "n": 56,
+   "ts": "2026-11-17T01:45:23Z",
+   "area": "MVP1-E1-05",
+   "kind": "build",
+   "summary": "Account management design (account page, API keys) and schema check for a service part",
+   "models": [
+    "claude-opus-5-5"
+   ],
+   "tokens": 1892303,
+   "output_tokens": 20689,
+   "cost_usd": 1.5268
+  },
+  {
+   "session": "fdd431bb",
+   "n": 57,
+   "ts": "2026-11-17T01:51:11Z",
+   "area": "MVP1-E0-07",
+   "kind": "build",
+   "summary": "Service template and gateway design documents",
+   "models": [
+    "claude-opus-5-5"
+   ],
+   "tokens": 1391192,
+   "output_tokens": 19776,
+   "cost_usd": 0.857
+  },
+  {
+   "session": "fdd431bb",
+   "n": 58,
+   "ts": "2026-11-17T01:55:33Z",
+   "area": "ARCH-REVIEW",
+   "kind": "build",
+   "summary": "Architect review skill: written",
+   "models": [
+    "claude-opus-5-5"
+   ],
+   "tokens": 1105127,
+   "output_tokens": 3689,
+   "cost_usd": 0.3418
+  },
+  {
+   "session": "fdd431bb",
+   "n": 59,
+   "ts": "2026-11-17T02:57:58.688Z",
+   "area": "ARCH-REVIEW",
+   "kind": "build",
+   "summary": "Architect review: mechanical checks, end-to-end review report, site and docs updates",
+   "models": [
+    "claude-opus-5-5"
+   ],
+   "tokens": 4698308,
+   "output_tokens": 24280,
+   "cost_usd": 2.7382
+  },
+  {
+   "session": "fdd431bb",
+   "n": 60,
+   "ts": "2026-11-17T03:57:45.974Z",
+   "area": "Process",
+   "kind": "scaffolding",
+   "summary": "Compare the two options for services acting for a person",
+   "models": [
+    "claude-opus-5-5"
+   ],
+   "tokens": 237395,
+   "output_tokens": 1213,
+   "cost_usd": 0.1106
+  },
+  {
+   "session": "fdd431bb",
+   "n": 61,
+   "ts": "2026-11-17T04:04:22.238Z",
+   "area": "Process",
+   "kind": "scaffolding",
+   "summary": "Record the delegated-token decision on the story and in the decision log",
+   "models": [
+    "claude-opus-5-5"
+   ],
+   "tokens": 1452152,
+   "output_tokens": 4351,
+   "cost_usd": 0.4302
+  },
+  {
+   "session": "fdd431bb",
+   "n": 62,
+   "ts": "2026-11-17T04:11:16.446Z",
+   "area": "Process",
+   "kind": "scaffolding",
+   "summary": "Record the gateway and event-routing decisions on their stories and in the decision log",
+   "models": [
+    "claude-opus-5-5"
+   ],
+   "tokens": 744217,
+   "output_tokens": 3761,
+   "cost_usd": 0.2508
+  },
+  {
+   "session": "fdd431bb",
+   "n": 63,
+   "ts": "2026-11-17T04:15:24.624Z",
+   "area": "ARCH-REVIEW",
+   "kind": "rework",
+   "summary": "Fix every review finding: Service access, scopes, template and gateway, services, DocFlow, architecture diagrams",
+   "models": [
+    "claude-opus-5-5"
+   ],
+   "tokens": 13212869,
+   "output_tokens": 49116,
+   "cost_usd": 4.2765
   }
  ]
 }

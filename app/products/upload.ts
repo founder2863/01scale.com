@@ -196,14 +196,6 @@ export const upload = {
           "meaning": "The calling app's own limits. DocFlow sends PDF, PNG and JPEG, 10 MB and 10 pages."
         },
         {
-          "name": "owner_id",
-          "in": "body",
-          "type": "uuid",
-          "required": "Only with Service access",
-          "constraints": "Rejected unless the caller has the `service` role.",
-          "meaning": "Lets an app's server store a file for a user, for example DocFlow saving the JSON and CSV results (MVP1-E5-04)."
-        },
-        {
           "name": "Idempotency-Key",
           "in": "header",
           "type": "string",
@@ -247,11 +239,6 @@ export const upload = {
           "when": "The same `Idempotency-Key` was sent with a different body."
         },
         {
-          "status": "403",
-          "code": "`service_only`",
-          "when": "`owner_id` was sent without the `service` role."
-        },
-        {
           "status": "401",
           "code": "`not_authenticated`",
           "when": "No valid access token."
@@ -263,7 +250,8 @@ export const upload = {
         }
       ],
       "request": "POST /api/upload/v1/files HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>\nIdempotency-Key: 8b1f6c2e-upload-1\nContent-Type: application/json\n\n{\n  \"file_name\": \"acme-invoice-0042.pdf\",\n  \"mime\": \"application/pdf\",\n  \"size\": 248913,\n  \"accept\": {\n    \"mimes\": [\n      \"application/pdf\",\n      \"image/png\",\n      \"image/jpeg\"\n    ],\n    \"max_bytes\": 10485760,\n    \"max_pages\": 10\n  }\n}",
-      "response": "{\n  \"file\": {\n    \"id\": \"0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b\",\n    \"file_name\": \"acme-invoice-0042.pdf\",\n    \"mime\": \"application/pdf\",\n    \"size_bytes\": 248913,\n    \"pages\": null,\n    \"status\": \"pending_upload\",\n    \"rejection_reason\": null,\n    \"sha256\": null,\n    \"created_at\": \"2026-11-17T09:14:07Z\",\n    \"completed_at\": null,\n    \"expires_at\": \"2026-12-17T09:14:07Z\"\n  },\n  \"upload\": {\n    \"url\": \"https://01scale-uploads.s3.us-east-1.amazonaws.com/users/0193a5b2-7c1e-7a3f-9b2d-4e6f8a1c2d3e/0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b/original.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAEXAMPLE%2F20261117%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261117T091407Z&X-Amz-Expires=300&X-Amz-SignedHeaders=content-length%3Bcontent-type%3Bhost&X-Amz-Signature=5f2c...\",\n    \"method\": \"PUT\",\n    \"headers\": {\n      \"Content-Type\": \"application/pdf\",\n      \"Content-Length\": \"248913\"\n    },\n    \"expires_at\": \"2026-11-17T09:19:07Z\"\n  }\n}"
+      "response": "{\n  \"file\": {\n    \"id\": \"0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b\",\n    \"file_name\": \"acme-invoice-0042.pdf\",\n    \"mime\": \"application/pdf\",\n    \"size_bytes\": 248913,\n    \"pages\": null,\n    \"status\": \"pending_upload\",\n    \"rejection_reason\": null,\n    \"sha256\": null,\n    \"created_at\": \"2026-11-17T09:14:07Z\",\n    \"completed_at\": null,\n    \"expires_at\": \"2026-12-17T09:14:07Z\"\n  },\n  \"upload\": {\n    \"url\": \"https://01scale-uploads.s3.us-east-1.amazonaws.com/users/0193a5b2-7c1e-7a3f-9b2d-4e6f8a1c2d3e/0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b/original.pdf?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAEXAMPLE%2F20261117%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261117T091407Z&X-Amz-Expires=300&X-Amz-SignedHeaders=content-length%3Bcontent-type%3Bhost&X-Amz-Signature=5f2c...\",\n    \"method\": \"PUT\",\n    \"headers\": {\n      \"Content-Type\": \"application/pdf\",\n      \"Content-Length\": \"248913\"\n    },\n    \"expires_at\": \"2026-11-17T09:19:07Z\"\n  }\n}",
+      "scope": "`upload:write`"
     },
     {
       "id": "complete-upload",
@@ -331,7 +319,8 @@ export const upload = {
         }
       ],
       "request": "POST /api/upload/v1/files/0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b/complete HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>",
-      "response": "{\n  \"file\": {\n    \"id\": \"0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b\",\n    \"file_name\": \"acme-invoice-0042.pdf\",\n    \"mime\": \"application/pdf\",\n    \"size_bytes\": 248913,\n    \"pages\": 2,\n    \"status\": \"ready\",\n    \"rejection_reason\": null,\n    \"sha256\": \"3a7bd3e2360a3d29eea436fcfb7e44c735d117c42d1c1835420b6b9942dd4f1b\",\n    \"created_at\": \"2026-11-17T09:14:07Z\",\n    \"completed_at\": \"2026-11-17T09:14:11Z\",\n    \"expires_at\": \"2026-12-17T09:14:07Z\"\n  }\n}"
+      "response": "{\n  \"file\": {\n    \"id\": \"0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b\",\n    \"file_name\": \"acme-invoice-0042.pdf\",\n    \"mime\": \"application/pdf\",\n    \"size_bytes\": 248913,\n    \"pages\": 2,\n    \"status\": \"ready\",\n    \"rejection_reason\": null,\n    \"sha256\": \"3a7bd3e2360a3d29eea436fcfb7e44c735d117c42d1c1835420b6b9942dd4f1b\",\n    \"created_at\": \"2026-11-17T09:14:07Z\",\n    \"completed_at\": \"2026-11-17T09:14:11Z\",\n    \"expires_at\": \"2026-12-17T09:14:07Z\"\n  }\n}",
+      "scope": "`upload:write`"
     },
     {
       "id": "get-file",
@@ -374,7 +363,8 @@ export const upload = {
         }
       ],
       "request": "GET /api/upload/v1/files/0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>",
-      "response": "{\n  \"file\": {\n    \"id\": \"0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b\",\n    \"file_name\": \"acme-invoice-0042.pdf\",\n    \"mime\": \"application/pdf\",\n    \"size_bytes\": 248913,\n    \"pages\": 2,\n    \"status\": \"ready\",\n    \"rejection_reason\": null,\n    \"sha256\": \"3a7bd3e2360a3d29eea436fcfb7e44c735d117c42d1c1835420b6b9942dd4f1b\",\n    \"created_at\": \"2026-11-17T09:14:07Z\",\n    \"completed_at\": \"2026-11-17T09:14:11Z\",\n    \"expires_at\": \"2026-12-17T09:14:07Z\"\n  }\n}"
+      "response": "{\n  \"file\": {\n    \"id\": \"0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b\",\n    \"file_name\": \"acme-invoice-0042.pdf\",\n    \"mime\": \"application/pdf\",\n    \"size_bytes\": 248913,\n    \"pages\": 2,\n    \"status\": \"ready\",\n    \"rejection_reason\": null,\n    \"sha256\": \"3a7bd3e2360a3d29eea436fcfb7e44c735d117c42d1c1835420b6b9942dd4f1b\",\n    \"created_at\": \"2026-11-17T09:14:07Z\",\n    \"completed_at\": \"2026-11-17T09:14:11Z\",\n    \"expires_at\": \"2026-12-17T09:14:07Z\"\n  }\n}",
+      "scope": "`upload:read`"
     },
     {
       "id": "list-files",
@@ -433,7 +423,8 @@ export const upload = {
         }
       ],
       "request": "GET /api/upload/v1/files?status=ready&limit=2 HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>",
-      "response": "{\n  \"data\": [\n    {\n      \"id\": \"0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b\",\n      \"file_name\": \"acme-invoice-0042.pdf\",\n      \"mime\": \"application/pdf\",\n      \"size_bytes\": 248913,\n      \"pages\": 2,\n      \"status\": \"ready\",\n      \"rejection_reason\": null,\n      \"sha256\": \"3a7bd3e2360a3d29eea436fcfb7e44c735d117c42d1c1835420b6b9942dd4f1b\",\n      \"created_at\": \"2026-11-17T09:14:07Z\",\n      \"completed_at\": \"2026-11-17T09:14:11Z\",\n      \"expires_at\": \"2026-12-17T09:14:07Z\"\n    }\n  ],\n  \"next_cursor\": null\n}"
+      "response": "{\n  \"data\": [\n    {\n      \"id\": \"0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b\",\n      \"file_name\": \"acme-invoice-0042.pdf\",\n      \"mime\": \"application/pdf\",\n      \"size_bytes\": 248913,\n      \"pages\": 2,\n      \"status\": \"ready\",\n      \"rejection_reason\": null,\n      \"sha256\": \"3a7bd3e2360a3d29eea436fcfb7e44c735d117c42d1c1835420b6b9942dd4f1b\",\n      \"created_at\": \"2026-11-17T09:14:07Z\",\n      \"completed_at\": \"2026-11-17T09:14:11Z\",\n      \"expires_at\": \"2026-12-17T09:14:07Z\"\n    }\n  ],\n  \"next_cursor\": null\n}",
+      "scope": "`upload:read`"
     },
     {
       "id": "download-url",
@@ -508,7 +499,8 @@ export const upload = {
         }
       ],
       "request": "GET /api/upload/v1/files/0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b/download-url?disposition=attachment HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>",
-      "response": "{\n  \"url\": \"https://01scale-uploads.s3.us-east-1.amazonaws.com/users/0193a5b2-7c1e-7a3f-9b2d-4e6f8a1c2d3e/0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b/original.pdf?response-content-disposition=attachment%3B%20filename%3D%22acme-invoice-0042.pdf%22&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAEXAMPLE%2F20261117%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261117T091407Z&X-Amz-Expires=300&X-Amz-SignedHeaders=host&X-Amz-Signature=5f2c...\",\n  \"expires_at\": \"2026-11-17T09:25:00Z\"\n}"
+      "response": "{\n  \"url\": \"https://01scale-uploads.s3.us-east-1.amazonaws.com/users/0193a5b2-7c1e-7a3f-9b2d-4e6f8a1c2d3e/0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b/original.pdf?response-content-disposition=attachment%3B%20filename%3D%22acme-invoice-0042.pdf%22&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAEXAMPLE%2F20261117%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20261117T091407Z&X-Amz-Expires=300&X-Amz-SignedHeaders=host&X-Amz-Signature=5f2c...\",\n  \"expires_at\": \"2026-11-17T09:25:00Z\"\n}",
+      "scope": "`upload:read`"
     },
     {
       "id": "delete-file",
@@ -557,7 +549,8 @@ export const upload = {
         }
       ],
       "request": "DELETE /api/upload/v1/files/0193b0c9-5f22-7a08-9e44-1a2b3c4d5e6f HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>",
-      "response": "HTTP/1.1 204 No Content"
+      "response": "HTTP/1.1 204 No Content",
+      "scope": "`upload:write`"
     },
     {
       "id": "events",
@@ -619,7 +612,8 @@ export const upload = {
         }
       ],
       "request": "POST /api/upload/v1/events HTTP/1.1\nX-01scale-Signature: sha256=8c1f...\nContent-Type: application/json\n\n{\n  \"event_id\": \"0193b2aa-6f01-7c2d-9e3f-4a5b6c7d8e9f\",\n  \"type\": \"identity.user.deleted\",\n  \"occurred_at\": \"2026-11-17T10:00:00Z\",\n  \"data\": {\n    \"user_id\": \"0193a5b2-7c1e-7a3f-9b2d-4e6f8a1c2d3e\"\n  }\n}",
-      "response": "HTTP/1.1 200 OK"
+      "response": "HTTP/1.1 200 OK",
+      "scope": "None: HMAC signature"
     }
   ],
   "noEndpoint": [
@@ -667,7 +661,7 @@ export const upload = {
           "nullable": "No",
           "default": "",
           "constraints": "",
-          "meaning": "The user who owns the file: the `sub` of the caller's access token, or `owner_id` sent by an app's server. A plain ID: Identity's tables are not reachable from here."
+          "meaning": "The user who owns the file: the `sub` of the caller's access token. An app storing a file for a user (DocFlow's results) uses a delegated token for that user. A plain ID: Identity's tables are not reachable from here."
         },
         {
           "name": "s3_key",
@@ -912,7 +906,7 @@ export const upload = {
         "`size` must be between 1 byte and 10 MB, and within `accept.max_bytes`.",
         "`accept` can only narrow the service's limits, never widen them.",
         "`file_name` is 1 to 255 characters, with no path separators or control characters; it is never used to build the storage key.",
-        "`owner_id` is accepted only from a caller with the `service` role.",
+        "The owner is always the token's user; an app storing a file for a user uses a delegated token (decision on #24).",
         "Another user's file always answers `404 file_not_found`, never `403`.",
         "Upload and download links last 5 minutes, and fix the type and size (upload) or type and filename (download) in their signature.",
         "`POST /files` accepts `Idempotency-Key`; `complete` and `DELETE` are idempotent by design.",
@@ -987,7 +981,8 @@ export const upload = {
   "openQuestions": [
     "Decided by Nikhil on 17 Nov 2026 (#64): these are demo services, with no batch or programmatic use yet. Each user may make 10 requests a minute that change something, on any service, and 60 reads a minute so pages and progress checks keep working; calls with an API key are limited to 10 a minute in total. Higher limits come with paid plans (`MVP2-E13-06`).",
     "Decided (#64): files are deleted after 30 days with no notice beforehand. The upload story says so, and each file's `expires_at` is returned with it.",
-    "Decided (#64): each uploaded file is its own file. Several photos of the pages of one invoice are several files, and several documents; joining them into one is not in this version."
+    "Decided (#64): each uploaded file is its own file. Several photos of the pages of one invoice are several files, and several documents; joining them into one is not in this version.",
+    "`FilePreview` renders PDFs in the browser (for example with PDF.js) from the 5-minute inline link; the file never passes through Upload's API. Which library is chosen when the component is built."
   ],
   "decisions": [],
   "journeys": [
@@ -1018,8 +1013,8 @@ export const upload = {
           "system": "Upload confirms the file arrived at the declared size, checks its first bytes match its type, and counts its pages."
         },
         {
-          "person": "Sees 'Uploaded' and is taken to the next step.",
-          "system": "The file is `ready`. The app that uses Upload moves on; in DocFlow, the extraction page opens."
+          "person": "Sees 'Uploaded' and a preview of the file, then continues.",
+          "system": "The file is `ready`. The app shows Upload's `FilePreview` for it and moves on when the person continues; in DocFlow, to the extraction page."
         }
       ],
       "outcome": "The file is stored privately, checked and ready to use. Only its owner can read it, through links that last 5 minutes."
@@ -1354,6 +1349,43 @@ export const upload = {
       ]
     },
     {
+      "name": "FilePreview",
+      "kind": "Component",
+      "purpose": "Shows a stored PDF page by page, or an image, inside the page, so a person can read the document beside other information. New: decided on #36 and confirmed on PR #65, used on DocFlow's upload screen (`MVP1-E2-04`) and extraction page (`MVP1-E3-04`), and by any other app.",
+      "props": [
+        {
+          "name": "fileId",
+          "type": "string",
+          "meaning": "The file."
+        },
+        {
+          "name": "page",
+          "type": "number, optional",
+          "meaning": "The page to show; changing it scrolls to that page. Default 1."
+        },
+        {
+          "name": "onPageChange",
+          "type": "(page) => void, optional",
+          "meaning": "Called when the person moves to another page."
+        },
+        {
+          "name": "highlight",
+          "type": "string, optional",
+          "meaning": "Text to mark on the shown page, for example a field's source quote. Ignored if not found."
+        }
+      ],
+      "states": [
+        "Loading: a placeholder of the document's shape",
+        "Shown: one page at a time with page number, previous and next, and zoom; an image fits the width",
+        "Link expired: fetches a new 5-minute link without a reload",
+        "Not available: 'This document is no longer available' when the file was deleted or expired after 30 days",
+        "Failed: the message and Retry"
+      ],
+      "calls": [
+        "`GET /files/{fileId}/download-url?disposition=inline`"
+      ]
+    },
+    {
       "name": "DeleteFileButton",
       "kind": "Component",
       "purpose": "Deletes a file after the person confirms.",
@@ -1385,6 +1417,7 @@ export const upload = {
     "Components call only the Upload API, plus the storage link that API hands out. They never call another service.",
     "An app can supply its own `create` and `complete` functions to wrap Upload in its own process (DocFlow does, to record the document as well). The components still know nothing about the app.",
     "They ship as the package `packages/ui-upload` and work in any app.",
+    "Each component works on its own, given its inputs and a signed-in person. It may depend on Identity's login component and on nothing else from another service (Nikhil's decision on #36). Pages place components side by side and pass values between them.",
     "No tokens in browser JavaScript: requests carry the HttpOnly session cookie and the gateway does the rest. Upload and download links are short-lived and fixed to one file.",
     "Every action works without dragging: a phone uses the file picker or the camera.",
     "Every request has a loading state that keeps the layout still, and a failure state with a plain-language message and a way to retry.",

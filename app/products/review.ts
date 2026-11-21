@@ -17,7 +17,7 @@ export const review = {
   "notStored": [
     "The document itself: only the quotes sent with each field.",
     "Document rules: re-checking values is the LLM Extraction service's job.",
-    "Ground-truth files: they are produced on export and handed over, not kept here."
+    "Exports of corrections: there are none. Only counts and rates leave this service (privacy rule on #41)."
   ],
   "overview": {
     "name": "Human Review",
@@ -26,8 +26,8 @@ export const review = {
     "base": "/api/review/v1",
     "what": [
       "Human Review is the platform service where a person checks the values the system is unsure about. In DocFlow it is the step between reading an invoice and producing the results.",
-      "An app sends it a set of values with their evidence and the reason each one was flagged. Review shows the uncertain ones first, records the person's decision on each (accept, correct, or not on the document) with a full history, and locks the values when the person finishes.",
-      "Every correction is also kept as a possible test case, so the model's real mistakes can be turned into ground truth for the eval set, after the owner approves them."
+      "An app sends it a set of values with their evidence and the reason each one was flagged. Review shows the uncertain ones first, records the person's decision on each (accept, correct, or not on the document) with a full history, and marks the review finished when the person is done. Values can still be corrected afterwards, and the latest values are the final document.",
+      "Every correction is also kept as a candidate model mistake, which the owner can approve inside the app. Only counts and rates are reported from them: no user's data ever leaves their account."
     ],
     "why": [
       {
@@ -51,9 +51,9 @@ export const review = {
       "Create a review from any set of values with their evidence and flags",
       "A queue of flagged values first, least certain first, with 'Show all fields'",
       "Accept, edit (checked by type) or mark not on the document, with full history",
-      "Complete only when every flagged value is decided; lock the values",
+      "Complete only when every flagged value is decided; correct values later, with every change recorded",
       "Record when a person confirms values that still fail a rule check",
-      "Keep corrections as eval candidates; admin approval and export as ground truth"
+      "Keep corrections as candidate model mistakes; admin approval and an accuracy report of counts only"
     ],
     "scope_out": [
       "Fixing values by describing the change in a chat: `MVP2-E11-03`",
@@ -88,11 +88,11 @@ export const review = {
     },
     {
       "who": "Human Review",
-      "what": "On `POST /tasks/{taskId}/complete`, locks the values, returns them and announces `review.task.completed`."
+      "what": "On `POST /tasks/{taskId}/complete`, marks the review finished, returns the values and announces `review.task.completed`. Later corrections are recorded the same way."
     },
     {
       "who": "Admin",
-      "what": "Later approves real mistakes and exports them as ground truth for the eval set."
+      "what": "Approves real model mistakes and reads the accuracy report, counts only."
     }
   ],
   "concepts": [
@@ -110,7 +110,7 @@ export const review = {
     },
     {
       "term": "Eval candidate",
-      "meaning": "A correction that could become a test case once an admin approves it."
+      "meaning": "A correction the admin can approve as a real model mistake. It stays in Review's database."
     },
     {
       "term": "Checks overridden",
@@ -264,7 +264,8 @@ export const review = {
         }
       ],
       "request": "POST /api/review/v1/tasks HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>\nIdempotency-Key: 4d2a-review-1\nContent-Type: application/json\n\n{\n  \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n  \"fields\": [\n    {\n      \"name\": \"vendor_name\",\n      \"type\": \"text\",\n      \"value\": \"Acme Supplies Ltd\",\n      \"confidence\": 0.97,\n      \"source_page\": 1,\n      \"source_quote\": \"Acme Supplies Ltd\",\n      \"flagged\": false,\n      \"flag_reasons\": []\n    },\n    {\n      \"name\": \"total\",\n      \"type\": \"decimal\",\n      \"value\": \"1240.00\",\n      \"confidence\": 0.3,\n      \"source_page\": 2,\n      \"source_quote\": \"TOTAL DUE  $1,240.00\",\n      \"flagged\": true,\n      \"flag_reasons\": [\n        \"Total \\u2260 subtotal + tax (1,150.00 + 80.00 = 1,230.00)\"\n      ]\n    }\n  ]\n}",
-      "response": "{\n  \"task\": {\n    \"id\": \"0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a2b\",\n    \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n    \"status\": \"open\",\n    \"resolved\": 0,\n    \"total\": 2,\n    \"flagged\": 1,\n    \"can_complete\": false,\n    \"checks_overridden\": false,\n    \"created_at\": \"2026-11-17T09:14:43Z\",\n    \"completed_at\": null\n  }\n}"
+      "response": "{\n  \"task\": {\n    \"id\": \"0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a2b\",\n    \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n    \"status\": \"open\",\n    \"resolved\": 0,\n    \"total\": 2,\n    \"flagged\": 1,\n    \"can_complete\": false,\n    \"checks_overridden\": false,\n    \"created_at\": \"2026-11-17T09:14:43Z\",\n    \"completed_at\": null\n  }\n}",
+      "scope": "`review:write`"
     },
     {
       "id": "get-task",
@@ -315,7 +316,8 @@ export const review = {
         }
       ],
       "request": "GET /api/review/v1/tasks/0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a2b HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>",
-      "response": "{\n  \"task\": {\n    \"id\": \"0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a2b\",\n    \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n    \"status\": \"open\",\n    \"resolved\": 1,\n    \"total\": 3,\n    \"flagged\": 2,\n    \"can_complete\": false,\n    \"checks_overridden\": false,\n    \"created_at\": \"2026-11-17T09:14:43Z\",\n    \"completed_at\": null\n  },\n  \"fields\": [\n    {\n      \"id\": \"0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a30\",\n      \"name\": \"total\",\n      \"line_index\": null,\n      \"type\": \"decimal\",\n      \"original_value\": \"1240.00\",\n      \"value\": \"1240.00\",\n      \"confidence\": 0.3,\n      \"source_page\": 2,\n      \"source_quote\": \"TOTAL DUE  $1,240.00\",\n      \"flagged\": true,\n      \"flag_reasons\": [\n        \"Total \\u2260 subtotal + tax (1,150.00 + 80.00 = 1,230.00)\"\n      ],\n      \"status\": \"pending\"\n    },\n    {\n      \"id\": \"0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a31\",\n      \"name\": \"vendor_tax_id\",\n      \"line_index\": null,\n      \"type\": \"text\",\n      \"original_value\": null,\n      \"value\": null,\n      \"confidence\": 0.62,\n      \"source_page\": null,\n      \"source_quote\": null,\n      \"flagged\": true,\n      \"flag_reasons\": [\n        \"Low confidence (0.62)\"\n      ],\n      \"status\": \"not_present\"\n    }\n  ]\n}"
+      "response": "{\n  \"task\": {\n    \"id\": \"0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a2b\",\n    \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n    \"status\": \"open\",\n    \"resolved\": 1,\n    \"total\": 3,\n    \"flagged\": 2,\n    \"can_complete\": false,\n    \"checks_overridden\": false,\n    \"created_at\": \"2026-11-17T09:14:43Z\",\n    \"completed_at\": null\n  },\n  \"fields\": [\n    {\n      \"id\": \"0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a30\",\n      \"name\": \"total\",\n      \"line_index\": null,\n      \"type\": \"decimal\",\n      \"original_value\": \"1240.00\",\n      \"value\": \"1240.00\",\n      \"confidence\": 0.3,\n      \"source_page\": 2,\n      \"source_quote\": \"TOTAL DUE  $1,240.00\",\n      \"flagged\": true,\n      \"flag_reasons\": [\n        \"Total \\u2260 subtotal + tax (1,150.00 + 80.00 = 1,230.00)\"\n      ],\n      \"status\": \"pending\"\n    },\n    {\n      \"id\": \"0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a31\",\n      \"name\": \"vendor_tax_id\",\n      \"line_index\": null,\n      \"type\": \"text\",\n      \"original_value\": null,\n      \"value\": null,\n      \"confidence\": 0.62,\n      \"source_page\": null,\n      \"source_quote\": null,\n      \"flagged\": true,\n      \"flag_reasons\": [\n        \"Low confidence (0.62)\"\n      ],\n      \"status\": \"not_present\"\n    }\n  ]\n}",
+      "scope": "`review:read`"
     },
     {
       "id": "update-field",
@@ -354,7 +356,8 @@ export const review = {
       "behaviour": [
         "`accept` keeps the value; `edit` replaces it; `not_present` empties it.",
         "Writes the old and new value, the action, who and when to the field's history, and records `review.field_updated`.",
-        "When the new value differs from the original, saves an eval candidate (`MVP1-E4-04`)."
+        "When the new value differs from the original, saves an eval candidate (`MVP1-E4-04`).",
+        "Also allowed after the task is completed, including after the app has charged for it (Nikhil's decision on #45): the change is recorded the same way, the task stays `completed`, and the latest values are the final document."
       ],
       "responses": [
         {
@@ -390,18 +393,14 @@ export const review = {
           "when": "`action` is unknown, or `value` is missing or sent when not allowed."
         },
         {
-          "status": "409",
-          "code": "`task_completed`",
-          "when": "The task is completed; its values are locked."
-        },
-        {
           "status": "401",
           "code": "`not_authenticated`",
           "when": "No valid access token."
         }
       ],
       "request": "PATCH /api/review/v1/tasks/0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a2b/fields/0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a30 HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>\nContent-Type: application/json\n\n{\n  \"action\": \"edit\",\n  \"value\": \"1230.00\"\n}",
-      "response": "{\n  \"field\": {\n    \"id\": \"0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a30\",\n    \"name\": \"total\",\n    \"line_index\": null,\n    \"type\": \"decimal\",\n    \"original_value\": \"1240.00\",\n    \"value\": \"1230.00\",\n    \"confidence\": 0.3,\n    \"source_page\": 2,\n    \"source_quote\": \"TOTAL DUE  $1,240.00\",\n    \"flagged\": true,\n    \"flag_reasons\": [\n      \"Total \\u2260 subtotal + tax (1,150.00 + 80.00 = 1,230.00)\"\n    ],\n    \"status\": \"edited\"\n  },\n  \"task\": {\n    \"resolved\": 2,\n    \"can_complete\": true\n  }\n}"
+      "response": "{\n  \"field\": {\n    \"id\": \"0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a30\",\n    \"name\": \"total\",\n    \"line_index\": null,\n    \"type\": \"decimal\",\n    \"original_value\": \"1240.00\",\n    \"value\": \"1230.00\",\n    \"confidence\": 0.3,\n    \"source_page\": 2,\n    \"source_quote\": \"TOTAL DUE  $1,240.00\",\n    \"flagged\": true,\n    \"flag_reasons\": [\n      \"Total \\u2260 subtotal + tax (1,150.00 + 80.00 = 1,230.00)\"\n    ],\n    \"status\": \"edited\"\n  },\n  \"task\": {\n    \"resolved\": 2,\n    \"can_complete\": true\n  }\n}",
+      "scope": "`review:write`"
     },
     {
       "id": "complete-task",
@@ -410,7 +409,7 @@ export const review = {
       "access": "Signed in",
       "story": "MVP1-E4-03",
       "title": "Complete the review",
-      "summary": "Locks the values and returns them. Allowed once every flagged field is decided. Re-checking the corrected values against the document's rules is the app's step before this, using the LLM Extraction service.",
+      "summary": "Marks the review finished and returns the values. Allowed once every flagged field is decided. Values can still be corrected afterwards, and every change is recorded. Re-checking the corrected values against the document's rules is the app's step before this, using the LLM Extraction service.",
       "params": [
         {
           "name": "taskId",
@@ -459,7 +458,8 @@ export const review = {
         }
       ],
       "request": "POST /api/review/v1/tasks/0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a2b/complete HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>\nContent-Type: application/json\n\n{\n  \"checks_overridden\": false\n}",
-      "response": "{\n  \"task\": {\n    \"id\": \"0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a2b\",\n    \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n    \"status\": \"completed\",\n    \"resolved\": 2,\n    \"total\": 3,\n    \"flagged\": 2,\n    \"can_complete\": true,\n    \"checks_overridden\": false,\n    \"created_at\": \"2026-11-17T09:14:43Z\",\n    \"completed_at\": \"2026-11-17T09:16:02Z\"\n  },\n  \"final_values\": [\n    {\n      \"name\": \"vendor_name\",\n      \"line_index\": null,\n      \"value\": \"Acme Supplies Ltd\"\n    },\n    {\n      \"name\": \"total\",\n      \"line_index\": null,\n      \"value\": \"1230.00\"\n    },\n    {\n      \"name\": \"vendor_tax_id\",\n      \"line_index\": null,\n      \"value\": null\n    }\n  ]\n}"
+      "response": "{\n  \"task\": {\n    \"id\": \"0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a2b\",\n    \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n    \"status\": \"completed\",\n    \"resolved\": 2,\n    \"total\": 3,\n    \"flagged\": 2,\n    \"can_complete\": true,\n    \"checks_overridden\": false,\n    \"created_at\": \"2026-11-17T09:14:43Z\",\n    \"completed_at\": \"2026-11-17T09:16:02Z\"\n  },\n  \"final_values\": [\n    {\n      \"name\": \"vendor_name\",\n      \"line_index\": null,\n      \"value\": \"Acme Supplies Ltd\"\n    },\n    {\n      \"name\": \"total\",\n      \"line_index\": null,\n      \"value\": \"1230.00\"\n    },\n    {\n      \"name\": \"vendor_tax_id\",\n      \"line_index\": null,\n      \"value\": null\n    }\n  ]\n}",
+      "scope": "`review:write`"
     },
     {
       "id": "list-candidates",
@@ -468,14 +468,14 @@ export const review = {
       "access": "Admin",
       "story": "MVP1-E4-04",
       "title": "Corrections that could become eval cases",
-      "summary": "Every value a person corrected, with what the model said, waiting for the owner to approve it as ground truth.",
+      "summary": "Every value a person corrected, with what the model said, for the owner to approve as a real model mistake. It is shown only inside the app, to the admin; it is never exported (Nikhil's decision on #41).",
       "params": [
         {
           "name": "status",
           "in": "query",
           "type": "string",
           "required": "No",
-          "constraints": "`candidate`, `approved`, `rejected` or `exported`. Default `candidate`.",
+          "constraints": "`candidate`, `approved` or `rejected`. Default `candidate`.",
           "meaning": "Which ones."
         },
         {
@@ -510,7 +510,8 @@ export const review = {
         }
       ],
       "request": "GET /api/review/v1/admin/eval-candidates?status=candidate HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>",
-      "response": "{\n  \"data\": [\n    {\n      \"id\": \"0193b101-aa00-7b01-8c02-0d03e04f05a6\",\n      \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n      \"field_name\": \"total\",\n      \"line_index\": null,\n      \"model_value\": \"1240.00\",\n      \"human_value\": \"1230.00\",\n      \"status\": \"candidate\",\n      \"created_at\": \"2026-11-17T09:15:30Z\"\n    }\n  ],\n  \"next_cursor\": null\n}"
+      "response": "{\n  \"data\": [\n    {\n      \"id\": \"0193b101-aa00-7b01-8c02-0d03e04f05a6\",\n      \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n      \"field_name\": \"total\",\n      \"line_index\": null,\n      \"model_value\": \"1240.00\",\n      \"human_value\": \"1230.00\",\n      \"status\": \"candidate\",\n      \"created_at\": \"2026-11-17T09:15:30Z\"\n    }\n  ],\n  \"next_cursor\": null\n}",
+      "scope": "`is_admin`"
     },
     {
       "id": "decide-candidate",
@@ -539,7 +540,7 @@ export const review = {
         }
       ],
       "behaviour": [
-        "Records the decision, who and when. An exported candidate cannot change."
+        "Records the decision, who and when. A decision can be changed later."
       ],
       "responses": [
         {
@@ -555,46 +556,50 @@ export const review = {
           "when": "No such candidate, or the caller is not an admin."
         },
         {
-          "status": "409",
-          "code": "`candidate_exported`",
-          "when": "Already exported."
-        },
-        {
           "status": "401",
           "code": "`not_authenticated`",
           "when": "No valid access token."
         }
       ],
       "request": "PATCH /api/review/v1/admin/eval-candidates/0193b101-aa00-7b01-8c02-0d03e04f05a6 HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>\nContent-Type: application/json\n\n{\n  \"status\": \"approved\"\n}",
-      "response": "{\n  \"candidate\": {\n    \"id\": \"0193b101-aa00-7b01-8c02-0d03e04f05a6\",\n    \"status\": \"approved\"\n  }\n}"
+      "response": "{\n  \"candidate\": {\n    \"id\": \"0193b101-aa00-7b01-8c02-0d03e04f05a6\",\n    \"status\": \"approved\"\n  }\n}",
+      "scope": "`is_admin`"
     },
     {
-      "id": "export-candidates",
-      "method": "POST",
-      "path": "/api/review/v1/admin/eval-candidates/export",
+      "id": "accuracy-report",
+      "method": "GET",
+      "path": "/api/review/v1/admin/accuracy",
       "access": "Admin",
       "story": "MVP1-E4-04",
-      "title": "Export approved corrections as ground truth",
-      "summary": "Produces ground-truth files for `evals/datasets/`, from approved candidates only.",
+      "title": "How often people correct each field",
+      "summary": "Replaces the export of corrections (Nikhil's decision on #41: a user's data never leaves their account). Numbers only: no values, no references, no user IDs.",
       "params": [
         {
-          "name": "candidate_ids",
-          "in": "body",
-          "type": "uuid[]",
-          "required": "Yes",
-          "constraints": "1 to 500 IDs, each `approved`.",
-          "meaning": "Which candidates to export."
+          "name": "since",
+          "in": "query",
+          "type": "date",
+          "required": "No",
+          "constraints": "Default: 30 days ago.",
+          "meaning": "Start of the period."
+        },
+        {
+          "name": "source",
+          "in": "query",
+          "type": "string",
+          "required": "No",
+          "constraints": "`all` (default) or `approved`.",
+          "meaning": "All corrections, or only those the admin approved as real model mistakes."
         }
       ],
       "behaviour": [
-        "Writes one ground-truth file per document reference, with the corrected values only, and returns 5-minute links to them.",
-        "Marks the candidates `exported`. The files hold field values, not the document; adding a document to the eval set is a separate, manual step."
+        "Read only. Counts per field name over the period: fields reviewed, flagged, corrected, marked not present, and approved mistakes; with the correction rate and the share of corrections that had been flagged (how well flagging catches mistakes).",
+        "Every count is shown as it is, however small (Nikhil's decision on #81: hiding small counts would make the report hard to test with few users). Rules that hide small groups come in MVP2 (`MVP2-E10-04`)."
       ],
       "responses": [
         {
           "status": "200",
-          "when": "Exported",
-          "body": "`files[]`: `name` and `url`."
+          "when": "The caller is an admin",
+          "body": "`since`, `totals` and `fields[]`, each with its counts and rates."
         }
       ],
       "errors": [
@@ -604,9 +609,9 @@ export const review = {
           "when": "The caller is not an admin."
         },
         {
-          "status": "409",
-          "code": "`candidate_not_approved`",
-          "when": "An ID is not `approved`; `ids[]` lists them."
+          "status": "422",
+          "code": "`validation_failed`",
+          "when": "`since` is not a date."
         },
         {
           "status": "401",
@@ -614,8 +619,9 @@ export const review = {
           "when": "No valid access token."
         }
       ],
-      "request": "POST /api/review/v1/admin/eval-candidates/export HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>\nContent-Type: application/json\n\n{\n  \"candidate_ids\": [\n    \"0193b101-aa00-7b01-8c02-0d03e04f05a6\"\n  ]\n}",
-      "response": "{\n  \"files\": [\n    {\n      \"name\": \"ground-truth-0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c.json\",\n      \"url\": \"https://01scale-uploads.s3.us-east-1.amazonaws.com/exports/ground-truth-....json?X-Amz-Expires=300&X-Amz-Signature=...\"\n    }\n  ]\n}"
+      "request": "GET /api/review/v1/admin/accuracy?since=2026-11-01 HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>",
+      "response": "{\n  \"since\": \"2026-11-01\",\n  \"totals\": {\n    \"tasks\": 42,\n    \"fields_reviewed\": 798,\n    \"corrected\": 37,\n    \"correction_rate\": 0.046,\n    \"corrections_flagged\": 0.92\n  },\n  \"fields\": [\n    {\n      \"name\": \"total\",\n      \"reviewed\": 42,\n      \"flagged\": 9,\n      \"corrected\": 6,\n      \"not_present\": 0,\n      \"approved_mistakes\": 5,\n      \"correction_rate\": 0.143\n    },\n    {\n      \"name\": \"vendor_tax_id\",\n      \"reviewed\": 42,\n      \"flagged\": 11,\n      \"corrected\": 3,\n      \"not_present\": 8,\n      \"approved_mistakes\": 2,\n      \"correction_rate\": 0.071\n    }\n  ]\n}",
+      "scope": "`is_admin`"
     },
     {
       "id": "events",
@@ -644,7 +650,7 @@ export const review = {
         }
       ],
       "behaviour": [
-        "Deletes that user's tasks, fields and history. Eval candidates already `approved` or `exported` are kept, without the user's ID: they hold one field's values, which the owner chose to keep as test data."
+        "Deletes that user's tasks, fields, history and eval candidates, approved ones included (Nikhil's decision on #41). Nothing of theirs is kept."
       ],
       "responses": [
         {
@@ -661,13 +667,14 @@ export const review = {
         }
       ],
       "request": "POST /api/review/v1/events HTTP/1.1\nX-01scale-Signature: sha256=8c1f...\nContent-Type: application/json\n\n{\n  \"event_id\": \"0193b2aa-6f01-7c2d-9e3f-4a5b6c7d8e9f\",\n  \"type\": \"identity.user.deleted\",\n  \"occurred_at\": \"2026-11-17T10:00:00Z\",\n  \"data\": {\n    \"user_id\": \"0193a5b2-7c1e-7a3f-9b2d-4e6f8a1c2d3e\"\n  }\n}",
-      "response": "HTTP/1.1 200 OK"
+      "response": "HTTP/1.1 200 OK",
+      "scope": "None: HMAC signature"
     }
   ],
   "noEndpoint": [
     {
       "topic": "Re-checking corrected values (MVP1-E4-03)",
-      "how": "The rule checks belong to the LLM Extraction service. The app calls its `POST /validations` with the corrected values before completing the task here, and passes `checks_overridden` if the person confirms values that still fail. Review itself knows no document rules."
+      "how": "The rule checks belong to the LLM Extraction service. The app calls LLM Extraction `POST /validations` with the corrected values before completing the task here, and passes `checks_overridden` if the person confirms values that still fail. Review itself knows no document rules."
     },
     {
       "topic": "Keyboard and touch (MVP1-E4-02 AC3)",
@@ -725,7 +732,7 @@ export const review = {
           "nullable": "No",
           "default": "'open'",
           "constraints": "`open` or `completed`",
-          "meaning": "Whether values can still change."
+          "meaning": "Whether the person has finished. Values can still be corrected after completion."
         },
         {
           "name": "checks_overridden",
@@ -1097,7 +1104,7 @@ export const review = {
     },
     {
       "name": "review.eval_candidates",
-      "purpose": "One row per value a person corrected, kept so the owner can turn real mistakes into test cases. Never added to the eval set without approval.",
+      "purpose": "One row per value a person corrected, so the owner can see the model's real mistakes. It never leaves this database: reports show only counts (privacy rule on #41).",
       "columns": [
         {
           "name": "id",
@@ -1110,10 +1117,10 @@ export const review = {
         {
           "name": "task_id",
           "type": "uuid",
-          "nullable": "Yes",
+          "nullable": "No",
           "default": "",
-          "constraints": "Empty after the owner's account is deleted",
-          "meaning": "The task it came from; no foreign key, so an approved candidate can outlive it."
+          "constraints": "Foreign key to `review.tasks`, delete cascades",
+          "meaning": "The task it came from; deleted with it, so nothing outlives the owner's account."
         },
         {
           "name": "reference",
@@ -1160,8 +1167,8 @@ export const review = {
           "type": "text",
           "nullable": "No",
           "default": "'candidate'",
-          "constraints": "`candidate`, `approved`, `rejected` or `exported`",
-          "meaning": "Where it is in the approval."
+          "constraints": "`candidate`, `approved` or `rejected`",
+          "meaning": "Whether the admin judged it a real model mistake."
         },
         {
           "name": "decided_by",
@@ -1193,7 +1200,8 @@ export const review = {
         "`eval_candidates_status_check`: only the listed values",
         "`eval_candidates_changed_check`: `human_value` is different from `model_value`",
         "`eval_candidates_decided_check`: `decided_by` and `decided_at` are set exactly when not `candidate`",
-        "`eval_candidates_task_field_idx`: unique (`task_id`, `field_name`, `line_index`) nulls not distinct where `task_id` is set, one candidate per corrected field",
+        "`eval_candidates_task_id_fkey`: foreign key to `review.tasks`, delete cascades",
+        "`eval_candidates_task_field_idx`: unique (`task_id`, `field_name`, `line_index`) nulls not distinct, one candidate per corrected field",
         "`eval_candidates_status_idx`: index on (`status`, `created_at`), for the admin list"
       ],
       "sampleCols": [
@@ -1279,10 +1287,10 @@ export const review = {
       "items": [
         "A task's fields arrive complete with their type, evidence and flags; Review fetches nothing from other services.",
         "An edit is checked by the field's type: a real date, a decimal with at most 4 places, an ISO 4217 code, or 1 to 500 characters of text.",
-        "A completed task's values are locked: changes answer `409 task_completed`.",
+        "A completed task's values can still be corrected; every change is recorded.",
         "A task completes only when no flagged field is `pending`.",
         "Another user's task answers `404 task_not_found`; admin endpoints answer `404 not_found` to anyone else.",
-        "Only `approved` candidates can be exported.",
+        "Admin reports show counts and rates only, to the admin alone; no correction is ever exported.",
         "`POST /tasks` accepts `Idempotency-Key`; `complete` is idempotent by design."
       ]
     },
@@ -1303,10 +1311,10 @@ export const review = {
         "Review owns its copy of every value. It never reads another service's data, and never changes the original it was sent.",
         "`original_value` never changes; `value` holds the decision. The difference between them is what a person corrected.",
         "Every decision writes a history row in the same transaction; history rows are never edited.",
-        "A task can be completed only when no flagged field is `pending`, and once completed its values never change.",
-        "A correction (a final value different from the original) creates exactly one eval candidate per field, updated if the person changes it again before completing.",
-        "A candidate becomes ground truth only after an admin approves it; only approved candidates are exported.",
-        "Deleting a user's account deletes their tasks, fields and history. Approved or exported candidates stay, without the task's ID."
+        "A task can be completed only when no flagged field is `pending`. After completion its values can still be corrected; every change is recorded, and the latest values are the final document.",
+        "A correction (a final value different from the original) creates exactly one eval candidate per field, updated if the person changes it again.",
+        "Candidates never leave this database. Reports built from them show counts and rates only, seen by the admin alone.",
+        "Deleting a user's account deletes their tasks, fields, history and eval candidates, approved ones included."
       ]
     }
   ],
@@ -1327,19 +1335,14 @@ export const review = {
       "secret": "Yes"
     },
     {
-      "name": "EVENT_SUBSCRIBERS",
-      "value": "The webhook addresses that receive Review's events",
-      "secret": "No"
-    },
-    {
-      "name": "EXPORT_BUCKET",
-      "value": "Where ground-truth exports are written, with 5-minute links",
+      "name": "EVENT_ROUTES",
+      "value": "From the service template: reference prefix → the app's event address (decision on #13)",
       "secret": "No"
     }
   ],
   "openQuestions": [
-    "Ground-truth exports need somewhere to write files. Upload is the natural place, but its files belong to users, not to the admin's exports. Use Upload with the service's own owner ID, or a separate bucket?",
-    "Should a person be able to undo a decision after completing, for example within a few minutes? Version 1 locks the values at once."
+    "Decided by Nikhil on 17 Nov 2026: values can be corrected after completion and after payment, and the latest values are final (#45, #40); corrections are never exported, only counted, and are deleted with the account (#41).",
+    "Decided by Nikhil on 20 Nov 2026 (#81): the accuracy report shows every count as it is in MVP1, so it can be tested with few users; it is seen only by the admin. Rules that hide small groups are MVP2 story `MVP2-E10-04`."
   ],
   "decisions": [],
   "journeys": [
@@ -1389,18 +1392,38 @@ export const review = {
         },
         {
           "person": "If every check passes: is taken to the results.",
-          "system": "The app completes the task in Review; the values are locked and Review announces that the task is completed."
+          "system": "The app completes the task in Review, which marks it finished and announces that the task is completed."
         },
         {
           "person": "If a check still fails: sees which one, for example 'Subtotal plus tax doesn't equal the total', with Fix it or 'Values are correct as on the document'.",
-          "system": "Nothing is locked yet."
+          "system": "Nothing is completed yet."
         },
         {
           "person": "Confirms the values are as printed.",
           "system": "The task is completed with `checks_overridden`, so the record shows the person chose to keep them."
         }
       ],
-      "outcome": "The values are final and ready for the results. Nothing can change them afterwards."
+      "outcome": "The values are ready for the results. The person can still correct them later; the latest values are the final document."
+    },
+    {
+      "name": "Correct a value after finishing",
+      "who": "Someone looking at their results, before or after paying",
+      "trigger": "Spots a wrong value on the results page.",
+      "stories": [
+        "MVP1-E4-02",
+        "MVP1-E5-04"
+      ],
+      "steps": [
+        {
+          "person": "Taps Edit beside the value, types the right one and saves.",
+          "system": "Review checks the value by its type and records the change with the old value, as during the review."
+        },
+        {
+          "person": "Sees the results with the corrected value.",
+          "system": "The app re-runs the rule checks and rebuilds the results from Review's latest values. No new payment is asked for."
+        }
+      ],
+      "outcome": "The corrected values are the final document, with the full history of changes kept."
     },
     {
       "name": "Review on a computer with the keyboard",
@@ -1442,11 +1465,11 @@ export const review = {
           "system": "Each decision is recorded with who and when."
         },
         {
-          "person": "Exports the approved ones.",
-          "system": "Review writes ground-truth files with the corrected values and returns links. The documents themselves are never added automatically."
+          "person": "Opens the accuracy report: per field, how often people corrected it and how many corrections had been flagged, as numbers only.",
+          "system": "Review counts its own records. No value, reference or user ID leaves the service."
         }
       ],
-      "outcome": "Real mistakes become test cases, so the next prompt change is measured against them."
+      "outcome": "The owner sees where the model makes real mistakes, without any user's data leaving their account. New prompts are tested on the synthetic eval set."
     }
   ],
   "edgeCases": [
@@ -1471,19 +1494,9 @@ export const review = {
       "code": "`fields_unresolved`"
     },
     {
-      "situation": "Edits after the review was completed, for example in a second tab",
-      "sees": "'This review is finished, so values can't change.'",
-      "code": "`task_completed`"
-    },
-    {
       "situation": "Follows a link to someone else's review",
       "sees": "'Not found.'",
       "code": "`task_not_found`"
-    },
-    {
-      "situation": "Exports a correction that was not approved",
-      "sees": "'Approve these first.' with the list.",
-      "code": "`candidate_not_approved`"
     },
     {
       "situation": "Is signed out",
@@ -1512,7 +1525,7 @@ export const review = {
         "Loading: placeholder rows",
         "Open: fields with their status",
         "All resolved: a short 'All checked' message",
-        "Completed: read-only values",
+        "Completed: marked 'Finished', values still editable",
         "Failed: 'Couldn't load this review.' and Retry"
       ],
       "calls": [
@@ -1601,7 +1614,7 @@ export const review = {
     {
       "name": "EvalCandidatesTable",
       "kind": "Component",
-      "purpose": "For an admin: corrections with both values, Approve and Reject, and Export for the approved ones.",
+      "purpose": "For an admin, inside the app: corrections with both values, Approve and Reject.",
       "props": [
         {
           "name": "status",
@@ -1613,15 +1626,35 @@ export const review = {
         "Loading",
         "Empty: 'No corrections waiting.'",
         "Loaded",
-        "Exporting",
-        "Exported: links to the files",
+        "Deciding",
         "Not an admin: 'Not found'",
         "Failed: Retry"
       ],
       "calls": [
         "`GET /admin/eval-candidates`",
-        "`PATCH /admin/eval-candidates/{candidateId}`",
-        "`POST /admin/eval-candidates/export`"
+        "`PATCH /admin/eval-candidates/{candidateId}`"
+      ]
+    },
+    {
+      "name": "AccuracyReport",
+      "kind": "Component",
+      "purpose": "For an admin: per field, how often people corrected it and how well flagging caught it, as numbers only.",
+      "props": [
+        {
+          "name": "since",
+          "type": "date, optional",
+          "meaning": "Start of the period. Default 30 days ago."
+        }
+      ],
+      "states": [
+        "Loading",
+        "Shown",
+        "Empty: 'No reviews in this period.'",
+        "Not an admin: 'Not found'",
+        "Failed: Retry"
+      ],
+      "calls": [
+        "`GET /admin/accuracy`"
       ]
     }
   ],
@@ -1657,7 +1690,7 @@ export const review = {
       "name": "Eval candidate",
       "table": "`review.eval_candidates`",
       "what": "A correction that could become a test case.",
-      "relations": "Came from a task, by ID only."
+      "relations": "Belongs to one task; deleted with it."
     },
     {
       "name": "Processed event",
@@ -1669,18 +1702,18 @@ export const review = {
   "lifecycles": [
     {
       "name": "Task",
-      "text": "`open` when created → `completed` when the person finishes. Never reopened."
+      "text": "`open` when created → `completed` when the person finishes → kept until the owner deletes their account. Fields can still be corrected after completion."
     },
     {
       "name": "Field",
-      "text": "`pending` → `accepted`, `edited` or `not_present`, and can change between those until the task is completed."
+      "text": "`pending` → `accepted`, `edited` or `not_present`, and can change between those at any time, also after completion. Each change adds a history row."
     },
     {
       "name": "Eval candidate",
-      "text": "`candidate` when a correction is made → `approved` or `rejected` by an admin → `exported` when written to a ground-truth file."
+      "text": "`candidate` when a correction is made → `approved` or `rejected` by an admin → deleted with its task or the owner's account."
     }
   ],
-  "ddl": "-- Human Review service, version 1. Schema: review.\n-- IDs are UUIDv7 values generated by the service.\n-- Checked with `npm run schema:check`: runs on PGlite, and every sample row passes every constraint.\n\ncreate schema if not exists review;\n\ncreate table review.tasks (\n  id                uuid        primary key,\n  owner_id          uuid        not null,\n  reference         text        not null,\n  status            text        not null default 'open',\n  checks_overridden boolean     not null default false,\n  created_at        timestamptz not null default now(),\n  completed_at      timestamptz,\n  completed_by      uuid,\n\n  constraint tasks_reference_check check (length(reference) between 1 and 200),\n  constraint tasks_status_check check (status in ('open', 'completed')),\n  constraint tasks_completed_check check (\n    (status = 'completed') = (completed_at is not null)\n    and (completed_at is null) = (completed_by is null)\n    and (completed_at is null or completed_at >= created_at)\n  )\n);\n\ncreate index tasks_owner_id_idx on review.tasks (owner_id, created_at desc);\n\ncreate table review.fields (\n  id             uuid         primary key,\n  task_id        uuid         not null,\n  name           text         not null,\n  line_index     smallint,\n  type           text         not null,\n  original_value jsonb,\n  value          jsonb,\n  confidence     numeric(3,2) not null,\n  source_page    smallint,\n  source_quote   text,\n  flagged        boolean      not null,\n  flag_reasons   text[]       not null default '{}',\n  status         text         not null default 'pending',\n  updated_by     uuid,\n  updated_at     timestamptz,\n\n  constraint fields_task_id_fkey foreign key (task_id)\n    references review.tasks (id) on delete cascade,\n  constraint fields_task_name_line_key unique nulls not distinct (task_id, name, line_index),\n  constraint fields_name_check check (length(name) between 1 and 64 and (line_index is null or line_index >= 0)),\n  constraint fields_type_check check (type in ('text', 'date', 'decimal', 'currency')),\n  constraint fields_status_check check (status in ('pending', 'accepted', 'edited', 'not_present')),\n  constraint fields_flagged_check check (flagged = (cardinality(flag_reasons) > 0)),\n  constraint fields_decided_check check (\n    (status <> 'pending') = (updated_by is not null)\n    and (updated_by is null) = (updated_at is null)\n  ),\n  constraint fields_not_present_check check (\n    (status <> 'not_present' or value is null)\n    and (status <> 'accepted' or value is not distinct from original_value)\n  ),\n  constraint fields_confidence_check check (confidence between 0 and 1 and (source_page is null or source_page >= 1)),\n  constraint fields_quote_check check (length(source_quote) between 1 and 500)\n);\n\n-- The queue: flagged first, then lowest confidence.\ncreate index fields_queue_idx on review.fields (task_id, flagged desc, confidence);\n\ncreate table review.field_changes (\n  id         uuid        primary key,\n  field_id   uuid        not null,\n  action     text        not null,\n  old_value  jsonb,\n  new_value  jsonb,\n  source     text        not null default 'review',\n  changed_by uuid        not null,\n  created_at timestamptz not null default now(),\n\n  constraint field_changes_field_id_fkey foreign key (field_id)\n    references review.fields (id) on delete cascade,\n  constraint field_changes_action_check check (action in ('accept', 'edit', 'not_present')),\n  constraint field_changes_source_check check (source in ('review'))\n);\n\ncreate index field_changes_field_id_idx on review.field_changes (field_id, created_at);\n\ncreate table review.eval_candidates (\n  id          uuid        primary key,\n  task_id     uuid,\n  reference   text        not null,\n  field_name  text        not null,\n  line_index  smallint,\n  model_value jsonb,\n  human_value jsonb,\n  status      text        not null default 'candidate',\n  decided_by  uuid,\n  decided_at  timestamptz,\n  created_at  timestamptz not null default now(),\n\n  constraint eval_candidates_reference_check check (length(reference) between 1 and 200 and length(field_name) between 1 and 64),\n  constraint eval_candidates_status_check check (status in ('candidate', 'approved', 'rejected', 'exported')),\n  constraint eval_candidates_changed_check check (human_value is distinct from model_value),\n  constraint eval_candidates_decided_check check (\n    (status <> 'candidate') = (decided_at is not null)\n    and (decided_at is null) = (decided_by is null)\n  )\n);\n\n-- One candidate per corrected field of a task; the admin list by status.\ncreate unique index eval_candidates_task_field_idx\n  on review.eval_candidates (task_id, field_name, line_index) nulls not distinct\n  where task_id is not null;\ncreate index eval_candidates_status_idx on review.eval_candidates (status, created_at);\n\ncreate table review.inbound_events (\n  event_id   uuid        primary key,\n  type       text        not null,\n  created_at timestamptz not null default now(),\n\n  constraint inbound_events_type_check check (length(type) between 1 and 100)\n);\n\n-- The service's database login reaches only this schema. History is never edited.\ngrant usage on schema review to review_service;\ngrant select, insert, update, delete on review.tasks, review.fields to review_service;\ngrant select, insert, delete on review.field_changes to review_service;\ngrant select, insert, update, delete on review.eval_candidates to review_service;\ngrant select, insert on review.inbound_events to review_service;\ngrant select, insert on review.audit_events to review_service;\n",
+  "ddl": "-- Human Review service, version 1. Schema: review.\n-- IDs are UUIDv7 values generated by the service.\n-- Checked with `npm run schema:check`: runs on PGlite, and every sample row passes every constraint.\n\ncreate schema if not exists review;\n\ncreate table review.tasks (\n  id                uuid        primary key,\n  owner_id          uuid        not null,\n  reference         text        not null,\n  status            text        not null default 'open',\n  checks_overridden boolean     not null default false,\n  created_at        timestamptz not null default now(),\n  completed_at      timestamptz,\n  completed_by      uuid,\n\n  constraint tasks_reference_check check (length(reference) between 1 and 200),\n  constraint tasks_status_check check (status in ('open', 'completed')),\n  constraint tasks_completed_check check (\n    (status = 'completed') = (completed_at is not null)\n    and (completed_at is null) = (completed_by is null)\n    and (completed_at is null or completed_at >= created_at)\n  )\n);\n\ncreate index tasks_owner_id_idx on review.tasks (owner_id, created_at desc);\n\ncreate table review.fields (\n  id             uuid         primary key,\n  task_id        uuid         not null,\n  name           text         not null,\n  line_index     smallint,\n  type           text         not null,\n  original_value jsonb,\n  value          jsonb,\n  confidence     numeric(3,2) not null,\n  source_page    smallint,\n  source_quote   text,\n  flagged        boolean      not null,\n  flag_reasons   text[]       not null default '{}',\n  status         text         not null default 'pending',\n  updated_by     uuid,\n  updated_at     timestamptz,\n\n  constraint fields_task_id_fkey foreign key (task_id)\n    references review.tasks (id) on delete cascade,\n  constraint fields_task_name_line_key unique nulls not distinct (task_id, name, line_index),\n  constraint fields_name_check check (length(name) between 1 and 64 and (line_index is null or line_index >= 0)),\n  constraint fields_type_check check (type in ('text', 'date', 'decimal', 'currency')),\n  constraint fields_status_check check (status in ('pending', 'accepted', 'edited', 'not_present')),\n  constraint fields_flagged_check check (flagged = (cardinality(flag_reasons) > 0)),\n  constraint fields_decided_check check (\n    (status <> 'pending') = (updated_by is not null)\n    and (updated_by is null) = (updated_at is null)\n  ),\n  constraint fields_not_present_check check (\n    (status <> 'not_present' or value is null)\n    and (status <> 'accepted' or value is not distinct from original_value)\n  ),\n  constraint fields_confidence_check check (confidence between 0 and 1 and (source_page is null or source_page >= 1)),\n  constraint fields_quote_check check (length(source_quote) between 1 and 500)\n);\n\n-- The queue: flagged first, then lowest confidence.\ncreate index fields_queue_idx on review.fields (task_id, flagged desc, confidence);\n\ncreate table review.field_changes (\n  id         uuid        primary key,\n  field_id   uuid        not null,\n  action     text        not null,\n  old_value  jsonb,\n  new_value  jsonb,\n  source     text        not null default 'review',\n  changed_by uuid        not null,\n  created_at timestamptz not null default now(),\n\n  constraint field_changes_field_id_fkey foreign key (field_id)\n    references review.fields (id) on delete cascade,\n  constraint field_changes_action_check check (action in ('accept', 'edit', 'not_present')),\n  constraint field_changes_source_check check (source in ('review'))\n);\n\ncreate index field_changes_field_id_idx on review.field_changes (field_id, created_at);\n\ncreate table review.eval_candidates (\n  id          uuid        primary key,\n  task_id     uuid        not null,\n  reference   text        not null,\n  field_name  text        not null,\n  line_index  smallint,\n  model_value jsonb,\n  human_value jsonb,\n  status      text        not null default 'candidate',\n  decided_by  uuid,\n  decided_at  timestamptz,\n  created_at  timestamptz not null default now(),\n\n  constraint eval_candidates_reference_check check (length(reference) between 1 and 200 and length(field_name) between 1 and 64),\n  constraint eval_candidates_task_id_fkey foreign key (task_id)\n    references review.tasks (id) on delete cascade,\n  constraint eval_candidates_status_check check (status in ('candidate', 'approved', 'rejected')),\n  constraint eval_candidates_changed_check check (human_value is distinct from model_value),\n  constraint eval_candidates_decided_check check (\n    (status <> 'candidate') = (decided_at is not null)\n    and (decided_at is null) = (decided_by is null)\n  )\n);\n\n-- One candidate per corrected field of a task; the admin list by status.\ncreate unique index eval_candidates_task_field_idx\n  on review.eval_candidates (task_id, field_name, line_index) nulls not distinct;\ncreate index eval_candidates_status_idx on review.eval_candidates (status, created_at);\n\ncreate table review.inbound_events (\n  event_id   uuid        primary key,\n  type       text        not null,\n  created_at timestamptz not null default now(),\n\n  constraint inbound_events_type_check check (length(type) between 1 and 100)\n);\n\n-- The service's database login reaches only this schema. History is never edited.\ngrant usage on schema review to review_service;\ngrant select, insert, update, delete on review.tasks, review.fields to review_service;\ngrant select, insert, delete on review.field_changes to review_service;\ngrant select, insert, update, delete on review.eval_candidates to review_service;\ngrant select, insert on review.inbound_events to review_service;\ngrant select, insert on review.audit_events to review_service;\n",
   "queries": [
     {
       "title": "The review queue (`GET /tasks/{taskId}`)",
@@ -1692,7 +1725,7 @@ export const review = {
     },
     {
       "title": "Record a correction as a candidate (in the same transaction as the edit)",
-      "sql": "insert into review.eval_candidates (id, task_id, reference, field_name, line_index, model_value, human_value)\nvalues ($1, $2, $3, $4, $5, $6, $7)\non conflict (task_id, field_name, line_index) where task_id is not null\ndo update set human_value = excluded.human_value;"
+      "sql": "insert into review.eval_candidates (id, task_id, reference, field_name, line_index, model_value, human_value)\nvalues ($1, $2, $3, $4, $5, $6, $7)\non conflict (task_id, field_name, line_index)\ndo update set human_value = excluded.human_value;"
     }
   ]
 };

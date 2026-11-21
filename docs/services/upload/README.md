@@ -116,15 +116,15 @@ const bytes = await (await fetch(url)).arrayBuffer();
 
 Base address: `https://01scale.com/api/upload/v1`
 
-| Method | Path | Access | Purpose |
-|---|---|---|---|
-| `POST` | `/files` | Signed in | Create a file and get an upload link |
-| `POST` | `/files/{fileId}/complete` | Signed in | Confirm the upload and check the file |
-| `GET` | `/files/{fileId}` | Signed in | Get one file |
-| `GET` | `/files` | Signed in | List my files |
-| `GET` | `/files/{fileId}/download-url` | Signed in | Get a link to read the file |
-| `DELETE` | `/files/{fileId}` | Signed in | Delete a file |
-| `POST` | `/events` | Service | Receive platform events |
+| Method | Path | Access | Scope | Purpose |
+|---|---|---|---|---|
+| `POST` | `/files` | Signed in | `upload:write` | Create a file and get an upload link |
+| `POST` | `/files/{fileId}/complete` | Signed in | `upload:write` | Confirm the upload and check the file |
+| `GET` | `/files/{fileId}` | Signed in | `upload:read` | Get one file |
+| `GET` | `/files` | Signed in | `upload:read` | List my files |
+| `GET` | `/files/{fileId}/download-url` | Signed in | `upload:read` | Get a link to read the file |
+| `DELETE` | `/files/{fileId}` | Signed in | `upload:write` | Delete a file |
+| `POST` | `/events` | Service | None: HMAC signature | Receive platform events |
 
 ## Configuration
 
@@ -145,3 +145,4 @@ Environment variables on the service's own deployment. Secrets are never committ
 - Decided by Nikhil on 17 Nov 2026 (#64): these are demo services, with no batch or programmatic use yet. Each user may make 10 requests a minute that change something, on any service, and 60 reads a minute so pages and progress checks keep working; calls with an API key are limited to 10 a minute in total. Higher limits come with paid plans (`MVP2-E13-06`).
 - Decided (#64): files are deleted after 30 days with no notice beforehand. The upload story says so, and each file's `expires_at` is returned with it.
 - Decided (#64): each uploaded file is its own file. Several photos of the pages of one invoice are several files, and several documents; joining them into one is not in this version.
+- `FilePreview` renders PDFs in the browser (for example with PDF.js) from the 5-minute inline link; the file never passes through Upload's API. Which library is chosen when the component is built.

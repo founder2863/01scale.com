@@ -74,7 +74,7 @@ As an AI agent acting for a user, I want to authenticate without a browser and d
   - `POST /api/identity/v1/api-keys` (signed in) — Create an API key for an agent or script. The secret is shown once. Body `{name, scopes[], expires_at?}` → `201 {api_key, secret}`. Session only: a key cannot create keys. Errors: `422`.
   - `DELETE /api/identity/v1/api-keys/{keyId}` (signed in) — Revoke an API key immediately. → `204`. Errors: `404`.
   - `POST /api/{service}/mcp` (signed in) — That service's MCP server: its operations exposed as tools for AI agents. Streamable HTTP. Tools map 1:1 to the service's OpenAPI `operationId`s and call the same service functions as the REST handlers.
-- **Database design:** `identity.api_keys` (id, owner_id, name, prefix, key_hash unique, scopes text[], last_used_at, expires_at, revoked_at, created_at). Only the SHA-256 hash of the secret is stored; `prefix` (first 8 characters) is kept for display.
+- **Database design:** `identity.api_keys` (id, user_id → users, name, prefix, key_hash unique, scopes text[], last_used_at, expires_at, revoked_at, created_at). Only the SHA-256 hash of the secret is stored; `prefix` (first 8 characters) is kept for display.
 
 ### MVP1-E0-07 · Service template — L
 As the owner, I want one template every service is built from, so each new service is mostly copying and all of them behave the same way.
@@ -85,6 +85,8 @@ As the owner, I want one template every service is built from, so each new servi
 - **AC5:** Outbound events are written in the same database transaction as the change (outbox) and delivered with an HMAC signature and retries.
 - **AC6:** Each service ships a UI package (`packages/ui-<name>`) of React components that call only its API, and a product page on 01scale.com built from the shared template (`MVP1-E0-10`): Read Me, Requirement EPIC, User Journey, UI Components, API Spec, Data Model and Schema, plus a try-it demo and its MCP tools once the service is live.
 - **AC7:** Every call to another service has a timeout and a safe retry; a service being down returns a clear `503` problem response, never corrupt data.
+- **AC8:** Calls to other services go through the gateway (decision on #21), with the caller's token, a service token or a delegated token (decision on #24). Every endpoint states the scope it needs.
+- **AC9:** An event goes only to the app that started the work, found by its `reference` prefix (`EVENT_ROUTES`); platform-wide events such as `identity.user.deleted` go to every service and app (decision on #13).
 - **Service:** Platform (service template)
 - **API design:** No endpoints of its own. The template gives every service the endpoints in E0-02, E0-05 and E0-06, access-token verification, the error format, and signed outbound events: `POST <subscriber_url>` with `{event_id, type, occurred_at, data}` and an `X-01scale-Signature` HMAC header, retried with backoff.
 - **Database design:** In every service's schema: `outbound_events` (id, type, payload jsonb, subscriber, status `pending|delivered|failed`, attempts, next_attempt_at, created_at). Events are written in the same transaction as the change they describe, then delivered (outbox pattern), so an event is never lost or sent for a change that rolled back.
@@ -92,7 +94,8 @@ As the owner, I want one template every service is built from, so each new servi
 ### MVP1-E0-08 · Gateway — M
 As a user or an agent, I want one address for the whole platform.
 - **AC1:** `01scale.com/api/{service}/…` is routed to the service that owns it. Services are not reachable by browsers at any other public address.
-- **AC2:** The gateway turns a session cookie or API key into a short-lived access token and forwards it; services never see cookies or API keys.
+- **AC2:** The gateway turns a session cookie or API key into a short-lived access token and forwards it; services never see cookies or API keys. An access token Identity already issued (a service or delegated token) is checked for signature and expiry and passed through unchanged.
+- **AC6:** Services and apps call each other through the gateway, like every other client (decision on #21).
 - **AC3:** `GET /api/openapi.json` returns one combined contract and `POST /api/mcp` one combined MCP server with tools namespaced by service.
 - **AC4:** The gateway applies rate limits per user and per IP, checks `Origin` on cookie-authenticated writes, and adds `X-Request-Id`. These are demo services, with no batch or programmatic use yet (Nikhil's decision on #64): each user may make 10 requests a minute that change something (POST, PUT, PATCH, DELETE), on any service, and 60 reads a minute so pages and progress checks keep working; calls with an API key are limited to 10 a minute in total. Sign-in endpoints keep their tighter limits per IP. Over a limit: `429 rate_limited` with `Retry-After`.
 - **AC5:** The gateway contains no business logic and no data.
@@ -106,13 +109,14 @@ As a user or an agent, I want one address for the whole platform.
 ### MVP1-E0-09 · DocFlow app shell — M
 As the owner, I want DocFlow to be a thin app that only connects platform services, so the next app can be built the same way.
 - **AC1:** `apps/docflow` holds the DocFlow pages, its own API under `/api/docflow/v1`, and one table of process records. It contains no identity, storage, extraction, review, payment or email logic.
-- **AC2:** DocFlow calls the services' APIs in a fixed order: upload → extraction → review → payment → delivery. It forwards the user's access token, so each service applies its own ownership checks.
+- **AC2:** DocFlow calls the services' APIs in a fixed order: upload → extraction → review → payment → delivery. It forwards the user's access token, or, for a step with no person present, a delegated token for them from Identity (decision on #24), so each service applies its own ownership checks. All calls go through the gateway (decision on #21).
 - **AC3:** DocFlow reacts to signed service events on its webhook (extraction finished, order paid, user deleted) and each event is processed once.
 - **AC4:** A boundary check fails the pipeline if a platform service refers to DocFlow.
+- **AC5:** DocFlow acts only on events about a document's current job or order, and every step can be retried after a failure halfway without doing it twice (review findings M4, M5).
 - **Service:** DocFlow app
 - **API design:**
   - `POST /api/docflow/v1/webhooks/{service}` (service) — Receives signed events from platform services and moves the process forward. HMAC-signed body `{event_id, type, occurred_at, data}` → `200`. Idempotent on `event_id`. Handles `extraction.job.completed|failed`, `payment.order.paid|expired|failed`, `identity.user.deleted`. Errors: `401` bad signature.
-- **Database design:** `docflow.documents` (id, owner_id, file_name, file_id, job_id, review_task_id, order_id, status `pending_upload|uploaded|rejected|extracting|extraction_failed|needs_review|reviewed|paid`, created_at). The process record: it holds only IDs of records owned by other services. `docflow.inbound_events` (event_id primary key, type, received_at) gives idempotency.
+- **Database design:** `docflow.documents` (id, owner_id, file_name, file_id, job_id, review_task_id, order_id, status `pending_upload|uploaded|rejected|extracting|extraction_failed|needs_review|reviewed|paid`, created_at). The process record: it holds only IDs of records owned by other services. `docflow.inbound_events` (event_id primary key, type, created_at) gives idempotency.
 
 ### MVP1-E0-10 · Site navigation and product page template — M
 As a hiring manager, I want every module to have its own page laid out the same way, on any device, so I can judge the product thinking quickly.
@@ -245,14 +249,15 @@ As a new user, I want to sign up with my email and password so I can use DocFlow
 - **AC2:** After sign-in, the app creates its own session cookie (HttpOnly, Secure, SameSite=Lax). Cognito tokens stay on the server and never reach browser JavaScript.
 - **AC3:** Sign-out clears the app session and calls Cognito's logout endpoint, so the next sign-in shows the login form.
 - **AC4:** `auth.signin` and `auth.signout` are audited.
+- **AC5:** A registered service or app can sign in as itself with a client secret, and a service allowed to act for users can exchange its token for a 5-minute token for one user, carrying `act` (decision on #24, `docs/decisions/MVP1-E1.md`). Delegated tokens never carry Identity scopes.
 - **Service:** Identity
 - **API design:**
   - `GET /api/identity/v1/auth/callback` (public) — OIDC redirect target: exchanges the code and creates the session. Query `code`, `state` → `302` to `return_to` with the session cookie set. Errors: `400` on `state`/`nonce` mismatch or unverified email.
   - `POST /api/identity/v1/auth/logout` (signed in) — End the current session and sign out of the identity provider. → `200 {logout_url}` (the client follows it to clear the provider session).
   - `GET /api/identity/v1/session` (signed in) — Who am I: the current session and user, or 401. → `200 {user: {id, email}, session: {expires_at}, auth: "session"|"api_key", scopes[]}`. Errors: `401`.
-  - `POST /api/identity/v1/token` (service) — Exchange a session cookie or API key for a short-lived access token (called by the gateway). → `200 {access_token, expires_in: 300}`. The token is a signed JWT with `sub`, `scopes`, `is_admin` and `aud`. Errors: `401`.
+  - `POST /api/identity/v1/token` (service) — Exchange a session cookie or API key for a short-lived access token (called by the gateway). → `200 {access_token, expires_in: 300}`. The token is a signed JWT with `sub`, `scopes`, `is_admin`, `aud` and `auth` (`session`, `api_key`, `service` or `delegated`). Also: `grant_type: client_credentials` (`client_id`, `client_secret`) → a service token with `app`; and `grant_type: urn:ietf:params:oauth:grant-type:token-exchange` with a service token and `on_behalf_of` → a delegated token with `act`. Errors: `401`, `403 delegation_not_allowed`, `404 user_not_found`.
   - `GET /api/identity/v1/jwks` (public) — The public keys services use to verify access tokens. → `200` JWKS. Cacheable; keys rotate with overlap so old tokens stay valid until they expire.
-- **Database design:** `identity.sessions` (id, user_id → users, token_hash unique, created_at, expires_at, revoked_at). `identity.signing_keys` (kid, public_jwk, private_key_encrypted, created_at, retired_at) for access tokens. The cookie holds a random token; only its SHA-256 hash is stored. Cognito tokens are not stored.
+- **Database design:** `identity.sessions` (id, user_id → users, token_hash unique, created_at, expires_at, revoked_at). `identity.signing_keys` (kid, public_jwk, private_key_encrypted, created_at, retired_at) for access tokens. The cookie holds a random token; only its SHA-256 hash is stored. Cognito tokens are not stored. `identity.service_clients` (id, secret_hash unique, scopes, act_scopes, created_at, rotated_at, revoked_at): registered services and apps, added only by migrations.
 
 ### MVP1-E1-04 · Forgot and reset password — S
 - **AC1:** Given I choose "Forgot password", when I enter my email, then Cognito sends a reset code. The page says the same thing whether or not the account exists.
@@ -271,6 +276,7 @@ As a user, I want to see and manage my account.
   - `GET /api/identity/v1/me` (signed in) — My account: email and joined date. → `200 {id, email, created_at}`.
   - `POST /api/identity/v1/me/password-change` (signed in) — Start a password change through the identity provider. → `200 {redirect_url}`; the provider returns the user to `/account?password_changed=1`. Session only.
   - `DELETE /api/identity/v1/me` (signed in) — Delete my account. Every service then deletes that user's data. Body `{confirm: "DELETE"}` → `202`, session cleared. Emits `identity.user.deleted`; each service deletes or anonymizes its own rows. Session only. Errors: `422`.
+  - `GET /api/identity/v1/users/{userId}` (service only, scope `identity:users.read`) — A user's verified email, for a service that writes to them (Delivery, `MVP1-E7-03`). → `200 {id, email}`. Errors: `404 user_not_found`, including for a deleted user. Added on PR #70.
   - `GET /api/docflow/v1/stats` (signed in) — My DocFlow totals for the account page. → `200 {documents_processed}`.
   - The account page is composed by the app: it reads `GET /api/identity/v1/me`, `GET /api/docflow/v1/stats` and `GET /api/payment/v1/orders`.
 - **Database design:** No new tables. Identity deletes the user's rows and emits `identity.user.deleted`; each service deletes its rows for that `owner_id`. Payment keeps orders with `owner_id` set to null.
@@ -350,7 +356,7 @@ As a user, I want to sign in with my Google account so I don't need another pass
 As Priya, I want to drag and drop or pick a file on my phone and see progress.
 - **AC1:** Drag and drop on desktop and the file picker on mobile both work, including the camera option on phones.
 - **AC2:** A progress bar shows upload percentage. On failure I see a retry button and a plain-language error.
-- **AC3:** After upload, I'm taken to the document's extraction page automatically.
+- **AC3:** Once the file is uploaded and checked, the upload screen shows its preview (Upload's `FilePreview` component) while extraction starts in the background; "Continue" takes me to the document's extraction page, which shows the same preview beside the fields (Nikhil's decision on PR #65).
 - **Note:** Uploaded files are deleted after 30 days. The person is not told beforehand (Nikhil's decision on #64).
 - **Note:** Each upload is its own file. Pages of one invoice uploaded separately, for example several photos, are separate files and separate documents (Nikhil's decision on #64).
 - **Service:** Upload (UI component), used by the DocFlow app
@@ -388,11 +394,13 @@ As Priya, I want to drag and drop or pick a file on my phone and see progress.
 - **AC2:** The output is forced into the invoice v1 schema (PRD §9) with a tool/JSON schema. Every field includes `value`, `confidence`, `source_page` and `source_quote`.
 - **AC3:** The model ID and prompt version are read from configuration and saved on the job.
 - **AC4:** The response is validated with zod. A schema failure triggers one repair attempt and then fails the job; invalid JSON is never stored.
+- **AC5:** Scanned PDFs and photos are in scope. Before extraction, the job reads each page's text: the PDF's text layer, or OCR by Claude when there is none or the file is an image. If no text is found, the job fails with `no_text_found` and the person sees "No text found" (Nikhil's decision on #34).
+- **AC6:** The default model is `claude-opus-5-5` (Nikhil's decision on #34).
 - **Evals:** EXT-1 schema validity, EXT-2 header field accuracy, EXT-3 line item F1, EXT-4 hallucination rate, EXT-7 latency, EXT-8 cost (see `EVALS.md`).
 - **Service:** LLM Extraction
 - **API design:**
   - `GET /api/extraction/v1/jobs/{jobId}/fields` (signed in) — The extracted fields with value, confidence and evidence. Query `flagged=true` → `200 {data: [Field]}`; `Field = {id, name, line_index?, value, confidence, model_confidence, source_page, source_quote, flagged, flag_reasons[]}`.
-  - Extraction itself has no endpoint: it runs inside the job started in E3-01. The job reads the file through Upload `GET /files/{fileId}/download-url`, forwarding the user's access token.
+  - Extraction itself has no endpoint: it runs inside the job started in E3-01. The job reads the file through Upload `GET /files/{fileId}/download-url` with a delegated token for the owner (decision on #24).
 - **Database design:** `extraction.jobs` adds model, prompt_version. `extraction.fields` (id, job_id → jobs, name, line_index null, value jsonb, model_confidence numeric(3,2), source_page, source_quote, created_at); unique `(job_id, name, line_index)`. These rows are the model's output and are never edited; human changes live in Review.
 
 ### MVP1-E3-03 · Rule checks and final confidence — M
@@ -400,15 +408,16 @@ As Priya, I want to drag and drop or pick a file on my phone and see progress.
 - **AC2:** Final confidence = the lower of model confidence and rule result (a failed check sets 0.3). Fields under the threshold (default 0.85) or failing a check are marked `flagged`.
 - **AC3:** Each flagged field stores the reason ("Total ≠ subtotal + tax", "Quote not found in document").
 - **AC4:** Unit tests cover every rule check, including rounding and missing-tax cases.
+- **AC5:** The source-quote check runs for scans and photos too, against the OCR text (decision on #35).
 - **Evals:** EXT-5 routing recall, EXT-6 flag rate.
 - **Service:** LLM Extraction
 - **API design:**
-  - `POST /api/extraction/v1/validations` (signed in) — Run the rule checks for a schema on a set of values. Body `{schema, values, file_id?}` → `200 {passed, checks: [{name, passed, fields[], message}]}`. Used after extraction and again on corrected data.
-- **Database design:** `extraction.fields` adds confidence numeric(3,2), flagged boolean, flag_reasons text[]. Index `extraction.fields(job_id) where flagged`.
+  - `POST /api/extraction/v1/validations` (signed in) — Run the rule checks for a schema on a set of values. Body `{schema, values, job_id?}` → `200 {passed, checks: [{name, passed, fields[], message}]}`. Used after extraction and again on corrected data.
+- **Database design:** `extraction.fields` adds confidence numeric(3,2), flagged boolean, flag_reasons text[]. Index `extraction.fields(job_id) where flagged`. `extraction.page_texts` (job_id → jobs, page, source `text_layer|ocr`, text, created_at): each page's text, for the quote check; deleted with the job.
 
 ### MVP1-E3-04 · Extraction page — M
 - **AC1:** While processing, the page shows status steps and polls every 2 seconds, without a full-page reload.
-- **AC2:** When done, the document preview (rendered PDF page or image) is on the left and the fields on the right, with confidence badges (green ≥ 0.85, amber 0.6–0.85, red < 0.6) and flagged fields highlighted.
+- **AC2:** When done, the document preview (rendered PDF page or image, Upload's `FilePreview` component, decided on #36) is on the left and the fields on the right, with confidence badges (green ≥ 0.85, amber 0.6–0.85, red < 0.6) and flagged fields highlighted.
 - **AC3:** Tapping a field shows its source quote and page. On desktop, the preview jumps to that page.
 - **AC4:** A "Review N flagged fields" button goes to E4. If nothing is flagged, "Continue to results" goes to E5.
 - **Service:** LLM Extraction (UI component), used by the DocFlow app
@@ -456,9 +465,10 @@ As a user, I want to ask a question in plain language across my processed invoic
 - **AC1:** Per field, I can accept, edit (with input checks: dates, numbers, currency code) or mark "Not on document".
 - **AC2:** Every change stores the original value, the new value, who changed it and when, and audits `review.field_updated`.
 - **AC3:** On desktop: Enter accepts, E edits, ↓ moves to the next field. On mobile: large tap targets.
+- **AC4:** Fields can still be corrected after the review is completed, including after payment; each change is recorded the same way, and the latest values are the final document (Nikhil's decision on #45).
 - **Service:** Human Review
 - **API design:**
-  - `PATCH /api/review/v1/tasks/{taskId}/fields/{fieldId}` (signed in) — Accept, edit or mark a field as not on the document. Body `{action: accept|edit|not_present, value?}` → `200 {field}`. Errors: `422` invalid date, number or currency; `409` if the task is locked.
+  - `PATCH /api/review/v1/tasks/{taskId}/fields/{fieldId}` (signed in) — Accept, edit or mark a field as not on the document. Body `{action: accept|edit|not_present, value?}` → `200 {field}`. Errors: `422` invalid date, number or currency. Allowed after completion (decision on #45).
 - **Database design:** `review.field_changes` (id, field_id → fields, old_value jsonb, new_value jsonb, action, source `review|chat`, changed_by, created_at) keeps the full history so any change can be traced or undone.
 
 ### MVP1-E4-03 · Complete review — S
@@ -468,17 +478,17 @@ As a user, I want to ask a question in plain language across my processed invoic
 - **Service:** Human Review; composed by the DocFlow app
 - **API design:**
   - `POST /api/review/v1/tasks/{taskId}/complete` (signed in) — Complete the task once every flagged field is resolved. Body `{checks_overridden?: boolean}` → `200 {task, final_values}`. Emits `review.task.completed`. Errors: `409` with `unresolved_fields[]`.
-  - `POST /api/docflow/v1/documents/{documentId}/complete-review` (signed in) — Finish review for a document: re-checks the corrected data and builds the outputs. Body `{confirm_failed_checks?: boolean}` → `200 {document}`. Calls Extraction `POST /validations`, then Review `complete`. Errors: `409` with `unresolved_fields[]` or `failed_checks[]`.
+  - `POST /api/docflow/v1/documents/{documentId}/complete-review` (signed in) — Finish review for a document: re-checks the corrected data and completes the Review task; results are built on demand afterwards (ARCHITECTURE.md §12.8). Body `{confirm_failed_checks?: boolean}` → `200 {document}`. Calls Extraction `POST /validations`, then Review `complete`. Errors: `409` with `unresolved_fields[]` or `failed_checks[]`.
 - **Database design:** Sets `review.tasks.status`, `completed_at`, `completed_by`, `checks_overridden` and `docflow.documents.status`.
 
 ### MVP1-E4-04 · Corrections feed the eval set — S
 - **AC1:** Each human correction is saved as a candidate eval case (document reference, field, model value, human value) in `eval_candidates`.
-- **AC2:** An admin export produces new ground-truth files for `evals/datasets/` after manual approval. Customer documents are never added automatically.
+- **AC2:** Approved corrections stay in Review's database; they are never exported to files or to the repository (Nikhil's decision on #41: the repository is public and one user's data must never be seen by another). Reports built from them show aggregates only, never values. Evals that test new prompts use only the synthetic and licensed datasets in `evals/`.
 - **Service:** Human Review
 - **API design:**
   - `GET /api/review/v1/admin/eval-candidates` (admin) — Human corrections waiting for approval as eval cases. Query `status`, `cursor` → `200 {data: [EvalCandidate], next_cursor}`.
-  - `POST /api/review/v1/admin/eval-candidates/export` (admin) — Export approved corrections as ground-truth files. Body `{candidate_ids[]}` → `200 {files: [{name, url}]}`. Only candidates with status `approved` are exported.
-- **Database design:** `review.eval_candidates` (id, task_id, reference, field_name, model_value jsonb, human_value jsonb, status `candidate|approved|rejected|exported`, created_at).
+  - `GET /api/review/v1/admin/accuracy` (admin) — How often people correct each field, as counts and rates only, seen by the admin alone (every count shown as it is, decided on #81). Query `since`, `source` → `200 {since, totals, fields[]}`. Replaces the export of corrections (decision on #41).
+- **Database design:** `review.eval_candidates` (id, task_id, reference, field_name, model_value jsonb, human_value jsonb, status `candidate|approved|rejected`, created_at). `task_id` references `review.tasks` with delete cascade, so candidates are deleted with the task and the account (decision on #41).
 
 ---
 
@@ -491,7 +501,7 @@ As a user, I want to ask a question in plain language across my processed invoic
 - **AC3:** The JSON preview has syntax highlighting and folding, and works on mobile.
 - **Service:** DocFlow app
 - **API design:**
-  - `GET /api/docflow/v1/documents/{documentId}/outputs` (signed in) — The outputs available for a document, and whether download is unlocked. → `200 {version, locked, formats: ["json", "csv"], generated_at}`.
+  - `GET /api/docflow/v1/documents/{documentId}/outputs` (signed in) — Results status: whether download is unlocked and whether the current values pass every check. → `200 {locked, formats: ["json", "csv"], checks: {passed, failed[]}, last_changed_at}`.
   - `GET /api/docflow/v1/documents/{documentId}/outputs/{format}/preview` (signed in) — Preview the JSON or CSV on screen before paying. `format = json|csv` → `200` with `application/json` (`{data, metadata}`) or `text/csv`, sent `Content-Disposition: inline`.
 - **Database design:** No new tables; the JSON is built from the review task's final values and the job's metadata, both read through their APIs.
 
@@ -509,15 +519,15 @@ As a user, I want to ask a question in plain language across my processed invoic
 - **AC2:** The download endpoints return 402 until the order is paid, enforced on the server.
 - **Service:** DocFlow app
 - **API design:**
-  - `GET /api/docflow/v1/documents/{documentId}/outputs/{format}/download` (signed in) — Download an output. Locked until the order is paid. → `302` to an Upload `download-url` (5 minutes, correct filename). Errors: `402` until the Payment order is `paid`, `404`.
+  - `GET /api/docflow/v1/documents/{documentId}/outputs/{format}/download` (signed in) — Download an output, built from Review's latest values. Locked until the order is paid. → `200` with the file as an attachment (`{document}-result.{format}`, `Cache-Control: no-store`). Errors: `402 payment_required`, `409 outputs_not_ready`.
 - **Database design:** No schema change; entitlement = the Payment order referenced by `docflow.documents.order_id` has status `paid`.
 
-### MVP1-E5-04 · Store outputs — S
-- **AC1:** On review completion, `result.json` and `result.csv` are written to `users/{userId}/{docId}/outputs/`.
-- **AC2:** If the user later edits fields, the outputs are regenerated and the version increments.
-- **Service:** DocFlow app (files stored through Upload)
-- **API design:** No new endpoints. DocFlow builds the files and stores them through Upload `POST /files` with a service token; `version` in `GET …/outputs` increments when they are regenerated.
-- **Database design:** `docflow.outputs` (id, document_id → documents, version, json_file_id, csv_file_id, created_at); unique `(document_id, version)`. The files themselves are `upload.files` rows owned by the user.
+### MVP1-E5-04 · Build outputs on demand — S
+- **AC1:** `result.json` and `result.csv` are never stored. Every preview and download builds them from Review's latest values and Extraction's metadata, so they always reflect the final document (Nikhil's decision on #45, ARCHITECTURE.md §12.8).
+- **AC2:** The person can correct values on the results page, before or after paying. Corrections are saved in Review with their history, the checks re-run, and the next preview or download shows them. No new payment is asked for.
+- **Service:** DocFlow app (values from Human Review, metadata from LLM Extraction)
+- **API design:** No new endpoints. Uses `GET …/outputs`, `…/preview` and `…/download` (E5-01, E5-03), which read Review `GET /tasks/{taskId}?all=true` and Extraction `GET /jobs/{jobId}`; corrections use Review `PATCH /tasks/{taskId}/fields/{fieldId}` through Review's component.
+- **Database design:** No tables: nothing is stored. The final values stay in `review.fields`, kept until the user deletes their account.
 
 ---
 
@@ -530,7 +540,7 @@ As a user, I want to ask a question in plain language across my processed invoic
 - **AC3:** A banner says "Test mode — use card 4242 4242 4242 4242, any future date, any CVC".
 - **Service:** Payment; composed by the DocFlow app
 - **API design:**
-  - `POST /api/payment/v1/orders` (service) — Create an order and a Stripe Checkout session. Called by an app's server, never the browser. Body `{user_id, reference, description, amount, currency, success_url, cancel_url}` → `201 {order, checkout_url}`; `200` with the open order for the same `reference`. Emits `payment.order.paid|expired|failed`.
+  - `POST /api/payment/v1/orders` (service) — Create an order and a Stripe Checkout session. Called by an app's server with a delegated token for the user who pays, never by the browser (decision on #24). Body `{reference, description, amount, currency, success_url, cancel_url}` → `201 {order, checkout_url}`; `200` with the open order for the same `reference`. Emits `payment.order.paid|expired|failed`.
   - `POST /api/docflow/v1/documents/{documentId}/checkout` (signed in) — Start payment for a document. → `201 {order_id, checkout_url}`. DocFlow sets the price and calls Payment `POST /orders`. Errors: `409` if already paid or not reviewed.
 - **Database design:** `payment.orders` (id, owner_id null, app, reference, description, stripe_session_id unique, amount, currency, status `pending|paid|expired|failed`, paid_at, created_at). Partial unique index on `(app, reference)` where status = `pending` prevents duplicate open orders. DocFlow stores the returned ID in `docflow.documents.order_id`.
 
@@ -541,7 +551,7 @@ As a user, I want to ask a question in plain language across my processed invoic
 - **AC4:** Also handles `checkout.session.expired` (order becomes `expired`) and async payment failure (order becomes `failed`).
 - **Service:** Payment
 - **API design:**
-  - `POST /api/payment/v1/webhooks/stripe` (service) — Stripe webhook: marks orders paid, expired or failed. Verifies `Stripe-Signature` → `200`. Already-processed event IDs return `200` with no change. Errors: `400` bad signature.
+  - `POST /api/payment/v1/webhooks/stripe` (service) — Stripe webhook: marks orders paid, expired or failed. Verifies `Stripe-Signature` → `200`. Already-processed event IDs return `200` with no change. Errors: `400 invalid_stripe_signature`.
 - **Database design:** `payment.stripe_events` (event_id primary key, type, processed_at) gives idempotency: insert first, skip if it already exists.
 
 ### MVP1-E6-03 · Payment page and states — S
@@ -554,6 +564,22 @@ As a user, I want to ask a question in plain language across my processed invoic
   - `GET /api/payment/v1/orders/{orderId}` (signed in) — Get one order, for payment and success pages to poll. → `200 {order: {id, reference, description, amount, currency, status: pending|paid|expired|failed}}`.
   - The page also calls DocFlow `POST …/checkout` (E6-01).
 - **Database design:** No schema change.
+
+### MVP1-E6-04 · Refunds — S
+**Status: pending.** Decided on PR #67: refunds are not in the first version of Payment; this story adds them.
+As the owner, I want to refund a paid order in full, so a demo user who was charged by mistake (in test mode) can be put right, and the platform shows how a refund flows through every service.
+- **AC1:** An admin can refund a paid order in full from the admin page, with a reason. A person always does this: it is session only and never available to API keys or agents.
+- **AC2:** Payment creates the refund in Stripe with the order's ID as the idempotency key, so a repeated request never refunds twice. The order becomes `refunded` when Stripe's webhook confirms it (`charge.refunded`), not when the request is sent.
+- **AC3:** Payment announces `payment.order.refunded` to the app that created the order (routed by reference, decision on #13). In DocFlow, the document's downloads lock again and its status shows "Refunded"; the reviewed data stays.
+- **AC4:** The person who paid is emailed through Delivery that the refund was made, with the amount; Stripe's own refund receipt still applies.
+- **AC5:** A refund is audited (`order.refunded`) with the admin, the reason and the amount. Partial refunds are not in this version.
+- **AC6:** Refunding an order that is not paid answers `409 not_paid`; refunding it again answers `409 already_refunded`.
+- **Service:** Payment; DocFlow reacts to the event; Delivery sends the email
+- **API design:**
+  - `POST /api/payment/v1/orders/{orderId}/refund` (admin, session only) — Refund a paid order in full. Body `{reason}` + `Idempotency-Key` → `202 {order}` with status `refund_pending`. Errors: `409 not_paid`, `409 already_refunded`, `503 stripe_unavailable`.
+  - The Stripe webhook (`MVP1-E6-02`) also handles `charge.refunded`.
+  - DocFlow's webhook handles `payment.order.refunded`.
+- **Database design:** `payment.orders.status` adds `refund_pending` and `refunded`; the order adds `refund_reason`, `stripe_refund_id` (unique) and `refunded_at`. `docflow.documents.status` adds `refunded`.
 
 ---
 
@@ -569,10 +595,10 @@ As a user, I want to ask a question in plain language across my processed invoic
 - **Database design:** No schema change.
 
 ### MVP1-E7-02 · Secure downloads — S
-- **AC1:** Each download checks on the server that the user owns the document and the order is paid, then redirects to a presigned GET URL valid for 5 minutes, with the right filename.
+- **AC1:** Each download checks on the server that the user owns the document and the order is paid, then returns the file built from Review's latest values, with the right filename and `Cache-Control: no-store`. A generated result is a few kilobytes and never stored, so it is returned directly; stored files such as uploads still move only by short-lived presigned links.
 - **AC2:** `delivery.downloaded` is audited.
-- **Service:** DocFlow app (links from Upload)
-- **API design:** Uses DocFlow `GET …/outputs/{format}/download` (E5-03), which checks the Payment order and redirects to an Upload `download-url`.
+- **Service:** DocFlow app
+- **API design:** Uses DocFlow `GET …/outputs/{format}/download` (E5-03), which checks the Payment order and returns the file.
 - **Database design:** No schema change.
 
 ### MVP1-E7-03 · Email delivery — M
@@ -581,9 +607,10 @@ As a user, I want to ask a question in plain language across my processed invoic
 - **AC3:** The email passes SPF/DKIM for the sending domain (Resend domain verification for 01scale.com), with plain-text and HTML versions.
 - **Service:** Delivery; triggered by the DocFlow app
 - **API design:**
-  - `POST /api/delivery/v1/messages` (service) — Send a templated email to a user. Called by an app's server. Body `{user_id, template, data, reference}` + `Idempotency-Key` → `202 {message}`. Retries 3 times with backoff. Emits `delivery.message.failed` on permanent failure.
+  - `POST /api/delivery/v1/messages` (service) — Send a templated email to a user. Called by an app's server with a delegated token for the recipient (decision on #24). Body `{template, data, reference}` + `Idempotency-Key` → `202 {message}`. Retries 3 times with backoff. Emits `delivery.message.failed` on permanent failure.
   - `GET /api/delivery/v1/messages` (signed in) — My messages and their delivery status. Query `reference`, `cursor` → `200 {data: [{id, channel, template, status: queued|sent|failed, attempts, sent_at}], next_cursor}`.
   - DocFlow calls `POST /messages` when it receives `payment.order.paid` on its webhook (E0-09), so the email is triggered by the server, not the browser.
+  - Delivery reads the recipient's verified address at send time with Identity `GET /api/identity/v1/users/{userId}` (service only, scope `identity:users.read`; designed with `MVP1-E1-05`). Decided by Nikhil on PR #68; the address is never passed in a request or an event.
 - **Database design:** `delivery.messages` (id, owner_id, app, reference, channel `email`, template, status `queued|sent|failed`, attempts, provider_message_id, last_error, sent_at, created_at). The recipient address is read from Identity at send time, not stored.
 
 ---

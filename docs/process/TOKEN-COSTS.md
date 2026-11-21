@@ -2,7 +2,7 @@
 
 What it costs to build 01scale with Claude Code, per story. Generated from `docs/process/token-ledger.json` by `npm run costs`; do not edit by hand.
 
-Updated 2026-11-17. 50 requests across 1 session(s). Total **$92.78** for 107.9 million tokens.
+Updated 2026-11-17. 63 requests across 1 session(s). Total **$116.42** for 159.3 million tokens.
 
 ## Per story
 
@@ -11,13 +11,21 @@ Updated 2026-11-17. 50 requests across 1 session(s). Total **$92.78** for 107.9 
 | Phase 0 · Site launch (home page, demos, theme) | 7 | 5.09M | $2.65 | $0.70 | $3.35 | 78% |
 | Design · API and database for every story | 2 | 9.80M | $3.08 | $8.09 | $11.17 | 22% |
 | Architecture decision and Architecture page | 3 | 6.79M | $3.07 | $0.00 | $3.07 | 100% |
-| MVP1-E1 · Login design (Identity, version 1) | 6 | 13.64M | $9.90 | $7.80 | $17.70 (part pending) | 38% |
+| MVP1-E1 · Login design (Identity, version 1) | 6 | 13.64M | $9.90 | $9.28 | $19.18 | 38% |
 | MVP1-E1-01 · Cognito setup guidance | 4 | 3.17M | $1.00 | $0.00 | $1.00 | 100% |
 | MVP1-E0-10 · Products pages and navigation | 1 | 7.75M | $4.87 | $0.00 | $4.87 | 100% |
 | MVP1-E0-11 · Product vision page | 3 | 9.08M | $2.45 | $0.95 | $3.40 | 66% |
 | MVP1-E0-12 · Design skills and How It's Built | 3 | 5.19M | $20.66 | $0.00 | $20.66 | 100% |
-| MVP1-E0-13 · Token cost tracking | 1 | 9.49M | $7.73 | $0.00 | $7.73 | 100% |
-| MVP1-E2 · Upload design | 1 | 26.96M | $0.00 | $0.00 | $0.00 (part pending) | 100% |
+| MVP1-E0-13 · Token cost tracking | 1 | 9.49M | $7.32 | $0.00 | $7.32 | 100% |
+| MVP1-E2 · Upload design | 1 | 20.86M | $5.88 | $0.00 | $5.88 | 100% |
+| MVP1-E3 · Extraction design | 1 | 15.65M | $4.62 | $0.00 | $4.62 | 100% |
+| MVP1-E4 · Human Review design | 1 | 5.81M | $1.89 | $0.00 | $1.89 | 100% |
+| MVP1-E5 · DocFlow app design (JSON and CSV output) | 1 | 2.67M | $0.98 | $0.00 | $0.98 | 100% |
+| MVP1-E6 · Payment design | 1 | 5.15M | $1.66 | $0.00 | $1.66 | 100% |
+| MVP1-E7 · Delivery design | 1 | 3.49M | $1.01 | $0.00 | $1.01 | 100% |
+| MVP1-E1-05, E0-06 · Account management design | 1 | 1.89M | $1.53 | $0.00 | $1.53 | 100% |
+| MVP1-E0-07, E0-08 · Service template and gateway design | 1 | 1.39M | $0.86 | $0.00 | $0.86 | 100% |
+| Architect skill and MVP1 architecture review | 3 | 19.02M | $3.08 | $4.28 | $7.36 | 31% |
 
 ## Scaffolding (not tied to a story)
 
@@ -27,13 +35,13 @@ Updated 2026-11-17. 50 requests across 1 session(s). Total **$92.78** for 107.9 
 | Planning documents | 2 | 1.35M | $0.72 |
 | Questions and explanations | 4 | 1.68M | $6.50 |
 | Product discovery | 8 | 2.64M | $9.61 |
-| Process | 2 | 1.74M | $0.31 |
-| Tool overhead (background calls) | 0 | 0.00M | $1.65 |
+| Process | 5 | 4.17M | $1.20 |
+| Tool overhead (background calls) | 0 | 0.00M | $-2.46 |
 
 ## Totals
 
-- Build $55.41, rework $17.54, scaffolding $19.83.
-- Token yield across stories (build ÷ build + rework): 79%.
+- Build $76.51, rework $23.30, scaffolding $16.61.
+- Token yield across stories (build ÷ build + rework): 77%.
 - Share of all tokens that went into kept story work: 71%.
 
 ## Definitions

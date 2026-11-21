@@ -31,6 +31,7 @@ Nikhil is a platform & AI product leader (17+ years: identity, payments, integra
 | Design rules shared by the design skills | `docs/process/DESIGN-RULES.md` (skills in `.claude/skills/`) |
 | Token cost ledger and table | `docs/process/token-ledger.json`, `docs/process/TOKEN-COSTS.md` |
 | Eval plan (LLM outputs) | `docs/evals/EVALS.md` |
+| Architecture reviews (skill `review-architecture`) | `docs/architecture/reviews/<date>-<phase>.md` |
 | Decision log per epic | `docs/decisions/<EPIC-ID>.md` |
 | Prompts (versioned) | `prompts/<name>/v<N>.md` |
 | Eval datasets & reports | `evals/datasets/`, `evals/reports/` |
@@ -48,6 +49,7 @@ Nikhil is a platform & AI product leader (17+ years: identity, payments, integra
   - MVP2: **build identity by hand.** No auth vendors or full auth frameworks (no Auth0, Clerk, Cognito, Better Auth, NextAuth). Allowed low-level libraries: `@node-rs/argon2` (password hashing), `jose` (JWT/JWS), `@simplewebauthn/*` (passkeys), Node `crypto`, Resend (email sending).
 - **Spec first.** Build from the story's acceptance criteria. If a story is ambiguous, add the question to the PR description instead of guessing silently.
 - **Decision log.** Record options and trade-offs in `docs/decisions/<EPIC-ID>.md`.
+- **User data stays private (Nikhil's rule for every component).** A user's data never leaves that user's account: it is never seen by another user and never written to the public repository (code, docs, datasets, fixtures, eval reports, logs, issues or PR comments). Test data in the repository is synthetic or public with a clear licence. Real users' corrections stay in the owning service's database; anything published from them is aggregate only, never values.
 - **Secure by default.** Store only hashes of tokens and passwords. Use HttpOnly + Secure + SameSite cookies. Keep S3 private, with short-lived presigned URLs. Verify webhook signatures. Rate-limit auth endpoints and never reveal whether an email exists. Write audit log entries for auth, review, payment and delivery events. Use OWASP ASVS as the checklist. Never log document contents or PII.
 - **LLM features ship with evals.** Thresholds are in `docs/evals/EVALS.md`. A prompt or model change must include an eval report in the PR.
 - **Never trust the model blindly.** Validate every LLM output against a schema, check it with deterministic rules, and route low confidence to a human.

@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { costs } from "../costs";
 import { designSkillCount, rulesHref, skillOrder, skills } from "../skills";
 import { builtTabs, type BuiltTab } from "../tabs";
+import YieldExplainer from "../yield-explainer";
 
 const REPO = "https://github.com/founder2863/01scale.com/blob/main";
 
@@ -83,7 +84,7 @@ export default async function HowItsBuilt({ params }: { params: Promise<Params> 
         {tab === "skills" && (
         <section id="skills">
           <h2 className="group-title">
-            Skills <span className="status">Written, first run pending</span>
+            Skills <span className="status">In use</span>
           </h2>
           <p className="note">
             A skill is a playbook for one task: what to read first, what to
@@ -94,10 +95,10 @@ export default async function HowItsBuilt({ params }: { params: Promise<Params> 
             Designing a module means producing the same seven documents each
             time, so I split that work into one skill per document, plus one
             that runs them in order, {designSkillCount} in all. A ninth records
-            what each story cost. They were written from how the{" "}
+            what each story cost, and a tenth reviews the whole design as an
+            architect, across every module. They were written from how the{" "}
             <Link href="/products/login-using-aws">Login using AWS</Link>{" "}
-            module was designed. Their first run on a new module is the next
-            step.
+            module was designed, then used to design every other MVP1 module.
           </p>
 
           <h3 className="section-subtitle">The order they run in</h3>
@@ -202,6 +203,8 @@ export default async function HowItsBuilt({ params }: { params: Promise<Params> 
               <span className="stat-label">Token yield across stories</span>
             </div>
           </div>
+
+          <YieldExplainer />
 
           <h3 className="section-subtitle">Per story</h3>
           <table className="cost-table">

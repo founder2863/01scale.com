@@ -20,7 +20,7 @@ export const extraction = {
     "schema": "The SQL for the LLM Extraction service's tables, in the `extraction` schema. No other service can read them."
   },
   "notStored": [
-    "The document itself: it stays in the Upload service.",
+    "The document itself: it stays in the Upload service. Only its page text is kept, for the quote check.",
     "The model's raw answer: only the validated fields are saved, so invalid output is never kept.",
     "The prompt text on each job: only its version; the text lives in `prompts/`.",
     "Document content in logs: logs carry IDs, counts and timings only."
@@ -54,7 +54,8 @@ export const extraction = {
       }
     ],
     "scope_in": [
-      "Read one document of up to 10 pages (PDF, PNG or JPEG) into the invoice v1 fields",
+      "Read one document of up to 10 pages (PDF, PNG or JPEG) into the invoice v1 fields, including scanned PDFs and photos, which are read by OCR",
+      "'No text found' when a document has no readable text",
       "A confidence score, page and quote for every value",
       "Rule checks: amounts, dates, currency, required fields and quotes",
       "Flag fields below the threshold or failing a check, with reasons",
@@ -205,7 +206,9 @@ export const extraction = {
         "Checks the file through Upload, forwarding the caller's access token, so only the caller's own ready files can be read.",
         "If a job for this file and schema is `queued` or `processing`, returns it with `200`. Nothing new is started or charged.",
         "Otherwise records a job as `queued`, with the model ID and prompt version from configuration, and returns `202`.",
-        "The job then runs in the background: fetch the file through a 5-minute Upload link, send it to Claude, check the answer, apply the rule checks, and save the fields.",
+        "The job then runs in the background: with a delegated token for the owner, fetch the file through a 5-minute Upload link, and read its text. A PDF with a text layer gives its text directly; a scanned PDF or a photo is read by OCR (Claude transcribing each page, in a call separate from extraction so the quote check stays independent). Each page's text is saved for the quote check.",
+        "If no text is found on any page, the job fails with `no_text_found` and the message 'No text found'. It is not retryable: the same file would give the same result.",
+        "Otherwise it sends the document to Claude with the versioned prompt, checks the answer against the schema, applies the rule checks (including every quote against the saved text, for photos and scans too), and saves the fields.",
         "Temporary failures (rate limit, timeout, overload) are retried up to 2 times, after 2 and then 8 seconds. After that the job is `failed`.",
         "When the job ends, announces `extraction.job.completed` or `extraction.job.failed` to subscribed apps, and records `job.completed` or `job.failed` in the audit log."
       ],
@@ -259,7 +262,8 @@ export const extraction = {
         }
       ],
       "request": "POST /api/extraction/v1/jobs HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>\nContent-Type: application/json\n\n{\n  \"file_id\": \"0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b\",\n  \"schema\": \"invoice-v1\",\n  \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\"\n}",
-      "response": "HTTP/1.1 202 Accepted\nLocation: /api/extraction/v1/jobs/0193b0d1-4b2c-7d10-9a8b-1c2d3e4f5a6b\nRetry-After: 2\nContent-Type: application/json\n\n{\n  \"job\": {\n    \"id\": \"0193b0d1-4b2c-7d10-9a8b-1c2d3e4f5a6b\",\n    \"file_id\": \"0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b\",\n    \"schema\": \"invoice-v1\",\n    \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n    \"status\": \"queued\",\n    \"steps\": [\n      {\n        \"name\": \"fetching_file\",\n        \"state\": \"waiting\"\n      },\n      {\n        \"name\": \"reading_document\",\n        \"state\": \"waiting\"\n      },\n      {\n        \"name\": \"checking_rules\",\n        \"state\": \"waiting\"\n      },\n      {\n        \"name\": \"saving\",\n        \"state\": \"waiting\"\n      }\n    ],\n    \"fields_total\": null,\n    \"fields_flagged\": null,\n    \"error_code\": null,\n    \"error_message\": null,\n    \"retryable\": false,\n    \"created_at\": \"2026-11-17T09:14:12Z\",\n    \"finished_at\": null\n  }\n}"
+      "response": "HTTP/1.1 202 Accepted\nLocation: /api/extraction/v1/jobs/0193b0d1-4b2c-7d10-9a8b-1c2d3e4f5a6b\nRetry-After: 2\nContent-Type: application/json\n\n{\n  \"job\": {\n    \"id\": \"0193b0d1-4b2c-7d10-9a8b-1c2d3e4f5a6b\",\n    \"file_id\": \"0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b\",\n    \"schema\": \"invoice-v1\",\n    \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n    \"status\": \"queued\",\n    \"steps\": [\n      {\n        \"name\": \"fetching_file\",\n        \"state\": \"waiting\"\n      },\n      {\n        \"name\": \"reading_text\",\n        \"state\": \"waiting\"\n      },\n      {\n        \"name\": \"reading_document\",\n        \"state\": \"waiting\"\n      },\n      {\n        \"name\": \"checking_rules\",\n        \"state\": \"waiting\"\n      },\n      {\n        \"name\": \"saving\",\n        \"state\": \"waiting\"\n      }\n    ],\n    \"fields_total\": null,\n    \"fields_flagged\": null,\n    \"error_code\": null,\n    \"error_message\": null,\n    \"retryable\": false,\n    \"created_at\": \"2026-11-17T09:14:12Z\",\n    \"finished_at\": null\n  }\n}",
+      "scope": "`extraction:write`"
     },
     {
       "id": "get-job",
@@ -281,7 +285,7 @@ export const extraction = {
       ],
       "behaviour": [
         "Read only.",
-        "`steps[]` lists `fetching_file`, `reading_document`, `checking_rules`, `saving`, each `waiting`, `running`, `done` or `failed`.",
+        "`steps[]` lists `fetching_file`, `reading_text`, `reading_document`, `checking_rules`, `saving`, each `waiting`, `running`, `done` or `failed`.",
         "A failed job has `error_code`, a plain-language `error_message`, and `retryable`: true when starting a new job may succeed.",
         "Sends `Retry-After: 2` while the job is `queued` or `processing`."
       ],
@@ -305,7 +309,8 @@ export const extraction = {
         }
       ],
       "request": "GET /api/extraction/v1/jobs/0193b0d1-4b2c-7d10-9a8b-1c2d3e4f5a6b HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>",
-      "response": "{\n  \"job\": {\n    \"id\": \"0193b0d1-4b2c-7d10-9a8b-1c2d3e4f5a6b\",\n    \"file_id\": \"0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b\",\n    \"schema\": \"invoice-v1\",\n    \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n    \"status\": \"extracted\",\n    \"steps\": [\n      {\n        \"name\": \"fetching_file\",\n        \"state\": \"done\"\n      },\n      {\n        \"name\": \"reading_document\",\n        \"state\": \"done\"\n      },\n      {\n        \"name\": \"checking_rules\",\n        \"state\": \"done\"\n      },\n      {\n        \"name\": \"saving\",\n        \"state\": \"done\"\n      }\n    ],\n    \"fields_total\": 19,\n    \"fields_flagged\": 3,\n    \"error_code\": null,\n    \"error_message\": null,\n    \"retryable\": false,\n    \"created_at\": \"2026-11-17T09:14:12Z\",\n    \"finished_at\": \"2026-11-17T09:14:41Z\"\n  }\n}"
+      "response": "{\n  \"job\": {\n    \"id\": \"0193b0d1-4b2c-7d10-9a8b-1c2d3e4f5a6b\",\n    \"file_id\": \"0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b\",\n    \"schema\": \"invoice-v1\",\n    \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n    \"status\": \"extracted\",\n    \"steps\": [\n      {\n        \"name\": \"fetching_file\",\n        \"state\": \"done\"\n      },\n      {\n        \"name\": \"reading_text\",\n        \"state\": \"done\"\n      },\n      {\n        \"name\": \"reading_document\",\n        \"state\": \"done\"\n      },\n      {\n        \"name\": \"checking_rules\",\n        \"state\": \"done\"\n      },\n      {\n        \"name\": \"saving\",\n        \"state\": \"done\"\n      }\n    ],\n    \"fields_total\": 19,\n    \"fields_flagged\": 3,\n    \"error_code\": null,\n    \"error_message\": null,\n    \"retryable\": false,\n    \"created_at\": \"2026-11-17T09:14:12Z\",\n    \"finished_at\": \"2026-11-17T09:14:41Z\"\n  }\n}",
+      "scope": "`extraction:read`"
     },
     {
       "id": "get-fields",
@@ -363,7 +368,8 @@ export const extraction = {
         }
       ],
       "request": "GET /api/extraction/v1/jobs/0193b0d1-4b2c-7d10-9a8b-1c2d3e4f5a6b/fields?flagged=true HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>",
-      "response": "{\n  \"data\": [\n    {\n      \"id\": \"0193b0d2-1f00-7a01-8b02-0c03d04e05f6\",\n      \"name\": \"total\",\n      \"line_index\": null,\n      \"value\": \"1240.00\",\n      \"confidence\": 0.3,\n      \"model_confidence\": 0.92,\n      \"source_page\": 2,\n      \"source_quote\": \"TOTAL DUE  $1,240.00\",\n      \"flagged\": true,\n      \"flag_reasons\": [\n        \"Total \\u2260 subtotal + tax (1,150.00 + 80.00 = 1,230.00)\"\n      ]\n    }\n  ]\n}"
+      "response": "{\n  \"data\": [\n    {\n      \"id\": \"0193b0d2-1f00-7a01-8b02-0c03d04e05f6\",\n      \"name\": \"total\",\n      \"line_index\": null,\n      \"value\": \"1240.00\",\n      \"confidence\": 0.3,\n      \"model_confidence\": 0.92,\n      \"source_page\": 2,\n      \"source_quote\": \"TOTAL DUE  $1,240.00\",\n      \"flagged\": true,\n      \"flag_reasons\": [\n        \"Total \\u2260 subtotal + tax (1,150.00 + 80.00 = 1,230.00)\"\n      ]\n    }\n  ]\n}",
+      "scope": "`extraction:read`"
     },
     {
       "id": "validate",
@@ -391,12 +397,12 @@ export const extraction = {
           "meaning": "The values to check."
         },
         {
-          "name": "file_id",
+          "name": "job_id",
           "in": "body",
           "type": "uuid",
           "required": "No",
-          "constraints": "A ready file of the caller's.",
-          "meaning": "When given, also checks that each `source_quote` in `values` appears in the file's text."
+          "constraints": "A job of the caller's that read text.",
+          "meaning": "When given, also checks that each `source_quote` in `values` appears in that job's saved page text, for scans and photos as well as text PDFs. Nothing is read again."
         }
       ],
       "behaviour": [
@@ -428,7 +434,8 @@ export const extraction = {
         }
       ],
       "request": "POST /api/extraction/v1/validations HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>\nContent-Type: application/json\n\n{\n  \"schema\": \"invoice-v1\",\n  \"values\": {\n    \"vendor_name\": \"Acme Supplies Ltd\",\n    \"invoice_number\": \"INV-0042\",\n    \"invoice_date\": \"2026-11-02\",\n    \"due_date\": \"2026-12-02\",\n    \"currency\": \"USD\",\n    \"subtotal\": \"1150.00\",\n    \"tax_total\": \"80.00\",\n    \"total\": \"1230.00\",\n    \"line_items\": [\n      {\n        \"description\": \"Paper, A4\",\n        \"quantity\": \"10\",\n        \"unit_price\": \"115.00\",\n        \"amount\": \"1150.00\"\n      }\n    ]\n  }\n}",
-      "response": "{\n  \"passed\": true,\n  \"checks\": [\n    {\n      \"name\": \"line_amounts_match_subtotal\",\n      \"passed\": true,\n      \"fields\": [\n        \"line_items\",\n        \"subtotal\"\n      ],\n      \"message\": \"Line amounts add up to the subtotal.\"\n    },\n    {\n      \"name\": \"subtotal_plus_tax_is_total\",\n      \"passed\": true,\n      \"fields\": [\n        \"subtotal\",\n        \"tax_total\",\n        \"total\"\n      ],\n      \"message\": \"Subtotal plus tax equals the total.\"\n    },\n    {\n      \"name\": \"dates_valid\",\n      \"passed\": true,\n      \"fields\": [\n        \"invoice_date\",\n        \"due_date\"\n      ],\n      \"message\": \"Dates are valid and the due date is after the invoice date.\"\n    },\n    {\n      \"name\": \"currency_valid\",\n      \"passed\": true,\n      \"fields\": [\n        \"currency\"\n      ],\n      \"message\": \"USD is a valid currency.\"\n    },\n    {\n      \"name\": \"required_present\",\n      \"passed\": true,\n      \"fields\": [\n        \"vendor_name\",\n        \"invoice_number\",\n        \"invoice_date\",\n        \"currency\",\n        \"total\"\n      ],\n      \"message\": \"All required fields are present.\"\n    }\n  ]\n}"
+      "response": "{\n  \"passed\": true,\n  \"checks\": [\n    {\n      \"name\": \"line_amounts_match_subtotal\",\n      \"passed\": true,\n      \"fields\": [\n        \"line_items\",\n        \"subtotal\"\n      ],\n      \"message\": \"Line amounts add up to the subtotal.\"\n    },\n    {\n      \"name\": \"subtotal_plus_tax_is_total\",\n      \"passed\": true,\n      \"fields\": [\n        \"subtotal\",\n        \"tax_total\",\n        \"total\"\n      ],\n      \"message\": \"Subtotal plus tax equals the total.\"\n    },\n    {\n      \"name\": \"dates_valid\",\n      \"passed\": true,\n      \"fields\": [\n        \"invoice_date\",\n        \"due_date\"\n      ],\n      \"message\": \"Dates are valid and the due date is after the invoice date.\"\n    },\n    {\n      \"name\": \"currency_valid\",\n      \"passed\": true,\n      \"fields\": [\n        \"currency\"\n      ],\n      \"message\": \"USD is a valid currency.\"\n    },\n    {\n      \"name\": \"required_present\",\n      \"passed\": true,\n      \"fields\": [\n        \"vendor_name\",\n        \"invoice_number\",\n        \"invoice_date\",\n        \"currency\",\n        \"total\"\n      ],\n      \"message\": \"All required fields are present.\"\n    }\n  ]\n}",
+      "scope": "`extraction:write`"
     },
     {
       "id": "admin-jobs",
@@ -471,7 +478,8 @@ export const extraction = {
         }
       ],
       "request": "GET /api/extraction/v1/admin/jobs?limit=1 HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>",
-      "response": "{\n  \"data\": [\n    {\n      \"id\": \"0193b0d1-4b2c-7d10-9a8b-1c2d3e4f5a6b\",\n      \"status\": \"extracted\",\n      \"model\": \"claude-sonnet-5-5\",\n      \"prompt_version\": \"extract-invoice/v1\",\n      \"pages\": 2,\n      \"tokens_in\": 6210,\n      \"tokens_out\": 1480,\n      \"cost_usd\": \"0.040830\",\n      \"duration_ms\": 28900,\n      \"error_code\": null,\n      \"created_at\": \"2026-11-17T09:14:12Z\"\n    }\n  ],\n  \"summary\": {\n    \"jobs\": 100,\n    \"failure_rate\": 0.02,\n    \"avg_cost_usd\": \"0.0412\",\n    \"p95_duration_ms\": 41200\n  }\n}"
+      "response": "{\n  \"data\": [\n    {\n      \"id\": \"0193b0d1-4b2c-7d10-9a8b-1c2d3e4f5a6b\",\n      \"status\": \"extracted\",\n      \"model\": \"claude-opus-5-5\",\n      \"prompt_version\": \"extract-invoice/v1\",\n      \"pages\": 2,\n      \"tokens_in\": 6210,\n      \"tokens_out\": 1480,\n      \"cost_usd\": \"0.040830\",\n      \"duration_ms\": 28900,\n      \"error_code\": null,\n      \"created_at\": \"2026-11-17T09:14:12Z\"\n    }\n  ],\n  \"summary\": {\n    \"jobs\": 100,\n    \"failure_rate\": 0.02,\n    \"avg_cost_usd\": \"0.0412\",\n    \"p95_duration_ms\": 41200\n  }\n}",
+      "scope": "`is_admin`"
     },
     {
       "id": "events",
@@ -533,7 +541,8 @@ export const extraction = {
         }
       ],
       "request": "POST /api/extraction/v1/events HTTP/1.1\nX-01scale-Signature: sha256=8c1f...\nContent-Type: application/json\n\n{\n  \"event_id\": \"0193b2aa-6f01-7c2d-9e3f-4a5b6c7d8e9f\",\n  \"type\": \"identity.user.deleted\",\n  \"occurred_at\": \"2026-11-17T10:00:00Z\",\n  \"data\": {\n    \"user_id\": \"0193a5b2-7c1e-7a3f-9b2d-4e6f8a1c2d3e\"\n  }\n}",
-      "response": "HTTP/1.1 200 OK"
+      "response": "HTTP/1.1 200 OK",
+      "scope": "None: HMAC signature"
     }
   ],
   "noEndpoint": [
@@ -624,7 +633,7 @@ export const extraction = {
           "type": "text",
           "nullable": "Yes",
           "default": "",
-          "constraints": "One of `fetching_file`, `reading_document`, `checking_rules`, `saving`",
+          "constraints": "One of `fetching_file`, `reading_text`, `reading_document`, `checking_rules`, `saving`",
           "meaning": "The step running now, or the step that failed. Empty while queued and after success."
         },
         {
@@ -712,7 +721,7 @@ export const extraction = {
           "type": "text",
           "nullable": "Yes",
           "default": "",
-          "constraints": "One of `file_unavailable`, `document_unreadable`, `model_unavailable`, `output_invalid`, `timed_out`; set exactly when failed",
+          "constraints": "One of `file_unavailable`, `document_unreadable`, `no_text_found`, `model_unavailable`, `output_invalid`, `timed_out`; set exactly when failed",
           "meaning": "Why the job failed, as a stable code."
         },
         {
@@ -797,7 +806,7 @@ export const extraction = {
           "extracted",
           "(empty)",
           "1",
-          "claude-sonnet-5-5",
+          "claude-opus-5-5",
           "extract-invoice/v1",
           "2",
           "19",
@@ -821,7 +830,7 @@ export const extraction = {
           "failed",
           "reading_document",
           "3",
-          "claude-sonnet-5-5",
+          "claude-opus-5-5",
           "extract-invoice/v1",
           "1",
           "(empty)",
@@ -1025,6 +1034,73 @@ export const extraction = {
       ]
     },
     {
+      "name": "extraction.page_texts",
+      "purpose": "The text of each page a job read: from the PDF's text layer, or by OCR for scans and photos. Used to check that every quote is really in the document.",
+      "columns": [
+        {
+          "name": "job_id",
+          "type": "uuid",
+          "nullable": "No",
+          "default": "",
+          "constraints": "Part of the primary key; foreign key to `extraction.jobs`, delete cascades",
+          "meaning": "Which job read it."
+        },
+        {
+          "name": "page",
+          "type": "smallint",
+          "nullable": "No",
+          "default": "",
+          "constraints": "1 to 10; part of the primary key",
+          "meaning": "Which page."
+        },
+        {
+          "name": "source",
+          "type": "text",
+          "nullable": "No",
+          "default": "",
+          "constraints": "`text_layer` or `ocr`",
+          "meaning": "Where the text came from. OCR text can contain reading mistakes, which the eval set measures."
+        },
+        {
+          "name": "text",
+          "type": "text",
+          "nullable": "No",
+          "default": "",
+          "constraints": "Up to 100,000 characters; may be empty for a blank page",
+          "meaning": "The page's text."
+        },
+        {
+          "name": "created_at",
+          "type": "timestamptz",
+          "nullable": "No",
+          "default": "now()",
+          "constraints": "",
+          "meaning": "When it was read."
+        }
+      ],
+      "constraints": [
+        "`page_texts_pkey`: primary key (`job_id`, `page`)",
+        "`page_texts_job_id_fkey`: foreign key to `extraction.jobs`, delete cascades",
+        "`page_texts_page_check`, `page_texts_source_check`, `page_texts_text_check`"
+      ],
+      "sampleCols": [
+        "job_id",
+        "page",
+        "source",
+        "text",
+        "created_at"
+      ],
+      "sampleRows": [
+        [
+          "0193b0d1-4b2c-7d10-9a8b-1c2d3e4f5a6b",
+          "2",
+          "text_layer",
+          "Subtotal 1,150.00  Tax 80.00  TOTAL DUE  $1,240.00",
+          "2026-11-17 09:14:15+00"
+        ]
+      ]
+    },
+    {
       "name": "extraction.inbound_events",
       "purpose": "One row per platform event Extraction has acted on, so a repeated delivery has no effect.",
       "columns": [
@@ -1100,7 +1176,7 @@ export const extraction = {
     {
       "level": "Data model level: business rules the service guarantees",
       "items": [
-        "A job only ever reads a file its owner can read: the file is fetched through Upload with the owner's own access token.",
+        "A job only ever reads a file its owner can read: the background job fetches it through Upload with a delegated token for the owner (`upload:read`, `act: service:extraction`), so Upload's ownership check applies and no user token is stored.",
         "At most one job per file and schema is `queued` or `processing` at a time, so the same document is never read or billed twice at once.",
         "A job only moves forward: `queued` → `processing` → `extracted` or `failed`. A failed job is never restarted; a retry is a new job.",
         "Fields are written once, all together, when a job succeeds, and never changed. A failed job has no fields.",
@@ -1125,7 +1201,7 @@ export const extraction = {
     },
     {
       "name": "EXTRACTION_MODEL",
-      "value": "The Claude model ID, for example `claude-sonnet-5-5`. Saved on each job.",
+      "value": "The Claude model ID; default `claude-opus-5-5` (Nikhil's decision on #34). Used for OCR and extraction, and saved on each job. A change needs an eval report.",
       "secret": "No"
     },
     {
@@ -1159,16 +1235,17 @@ export const extraction = {
       "secret": "Yes"
     },
     {
-      "name": "EVENT_SUBSCRIBERS",
-      "value": "The webhook addresses that receive Extraction's events, for example DocFlow's",
+      "name": "EVENT_ROUTES",
+      "value": "From the service template: reference prefix → the app's event address (decision on #13)",
       "secret": "No"
     }
   ],
   "openQuestions": [
     "Rate limits are starting values to be tuned once there is real traffic.",
-    "Decided by Nikhil on 17 Nov 2026 (#65): photo values are not capped. A person can always see every value, flagged or not, through 'Show all fields' in review, so the minimal implementation is kept. (Later, #80 adds OCR, which lets the quote check run on photos as well.)",
-    "The extraction page shows the document beside the fields (`MVP1-E3-04`). Upload ships no inline preview component, only a link that opens the file. Either Upload gains a preview component, or the app renders one from the download link.",
-    "Which model is the default is a cost and accuracy choice to settle with the eval set (targets: at most $0.10 and 60 seconds per document)."
+    "Decided by Nikhil on 17 Nov 2026: Claude Opus 5.5 is the default model (#34); scans and photos are in scope, read by OCR, with 'No text found' when there is no text (#34, #35); Upload ships the preview the extraction page uses (#36).",
+    "OCR uses Claude itself, so no second vendor is needed. AWS Textract is the alternative if OCR accuracy or cost on the eval set's scanned cases misses its targets.",
+    "Opus 5.5 costs more per token than the earlier sample model; the eval set measures whether it stays within $0.10 per document.",
+    "Decided by Nikhil on 17 Nov 2026 (#65): photo values are not capped. A person can always see every value, flagged or not, through 'Show all fields' in review, so the minimal implementation is kept. (Later, #80 adds OCR, which lets the quote check run on photos as well.)"
   ],
   "decisions": [],
   "journeys": [
@@ -1283,9 +1360,14 @@ export const extraction = {
       "code": "`output_invalid`"
     },
     {
-      "situation": "The document cannot be read, for example a blank or very blurred photo",
-      "sees": "'We couldn't read this document. Upload a clearer copy.'",
+      "situation": "The file cannot be opened, for example a damaged or password-protected PDF",
+      "sees": "'We couldn't open this document. Upload another copy.'",
       "code": "`document_unreadable`"
+    },
+    {
+      "situation": "No text is found, even by OCR: a blank page, or a photo too blurred or dark to read",
+      "sees": "'No text found' and Choose another file. No Retry: the same file would give the same result.",
+      "code": "`no_text_found`"
     },
     {
       "situation": "The job takes longer than its limit",
@@ -1549,10 +1631,14 @@ export const extraction = {
     },
     {
       "name": "The document's content",
-      "text": "Fetched through a 5-minute Upload link into memory for the model call, then dropped. Never written to disk or to the database."
+      "text": "Fetched through a 5-minute Upload link into memory, then dropped. Only each page's text is saved (`extraction.page_texts`), for the quote check."
+    },
+    {
+      "name": "Page text",
+      "text": "Saved when the job reads the document → never changed → deleted with its job or its owner's account. It stays inside the owner's account like every other record (privacy rule on #41)."
     }
   ],
-  "ddl": "-- LLM Extraction service, version 1. Schema: extraction.\n-- IDs are UUIDv7 values generated by the service.\n-- Checked with `npm run schema:check`: runs on PGlite, and every sample row passes every constraint.\n\ncreate schema if not exists extraction;\n\ncreate table extraction.jobs (\n  id             uuid          primary key,\n  owner_id       uuid          not null,\n  file_id        uuid          not null,\n  schema         text          not null,\n  reference      text,\n  status         text          not null default 'queued',\n  step           text,\n  attempt        smallint      not null default 1,\n  model          text          not null,\n  prompt_version text          not null,\n  pages          smallint,\n  fields_total   smallint,\n  fields_flagged smallint,\n  tokens_in      integer,\n  tokens_out     integer,\n  cost_usd       numeric(10,6),\n  duration_ms    integer,\n  error_code     text,\n  error_message  text,\n  created_at     timestamptz   not null default now(),\n  started_at     timestamptz,\n  finished_at    timestamptz,\n\n  constraint jobs_schema_check check (schema in ('invoice-v1')),\n  constraint jobs_reference_check check (length(reference) between 1 and 200),\n  constraint jobs_status_check check (status in ('queued', 'processing', 'extracted', 'failed')),\n  constraint jobs_step_check\n    check (step in ('fetching_file', 'reading_document', 'checking_rules', 'saving')),\n  constraint jobs_attempt_check check (attempt between 1 and 3),\n  constraint jobs_model_check check (length(model) between 1 and 100 and length(prompt_version) between 1 and 100),\n  constraint jobs_error_code_check check (error_code in\n    ('file_unavailable', 'document_unreadable', 'model_unavailable', 'output_invalid', 'timed_out')),\n  constraint jobs_failed_check check (\n    (status = 'failed') = (error_code is not null)\n    and (error_code is null) = (error_message is null)\n  ),\n  constraint jobs_finished_check check ((status in ('extracted', 'failed')) = (finished_at is not null)),\n  constraint jobs_extracted_check check (\n    status <> 'extracted'\n    or (fields_total is not null and fields_flagged between 0 and fields_total\n        and tokens_in is not null and tokens_out is not null\n        and cost_usd is not null and duration_ms is not null)\n  ),\n  constraint jobs_numbers_check check (\n    (pages is null or pages between 1 and 10)\n    and coalesce(fields_total, 0) >= 0 and coalesce(tokens_in, 0) >= 0\n    and coalesce(tokens_out, 0) >= 0 and coalesce(cost_usd, 0) >= 0\n    and coalesce(duration_ms, 0) >= 0\n  ),\n  constraint jobs_dates_check check (\n    (started_at is null or started_at >= created_at)\n    and (finished_at is null or finished_at >= coalesce(started_at, created_at))\n  )\n);\n\n-- One running job per file and schema: a second request returns the first.\ncreate unique index jobs_active_file_idx on extraction.jobs (file_id, schema)\n  where status in ('queued', 'processing');\n-- A user's jobs; the admin's recent jobs; the sweep of jobs left queued.\ncreate index jobs_owner_id_idx on extraction.jobs (owner_id, created_at desc);\ncreate index jobs_created_at_idx on extraction.jobs (created_at desc);\ncreate index jobs_queued_idx on extraction.jobs (created_at) where status = 'queued';\n\ncreate table extraction.fields (\n  id               uuid         primary key,\n  job_id           uuid         not null,\n  name             text         not null,\n  line_index       smallint,\n  value            jsonb,\n  model_confidence numeric(3,2) not null,\n  confidence       numeric(3,2) not null,\n  source_page      smallint,\n  source_quote     text,\n  flagged          boolean      not null default false,\n  flag_reasons     text[]       not null default '{}',\n  created_at       timestamptz  not null default now(),\n\n  constraint fields_job_id_fkey foreign key (job_id)\n    references extraction.jobs (id) on delete cascade,\n  constraint fields_job_name_line_key unique nulls not distinct (job_id, name, line_index),\n  constraint fields_name_check check (name in ('vendor_name', 'vendor_address', 'vendor_tax_id', 'invoice_number', 'invoice_date', 'due_date', 'bill_to_name', 'bill_to_address', 'currency', 'subtotal', 'tax_total', 'total', 'payment_terms', 'description', 'quantity', 'unit_price', 'amount')),\n  constraint fields_line_index_check check (\n    (name in ('description', 'quantity', 'unit_price', 'amount')) = (line_index is not null)\n    and (line_index is null or line_index >= 0)\n  ),\n  constraint fields_confidence_check check (\n    model_confidence between 0 and 1\n    and confidence between 0 and 1\n    and confidence <= model_confidence\n  ),\n  constraint fields_evidence_check check (\n    (value is null) = (source_quote is null)\n    and (source_quote is null) = (source_page is null)\n  ),\n  constraint fields_quote_check check (length(source_quote) between 1 and 500),\n  constraint fields_flagged_check check (flagged = (cardinality(flag_reasons) > 0))\n);\n\n-- The fields a person must check, for the review queue.\ncreate index fields_flagged_idx on extraction.fields (job_id) where flagged;\n\ncreate table extraction.inbound_events (\n  event_id   uuid        primary key,\n  type       text        not null,\n  created_at timestamptz not null default now(),\n\n  constraint inbound_events_type_check check (length(type) between 1 and 100)\n);\n\n-- The service's database login reaches only this schema. Fields are deleted only\n-- with their owner's account; audit events can be added and read, never changed.\ngrant usage on schema extraction to extraction_service;\ngrant select, insert, update on extraction.jobs to extraction_service;\ngrant select, insert, delete on extraction.fields to extraction_service;\ngrant select, insert on extraction.inbound_events to extraction_service;\ngrant select, insert on extraction.audit_events to extraction_service;\n",
+  "ddl": "-- LLM Extraction service, version 1. Schema: extraction.\n-- IDs are UUIDv7 values generated by the service.\n-- Checked with `npm run schema:check`: runs on PGlite, and every sample row passes every constraint.\n\ncreate schema if not exists extraction;\n\ncreate table extraction.jobs (\n  id             uuid          primary key,\n  owner_id       uuid          not null,\n  file_id        uuid          not null,\n  schema         text          not null,\n  reference      text,\n  status         text          not null default 'queued',\n  step           text,\n  attempt        smallint      not null default 1,\n  model          text          not null,\n  prompt_version text          not null,\n  pages          smallint,\n  fields_total   smallint,\n  fields_flagged smallint,\n  tokens_in      integer,\n  tokens_out     integer,\n  cost_usd       numeric(10,6),\n  duration_ms    integer,\n  error_code     text,\n  error_message  text,\n  created_at     timestamptz   not null default now(),\n  started_at     timestamptz,\n  finished_at    timestamptz,\n\n  constraint jobs_schema_check check (schema in ('invoice-v1')),\n  constraint jobs_reference_check check (length(reference) between 1 and 200),\n  constraint jobs_status_check check (status in ('queued', 'processing', 'extracted', 'failed')),\n  constraint jobs_step_check\n    check (step in ('fetching_file', 'reading_text', 'reading_document', 'checking_rules', 'saving')),\n  constraint jobs_attempt_check check (attempt between 1 and 3),\n  constraint jobs_model_check check (length(model) between 1 and 100 and length(prompt_version) between 1 and 100),\n  constraint jobs_error_code_check check (error_code in\n    ('file_unavailable', 'document_unreadable', 'no_text_found', 'model_unavailable', 'output_invalid', 'timed_out')),\n  constraint jobs_failed_check check (\n    (status = 'failed') = (error_code is not null)\n    and (error_code is null) = (error_message is null)\n  ),\n  constraint jobs_finished_check check ((status in ('extracted', 'failed')) = (finished_at is not null)),\n  constraint jobs_extracted_check check (\n    status <> 'extracted'\n    or (fields_total is not null and fields_flagged between 0 and fields_total\n        and tokens_in is not null and tokens_out is not null\n        and cost_usd is not null and duration_ms is not null)\n  ),\n  constraint jobs_numbers_check check (\n    (pages is null or pages between 1 and 10)\n    and coalesce(fields_total, 0) >= 0 and coalesce(tokens_in, 0) >= 0\n    and coalesce(tokens_out, 0) >= 0 and coalesce(cost_usd, 0) >= 0\n    and coalesce(duration_ms, 0) >= 0\n  ),\n  constraint jobs_dates_check check (\n    (started_at is null or started_at >= created_at)\n    and (finished_at is null or finished_at >= coalesce(started_at, created_at))\n  )\n);\n\n-- One running job per file and schema: a second request returns the first.\ncreate unique index jobs_active_file_idx on extraction.jobs (file_id, schema)\n  where status in ('queued', 'processing');\n-- A user's jobs; the admin's recent jobs; the sweep of jobs left queued.\ncreate index jobs_owner_id_idx on extraction.jobs (owner_id, created_at desc);\ncreate index jobs_created_at_idx on extraction.jobs (created_at desc);\ncreate index jobs_queued_idx on extraction.jobs (created_at) where status = 'queued';\n\ncreate table extraction.fields (\n  id               uuid         primary key,\n  job_id           uuid         not null,\n  name             text         not null,\n  line_index       smallint,\n  value            jsonb,\n  model_confidence numeric(3,2) not null,\n  confidence       numeric(3,2) not null,\n  source_page      smallint,\n  source_quote     text,\n  flagged          boolean      not null default false,\n  flag_reasons     text[]       not null default '{}',\n  created_at       timestamptz  not null default now(),\n\n  constraint fields_job_id_fkey foreign key (job_id)\n    references extraction.jobs (id) on delete cascade,\n  constraint fields_job_name_line_key unique nulls not distinct (job_id, name, line_index),\n  constraint fields_name_check check (name in ('vendor_name', 'vendor_address', 'vendor_tax_id', 'invoice_number', 'invoice_date', 'due_date', 'bill_to_name', 'bill_to_address', 'currency', 'subtotal', 'tax_total', 'total', 'payment_terms', 'description', 'quantity', 'unit_price', 'amount')),\n  constraint fields_line_index_check check (\n    (name in ('description', 'quantity', 'unit_price', 'amount')) = (line_index is not null)\n    and (line_index is null or line_index >= 0)\n  ),\n  constraint fields_confidence_check check (\n    model_confidence between 0 and 1\n    and confidence between 0 and 1\n    and confidence <= model_confidence\n  ),\n  constraint fields_evidence_check check (\n    (value is null) = (source_quote is null)\n    and (source_quote is null) = (source_page is null)\n  ),\n  constraint fields_quote_check check (length(source_quote) between 1 and 500),\n  constraint fields_flagged_check check (flagged = (cardinality(flag_reasons) > 0))\n);\n\n-- The fields a person must check, for the review queue.\ncreate index fields_flagged_idx on extraction.fields (job_id) where flagged;\n\n-- The text of each page, for the quote check. Deleted with the job.\ncreate table extraction.page_texts (\n  job_id     uuid        not null,\n  page       smallint    not null,\n  source     text        not null,\n  text       text        not null,\n  created_at timestamptz not null default now(),\n\n  constraint page_texts_pkey primary key (job_id, page),\n  constraint page_texts_job_id_fkey foreign key (job_id)\n    references extraction.jobs (id) on delete cascade,\n  constraint page_texts_page_check check (page between 1 and 10),\n  constraint page_texts_source_check check (source in ('text_layer', 'ocr')),\n  constraint page_texts_text_check check (length(text) <= 100000)\n);\n\ncreate table extraction.inbound_events (\n  event_id   uuid        primary key,\n  type       text        not null,\n  created_at timestamptz not null default now(),\n\n  constraint inbound_events_type_check check (length(type) between 1 and 100)\n);\n\n-- The service's database login reaches only this schema. Fields are deleted only\n-- with their owner's account; audit events can be added and read, never changed.\ngrant usage on schema extraction to extraction_service;\ngrant select, insert, update on extraction.jobs to extraction_service;\ngrant select, insert, delete on extraction.fields, extraction.page_texts to extraction_service;\ngrant select, insert on extraction.inbound_events to extraction_service;\ngrant select, insert on extraction.audit_events to extraction_service;\n",
   "queries": [
     {
       "title": "Start a job, or find the running one (`POST /jobs`)",

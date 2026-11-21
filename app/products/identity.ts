@@ -211,7 +211,7 @@ export const identity = {
     {
       "claim": "`auth`",
       "example": "`session`",
-      "meaning": "How the user authenticated (`api_key` arrives with story MVP1-E0-06)"
+      "meaning": "How the caller authenticated: `session` here; `api_key` (Account management), `service` and `delegated` (Service access, `docs/services/identity/service-access`)"
     },
     {
       "claim": "`scopes`",

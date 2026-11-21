@@ -33,11 +33,11 @@ create table extraction.jobs (
   constraint jobs_reference_check check (length(reference) between 1 and 200),
   constraint jobs_status_check check (status in ('queued', 'processing', 'extracted', 'failed')),
   constraint jobs_step_check
-    check (step in ('fetching_file', 'reading_document', 'checking_rules', 'saving')),
+    check (step in ('fetching_file', 'reading_text', 'reading_document', 'checking_rules', 'saving')),
   constraint jobs_attempt_check check (attempt between 1 and 3),
   constraint jobs_model_check check (length(model) between 1 and 100 and length(prompt_version) between 1 and 100),
   constraint jobs_error_code_check check (error_code in
-    ('file_unavailable', 'document_unreadable', 'model_unavailable', 'output_invalid', 'timed_out')),
+    ('file_unavailable', 'document_unreadable', 'no_text_found', 'model_unavailable', 'output_invalid', 'timed_out')),
   constraint jobs_failed_check check (
     (status = 'failed') = (error_code is not null)
     and (error_code is null) = (error_message is null)
@@ -107,6 +107,22 @@ create table extraction.fields (
 -- The fields a person must check, for the review queue.
 create index fields_flagged_idx on extraction.fields (job_id) where flagged;
 
+-- The text of each page, for the quote check. Deleted with the job.
+create table extraction.page_texts (
+  job_id     uuid        not null,
+  page       smallint    not null,
+  source     text        not null,
+  text       text        not null,
+  created_at timestamptz not null default now(),
+
+  constraint page_texts_pkey primary key (job_id, page),
+  constraint page_texts_job_id_fkey foreign key (job_id)
+    references extraction.jobs (id) on delete cascade,
+  constraint page_texts_page_check check (page between 1 and 10),
+  constraint page_texts_source_check check (source in ('text_layer', 'ocr')),
+  constraint page_texts_text_check check (length(text) <= 100000)
+);
+
 create table extraction.inbound_events (
   event_id   uuid        primary key,
   type       text        not null,
@@ -119,6 +135,6 @@ create table extraction.inbound_events (
 -- with their owner's account; audit events can be added and read, never changed.
 grant usage on schema extraction to extraction_service;
 grant select, insert, update on extraction.jobs to extraction_service;
-grant select, insert, delete on extraction.fields to extraction_service;
+grant select, insert, delete on extraction.fields, extraction.page_texts to extraction_service;
 grant select, insert on extraction.inbound_events to extraction_service;
 grant select, insert on extraction.audit_events to extraction_service;

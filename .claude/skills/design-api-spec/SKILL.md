@@ -13,11 +13,12 @@ description: Write the API specification for a 01scale service module - every en
 
 1. **Method and path** under `/api/{service}/v1`, plus a short title.
 2. **Access**: Public, Signed in, Admin or Service. Service endpoints are never callable from a browser.
-3. **Inputs**: for each, where it is (path, query, header, cookie, body), type, whether required, its constraints (allowed values, length, format) and what it means.
-4. **Behaviour**: what it does, in order, including what it writes and which audit event it records.
-5. **Responses**: status, when, and the body or headers.
-6. **Errors**: status, a stable machine-readable `code`, and when it happens.
-7. **Sample request and sample response** that match the inputs and responses exactly.
+3. **Scope**: what a token needs. By default `<service>:read` for GET and `<service>:write` otherwise; state the exceptions (session only, admin, per tool, signature or client secret). A delegated token carries the user's scopes granted to the acting service.
+4. **Inputs**: for each, where it is (path, query, header, cookie, body), type, whether required, its constraints (allowed values, length, format) and what it means.
+5. **Behaviour**: what it does, in order, including what it writes and which audit event it records.
+6. **Responses**: status, when, and the body or headers.
+7. **Errors**: status, a stable machine-readable `code`, and when it happens.
+8. **Sample request and sample response** that match the inputs and responses exactly.
 
 ## Rules that are easy to get wrong
 
@@ -26,7 +27,7 @@ description: Write the API specification for a 01scale service module - every en
 - A `POST` that creates something accepts `Idempotency-Key`, or is idempotent by design. Say which.
 - Lists use cursor pagination: `cursor`, `limit` → `{data, next_cursor}`.
 - Long work returns `202` and a job to poll, with `Retry-After`.
-- Files never pass through the API: issue a short-lived presigned URL.
+- Stored files never pass through the API: issue a short-lived presigned URL. A small result generated on each request from data (a few kilobytes, never stored) may be returned directly, with `Cache-Control: no-store`.
 - An endpoint that could reveal whether an account or record exists must answer the same way in both cases.
 - Only an app's server may call an endpoint that sets a price or sends a message.
 - State rate limits as starting values, and list them as an open question.

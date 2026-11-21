@@ -66,6 +66,8 @@ Services never see cookies or API keys, and they do not call Identity on each re
 - **Services are app-agnostic.** Upload knows about files, not invoices. Payment knows about orders with an opaque `reference`, not documents. That is what lets a second app reuse them.
 - **Apps hold the process.** DocFlow's own API under `/api/docflow/v1` owns the invoice process: which file, which job, which review task and which order belong together, and what the next step is. It calls the services in a fixed order.
 - **Prices and entitlements are app decisions.** Only an app's server can create a Payment order or send a Delivery message (Service access), so a browser can never set an amount.
+- **Services acting for a user** (decision on #24): a step with no person present (for example DocFlow after an extraction finishes) uses a delegated token from Identity: the user's token, marked with the acting service in `act`. Every service keeps one ownership rule, and audit records both.
+- **Every call goes through the gateway** (decision on #21): services and apps call each other at `01scale.com/api/{service}/v1/…`, like any client.
 
 ## Agent access
 
@@ -111,6 +113,8 @@ Sign-in, sessions, accounts, API keys and the tokens every other service trusts.
 | `POST` | `/api/identity/v1/auth/logout` | Signed in | End the current session and sign out of the identity provider. | `MVP1-E1-03` |
 | `GET` | `/api/identity/v1/session` | Signed in | Who am I: the current session and user, or 401. | `MVP1-E1-03` |
 | `POST` | `/api/identity/v1/token` | Service | Exchange a session cookie or API key for a short-lived access token (called by the gateway). | `MVP1-E1-03` |
+| `POST` | `/api/identity/v1/token` (client credentials, token exchange) | Service | A service signs in as itself; a service allowed to act for users gets a 5-minute delegated token for one user (`act` claim). | `MVP1-E1-03` |
+| `GET` | `/api/identity/v1/users/{userId}` | Service | A user's verified email, for services that write to them (Delivery). | `MVP1-E7-01` |
 | `GET` | `/api/identity/v1/jwks` | Public | The public keys services use to verify access tokens. | `MVP1-E1-03` |
 | `GET` | `/api/identity/v1/me` | Signed in | My account: email and joined date. | `MVP1-E1-05` |
 | `POST` | `/api/identity/v1/me/password-change` | Signed in | Start a password change through the identity provider. | `MVP1-E1-05` |
@@ -178,9 +182,9 @@ A person checks the fields the system is unsure about.
 | `PATCH` | `/api/review/v1/tasks/{taskId}/fields/{fieldId}` | Signed in | Accept, edit or mark a field as not on the document. | `MVP1-E4-02` |
 | `POST` | `/api/review/v1/tasks/{taskId}/complete` | Signed in | Complete the task once every flagged field is resolved. | `MVP1-E4-03` |
 | `GET` | `/api/review/v1/admin/eval-candidates` | Admin | Human corrections waiting for approval as eval cases. | `MVP1-E4-04` |
-| `POST` | `/api/review/v1/admin/eval-candidates/export` | Admin | Export approved corrections as ground-truth files. | `MVP1-E4-04` |
+| `GET` | `/api/review/v1/admin/accuracy` | Admin | How often people correct each field: counts and rates only, never values (decision on #41). | `MVP1-E4-04` |
 | `GET` | `/api/review/v1/admin/quality` | Admin | Judge vs human: agreement, confusion matrix, weakest fields (30 days). | `MVP2-E10-03` |
-| `POST` | `/api/review/v1/admin/quality/export` | Admin | Export judge/human disagreements as eval candidates. | `MVP2-E10-03` |
+| `POST` | `/api/review/v1/admin/quality/candidates` | Admin | Add judge/human disagreements to eval candidates inside Review's database; a count only, nothing leaves the service (#41). | `MVP2-E10-03` |
 | `GET` | `/api/review/v1/tasks/{taskId}/chat/messages` | Signed in | The correction chat history for a task. | `MVP2-E11-03` |
 | `POST` | `/api/review/v1/tasks/{taskId}/chat/messages` | Signed in | Ask the correction agent to fix data in plain language. | `MVP2-E11-03` |
 | `POST` | `/api/review/v1/tasks/{taskId}/proposals/{proposalId}/apply` | Signed in | Apply a proposed change. | `MVP2-E11-03` |
@@ -234,10 +238,10 @@ The first app: the invoice process assembled from the platform services.
 | `GET` | `/api/docflow/v1/documents` | Signed in | List my DocFlow documents with status and the next action. | `MVP1-E2-05` |
 | `GET` | `/api/docflow/v1/documents/{documentId}` | Signed in | Get one DocFlow document and the IDs of its parts in each service. | `MVP1-E2-05` |
 | `POST` | `/api/docflow/v1/documents/{documentId}/retry-extraction` | Signed in | Retry a failed extraction for a document. | `MVP1-E3-01` |
-| `POST` | `/api/docflow/v1/documents/{documentId}/complete-review` | Signed in | Finish review for a document: re-checks the corrected data and builds the outputs. | `MVP1-E4-03` |
-| `GET` | `/api/docflow/v1/documents/{documentId}/outputs` | Signed in | The outputs available for a document, and whether download is unlocked. | `MVP1-E5-01` |
+| `POST` | `/api/docflow/v1/documents/{documentId}/complete-review` | Signed in | Finish review for a document: re-checks the corrected data and completes the review. | `MVP1-E4-03` |
+| `GET` | `/api/docflow/v1/documents/{documentId}/outputs` | Signed in | Results status: whether download is unlocked and whether the current values pass every check. | `MVP1-E5-01` |
 | `GET` | `/api/docflow/v1/documents/{documentId}/outputs/{format}/preview` | Signed in | Preview the JSON or CSV on screen before paying. | `MVP1-E5-01` |
-| `GET` | `/api/docflow/v1/documents/{documentId}/outputs/{format}/download` | Signed in | Download an output. Locked until the order is paid. | `MVP1-E5-03` |
+| `GET` | `/api/docflow/v1/documents/{documentId}/outputs/{format}/download` | Signed in | Download an output, built from Review's latest values. Locked until the order is paid. | `MVP1-E5-03` |
 | `POST` | `/api/docflow/v1/documents/{documentId}/checkout` | Signed in | Start payment for a document. | `MVP1-E6-01` |
 | `POST` | `/api/docflow/v1/batches` | Signed in | Create a batch of up to 10 documents; each file is checked on its own. | `MVP2-E9-01` |
 | `POST` | `/api/docflow/v1/batches/{batchId}/process` | Signed in | Start extraction for the batch once the uploads are confirmed. | `MVP2-E9-01` |

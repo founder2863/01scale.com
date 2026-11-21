@@ -46,10 +46,10 @@ export const costs = {
       "buildTokens": 5197416,
       "reworkTokens": 8445956,
       "buildCost": 9.9,
-      "reworkCost": 7.8,
-      "totalCost": 17.7,
+      "reworkCost": 9.28,
+      "totalCost": 19.18,
       "yield": 38,
-      "pending": true
+      "pending": false
     },
     {
       "key": "MVP1-E1-01",
@@ -105,9 +105,9 @@ export const costs = {
       "requests": 1,
       "buildTokens": 9488541,
       "reworkTokens": 0,
-      "buildCost": 7.73,
+      "buildCost": 7.32,
       "reworkCost": 0,
-      "totalCost": 7.73,
+      "totalCost": 7.32,
       "yield": 100,
       "pending": false
     },
@@ -115,13 +115,109 @@ export const costs = {
       "key": "MVP1-E2",
       "name": "MVP1-E2 · Upload design",
       "requests": 1,
-      "buildTokens": 26957294,
+      "buildTokens": 20858627,
       "reworkTokens": 0,
-      "buildCost": 0,
+      "buildCost": 5.88,
       "reworkCost": 0,
-      "totalCost": 0,
+      "totalCost": 5.88,
       "yield": 100,
-      "pending": true
+      "pending": false
+    },
+    {
+      "key": "MVP1-E3",
+      "name": "MVP1-E3 · Extraction design",
+      "requests": 1,
+      "buildTokens": 15653506,
+      "reworkTokens": 0,
+      "buildCost": 4.62,
+      "reworkCost": 0,
+      "totalCost": 4.62,
+      "yield": 100,
+      "pending": false
+    },
+    {
+      "key": "MVP1-E4",
+      "name": "MVP1-E4 · Human Review design",
+      "requests": 1,
+      "buildTokens": 5810683,
+      "reworkTokens": 0,
+      "buildCost": 1.89,
+      "reworkCost": 0,
+      "totalCost": 1.89,
+      "yield": 100,
+      "pending": false
+    },
+    {
+      "key": "MVP1-E5",
+      "name": "MVP1-E5 · DocFlow app design (JSON and CSV output)",
+      "requests": 1,
+      "buildTokens": 2668470,
+      "reworkTokens": 0,
+      "buildCost": 0.98,
+      "reworkCost": 0,
+      "totalCost": 0.98,
+      "yield": 100,
+      "pending": false
+    },
+    {
+      "key": "MVP1-E6",
+      "name": "MVP1-E6 · Payment design",
+      "requests": 1,
+      "buildTokens": 5154747,
+      "reworkTokens": 0,
+      "buildCost": 1.66,
+      "reworkCost": 0,
+      "totalCost": 1.66,
+      "yield": 100,
+      "pending": false
+    },
+    {
+      "key": "MVP1-E7",
+      "name": "MVP1-E7 · Delivery design",
+      "requests": 1,
+      "buildTokens": 3491642,
+      "reworkTokens": 0,
+      "buildCost": 1.01,
+      "reworkCost": 0,
+      "totalCost": 1.01,
+      "yield": 100,
+      "pending": false
+    },
+    {
+      "key": "MVP1-E1-05",
+      "name": "MVP1-E1-05, E0-06 · Account management design",
+      "requests": 1,
+      "buildTokens": 1892303,
+      "reworkTokens": 0,
+      "buildCost": 1.53,
+      "reworkCost": 0,
+      "totalCost": 1.53,
+      "yield": 100,
+      "pending": false
+    },
+    {
+      "key": "MVP1-E0-07",
+      "name": "MVP1-E0-07, E0-08 · Service template and gateway design",
+      "requests": 1,
+      "buildTokens": 1391192,
+      "reworkTokens": 0,
+      "buildCost": 0.86,
+      "reworkCost": 0,
+      "totalCost": 0.86,
+      "yield": 100,
+      "pending": false
+    },
+    {
+      "key": "ARCH-REVIEW",
+      "name": "Architect skill and MVP1 architecture review",
+      "requests": 3,
+      "buildTokens": 5803435,
+      "reworkTokens": 13212869,
+      "buildCost": 3.08,
+      "reworkCost": 4.28,
+      "totalCost": 7.36,
+      "yield": 31,
+      "pending": false
     }
   ],
   "scaffolding": [
@@ -151,33 +247,33 @@ export const costs = {
     },
     {
       "name": "Process",
-      "requests": 2,
-      "tokens": 1740306,
-      "cost": 0.31
+      "requests": 5,
+      "tokens": 4174070,
+      "cost": 1.2
     },
     {
       "name": "Tool overhead (background calls)",
       "requests": 0,
       "tokens": 0,
-      "cost": 1.65
+      "cost": -2.46
     }
   ],
   "totals": {
-    "requests": 50,
-    "tokens": 107876819,
-    "cost": 92.78,
-    "buildCost": 55.41,
-    "reworkCost": 17.54,
-    "scaffoldingCost": 19.83,
-    "storyYield": 79,
+    "requests": 63,
+    "tokens": 159290763,
+    "cost": 116.42,
+    "buildCost": 76.51,
+    "reworkCost": 23.3,
+    "scaffoldingCost": 16.61,
+    "storyYield": 77,
     "overallYield": 71,
-    "pendingRequests": 2
+    "pendingRequests": 0
   },
   "byKind": {
-    "input": 0.06,
-    "output": 15.57,
-    "cache_read": 13.59,
-    "cache_write": 55.62
+    "input": 0.08,
+    "output": 22.0,
+    "cache_read": 29.67,
+    "cache_write": 64.67
   },
   "mostExpensive": [
     {
@@ -200,7 +296,7 @@ export const costs = {
     },
     {
       "summary": "Token cost tracking on How It's Built (and finishing the skills work)",
-      "cost": 7.73,
+      "cost": 7.32,
       "tokens": 9488541,
       "outputTokens": 38191
     },

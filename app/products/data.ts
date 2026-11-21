@@ -87,6 +87,10 @@ export const products = [
           {
             "label": "AC4",
             "text": "`auth.signin` and `auth.signout` are audited."
+          },
+          {
+            "label": "AC5",
+            "text": "A registered service or app can sign in as itself with a client secret, and a service allowed to act for users can exchange its token for a 5-minute token for one user, carrying `act` (decision on #24, `docs/decisions/MVP1-E1.md`). Delegated tokens never carry Identity scopes."
           }
         ],
         "evals": "",
@@ -239,7 +243,7 @@ export const products = [
         "path": "/api/identity/v1/token",
         "access": "Service",
         "summary": "Exchange a session cookie or API key for a short-lived access token (called by the gateway).",
-        "detail": "→ `200 {access_token, expires_in: 300}`. The token is a signed JWT with `sub`, `scopes`, `is_admin` and `aud`. Errors: `401`.",
+        "detail": "→ `200 {access_token, expires_in: 300}`. The token is a signed JWT with `sub`, `scopes`, `is_admin`, `aud` and `auth` (`session`, `api_key`, `service` or `delegated`). Also: `grant_type: client_credentials` (`client_id`, `client_secret`) → a service token with `app`; and `grant_type: urn:ietf:params:oauth:grant-type:token-exchange` with a service token and `on_behalf_of` → a delegated token with `act`. Errors: `401`, `403 delegation_not_allowed`, `404 user_not_found`.",
         "story": "MVP1-E1-03"
       },
       {
@@ -299,7 +303,7 @@ export const products = [
       {
         "story": "MVP1-E1-03",
         "title": "Sign in and sign out",
-        "text": "`identity.sessions` (id, user_id → users, token_hash unique, created_at, expires_at, revoked_at). `identity.signing_keys` (kid, public_jwk, private_key_encrypted, created_at, retired_at) for access tokens. The cookie holds a random token; only its SHA-256 hash is stored. Cognito tokens are not stored."
+        "text": "`identity.sessions` (id, user_id → users, token_hash unique, created_at, expires_at, revoked_at). `identity.signing_keys` (kid, public_jwk, private_key_encrypted, created_at, retired_at) for access tokens. The cookie holds a random token; only its SHA-256 hash is stored. Cognito tokens are not stored. `identity.service_clients` (id, secret_hash unique, scopes, act_scopes, created_at, rotated_at, revoked_at): registered services and apps, added only by migrations."
       },
       {
         "story": "MVP1-E1-04",
@@ -330,8 +334,8 @@ export const products = [
     "group": "MVP1",
     "service": "Identity",
     "description": "An account page to view and update your details, delete your account, and create API keys for AI agents.",
-    "status": "Planned",
-    "detailed": false,
+    "status": "Designed",
+    "detailed": true,
     "epic": {
       "id": "E1",
       "title": "Accounts with AWS Cognito",
@@ -420,6 +424,14 @@ export const products = [
       },
       {
         "method": "GET",
+        "path": "/api/identity/v1/users/{userId}",
+        "access": "Service only, scope `identity:users.read`",
+        "summary": "A user's verified email, for a service that writes to them (Delivery, `MVP1-E7-03`).",
+        "detail": "→ `200 {id, email}`. Errors: `404 user_not_found`, including for a deleted user. Added on PR #70.",
+        "story": "MVP1-E1-05"
+      },
+      {
+        "method": "GET",
         "path": "/api/docflow/v1/stats",
         "access": "Signed in",
         "summary": "My DocFlow totals for the account page.",
@@ -474,7 +486,7 @@ export const products = [
       {
         "story": "MVP1-E0-06",
         "title": "Agent access: API keys and MCP",
-        "text": "`identity.api_keys` (id, owner_id, name, prefix, key_hash unique, scopes text[], last_used_at, expires_at, revoked_at, created_at). Only the SHA-256 hash of the secret is stored; `prefix` (first 8 characters) is kept for display."
+        "text": "`identity.api_keys` (id, user_id → users, name, prefix, key_hash unique, scopes text[], last_used_at, expires_at, revoked_at, created_at). Only the SHA-256 hash of the secret is stored; `prefix` (first 8 characters) is kept for display."
       }
     ]
   },
@@ -579,7 +591,7 @@ export const products = [
           },
           {
             "label": "AC3",
-            "text": "After upload, I'm taken to the document's extraction page automatically."
+            "text": "Once the file is uploaded and checked, the upload screen shows its preview (Upload's `FilePreview` component) while extraction starts in the background; \"Continue\" takes me to the document's extraction page, which shows the same preview beside the fields (Nikhil's decision on PR #65)."
           }
         ],
         "evals": "",
@@ -785,6 +797,14 @@ export const products = [
           {
             "label": "AC4",
             "text": "The response is validated with zod. A schema failure triggers one repair attempt and then fails the job; invalid JSON is never stored."
+          },
+          {
+            "label": "AC5",
+            "text": "Scanned PDFs and photos are in scope. Before extraction, the job reads each page's text: the PDF's text layer, or OCR by Claude when there is none or the file is an image. If no text is found, the job fails with `no_text_found` and the person sees \"No text found\" (Nikhil's decision on #34)."
+          },
+          {
+            "label": "AC6",
+            "text": "The default model is `claude-opus-5-5` (Nikhil's decision on #34)."
           }
         ],
         "evals": "EXT-1 schema validity, EXT-2 header field accuracy, EXT-3 line item F1, EXT-4 hallucination rate, EXT-7 latency, EXT-8 cost (see `EVALS.md`).",
@@ -812,6 +832,10 @@ export const products = [
           {
             "label": "AC4",
             "text": "Unit tests cover every rule check, including rounding and missing-tax cases."
+          },
+          {
+            "label": "AC5",
+            "text": "The source-quote check runs for scans and photos too, against the OCR text (decision on #35)."
           }
         ],
         "evals": "EXT-5 routing recall, EXT-6 flag rate.",
@@ -830,7 +854,7 @@ export const products = [
           },
           {
             "label": "AC2",
-            "text": "When done, the document preview (rendered PDF page or image) is on the left and the fields on the right, with confidence badges (green ≥ 0.85, amber 0.6–0.85, red < 0.6) and flagged fields highlighted."
+            "text": "When done, the document preview (rendered PDF page or image, Upload's `FilePreview` component, decided on #36) is on the left and the fields on the right, with confidence badges (green ≥ 0.85, amber 0.6–0.85, red < 0.6) and flagged fields highlighted."
           },
           {
             "label": "AC3",
@@ -937,7 +961,7 @@ export const products = [
         "path": "/api/extraction/v1/validations",
         "access": "Signed in",
         "summary": "Run the rule checks for a schema on a set of values.",
-        "detail": "Body `{schema, values, file_id?}` → `200 {passed, checks: [{name, passed, fields[], message}]}`. Used after extraction and again on corrected data.",
+        "detail": "Body `{schema, values, job_id?}` → `200 {passed, checks: [{name, passed, fields[], message}]}`. Used after extraction and again on corrected data.",
         "story": "MVP1-E3-03"
       },
       {
@@ -960,7 +984,7 @@ export const products = [
     "apiNotes": [
       {
         "story": "MVP1-E3-02",
-        "text": "Extraction itself has no endpoint: it runs inside the job started in E3-01. The job reads the file through Upload `GET /files/{fileId}/download-url`, forwarding the user's access token."
+        "text": "Extraction itself has no endpoint: it runs inside the job started in E3-01. The job reads the file through Upload `GET /files/{fileId}/download-url` with a delegated token for the owner (decision on #24)."
       },
       {
         "story": "MVP1-E3-04",
@@ -981,7 +1005,7 @@ export const products = [
       {
         "story": "MVP1-E3-03",
         "title": "Rule checks and final confidence",
-        "text": "`extraction.fields` adds confidence numeric(3,2), flagged boolean, flag_reasons text[]. Index `extraction.fields(job_id) where flagged`."
+        "text": "`extraction.fields` adds confidence numeric(3,2), flagged boolean, flag_reasons text[]. Index `extraction.fields(job_id) where flagged`. `extraction.page_texts` (job_id → jobs, page, source `text_layer|ocr`, text, created_at): each page's text, for the quote check; deleted with the job."
       },
       {
         "story": "MVP1-E3-04",
@@ -1052,6 +1076,10 @@ export const products = [
           {
             "label": "AC3",
             "text": "On desktop: Enter accepts, E edits, ↓ moves to the next field. On mobile: large tap targets."
+          },
+          {
+            "label": "AC4",
+            "text": "Fields can still be corrected after the review is completed, including after payment; each change is recorded the same way, and the latest values are the final document (Nikhil's decision on #45)."
           }
         ],
         "evals": "",
@@ -1093,7 +1121,7 @@ export const products = [
           },
           {
             "label": "AC2",
-            "text": "An admin export produces new ground-truth files for `evals/datasets/` after manual approval. Customer documents are never added automatically."
+            "text": "Approved corrections stay in Review's database; they are never exported to files or to the repository (Nikhil's decision on #41: the repository is public and one user's data must never be seen by another). Reports built from them show aggregates only, never values. Evals that test new prompts use only the synthetic and licensed datasets in `evals/`."
           }
         ],
         "evals": "",
@@ -1122,7 +1150,7 @@ export const products = [
         "path": "/api/review/v1/tasks/{taskId}/fields/{fieldId}",
         "access": "Signed in",
         "summary": "Accept, edit or mark a field as not on the document.",
-        "detail": "Body `{action: accept|edit|not_present, value?}` → `200 {field}`. Errors: `422` invalid date, number or currency; `409` if the task is locked.",
+        "detail": "Body `{action: accept|edit|not_present, value?}` → `200 {field}`. Errors: `422` invalid date, number or currency. Allowed after completion (decision on #45).",
         "story": "MVP1-E4-02"
       },
       {
@@ -1137,7 +1165,7 @@ export const products = [
         "method": "POST",
         "path": "/api/docflow/v1/documents/{documentId}/complete-review",
         "access": "Signed in",
-        "summary": "Finish review for a document: re-checks the corrected data and builds the outputs.",
+        "summary": "Finish review for a document: re-checks the corrected data and completes the Review task; results are built on demand afterwards (ARCHITECTURE.md §12.8).",
         "detail": "Body `{confirm_failed_checks?: boolean}` → `200 {document}`. Calls Extraction `POST /validations`, then Review `complete`. Errors: `409` with `unresolved_fields[]` or `failed_checks[]`.",
         "story": "MVP1-E4-03"
       },
@@ -1150,11 +1178,11 @@ export const products = [
         "story": "MVP1-E4-04"
       },
       {
-        "method": "POST",
-        "path": "/api/review/v1/admin/eval-candidates/export",
+        "method": "GET",
+        "path": "/api/review/v1/admin/accuracy",
         "access": "Admin",
-        "summary": "Export approved corrections as ground-truth files.",
-        "detail": "Body `{candidate_ids[]}` → `200 {files: [{name, url}]}`. Only candidates with status `approved` are exported.",
+        "summary": "How often people correct each field, as counts and rates only, seen by the admin alone (every count shown as it is, decided on #81).",
+        "detail": "Query `since`, `source` → `200 {since, totals, fields[]}`. Replaces the export of corrections (decision on #41).",
         "story": "MVP1-E4-04"
       }
     ],
@@ -1178,7 +1206,7 @@ export const products = [
       {
         "story": "MVP1-E4-04",
         "title": "Corrections feed the eval set",
-        "text": "`review.eval_candidates` (id, task_id, reference, field_name, model_value jsonb, human_value jsonb, status `candidate|approved|rejected|exported`, created_at)."
+        "text": "`review.eval_candidates` (id, task_id, reference, field_name, model_value jsonb, human_value jsonb, status `candidate|approved|rejected`, created_at). `task_id` references `review.tasks` with delete cascade, so candidates are deleted with the task and the account (decision on #41)."
       }
     ]
   },
@@ -1189,8 +1217,8 @@ export const products = [
     "group": "MVP1",
     "service": "DocFlow app",
     "description": "Preview the final JSON, metadata and CSV before paying.",
-    "status": "Planned",
-    "detailed": false,
+    "status": "Designed",
+    "detailed": true,
     "epic": {
       "id": "E5",
       "title": "JSON review, metadata and CSV",
@@ -1268,22 +1296,22 @@ export const products = [
       },
       {
         "id": "MVP1-E5-04",
-        "title": "Store outputs",
+        "title": "Build outputs on demand",
         "size": "S",
         "pending": "",
         "story": "",
         "acs": [
           {
             "label": "AC1",
-            "text": "On review completion, `result.json` and `result.csv` are written to `users/{userId}/{docId}/outputs/`."
+            "text": "`result.json` and `result.csv` are never stored. Every preview and download builds them from Review's latest values and Extraction's metadata, so they always reflect the final document (Nikhil's decision on #45, ARCHITECTURE.md §12.8)."
           },
           {
             "label": "AC2",
-            "text": "If the user later edits fields, the outputs are regenerated and the version increments."
+            "text": "The person can correct values on the results page, before or after paying. Corrections are saved in Review with their history, the checks re-run, and the next preview or download shows them. No new payment is asked for."
           }
         ],
         "evals": "",
-        "service": "DocFlow app (files stored through Upload)"
+        "service": "DocFlow app (values from Human Review, metadata from LLM Extraction)"
       }
     ],
     "endpoints": [
@@ -1291,8 +1319,8 @@ export const products = [
         "method": "GET",
         "path": "/api/docflow/v1/documents/{documentId}/outputs",
         "access": "Signed in",
-        "summary": "The outputs available for a document, and whether download is unlocked.",
-        "detail": "→ `200 {version, locked, formats: [\"json\", \"csv\"], generated_at}`.",
+        "summary": "Results status: whether download is unlocked and whether the current values pass every check.",
+        "detail": "→ `200 {locked, formats: [\"json\", \"csv\"], checks: {passed, failed[]}, last_changed_at}`.",
         "story": "MVP1-E5-01"
       },
       {
@@ -1307,8 +1335,8 @@ export const products = [
         "method": "GET",
         "path": "/api/docflow/v1/documents/{documentId}/outputs/{format}/download",
         "access": "Signed in",
-        "summary": "Download an output.",
-        "detail": "Locked until the order is paid. → `302` to an Upload `download-url` (5 minutes, correct filename). Errors: `402` until the Payment order is `paid`, `404`.",
+        "summary": "Download an output, built from Review's latest values.",
+        "detail": "Locked until the order is paid. → `200` with the file as an attachment (`{document}-result.{format}`, `Cache-Control: no-store`). Errors: `402 payment_required`, `409 outputs_not_ready`.",
         "story": "MVP1-E5-03"
       }
     ],
@@ -1319,7 +1347,7 @@ export const products = [
       },
       {
         "story": "MVP1-E5-04",
-        "text": "No new endpoints. DocFlow builds the files and stores them through Upload `POST /files` with a service token; `version` in `GET …/outputs` increments when they are regenerated."
+        "text": "No new endpoints. Uses `GET …/outputs`, `…/preview` and `…/download` (E5-01, E5-03), which read Review `GET /tasks/{taskId}?all=true` and Extraction `GET /jobs/{jobId}`; corrections use Review `PATCH /tasks/{taskId}/fields/{fieldId}` through Review's component."
       }
     ],
     "dbNotes": [
@@ -1340,8 +1368,8 @@ export const products = [
       },
       {
         "story": "MVP1-E5-04",
-        "title": "Store outputs",
-        "text": "`docflow.outputs` (id, document_id → documents, version, json_file_id, csv_file_id, created_at); unique `(document_id, version)`. The files themselves are `upload.files` rows owned by the user."
+        "title": "Build outputs on demand",
+        "text": "No tables: nothing is stored. The final values stay in `review.fields`, kept until the user deletes their account."
       }
     ]
   },
@@ -1352,8 +1380,8 @@ export const products = [
     "group": "MVP1",
     "service": "Payment",
     "description": "A one-time payment with Stripe Checkout in test mode.",
-    "status": "Planned",
-    "detailed": false,
+    "status": "Designed",
+    "detailed": true,
     "epic": {
       "id": "E6",
       "title": "Payment",
@@ -1432,6 +1460,41 @@ export const products = [
         ],
         "evals": "",
         "service": "Payment (UI component), used by the DocFlow app"
+      },
+      {
+        "id": "MVP1-E6-04",
+        "title": "Refunds",
+        "size": "S",
+        "pending": "Decided on PR #67: refunds are not in the first version of Payment; this story adds them.",
+        "story": "As the owner, I want to refund a paid order in full, so a demo user who was charged by mistake (in test mode) can be put right, and the platform shows how a refund flows through every service.",
+        "acs": [
+          {
+            "label": "AC1",
+            "text": "An admin can refund a paid order in full from the admin page, with a reason. A person always does this: it is session only and never available to API keys or agents."
+          },
+          {
+            "label": "AC2",
+            "text": "Payment creates the refund in Stripe with the order's ID as the idempotency key, so a repeated request never refunds twice. The order becomes `refunded` when Stripe's webhook confirms it (`charge.refunded`), not when the request is sent."
+          },
+          {
+            "label": "AC3",
+            "text": "Payment announces `payment.order.refunded` to the app that created the order (routed by reference, decision on #13). In DocFlow, the document's downloads lock again and its status shows \"Refunded\"; the reviewed data stays."
+          },
+          {
+            "label": "AC4",
+            "text": "The person who paid is emailed through Delivery that the refund was made, with the amount; Stripe's own refund receipt still applies."
+          },
+          {
+            "label": "AC5",
+            "text": "A refund is audited (`order.refunded`) with the admin, the reason and the amount. Partial refunds are not in this version."
+          },
+          {
+            "label": "AC6",
+            "text": "Refunding an order that is not paid answers `409 not_paid`; refunding it again answers `409 already_refunded`."
+          }
+        ],
+        "evals": "",
+        "service": "Payment; DocFlow reacts to the event; Delivery sends the email"
       }
     ],
     "endpoints": [
@@ -1440,7 +1503,7 @@ export const products = [
         "path": "/api/payment/v1/orders",
         "access": "Service",
         "summary": "Create an order and a Stripe Checkout session.",
-        "detail": "Called by an app's server, never the browser. Body `{user_id, reference, description, amount, currency, success_url, cancel_url}` → `201 {order, checkout_url}`; `200` with the open order for the same `reference`. Emits `payment.order.paid|expired|failed`.",
+        "detail": "Called by an app's server with a delegated token for the user who pays, never by the browser (decision on #24). Body `{reference, description, amount, currency, success_url, cancel_url}` → `201 {order, checkout_url}`; `200` with the open order for the same `reference`. Emits `payment.order.paid|expired|failed`.",
         "story": "MVP1-E6-01"
       },
       {
@@ -1456,7 +1519,7 @@ export const products = [
         "path": "/api/payment/v1/webhooks/stripe",
         "access": "Service",
         "summary": "Stripe webhook: marks orders paid, expired or failed.",
-        "detail": "Verifies `Stripe-Signature` → `200`. Already-processed event IDs return `200` with no change. Errors: `400` bad signature.",
+        "detail": "Verifies `Stripe-Signature` → `200`. Already-processed event IDs return `200` with no change. Errors: `400 invalid_stripe_signature`.",
         "story": "MVP1-E6-02"
       },
       {
@@ -1474,12 +1537,28 @@ export const products = [
         "summary": "Get one order, for payment and success pages to poll.",
         "detail": "→ `200 {order: {id, reference, description, amount, currency, status: pending|paid|expired|failed}}`.",
         "story": "MVP1-E6-03"
+      },
+      {
+        "method": "POST",
+        "path": "/api/payment/v1/orders/{orderId}/refund",
+        "access": "Admin, session only",
+        "summary": "Refund a paid order in full.",
+        "detail": "Body `{reason}` + `Idempotency-Key` → `202 {order}` with status `refund_pending`. Errors: `409 not_paid`, `409 already_refunded`, `503 stripe_unavailable`.",
+        "story": "MVP1-E6-04"
       }
     ],
     "apiNotes": [
       {
         "story": "MVP1-E6-03",
         "text": "The page also calls DocFlow `POST …/checkout` (E6-01)."
+      },
+      {
+        "story": "MVP1-E6-04",
+        "text": "The Stripe webhook (`MVP1-E6-02`) also handles `charge.refunded`."
+      },
+      {
+        "story": "MVP1-E6-04",
+        "text": "DocFlow's webhook handles `payment.order.refunded`."
       }
     ],
     "dbNotes": [
@@ -1497,6 +1576,11 @@ export const products = [
         "story": "MVP1-E6-03",
         "title": "Payment page and states",
         "text": "No schema change."
+      },
+      {
+        "story": "MVP1-E6-04",
+        "title": "Refunds",
+        "text": "`payment.orders.status` adds `refund_pending` and `refunded`; the order adds `refund_reason`, `stripe_refund_id` (unique) and `refunded_at`. `docflow.documents.status` adds `refunded`."
       }
     ]
   },
@@ -1507,8 +1591,8 @@ export const products = [
     "group": "MVP1",
     "service": "Delivery",
     "description": "Get the files immediately by secure download, with a copy by email.",
-    "status": "Planned",
-    "detailed": false,
+    "status": "Designed",
+    "detailed": true,
     "epic": {
       "id": "E7",
       "title": "Success, download and email",
@@ -1547,7 +1631,7 @@ export const products = [
         "acs": [
           {
             "label": "AC1",
-            "text": "Each download checks on the server that the user owns the document and the order is paid, then redirects to a presigned GET URL valid for 5 minutes, with the right filename."
+            "text": "Each download checks on the server that the user owns the document and the order is paid, then returns the file built from Review's latest values, with the right filename and `Cache-Control: no-store`. A generated result is a few kilobytes and never stored, so it is returned directly; stored files such as uploads still move only by short-lived presigned links."
           },
           {
             "label": "AC2",
@@ -1555,7 +1639,7 @@ export const products = [
           }
         ],
         "evals": "",
-        "service": "DocFlow app (links from Upload)"
+        "service": "DocFlow app"
       },
       {
         "id": "MVP1-E7-03",
@@ -1587,7 +1671,7 @@ export const products = [
         "path": "/api/delivery/v1/messages",
         "access": "Service",
         "summary": "Send a templated email to a user.",
-        "detail": "Called by an app's server. Body `{user_id, template, data, reference}` + `Idempotency-Key` → `202 {message}`. Retries 3 times with backoff. Emits `delivery.message.failed` on permanent failure.",
+        "detail": "Called by an app's server with a delegated token for the recipient (decision on #24). Body `{template, data, reference}` + `Idempotency-Key` → `202 {message}`. Retries 3 times with backoff. Emits `delivery.message.failed` on permanent failure.",
         "story": "MVP1-E7-03"
       },
       {
@@ -1606,11 +1690,15 @@ export const products = [
       },
       {
         "story": "MVP1-E7-02",
-        "text": "Uses DocFlow `GET …/outputs/{format}/download` (E5-03), which checks the Payment order and redirects to an Upload `download-url`."
+        "text": "Uses DocFlow `GET …/outputs/{format}/download` (E5-03), which checks the Payment order and returns the file."
       },
       {
         "story": "MVP1-E7-03",
         "text": "DocFlow calls `POST /messages` when it receives `payment.order.paid` on its webhook (E0-09), so the email is triggered by the server, not the browser."
+      },
+      {
+        "story": "MVP1-E7-03",
+        "text": "Delivery reads the recipient's verified address at send time with Identity `GET /api/identity/v1/users/{userId}` (service only, scope `identity:users.read`; designed with `MVP1-E1-05`). Decided by Nikhil on PR #68; the address is never passed in a request or an event."
       }
     ],
     "dbNotes": [
@@ -1864,6 +1952,91 @@ export const products = [
         ],
         "evals": "",
         "service": "Identity and service template"
+      },
+      {
+        "id": "MVP2-E8-10",
+        "title": "Account security on our own screens",
+        "size": "S",
+        "pending": "",
+        "story": "Decided by Nikhil on 17 Nov 2026 (issue #26): in MVP1, \"Change password\" uses Cognito's hosted forgot-password page; our own screens come with hand-built identity. As a user, I want to manage how I sign in on 01scale's own account page, without being sent to another site.",
+        "acs": [
+          {
+            "label": "AC1",
+            "text": "`/account/security` replaces MVP1's \"Change password\" button. MVP2 sign-in is passwordless, so there is no password to change: the page lists my sign-in methods (my email for magic links and codes, and my passkeys), and I can add a passkey, remove one (with re-authentication, `MVP2-E8-07`) or change my email."
+          },
+          {
+            "label": "AC2",
+            "text": "No step sends me to an outside page. Every action is an Identity endpoint with its UI component in `packages/ui-identity`."
+          },
+          {
+            "label": "AC3",
+            "text": "An MVP1 user who signed in with a password and has not yet set up a passkey sees a prompt to add one."
+          }
+        ],
+        "evals": "",
+        "service": "Identity"
+      },
+      {
+        "id": "MVP2-E8-11",
+        "title": "Deactivate first, delete after 30 days",
+        "size": "S",
+        "pending": "",
+        "story": "Decided by Nikhil on 20 Nov 2026 (PR #70): MVP1 deletes an account at once; MVP2 adds a 30-day window to undo a deletion. As a user, I want a deleted account to stay recoverable for 30 days, so a mistake or a change of mind does not lose my work, while my data is still erased for good afterwards.",
+        "acs": [
+          {
+            "label": "AC1",
+            "text": "\"Delete account\" deactivates the account at once: I am signed out everywhere, my sessions, API keys and agents stop working, and no one can reach my data. I see the date it will be deleted for good."
+          },
+          {
+            "label": "AC2",
+            "text": "Signing in within 30 days offers **Restore account**, which brings everything back as it was. After restoring, nothing has been deleted."
+          },
+          {
+            "label": "AC3",
+            "text": "After 30 days, a daily job deletes the account for good through the existing `identity.user.deleted` event, so every service deletes or anonymizes its own data exactly as in MVP1. \"Delete now\" skips the wait for anyone who asks."
+          },
+          {
+            "label": "AC4",
+            "text": "While deactivated, the account receives no emails, and `GET /api/identity/v1/users/{userId}` answers `404`, so no service writes to it."
+          },
+          {
+            "label": "AC5",
+            "text": "Deactivation, restore and the final deletion are each audited. The consent line and the account page say that deletion completes 30 days after the request."
+          }
+        ],
+        "evals": "",
+        "service": "Identity only: other services need no change, because a deactivated user cannot sign in and their data is reachable only by them."
+      },
+      {
+        "id": "MVP2-E8-12",
+        "title": "Rotate service client secrets without downtime",
+        "size": "S",
+        "pending": "",
+        "story": "Decided by Nikhil on 20 Nov 2026 (PR #73): parked for MVP2. In MVP1 a client secret changes only with a database migration and a deployment. As the owner, I want to change a service's or app's client secret without any moment where its calls fail, so a leaked or old secret can be replaced at once and routinely.",
+        "acs": [
+          {
+            "label": "AC1",
+            "text": "Each client can hold two active secrets at the same time. Identity accepts either while both are active."
+          },
+          {
+            "label": "AC2",
+            "text": "Rotating is three steps with no downtime: add a new secret; set it in the client's environment and redeploy; retire the old secret. Retiring it takes effect on the next sign-in; tokens already issued last at most 5 minutes."
+          },
+          {
+            "label": "AC3",
+            "text": "A secret can also be retired at once in an emergency, for example after a leak, even if the client then fails until it has the new one."
+          },
+          {
+            "label": "AC4",
+            "text": "The admin page shows, per client, when each secret was created and last used, so an unused old secret is easy to spot. Each secret is shown once at creation and stored only as a hash."
+          },
+          {
+            "label": "AC5",
+            "text": "Adding and retiring secrets are admin and session-only actions, never available to API keys or agents, and are audited."
+          }
+        ],
+        "evals": "",
+        "service": "Identity"
       }
     ],
     "endpoints": [
@@ -2026,6 +2199,38 @@ export const products = [
         "summary": "Users migrated from Cognito vs not yet migrated.",
         "detail": "→ `200 {migrated, pending, cutoff_at}`.",
         "story": "MVP2-E8-08"
+      },
+      {
+        "method": "POST",
+        "path": "/api/identity/v1/me/restore",
+        "access": "Signed in during the 30 days",
+        "summary": "Restore my account.",
+        "detail": "→ `200 {user}`. Errors: `409 not_deactivated`.",
+        "story": "MVP2-E8-11"
+      },
+      {
+        "method": "POST",
+        "path": "/api/identity/v1/admin/service-clients/{clientId}/secrets",
+        "access": "Admin, session only",
+        "summary": "Add a secret.",
+        "detail": "→ `201 {secret_id, secret}`, the secret shown once. Errors: `409 too_many_secrets` when two are already active.",
+        "story": "MVP2-E8-12"
+      },
+      {
+        "method": "DELETE",
+        "path": "/api/identity/v1/admin/service-clients/{clientId}/secrets/{secretId}",
+        "access": "Admin, session only",
+        "summary": "Retire a secret.",
+        "detail": "→ `204`. Errors: `409 last_secret` unless `?emergency=true`.",
+        "story": "MVP2-E8-12"
+      },
+      {
+        "method": "GET",
+        "path": "/api/identity/v1/admin/service-clients",
+        "access": "Admin",
+        "summary": "Clients with their secrets' created and last-used dates.",
+        "detail": "Never returns a secret.",
+        "story": "MVP2-E8-12"
       }
     ],
     "apiNotes": [
@@ -2036,6 +2241,14 @@ export const products = [
       {
         "story": "MVP2-E8-09",
         "text": "No new endpoints. The gateway checks the `Origin` header on cookie-authenticated writes; API-key requests are exempt from CSRF checks because they carry no ambient credentials."
+      },
+      {
+        "story": "MVP2-E8-10",
+        "text": "No new endpoints: composes `GET /api/identity/v1/passkeys` and `DELETE …/passkeys/{passkeyId}` (`MVP2-E8-04`), `POST /api/identity/v1/me/email-change` (`MVP2-E8-07`) and `GET /api/identity/v1/sessions` (`MVP2-E8-06`). Removes `POST /api/identity/v1/me/password-change` (MVP1), with a deprecation note in the changelog."
+      },
+      {
+        "story": "MVP2-E8-11",
+        "text": "`DELETE /api/identity/v1/me` (signed in, session only) now deactivates. Body `{confirm: \"DELETE\"}` → `202 {deletes_at}`. With `{confirm: \"DELETE\", now: true}` it deletes at once, as in MVP1."
       }
     ],
     "dbNotes": [
@@ -2083,6 +2296,21 @@ export const products = [
         "story": "MVP2-E8-09",
         "title": "Auth security hardening",
         "text": "No schema change."
+      },
+      {
+        "story": "MVP2-E8-10",
+        "title": "Account security on our own screens",
+        "text": "No schema change."
+      },
+      {
+        "story": "MVP2-E8-11",
+        "title": "Deactivate first, delete after 30 days",
+        "text": "`identity.users` adds `deactivated_at` and `deletes_at` (both empty unless deactivated). A partial index on `deletes_at` serves the daily job."
+      },
+      {
+        "story": "MVP2-E8-12",
+        "title": "Rotate service client secrets without downtime",
+        "text": "`identity.service_client_secrets` (id, client_id → service_clients, secret_hash unique, created_at, last_used_at, retired_at), replacing `service_clients.secret_hash`. A partial unique rule allows at most two active secrets per client."
       }
     ]
   },
@@ -2169,6 +2397,33 @@ export const products = [
         ],
         "evals": "MD-1 batch completeness, MD-2 batch latency, MD-3 accuracy in batch vs alone.",
         "service": "DocFlow app"
+      },
+      {
+        "id": "MVP2-E9-04",
+        "title": "Keep original documents beyond 30 days",
+        "size": "S",
+        "pending": "",
+        "story": "Decided by Nikhil on 17 Nov 2026 (ARCHITECTURE.md §12.8): in MVP1, originals are deleted after 30 days; keeping them longer is for MVP2. As a user, I want to see the original invoice beside its results months later, so I can check a value against the document.",
+        "acs": [
+          {
+            "label": "AC1",
+            "text": "An app can ask Upload to keep a file until the owner deletes it or their account (`retention: until_deleted`), instead of the default 30 days."
+          },
+          {
+            "label": "AC2",
+            "text": "DocFlow keeps the originals of documents whose review is complete; files never completed still expire after 30 days."
+          },
+          {
+            "label": "AC3",
+            "text": "The S3 lifecycle rule applies only to files tagged for expiry, so kept files are not removed. Storage cost per user is shown on the admin page."
+          },
+          {
+            "label": "AC4",
+            "text": "Deleting a document or the account deletes its original at once, as today."
+          }
+        ],
+        "evals": "",
+        "service": "Upload (provider), then DocFlow"
       }
     ],
     "endpoints": [
@@ -2219,6 +2474,14 @@ export const products = [
         "summary": "Batch status with each document's step and status.",
         "detail": "→ `200 {batch, documents: [{id, file_name, step, status}], summary: {extracted, needs_review, failed}}`.",
         "story": "MVP2-E9-03"
+      },
+      {
+        "method": "PATCH",
+        "path": "/api/upload/v1/files/{fileId}",
+        "access": "Signed in",
+        "summary": "change a file's retention.",
+        "detail": "Body `{retention: \"30_days\"|\"until_deleted\"}` → `200 {file}`.",
+        "story": "MVP2-E9-04"
       }
     ],
     "apiNotes": [
@@ -2242,6 +2505,11 @@ export const products = [
         "story": "MVP2-E9-03",
         "title": "Batch status page",
         "text": "No schema change."
+      },
+      {
+        "story": "MVP2-E9-04",
+        "title": "Keep original documents beyond 30 days",
+        "text": "`upload.files.expires_at` becomes nullable: empty means kept until deleted."
       }
     ]
   },
@@ -2311,11 +2579,38 @@ export const products = [
         "acs": [
           {
             "label": "AC1",
-            "text": "`/admin/quality` shows, for the last 30 days: judge agreement with human decisions, the confusion matrix and the fields the judge most often gets wrong."
+            "text": "`/admin/quality` shows, for the last 30 days, **numbers only**: judge agreement with human decisions, the confusion matrix and the fields the judge most often gets wrong. No field value, document or user appears (Nikhil's rule on #41; small-group rules in `MVP2-E10-04`)."
           },
           {
             "label": "AC2",
-            "text": "Cases where the judge and the human disagree can be exported as eval candidates."
+            "text": "The admin can add the cases where the judge and the human disagree to Review's eval candidates, **inside Review's database**, for the admin to approve as in `MVP1-E4-04`. Nothing is exported to files or to the repository, and the candidates are deleted with their owner's account (decisions on #41)."
+          }
+        ],
+        "evals": "",
+        "service": "Human Review"
+      },
+      {
+        "id": "MVP2-E10-04",
+        "title": "Privacy rules for small groups in reports",
+        "size": "S",
+        "pending": "",
+        "story": "Decided by Nikhil on 20 Nov 2026 (PR #81): MVP1's accuracy report shows every count as it is, so it can be tested with few users; MVP2 adds rules so a small count can never point to one person. As the owner, I want reports built from real users' work to stay anonymous as the number of testers grows, so a number can never reveal something about one person's document.",
+        "acs": [
+          {
+            "label": "AC1",
+            "text": "In every admin report built from users' data (the accuracy report of `MVP1-E4-04` and the judge vs human dashboard of `MVP2-E10-03`), a row whose numbers come from **fewer than 2 different people** is hidden or merged into \"Other\". The threshold is configuration."
+          },
+          {
+            "label": "AC2",
+            "text": "A count from enough people is shown as it is, however small, so the report stays useful with few testers."
+          },
+          {
+            "label": "AC3",
+            "text": "Hidden rows are still counted in the totals, and the report says how many rows were hidden and why."
+          },
+          {
+            "label": "AC4",
+            "text": "Unit tests cover the edge cases: one person with many corrections, many people with one each, and a total that would let a hidden row be worked out by subtraction."
           }
         ],
         "evals": "",
@@ -2333,10 +2628,10 @@ export const products = [
       },
       {
         "method": "POST",
-        "path": "/api/review/v1/admin/quality/export",
-        "access": "Admin",
-        "summary": "Export judge/human disagreements as eval candidates.",
-        "detail": "→ `201 {created}` rows in `review.eval_candidates`.",
+        "path": "/api/review/v1/admin/quality/candidates",
+        "access": "Admin, session only",
+        "summary": "Add judge/human disagreements to `review.eval_candidates`, inside Review's database.",
+        "detail": "→ `201 {created}`: a count only, no values. Nothing leaves the service.",
         "story": "MVP2-E10-03"
       }
     ],
@@ -2352,6 +2647,10 @@ export const products = [
       {
         "story": "MVP2-E10-03",
         "text": "Review can compare judge and human because each review field stores the judge verdict it was created with."
+      },
+      {
+        "story": "MVP2-E10-04",
+        "text": "No new endpoints. `GET /api/review/v1/admin/accuracy` and the judge vs human report add `hidden_rows` and apply the rule."
       }
     ],
     "dbNotes": [
@@ -2369,6 +2668,11 @@ export const products = [
         "story": "MVP2-E10-03",
         "title": "Judge vs human dashboard",
         "text": "No new tables; aggregates `review.fields.judge_verdict` against `review.field_changes`."
+      },
+      {
+        "story": "MVP2-E10-04",
+        "title": "Privacy rules for small groups in reports",
+        "text": "No schema change; the rule counts distinct `review.tasks.owner_id` per row."
       }
     ]
   },
@@ -2649,7 +2953,7 @@ export const products = [
       {
         "story": "MVP2-E12-02",
         "title": "Batch outputs",
-        "text": "`docflow.outputs` adds batch_id null, zip_file_id; a batch output row has `document_id` null."
+        "text": "No tables: like single documents, batch results (JSON, CSV and the zip) are built on demand from each document's Review values and never stored (ARCHITECTURE.md §12.8)."
       }
     ]
   },

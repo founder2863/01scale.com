@@ -25,11 +25,22 @@ What a person sees and what the system does while checking flagged values, in ve
 | Step | The person | The system |
 |---|---|---|
 | 1 | Taps Complete review. | The app re-runs the rule checks on the corrected values through the LLM Extraction service. |
-| 2 | If every check passes: is taken to the results. | The app completes the task in Review; the values are locked and Review announces that the task is completed. |
-| 3 | If a check still fails: sees which one, for example 'Subtotal plus tax doesn't equal the total', with Fix it or 'Values are correct as on the document'. | Nothing is locked yet. |
+| 2 | If every check passes: is taken to the results. | The app completes the task in Review, which marks it finished and announces that the task is completed. |
+| 3 | If a check still fails: sees which one, for example 'Subtotal plus tax doesn't equal the total', with Fix it or 'Values are correct as on the document'. | Nothing is completed yet. |
 | 4 | Confirms the values are as printed. | The task is completed with `checks_overridden`, so the record shows the person chose to keep them. |
 
-**Result:** The values are final and ready for the results. Nothing can change them afterwards.
+**Result:** The values are ready for the results. The person can still correct them later; the latest values are the final document.
+
+## Correct a value after finishing
+
+**Who:** Someone looking at their results, before or after paying · **Starts when:** Spots a wrong value on the results page. · **Stories:** `MVP1-E4-02`, `MVP1-E5-04`
+
+| Step | The person | The system |
+|---|---|---|
+| 1 | Taps Edit beside the value, types the right one and saves. | Review checks the value by its type and records the change with the old value, as during the review. |
+| 2 | Sees the results with the corrected value. | The app re-runs the rule checks and rebuilds the results from Review's latest values. No new payment is asked for. |
+
+**Result:** The corrected values are the final document, with the full history of changes kept.
 
 ## Review on a computer with the keyboard
 
@@ -51,9 +62,9 @@ What a person sees and what the system does while checking flagged values, in ve
 |---|---|---|
 | 1 | Sees each correction: the field, what the system said and what the person changed it to. | Review lists candidates waiting for a decision. |
 | 2 | Approves the ones that are real model mistakes and rejects the rest. | Each decision is recorded with who and when. |
-| 3 | Exports the approved ones. | Review writes ground-truth files with the corrected values and returns links. The documents themselves are never added automatically. |
+| 3 | Opens the accuracy report: per field, how often people corrected it and how many corrections had been flagged, as numbers only. | Review counts its own records. No value, reference or user ID leaves the service. |
 
-**Result:** Real mistakes become test cases, so the next prompt change is measured against them.
+**Result:** The owner sees where the model makes real mistakes, without any user's data leaving their account. New prompts are tested on the synthetic eval set.
 
 ## When something goes wrong
 
@@ -63,7 +74,5 @@ What a person sees and what the system does while checking flagged values, in ve
 | Types letters into an amount | 'Enter a number, like 1230.00.' | `invalid_decimal` |
 | Types a currency that is not a real code | 'Enter a 3-letter currency code, like USD.' | `invalid_currency` |
 | Tries to complete with fields still to check | Complete review stays disabled; the remaining fields are highlighted. | `fields_unresolved` |
-| Edits after the review was completed, for example in a second tab | 'This review is finished, so values can't change.' | `task_completed` |
 | Follows a link to someone else's review | 'Not found.' | `task_not_found` |
-| Exports a correction that was not approved | 'Approve these first.' with the list. | `candidate_not_approved` |
 | Is signed out | Is taken to sign in, then back to the review. | `not_authenticated` |

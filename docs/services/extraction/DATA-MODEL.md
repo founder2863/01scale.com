@@ -19,7 +19,8 @@ What the service keeps, how the pieces relate, and what every field means. The S
 |---|---|
 | Job | `queued` when asked for → `processing` when the background work starts → `extracted` when its fields are saved, or `failed` after the last retry. A job left `queued` for a minute is picked up by the sweep. |
 | Field | Created with all its job's fields in one step → never changed → deleted only with its job or its owner's account. |
-| The document's content | Fetched through a 5-minute Upload link into memory for the model call, then dropped. Never written to disk or to the database. |
+| The document's content | Fetched through a 5-minute Upload link into memory, then dropped. Only each page's text is saved (`extraction.page_texts`), for the quote check. |
+| Page text | Saved when the job reads the document → never changed → deleted with its job or its owner's account. It stays inside the owner's account like every other record (privacy rule on #41). |
 
 ## `extraction.jobs`
 
@@ -33,7 +34,7 @@ One row per attempt to read one file. A retry is a new job, so the history of at
 | `schema` | `text` | No |  | `invoice-v1` in version 1 | Which fields were extracted, and so which prompt and rules applied. |
 | `reference` | `text` | Yes |  | 1 to 200 characters | The caller's own label, returned in events. Opaque to Extraction. |
 | `status` | `text` | No | 'queued' | One of `queued`, `processing`, `extracted`, `failed` | Where the job is. |
-| `step` | `text` | Yes |  | One of `fetching_file`, `reading_document`, `checking_rules`, `saving` | The step running now, or the step that failed. Empty while queued and after success. |
+| `step` | `text` | Yes |  | One of `fetching_file`, `reading_text`, `reading_document`, `checking_rules`, `saving` | The step running now, or the step that failed. Empty while queued and after success. |
 | `attempt` | `smallint` | No | 1 | 1 to 3 | Which try this is within the job: the first, or one of the 2 retries after a temporary failure. |
 | `model` | `text` | No |  | 1 to 100 characters | The Claude model used, from configuration at the time (`MVP1-E3-02` AC3). |
 | `prompt_version` | `text` | No |  | Like `extract-invoice/v1` | The versioned prompt used, so a result can always be traced to its prompt. |
@@ -44,7 +45,7 @@ One row per attempt to read one file. A retry is a new job, so the history of at
 | `tokens_out` | `integer` | Yes |  | 0 or more | Tokens the model returned. |
 | `cost_usd` | `numeric(10,6)` | Yes |  | 0 or more | Estimated model cost of this job, from the tokens and the model's price per token in configuration. Six decimals because one job costs fractions of a cent. |
 | `duration_ms` | `integer` | Yes |  | 0 or more | Time from start of processing to the end, in milliseconds. |
-| `error_code` | `text` | Yes |  | One of `file_unavailable`, `document_unreadable`, `model_unavailable`, `output_invalid`, `timed_out`; set exactly when failed | Why the job failed, as a stable code. |
+| `error_code` | `text` | Yes |  | One of `file_unavailable`, `document_unreadable`, `no_text_found`, `model_unavailable`, `output_invalid`, `timed_out`; set exactly when failed | Why the job failed, as a stable code. |
 | `error_message` | `text` | Yes |  | Set exactly when failed | The plain-language message a person sees. |
 | `created_at` | `timestamptz` | No | now() |  | When the job was asked for. |
 | `started_at` | `timestamptz` | Yes |  | Not before `created_at` | When processing began. |
@@ -69,6 +70,18 @@ One row per value read from a document: a header field, or one field of one line
 | `flag_reasons` | `text[]` | No | '{}' | Plain-language reasons | Why it was flagged, for example 'Total ≠ subtotal + tax' or 'Low confidence (0.62)'. |
 | `created_at` | `timestamptz` | No | now() |  | When it was saved. |
 
+## `extraction.page_texts`
+
+The text of each page a job read: from the PDF's text layer, or by OCR for scans and photos. Used to check that every quote is really in the document.
+
+| Field | Type | Empty allowed | Default | Constraints | What it means |
+|---|---|---|---|---|---|
+| `job_id` | `uuid` | No |  | Part of the primary key; foreign key to `extraction.jobs`, delete cascades | Which job read it. |
+| `page` | `smallint` | No |  | 1 to 10; part of the primary key | Which page. |
+| `source` | `text` | No |  | `text_layer` or `ocr` | Where the text came from. OCR text can contain reading mistakes, which the eval set measures. |
+| `text` | `text` | No |  | Up to 100,000 characters; may be empty for a blank page | The page's text. |
+| `created_at` | `timestamptz` | No | now() |  | When it was read. |
+
 ## `extraction.inbound_events`
 
 One row per platform event Extraction has acted on, so a repeated delivery has no effect.
@@ -85,7 +98,7 @@ The service template also gives Extraction `audit_events`, `idempotency_keys` an
 
 ## Business rules
 
-- A job only ever reads a file its owner can read: the file is fetched through Upload with the owner's own access token.
+- A job only ever reads a file its owner can read: the background job fetches it through Upload with a delegated token for the owner (`upload:read`, `act: service:extraction`), so Upload's ownership check applies and no user token is stored.
 - At most one job per file and schema is `queued` or `processing` at a time, so the same document is never read or billed twice at once.
 - A job only moves forward: `queued` → `processing` → `extracted` or `failed`. A failed job is never restarted; a retry is a new job.
 - Fields are written once, all together, when a job succeeds, and never changed. A failed job has no fields.
@@ -97,7 +110,7 @@ The service template also gives Extraction `audit_events`, `idempotency_keys` an
 
 ## What is deliberately not stored
 
-- The document itself: it stays in the Upload service.
+- The document itself: it stays in the Upload service. Only its page text is kept, for the quote check.
 - The model's raw answer: only the validated fields are saved, so invalid output is never kept.
 - The prompt text on each job: only its version; the text lives in `prompts/`.
 - Document content in logs: logs carry IDs, counts and timings only.

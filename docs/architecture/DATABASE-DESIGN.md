@@ -43,6 +43,7 @@ Neon Postgres, defined in Drizzle and changed only through migrations. **Each se
 | identity | `sessions` | Browser sessions; only a hash of the token is stored. | `MVP1-E1-03` |
 | identity | `signing_keys` | Keys that sign access tokens. | `MVP1-E1-03` |
 | identity | `api_keys` | Keys for agents and scripts; hash only. | `MVP1-E0-06` |
+| identity | `service_clients` | Services and apps allowed to get tokens, and what they may do for users; secret hash only. | `MVP1-E1-03` |
 | identity | `auth_identities` | How a user can sign in (email, passkey). | `MVP2-E8-01` |
 | identity | `login_tokens` | Magic links and one-time codes; hash only. | `MVP2-E8-01` |
 | identity | `passkeys` | WebAuthn credentials. | `MVP2-E8-01` |
@@ -53,6 +54,7 @@ Neon Postgres, defined in Drizzle and changed only through migrations. **Each se
 | upload | `files` | A stored file with its checks and status. | `MVP1-E2-02` |
 | extraction | `jobs` | One extraction attempt, with model, cost and timing. | `MVP1-E3-01` |
 | extraction | `fields` | The model's output: value, confidence and evidence. Never edited. | `MVP1-E3-02` |
+| extraction | `page_texts` | Each page's text (text layer or OCR), for the quote check. | `MVP1-E3-03` |
 | extraction | `job_groups` | Jobs run together with a concurrency limit. | `MVP2-E9-02` |
 | extraction | `pipeline_runs` | Per-node checkpoints so a retry resumes. | `MVP2-E9-02` |
 | extraction | `field_judgements` | The judge model's verdict on a field. | `MVP2-E10-01` |
@@ -74,7 +76,6 @@ Neon Postgres, defined in Drizzle and changed only through migrations. **Each se
 | delivery | `notifications` | Every notification attempt per channel. | `MVP2-E14-04` |
 | docflow | `documents` | The process record: IDs of the file, job, review task and order for one invoice. | `MVP1-E0-09` |
 | docflow | `inbound_events` | Processed service event IDs. | `MVP1-E0-09` |
-| docflow | `outputs` | Generated JSON and CSV file IDs, versioned. | `MVP1-E5-04` |
 | docflow | `batches` | A group of documents processed together. | `MVP2-E9-01` |
 
 ## How records link across services

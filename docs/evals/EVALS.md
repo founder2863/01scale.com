@@ -19,7 +19,7 @@ Every LLM feature is measured against a fixed dataset with thresholds that block
 | `enrichment` | Real public vendors with hand-verified metadata (MVP2) | 30 |
 | `chat` | Scripted correction instructions with expected diffs (MVP2) | 40 |
 
-**Sourcing:** synthetic invoices generated from templates (varied layouts, fonts, currencies), public sample invoices with clear licences, and approved corrections from production (MVP1-E4-04). **No real customer documents** without explicit consent.
+**Sourcing:** synthetic invoices generated from templates (varied layouts, fonts, currencies) and public sample invoices with clear licences. Nothing in `evals/` comes from a user: the repository is public, and a user's data never leaves their account (Nikhil's decision on #41). Real users' corrections stay in Human Review's database (MVP1-E4-04); anything reported from them is an aggregate, never a value.
 
 **Coverage required in each invoice set:** clean digital PDF; scanned or photographed (skewed, low light); multi-page line items; no tax; multiple taxes; non-USD currency; handwritten notes; credit note (negative totals); missing invoice number; dense line items (>25 rows).
 
