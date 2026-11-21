@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Cover } from "./home/cover";
 
 export default function Home() {
   return (
@@ -16,6 +17,8 @@ export default function Home() {
           </Link>
         </div>
       </section>
+
+      <Cover />
 
       <div className="container content cards">
         <section className="card">

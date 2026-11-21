@@ -434,6 +434,17 @@ As a visitor on a module page, I want to see every app that uses this module and
 - **API design:** No endpoints.
 - **Database design:** No tables.
 
+
+### MVP1-E0-36 · Home page cover: apps and platforms I launched, enabled and scaled — S
+As a hiring manager landing on 01scale, I want one picture of what Nikhil built across his career, so I understand his strengths before opening any product.
+- **AC1:** The home page opens, below the hero, with a cover titled "Apps & platforms I launched, enabled and scaled", from Nikhil's own summary graphic (21 Nov 2026). It has three areas: **Embedded Products Platform** ($100M+ GTV · $4M+ ARR), **Integration Platform (iPaaS)** (300K+ partners self-integrating) and **Data & AI APIs** (+20–40% quote-to-bind).
+- **AC2:** Each area shows its apps (the app layer), the platform capabilities under them (the platform layer) and Nikhil's functional expertise, with a legend for the three, and arcs that link the expertise across areas.
+- **AC3:** It is built as part of the page, not an image: readable from 320 to 1920 pixels wide, in light and dark mode. On a phone the areas stack and the arcs are hidden.
+- **AC4:** The words and figures live in one data file (`app/home/profile.ts`), with the other home page content that follows (numbers, experience, responsibilities, academics, recommendations), so a figure is changed in one place.
+- **Service:** Site (`apps/web`)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
 ---
 
 ## E1 · Accounts with AWS Cognito (MVP1 "a")

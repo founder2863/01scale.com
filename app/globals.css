@@ -2161,3 +2161,209 @@ section[id] {
   justify-content: space-between;
   align-items: center;
 }
+
+/* Home page cover (MVP1-E0-36): apps and platforms launched, enabled and scaled.
+   Phones: everything stacks. 900px+: intro on top, three areas side by side.
+   1280px+: intro and three areas in one row. */
+.cover {
+  padding: 36px 0 40px;
+  border-bottom: 1px solid var(--border);
+}
+
+.cover-grid {
+  display: grid;
+  gap: 32px;
+}
+
+.cover-intro h2 {
+  margin: 0 0 16px;
+  padding-left: 14px;
+  border-left: 4px solid var(--brand);
+  font-size: clamp(1.4rem, 2.6vw, 1.9rem);
+  line-height: 1.2;
+}
+
+.cover-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.cover-legend li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cover-key {
+  display: inline-block;
+  width: 26px;
+  height: 14px;
+  border-radius: 5px;
+}
+
+.cover-key-app {
+  border: 1.5px solid var(--link);
+}
+
+.cover-key-platform {
+  border-radius: 999px;
+  background: var(--brand);
+}
+
+.cover-key-arc {
+  width: 26px;
+  height: 14px;
+  color: var(--link);
+}
+
+.cover-area h3 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.cover-metric {
+  margin: 4px 0 14px;
+  color: var(--link);
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.cover-apps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cover-apps li {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 58px;
+  padding: 8px 6px;
+  border: 1.5px solid var(--link);
+  border-radius: 10px;
+  background: var(--bg);
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+}
+
+/* The line from each app down to the platform it is built on. */
+.cover-apps li::after {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  width: 1.5px;
+  height: 16px;
+  background: var(--link);
+  content: "";
+}
+
+.cover-platform {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin: 16px 0 0;
+  padding: 14px 10px;
+  border: 1.5px solid var(--link);
+  border-radius: 14px;
+  background: var(--chip-bg);
+  list-style: none;
+}
+
+.cover-platform li {
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--brand);
+  color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.cover-expertise {
+  position: relative;
+  margin-top: 14px;
+  text-align: center;
+}
+
+.cover-expertise-pill {
+  display: inline-block;
+  margin: 0;
+  padding: 8px 18px;
+  border-radius: 999px;
+  background: var(--text);
+  color: var(--bg);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.cover-modes {
+  margin: 6px 0 0;
+  color: var(--link);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.cover-arc {
+  display: none;
+}
+
+@media (min-width: 900px) {
+  .cover-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: 40px;
+  }
+
+  .cover-intro {
+    grid-column: 1 / -1;
+  }
+
+  .cover-area {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .cover-expertise {
+    margin-top: auto;
+    padding-top: 14px;
+  }
+
+  /* The arc reaches back across the gap to the previous area's expertise. */
+  .cover-arc {
+    position: absolute;
+    top: 6px;
+    left: -58px;
+    display: block;
+    width: 72px;
+    height: 32px;
+    color: var(--link);
+  }
+}
+
+@media (min-width: 1280px) {
+  .cover-grid {
+    grid-template-columns: minmax(200px, 0.8fr) repeat(3, minmax(0, 1fr));
+  }
+
+  .cover-intro {
+    grid-column: auto;
+  }
+
+  .cover-legend {
+    flex-direction: column;
+  }
+}
