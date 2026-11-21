@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+import { products } from "../../products/data";
+import { coreComponents } from "../core";
 
 export const metadata: Metadata = {
-  title: "Architecture — 01scale",
+  title: "Platform Architecture — 01scale",
   description:
     "How 01scale is built: independent platform services behind one gateway, and the reasoning behind that choice.",
 };
@@ -23,6 +26,9 @@ const services = [
   { name: "Payment", job: "Orders and checkout" },
   { name: "Delivery", job: "Email, later SMS and push" },
 ];
+
+// Platform services, in the order of the DocFlow journey; apps are on Apps Architecture.
+const serviceNames = ["Identity", "Upload", "LLM Extraction", "Human Review", "Payment", "Delivery"];
 
 const options = [
   {
@@ -129,8 +135,8 @@ export default function Architecture() {
     <>
       <section className="hero hero-small">
         <div className="container">
-          <p className="eyebrow">Platform design</p>
-          <h1>Architecture</h1>
+          <p className="eyebrow">Platform</p>
+          <h1>Platform Architecture</h1>
           <p className="lead">
             01scale is a set of independent platform services. Apps are
             assembled from them. This is how it fits together and why I built
@@ -171,7 +177,55 @@ export default function Architecture() {
           <p className="note">
             A service knows nothing about the apps that use it. Upload stores
             files, not invoices. That is what lets the next app reuse it.
+            How each app uses the services is in{" "}
+            <Link href="/platform/apps">Apps Architecture</Link>.
           </p>
+        </section>
+
+        <section>
+          <h2 className="group-title">Platform Core</h2>
+          <p className="note">
+            The shared components every service is built on, so no service
+            rebuilds them.
+          </p>
+          <ul className="link-list">
+            {coreComponents.map((component) => (
+              <li key={component.slug}>
+                <Link className="status" href={`/platform/core/${component.slug}`}>
+                  {component.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <section>
+          <h2 className="group-title">The services, one by one</h2>
+          <p className="note">
+            Each service&apos;s own design is on its module pages. Its
+            Architecture &amp; System Design section (story MVP1-E0-20) will
+            appear there.
+          </p>
+          <dl className="decisions">
+            {serviceNames.map((service) => (
+              <div key={service}>
+                <dt>{service}</dt>
+                <dd>
+                  <ul className="link-list">
+                    {products
+                      .filter((product) => product.service === service)
+                      .map((product) => (
+                        <li key={product.slug}>
+                          <Link href={`/products/${product.slug}`}>
+                            {product.title} ({product.group})
+                          </Link>
+                        </li>
+                      ))}
+                  </ul>
+                </dd>
+              </div>
+            ))}
+          </dl>
         </section>
 
         <section>

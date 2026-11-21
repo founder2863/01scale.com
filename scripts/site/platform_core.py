@@ -1,0 +1,204 @@
+"""Platform Core: the shared components every service and app uses (story MVP1-E0-22).
+
+The design source for the Platform Core pages. Every fact here comes from a story in
+docs/epics/MVP1-EPICS.md or a document in docs/architecture/; nothing is invented to fill a gap.
+A component whose usage is not designed yet has `usage: None` and its page shows "Coming Soon...".
+
+Writes app/platform/core.ts. Run from the repo root as part of:  npm run site:data
+"""
+import json
+
+REPO = "https://github.com/founder2863/01scale.com/blob/main"
+TREE = "https://github.com/founder2863/01scale.com/tree/main"
+
+COMPONENTS = [
+    {
+        "slug": "gateway",
+        "name": "Gateway",
+        "purpose": "One address for the whole platform: people, code and AI agents call 01scale.com/api/{service}/…, and the gateway routes each call to the service that owns it.",
+        "gives": [
+            "Routing by the service name in the path, so a service is never reachable at any other public address",
+            "A session cookie or API key turned into a short-lived access token, so services never see cookies or keys",
+            "Rate limits per user, per API key and per IP, with 429 and Retry-After",
+            "An X-Request-Id on every request",
+            "One combined OpenAPI contract and one combined MCP server",
+        ],
+        "usage": {"label": "Check the health of the platform", "lang": "bash",
+                  "code": "curl https://01scale.com/api/health\n# 200 {\"status\": \"ok\", \"services\": {\"identity\": …, \"upload\": …}}"},
+        "status": "Designed", "version": "v1", "stories": ["MVP1-E0-08"],
+        "docs": f"{TREE}/docs/services/gateway",
+    },
+    {
+        "slug": "service-template",
+        "name": "Service template",
+        "purpose": "The starting point every service is copied from (packages/service-kit), so a new service is mostly copying and every service behaves the same way.",
+        "gives": [
+            "Access-token verification and the standard error format",
+            "Request IDs and structured logs",
+            "Idempotency, cursor pagination, and OpenAPI and MCP generation",
+            "Signed outbound events written in the same transaction as the change (outbox)",
+            "Timeouts and safe retries on calls to other services",
+            "A mock of the service's API generated from its contract",
+            "A boundary check that fails if a service imports another's code or names another's schema",
+        ],
+        "usage": None,
+        "status": "Designed", "version": "v1", "stories": ["MVP1-E0-07"],
+        "docs": f"{TREE}/docs/services/service-kit",
+    },
+    {
+        "slug": "design-system",
+        "name": "Design system",
+        "purpose": "Shared design tokens and accessible base components (packages/ui-core), so every service's screens look like one product while each service still ships on its own.",
+        "gives": [
+            "Brand colours, type, spacing and light and dark themes",
+            "Base components: button, input, select, checkbox, card, badge, dialog, tabs, toast, form errors",
+            "Keyboard access, visible focus and WCAG AA contrast built in",
+            "No business logic and no service calls; each service pins the version it uses",
+        ],
+        "usage": None,
+        "status": "Planned", "version": "v1", "stories": ["MVP1-E0-19"],
+        "docs": None,
+    },
+    {
+        "slug": "api-standards",
+        "name": "API standards",
+        "purpose": "The rules every service's API follows, and the tooling that enforces them, so a developer or an agent learns them once. A service's own endpoints are on its product page.",
+        "gives": [
+            "Every endpoint under /api/{service}/v{N}, JSON in and out",
+            "One error shape (RFC 9457 problem+json) with a stable code",
+            "Cursor pagination, Idempotency-Key on creates, 202 and polling for long work",
+            "An OpenAPI 3.1 contract per service, generated from its zod schemas and checked in CI",
+            "Each service versions its API on its own",
+        ],
+        "usage": {"label": "Every error has the same shape", "lang": "json",
+                  "code": "{\n  \"type\": \"about:blank\",\n  \"title\": \"Too many requests\",\n  \"status\": 429,\n  \"detail\": \"Try again in a minute.\",\n  \"code\": \"rate_limited\",\n  \"request_id\": \"…\",\n  \"errors\": []\n}"},
+        "status": "Designed", "version": "v1", "stories": ["MVP1-E0-05"],
+        "docs": f"{REPO}/docs/architecture/API-DESIGN.md",
+    },
+    {
+        "slug": "data-standards",
+        "name": "Data standards",
+        "purpose": "How every service stores its data: one Neon project, a schema and database role per service, and the same conventions everywhere. A service's own tables are on its product page.",
+        "gives": [
+            "A schema and role per service; a test proves one service cannot read another's schema",
+            "Migrations that run before a new version serves traffic",
+            "PGlite for tests, with the same migrations and no network",
+            "UUIDv7 IDs, timestamptz, money as integer minor units plus currency, owner_id on user-owned tables",
+            "No foreign key between schemas: another service's record is a plain ID",
+        ],
+        "usage": {"label": "The conventions every table follows", "lang": "sql",
+                  "code": "id          uuid primary key,             -- UUIDv7\nowner_id    uuid not null,                -- the user, from the access token\namount      integer not null,             -- money in minor units\ncurrency    char(3) not null,             -- ISO 4217\nstatus      text not null check (status in (…)),\ncreated_at  timestamptz not null default now()"},
+        "status": "Designed", "version": "v1", "stories": ["MVP1-E0-01"],
+        "docs": f"{REPO}/docs/architecture/DATABASE-DESIGN.md",
+    },
+    {
+        "slug": "agent-access",
+        "name": "Agent access",
+        "purpose": "Anything a person can do in the UI, an AI agent can do through the API with the user's permission: API keys, and an MCP server per service combined at one address.",
+        "gives": [
+            "API keys with scopes, shown once and stored only as a hash",
+            "An MCP server per service whose tools match its OpenAPI operations",
+            "One combined MCP server at /api/mcp, with tools namespaced by service",
+            "Every API-key and MCP call audited; payment keeps a human in the loop",
+        ],
+        "usage": {"label": "List every tool on the platform", "lang": "bash",
+                  "code": "curl https://01scale.com/api/mcp \\\n  -H \"Authorization: Bearer $API_KEY\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"jsonrpc\": \"2.0\", \"id\": 1, \"method\": \"tools/list\"}'"},
+        "status": "Designed", "version": "v1", "stories": ["MVP1-E0-06"],
+        "docs": None,
+    },
+    {
+        "slug": "audit-log",
+        "name": "Audit log",
+        "purpose": "One way to record every important event (sign-ins, reviews, payments, deliveries, API-key calls) in each service's own append-only table.",
+        "gives": [
+            "One helper in the service template",
+            "A fixed list of actions, and metadata checked against an allow-list",
+            "No document contents, tokens or full card numbers, enforced by a test",
+            "Append-only: the service's role cannot update or delete a row",
+        ],
+        "usage": {"label": "Record an event", "lang": "ts",
+                  "code": "await audit(actorId, \"auth.signin\", target, metadata);"},
+        "status": "Designed", "version": "v1", "stories": ["MVP1-E0-02"],
+        "docs": None,
+    },
+    {
+        "slug": "monitoring",
+        "name": "Monitoring",
+        "purpose": "Follow one request through every service and know when something breaks, using Vercel's built-in monitoring.",
+        "gives": [
+            "A request ID and trace header passed through every call and event",
+            "Structured logs with no document contents or personal data",
+            "Request count, error rate and p95 latency per endpoint",
+            "Alerts when health checks fail, targets are missed or a budget is crossed",
+        ],
+        "usage": None,
+        "status": "Planned", "version": "v1", "stories": ["MVP1-E0-25"],
+        "docs": None,
+    },
+    {
+        "slug": "ci-deployment",
+        "name": "CI & deployment",
+        "purpose": "Checks on every pull request and an independent pipeline per service, so one service can ship or roll back without touching the others.",
+        "gives": [
+            "Lint, typecheck and unit tests for each service a pull request touches",
+            "A failed check blocks the merge",
+            "Migrations proven to apply from empty, and the OpenAPI file checked against the code",
+            "One Vercel project per service, deployed on its own",
+        ],
+        "usage": None,
+        "status": "Designed", "version": "v1", "stories": ["MVP1-E0-03", "MVP1-E0-07"],
+        "docs": None,
+    },
+    {
+        "slug": "eval-harness",
+        "name": "Eval harness",
+        "purpose": "Measures the quality of every LLM output against labelled data, so a prompt or model change is judged by numbers, not impressions.",
+        "gives": [
+            "Every metric in EVALS.md with pass or fail against its threshold, plus cost and latency",
+            "A non-zero exit when a threshold fails or a metric drops from its baseline",
+            "Recorded model responses, so later runs need no API calls",
+        ],
+        "usage": {"label": "Run the evals", "lang": "bash", "code": "npm run eval -- --set dev"},
+        "status": "Designed", "version": "v1", "stories": ["MVP1-E0-04"],
+        "docs": f"{REPO}/docs/evals/EVALS.md",
+    },
+    {
+        "slug": "security-baseline",
+        "name": "Security baseline",
+        "purpose": "The security bar every service meets, and how a public repository stays safe while visitors use the real thing.",
+        "gives": [
+            "The OWASP ASVS checks, the user-data privacy rule and the rate limits, with each service's status",
+            "Secrets only in Vercel and AWS, never in the repository or a browser",
+            "Separate keys for local, preview and production; outside providers in test mode",
+            "A daily cap of 20 extractions per user and fixed monthly budgets",
+        ],
+        "usage": None,
+        "status": "Planned", "version": "v1", "stories": ["MVP1-E0-26"],
+        "docs": None,
+    },
+    {
+        "slug": "site-template",
+        "name": "Site & docs template",
+        "purpose": "One product page template for every module, filled from each module's design source, so the docs and the site never drift apart.",
+        "gives": [
+            "A page per module with the same sections, in the same order",
+            "Documents and page data generated from one design file per module",
+            "The design skills that write each document the same way every time",
+        ],
+        "usage": {"label": "Regenerate the documents and page data", "lang": "bash", "code": "npm run site:data"},
+        "status": "Live", "version": "v1", "stories": ["MVP1-E0-10", "MVP1-E0-12", "MVP1-E0-18", "MVP1-E0-21"],
+        "docs": f"{REPO}/docs/process/DESIGN-RULES.md",
+    },
+]
+
+slugs = [c["slug"] for c in COMPONENTS]
+assert len(slugs) == len(set(slugs)), "duplicate slug"
+assert all(c["status"] in ("Live", "Designed", "Planned") for c in COMPONENTS)
+
+with open("app/platform/core.ts", "w") as f:
+    f.write("// Generated by scripts/site/platform_core.py. Do not edit by hand.\n")
+    f.write(f'export const EPICS_URL = "{REPO}/docs/epics/MVP1-EPICS.md";\n\n')
+    f.write("export const coreComponents = ")
+    f.write(json.dumps(COMPONENTS, indent=2, ensure_ascii=False))
+    f.write(" as const;\n\nexport type CoreComponent = (typeof coreComponents)[number];\n")
+print("app/platform/core.ts:", len(COMPONENTS), "components")

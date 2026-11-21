@@ -121,7 +121,7 @@ As the owner, I want DocFlow to be a thin app that only connects platform servic
 
 ### MVP1-E0-10 · Site navigation and product page template — M
 As a hiring manager, I want every module to have its own page laid out the same way, on any device, so I can judge the product thinking quickly.
-- **AC1:** The site has three navigation items: Home, Products and Architecture.
+- **AC1:** The site has four navigation items: Home, Products, Platform and How It's Built (Platform replaced Architecture in `MVP1-E0-22`).
 - **AC2:** The Products menu is organized at two levels, MVP1 and MVP2, with the numbered modules under each. Every number is fully visible on a phone, including 10 to 15.
 - **AC3:** Choosing a module opens its own page in the same tab, with a service introduction at the top and seven sections: Read Me, Requirement EPIC, User Journey, UI Components, API Spec, Data Model and Schema. On a desktop the sections are a vertical list on the left; on a phone or tablet they are a bar that scrolls sideways and stays in view.
 - **AC4:** Every module uses the same template. A section whose design is not finalized shows "Coming Soon..." and says what will appear there. Requirements, endpoints and data notes that already exist in the stories are shown.

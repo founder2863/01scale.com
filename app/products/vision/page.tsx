@@ -156,7 +156,7 @@ export default function Vision() {
             ))}
           </div>
           <p className="doc-link">
-            <Link href="/architecture">How it is built, and the trade-offs I accepted →</Link>
+            <Link href="/platform/architecture">How it is built, and the trade-offs I accepted →</Link>
           </p>
         </section>
 
