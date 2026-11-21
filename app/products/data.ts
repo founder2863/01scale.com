@@ -805,6 +805,14 @@ export const products = [
           {
             "label": "AC6",
             "text": "The default model is `claude-opus-5-5` (Nikhil's decision on #34)."
+          },
+          {
+            "label": "AC7",
+            "text": "**Demo budget (Nikhil's decision on PR #87):** each calendar month (UTC), jobs use `claude-opus-5-5` until $5 of Opus cost is used, then `claude-haiku-5-5` until $5 of Haiku cost is used. When both are used, a new job is refused with `503 demo_budget_reached` and `Retry-After` set to the start of next month. Spend is the sum of `cost_usd` on the month's jobs, per model. The hard backstop is outside the code: prepaid API credit with auto-reload off and a $10 monthly spend limit on the Anthropic workspace, so the bill can never exceed $10."
+          },
+          {
+            "label": "AC8",
+            "text": "The eval report covers both models. If Haiku scores below a threshold, it still runs: confidence routing sends more fields to human review, and the Costs page says so."
           }
         ],
         "evals": "EXT-1 schema validity, EXT-2 header field accuracy, EXT-3 line item F1, EXT-4 hallucination rate, EXT-7 latency, EXT-8 cost (see `EVALS.md`).",
@@ -863,6 +871,10 @@ export const products = [
           {
             "label": "AC4",
             "text": "A \"Review N flagged fields\" button goes to E4. If nothing is flagged, \"Continue to results\" goes to E5."
+          },
+          {
+            "label": "AC5",
+            "text": "The page says which model read the document. When it was Claude Haiku 5.5, it shows: \"This month's demo budget for Claude Opus 5.5 is used, so this document was read by Claude Haiku 5.5, a faster, lower-cost model. More fields may be flagged for your review.\" When both budgets are used, the upload step shows: \"Demo capacity for this month is used up. Extraction is back on <date>.\" (Nikhil's decision on PR #87)."
           }
         ],
         "evals": "",
@@ -882,10 +894,49 @@ export const products = [
           {
             "label": "AC2",
             "text": "An admin-only page `/admin/jobs` shows the last 100 jobs with these numbers and the failure rate."
+          },
+          {
+            "label": "AC3",
+            "text": "The admin page also shows this month's spend per model against its $5 budget (`MVP1-E3-02` AC7)."
           }
         ],
         "evals": "",
         "service": "LLM Extraction"
+      },
+      {
+        "id": "MVP1-E3-06",
+        "title": "Ask questions about my documents (RAG)",
+        "size": "L",
+        "pending": "",
+        "story": "As a user, I want to ask a question in plain language across my processed invoices, such as \"How much did I pay Acme Supplies in October?\", and get an answer that shows the invoices it came from.",
+        "acs": [
+          {
+            "label": "AC1",
+            "text": "When an extraction finishes, the document's page text (`extraction.page_texts`) is split into passages, turned into embeddings and added to the owner's own index. Deleting a document or the account deletes its passages."
+          },
+          {
+            "label": "AC2",
+            "text": "A question retrieves the most relevant passages **only from the caller's own documents** (the owner filter is part of the search itself, never applied afterwards), and Claude answers using only those passages."
+          },
+          {
+            "label": "AC3",
+            "text": "Every statement in the answer cites its document, page and quote. Each quote is checked against the retrieved text, as the extraction quote check does; a statement whose quote is not found is removed. If nothing relevant is found, the answer says so instead of guessing."
+          },
+          {
+            "label": "AC4",
+            "text": "The question box can be limited to chosen documents. The answer shows its citations as links that open the document at the cited page, using Upload's `FilePreview`."
+          },
+          {
+            "label": "AC5",
+            "text": "Evals RAG-1 to RAG-4 (`docs/evals/EVALS.md`) meet their thresholds on the synthetic dataset before release. Model, prompt version, tokens, cost and time are recorded per question, like extraction jobs."
+          },
+          {
+            "label": "AC6",
+            "text": "Asking counts towards the limit of 10 requests a minute that change something; agents can ask through the MCP tool `extraction.askDocuments`, within the same limits."
+          }
+        ],
+        "evals": "RAG-1 retrieval recall, RAG-2 faithfulness, RAG-3 refusal on unanswerable questions, RAG-4 latency and cost (see `EVALS.md`).",
+        "service": "LLM Extraction (index and answers); DocFlow composes the \"Ask\" box on `/documents`"
       }
     ],
     "endpoints": [
@@ -936,6 +987,14 @@ export const products = [
         "summary": "Last 100 jobs with tokens, cost, duration and failure rate.",
         "detail": "→ `200 {data: [Job], summary: {failure_rate, avg_cost_usd, p95_duration_ms}}`. Errors: `404` for non-admins.",
         "story": "MVP1-E3-05"
+      },
+      {
+        "method": "POST",
+        "path": "/api/extraction/v1/questions",
+        "access": "Signed in",
+        "summary": "Answer a question from my documents, with citations.",
+        "detail": "Body `{question, file_ids?}` → `200 {answer, citations: [{file_id, page, quote}], found: boolean, model, prompt_version}`. Errors: `422 validation_failed`, `429 rate_limited`.",
+        "story": "MVP1-E3-06"
       }
     ],
     "apiNotes": [
@@ -973,6 +1032,11 @@ export const products = [
         "story": "MVP1-E3-05",
         "title": "Cost and latency logging",
         "text": "`extraction.jobs` adds tokens_in, tokens_out, cost_usd numeric(10,6), duration_ms."
+      },
+      {
+        "story": "MVP1-E3-06",
+        "title": "Ask questions about my documents (RAG)",
+        "text": "`extraction.passages` (id, job_id → jobs on delete cascade, owner_id, page, text, embedding `vector`, created_at); an approximate-nearest-neighbour index on `embedding` (pgvector, HNSW) and an index on `owner_id`. `extraction.questions` (id, owner_id, model, prompt_version, tokens_in, tokens_out, cost_usd, duration_ms, found, created_at): no question or answer text is stored."
       }
     ]
   },
@@ -3053,6 +3117,45 @@ export const products = [
         ],
         "evals": "",
         "service": "Payment (subscriptions), Identity (plan in the token), Gateway (limits per plan)"
+      },
+      {
+        "id": "MVP2-E13-07",
+        "title": "Scheduled payments",
+        "size": "M",
+        "pending": "",
+        "story": "As a user, I want to choose the date a payment is taken, for example at the end of the month for all the invoices I processed, so I don't have to pay at the moment I finish.",
+        "acs": [
+          {
+            "label": "AC1",
+            "text": "Instead of paying now, I can choose a date up to 90 days ahead, in my own time zone, and which saved card to use (my default card unless I pick another, `MVP2-E13-03`). I see the amount, the date and the card before I confirm."
+          },
+          {
+            "label": "AC2",
+            "text": "The day before, I am reminded by my notification settings (`MVP2-E14`), with a link to change the date, the card, or cancel."
+          },
+          {
+            "label": "AC3",
+            "text": "On the date, Payment charges the saved card without me present (an off-session Stripe PaymentIntent). The charge happens once, whatever repeats: the schedule's ID is Stripe's idempotency key."
+          },
+          {
+            "label": "AC4",
+            "text": "If the bank asks for authentication (3-D Secure) or the card is declined, the payment waits as `requires_action` or `failed`, I am notified with a link to complete it or choose another card, and Payment retries a declined card once the next day. Nothing is charged twice."
+          },
+          {
+            "label": "AC5",
+            "text": "I can change the date or card, or cancel, until the charge starts. Downloads unlock only when the scheduled payment succeeds, as for any payment."
+          },
+          {
+            "label": "AC6",
+            "text": "The amount is set by the app's server when the schedule is created and cannot change afterwards; a different amount needs a new schedule. A person always sets up, changes and confirms a schedule: an agent can only propose one, through an approval (`MVP2-E16-05`)."
+          },
+          {
+            "label": "AC7",
+            "text": "Every schedule, change, cancellation, charge and failure is audited."
+          }
+        ],
+        "evals": "",
+        "service": "Payment (schedules and the daily run); DocFlow offers \"Pay on a date\"; Delivery sends the reminder and failure notices"
       }
     ],
     "endpoints": [
@@ -3143,6 +3246,46 @@ export const products = [
         "summary": "Cancel at the end of the period.",
         "detail": "→ `200 {subscription}`.",
         "story": "MVP2-E13-06"
+      },
+      {
+        "method": "POST",
+        "path": "/api/payment/v1/schedules",
+        "access": "Service, delegated token",
+        "summary": "Schedule a charge for a user.",
+        "detail": "The app's server sets the amount. Body `{reference, description, amount, currency, charge_on, time_zone, payment_method_id?}` + `Idempotency-Key` → `201 {schedule}`. Errors: `422 charge_date_out_of_range` (past, or more than 90 days ahead), `409 already_paid`, `422 no_saved_card`.",
+        "story": "MVP2-E13-07"
+      },
+      {
+        "method": "GET",
+        "path": "/api/payment/v1/schedules",
+        "access": "Signed in",
+        "summary": "My scheduled payments, soonest first.",
+        "detail": "Query `status`, `cursor`, `limit` → `200 {data: [Schedule], next_cursor}`.",
+        "story": "MVP2-E13-07"
+      },
+      {
+        "method": "PATCH",
+        "path": "/api/payment/v1/schedules/{scheduleId}",
+        "access": "Signed in, session only",
+        "summary": "Change the date or card.",
+        "detail": "Body `{charge_on?, payment_method_id?}` → `200 {schedule}`. Errors: `409 schedule_started`.",
+        "story": "MVP2-E13-07"
+      },
+      {
+        "method": "DELETE",
+        "path": "/api/payment/v1/schedules/{scheduleId}",
+        "access": "Signed in, session only",
+        "summary": "Cancel.",
+        "detail": "→ `200 {schedule}` with status `cancelled`. Errors: `409 schedule_started`.",
+        "story": "MVP2-E13-07"
+      },
+      {
+        "method": "POST",
+        "path": "/api/docflow/v1/batches/{batchId}/schedule-payment",
+        "access": "Signed in",
+        "summary": "Pay for a batch on a date.",
+        "detail": "Body `{charge_on, payment_method_id?}` → `201 {schedule}`. DocFlow computes the amount and calls Payment.",
+        "story": "MVP2-E13-07"
       }
     ],
     "apiNotes": [
@@ -3157,6 +3300,10 @@ export const products = [
       {
         "story": "MVP2-E13-06",
         "text": "Payment announces `payment.subscription.changed`; Identity puts `plan` in the user's access tokens."
+      },
+      {
+        "story": "MVP2-E13-07",
+        "text": "Payment announces `payment.schedule.charged`, `.failed` and `.requires_action` to the app that created the schedule (routed by reference, decision on #13)."
       }
     ],
     "dbNotes": [
@@ -3189,6 +3336,11 @@ export const products = [
         "story": "MVP2-E13-06",
         "title": "Free plan and upgrade to paid",
         "text": "`payment.subscriptions` (id, owner_id unique, plan, status `active|past_due|cancelled`, stripe_subscription_id unique, current_period_end, created_at). `identity.users` adds `plan`, kept in step from the event."
+      },
+      {
+        "story": "MVP2-E13-07",
+        "title": "Scheduled payments",
+        "text": "`payment.schedules` (id, owner_id, app, reference, description, amount, currency, payment_method_id, charge_on date, time_zone, status `scheduled|processing|charged|requires_action|failed|cancelled`, payment_id → payments, attempts, reminded_at, created_at, cancelled_at). A partial unique index allows one open schedule per app and reference. A daily job picks schedules due today (in their time zone) with `for update skip locked`, so two runs never charge the same schedule."
       }
     ]
   },

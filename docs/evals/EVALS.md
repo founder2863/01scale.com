@@ -48,6 +48,16 @@ Every LLM feature is measured against a fixed dataset with thresholds that block
 
 **Why EXT-5 and EXT-6 come as a pair:** flagging everything gives perfect recall and a useless product. Tune the threshold so both hold, and plot the trade-off curve in the report.
 
+### Questions over my documents (RAG) — MVP1-E3-06
+Dataset `rag`: questions written over the synthetic invoices, each with the passages that answer it and the expected answer; a third are unanswerable from the documents.
+
+| ID | Metric | Definition | Threshold |
+|---|---|---|---|
+| RAG-1 | Retrieval recall | % of questions where an answering passage is in the top 5 retrieved | ≥90% |
+| RAG-2 | Faithfulness | % of answer statements supported by a cited quote found in the retrieved text | ≥98% |
+| RAG-3 | Refusal on unanswerable | % of unanswerable questions answered "not found" instead of a guess | ≥95% |
+| RAG-4 | Latency and cost | p95 time and mean cost per question | ≤8 s · ≤$0.02 |
+
 ---
 
 ## MVP2 metrics
