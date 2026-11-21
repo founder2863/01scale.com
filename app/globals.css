@@ -1741,6 +1741,21 @@ section[id] {
   margin-top: 20px;
 }
 
+/* Tables of words, not numbers (Costs tab): align left and keep story IDs on one line. */
+.cost-table-text th,
+.cost-table-text td {
+  text-align: left;
+}
+
+.cost-table-text code {
+  white-space: nowrap;
+}
+
+/* What I pay: four short items, one row on a wide screen. */
+.cost-paid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+}
+
 /* Phones: each row becomes a small card with labelled values. */
 
 @media (max-width: 719px) {

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { builtTabs } from "./tabs";
 
-// The header's "How It's Built" menu: Skills, Token Costs and Agents.
+// The header's "How It's Built" menu: Skills, Token Costs, Agents and Costs.
 export default function HowItsBuiltMenu() {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
