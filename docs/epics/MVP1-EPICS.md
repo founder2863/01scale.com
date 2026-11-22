@@ -499,6 +499,27 @@ As a visitor on Platform Architecture, I want the diagram to show every business
 - **API design:** No endpoints.
 - **Database design:** No tables.
 
+
+### MVP1-E0-44 · App names with their version, in folders and documents — M
+As the owner, I want every app's folders and documents named the same way, `<app>-<version>`, so anyone can tell which app and which version a file belongs to (Nikhil's request, 22 Nov 2026; to be built later).
+- **AC1:** An inventory lists every app folder and document whose name lacks the app or the version, or mixes phases and apps. Found on 22 Nov 2026:
+  - PRDs: `docs/prd/MVP1-PRD.md` (DocFlow V1 and the platform) and `docs/prd/AUTOREP-PRD.md` (no version);
+  - epics: `docs/epics/MVP1-EPICS.md` and `docs/epics/AUTOREP-EPICS.md`;
+  - decision logs: `docs/decisions/AUTOREP-E1.md` next to `MVP1-E0.md`;
+  - `docs/services/docflow/`: an app's documents under services;
+  - site and design files: `app/products/docflow.ts`, `app/products/docflow-vision.tsx`, `scripts/site/docflow_design.py`.
+- **AC2:** App folders and documents follow `<app>-<version>`, lower case: for example `docflow-v1` and `autorep-v1`, with a document's own name inside the folder (for example `docs/apps/docflow-v1/PRD.md`). Platform documents, which belong to no app, keep their own names.
+- **AC3:** Every rename is a move (`git mv`), so history follows the file. Links in docs, the site and the design scripts are updated in the same PR, and a check finds no broken link. Any public address that changes redirects to the new one.
+- **AC4:** `CLAUDE.md` ("Where things live") and `docs/process/DESIGN-RULES.md` state the convention.
+- **AC5:** Content is not changed, only names and links.
+- **Open questions, answered before the story is built:**
+  1. Do story IDs follow the convention too (for example `AUTOREP-E1-01` → `AUTOREP-V1-E1-01`), and do GitHub issue titles change with them?
+  2. Do site addresses change (`/products/docflow` → `/products/docflow-v1`)? Today an app page is `/products/<app>`, with a tab per version (decided on PR #118).
+  3. `MVP1-PRD.md` holds both DocFlow V1 and the platform: split it into the platform's PRD and DocFlow V1's, or keep one?
+- **Service:** Site (`apps/web`), docs and design tooling
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
 ---
 
 ## E1 · Accounts with AWS Cognito (MVP1 "a")
