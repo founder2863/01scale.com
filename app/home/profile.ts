@@ -49,15 +49,15 @@ export const cover = {
 export const snapshot = [
   {
     label: "Who I am",
-    text: "I'm Nikhil Shrivastava, a platform and AI product leader with 17+ years in regulated SaaS: identity, payments, integrations and AI.",
+    text: "I'm Nikhil Shrivastava, a platform and AI product leader with 17+ years in regulated SaaS and PaaS, at start-ups and Fortune 500 companies. I've launched products 0→1 and scaled existing ones, across vertical SaaS and horizontal platform services, growing revenue and cutting cost. I've also built product teams, with competency levels and growth paths.",
   },
   {
     label: "Who this site is for",
-    text: "Hiring managers and teams looking for a platform product leader who can show the work, not only describe it. Each demo is something you can try yourself as it ships.",
+    text: "Hiring managers and teams looking for a product leader who can show the work, not only describe it. It shows how a product manager uses modern AI tools such as Claude Code and Claude Cowork to do the job. Every product has working demos you can try as they ship, and its documents: requirements, API designs and the roadmap.",
   },
   {
     label: "What this site is",
-    text: "Each module is a small, working slice of a real product: sign-in, document upload, AI extraction, human review, payment and delivery. The first app is DocFlow, which turns an uploaded invoice into reviewed, structured data.",
+    text: "01scale is organised like a multi-product platform company. Platform Core is the foundation. On it sit platform services, each a working slice of business functionality: sign-in, document upload, AI extraction, human review, payment and delivery. Customer-facing apps are assembled from those services. The first, DocFlow, turns an uploaded invoice into reviewed, structured data.",
   },
 ] as const;
 
