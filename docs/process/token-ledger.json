@@ -3440,10 +3440,40 @@
       "models": [
         "claude-opus-5-5"
       ],
-      "tokens": 4027903,
-      "output_tokens": 7962,
+      "tokens": 6594220,
+      "output_tokens": 11893,
       "cost_usd": null,
-      "estimated_usd": 1.054
+      "estimated_usd": 1.7235
+    },
+    {
+      "session": "4f156423",
+      "n": 9,
+      "ts": "2026-11-22T23:12:06.430Z",
+      "area": "MVP1-E0-19",
+      "kind": "rework",
+      "summary": "Rework: fix a lone button stretched to fill a tall column while extraction runs (align-content in stacks)",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 5274608,
+      "output_tokens": 3223,
+      "cost_usd": null,
+      "estimated_usd": 1.2349
+    },
+    {
+      "session": "4f156423",
+      "n": 10,
+      "ts": "2026-11-22T23:19:46.510Z",
+      "area": "Process",
+      "kind": "scaffolding",
+      "summary": "Process: record costs and write the review history into the PR description",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 533840,
+      "output_tokens": 416,
+      "cost_usd": null,
+      "estimated_usd": 0.1152
     }
   ]
 }

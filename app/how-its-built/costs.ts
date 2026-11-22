@@ -522,19 +522,19 @@ export const costs = {
     {
       "key": "MVP1-E0-19",
       "name": "MVP1-E0-19 · Design system (packages/ui-core), service UI packages (E0-07 AC6) and the DocFlow V1 clickable prototype (E0-18 for DocFlow)",
-      "requests": 5,
+      "requests": 6,
       "buildTokens": 36887681,
-      "reworkTokens": 16352386,
+      "reworkTokens": 24193311,
       "buildCost": 14.6,
       "reworkCost": 0,
       "totalCost": 14.6,
-      "yield": 69,
+      "yield": 60,
       "pending": true
     }
   ],
   "storyTotals": {
-    "requests": 147,
-    "tokens": 560032293,
+    "requests": 148,
+    "tokens": 567873218,
     "buildCost": 156.68,
     "reworkCost": 126.57,
     "cost": 283.25,
@@ -568,8 +568,8 @@ export const costs = {
     },
     {
       "name": "Process",
-      "requests": 37,
-      "tokens": 92156916,
+      "requests": 38,
+      "tokens": 92690756,
       "cost": 24.75
     },
     {
@@ -580,22 +580,22 @@ export const costs = {
     }
   ],
   "scaffoldingTotals": {
-    "requests": 88,
-    "tokens": 127708164,
+    "requests": 89,
+    "tokens": 128242004,
     "cost": 66.47
   },
   "totals": {
-    "requests": 235,
-    "tokens": 687740457,
+    "requests": 237,
+    "tokens": 696115222,
     "cost": 349.72,
     "buildCost": 156.68,
     "reworkCost": 126.57,
     "scaffoldingCost": 66.47,
     "storyYield": 53,
     "overallYield": 43,
-    "pendingRequests": 19,
-    "pendingEstimate": 13.48,
-    "pendingEstimated": 13
+    "pendingRequests": 21,
+    "pendingEstimate": 15.5,
+    "pendingEstimated": 15
   },
   "byKind": {
     "input": 0.06,
