@@ -1846,6 +1846,13 @@ section[id] {
   font-weight: 600;
 }
 
+/* The Total line under a table. */
+.cost-table tfoot th,
+.cost-table tfoot td {
+  font-weight: 700;
+  border-top: 2px solid var(--border);
+}
+
 .cost-table tbody tr:hover {
   background: var(--surface);
 }
@@ -1896,6 +1903,15 @@ section[id] {
 
 @media (max-width: 719px) {
   .cost-table thead {
+    display: none;
+  }
+
+  .cost-table tfoot,
+  .cost-table .cost-empty {
+    display: block;
+  }
+
+  .cost-table .cost-empty {
     display: none;
   }
 

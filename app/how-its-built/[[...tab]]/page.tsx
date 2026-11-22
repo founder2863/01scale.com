@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { costs } from "../costs";
-import { constraints, paid, perExtraction, providers } from "../running-costs";
+import { constraints, paid, perExtraction, providers, providersTotal } from "../running-costs";
 import { designSkillCount, rulesHref, skillOrder, skills } from "../skills";
 import { builtTabs, type BuiltTab } from "../tabs";
 import YieldExplainer from "../yield-explainer";
@@ -239,6 +239,19 @@ export default async function HowItsBuilt({ params }: { params: Promise<Params> 
                 </tr>
               ))}
             </tbody>
+            <tfoot>
+              <tr>
+                <th scope="row">Total</th>
+                <td data-label="Tokens">{mtok(costs.storyTotals.tokens)}</td>
+                <td data-label="Build cost">{usd(costs.storyTotals.buildCost)}</td>
+                <td data-label="Rework cost">{usd(costs.storyTotals.reworkCost)}</td>
+                <td data-label="Total">
+                  {usd(costs.storyTotals.cost)}
+                  {costs.storyTotals.pending && <span className="cost-pending"> + pending</span>}
+                </td>
+                <td data-label="Token yield">{costs.storyTotals.yield}%</td>
+              </tr>
+            </tfoot>
           </table>
 
           <h3 className="section-subtitle">Scaffolding, not tied to a story</h3>
@@ -261,6 +274,14 @@ export default async function HowItsBuilt({ params }: { params: Promise<Params> 
                 </tr>
               ))}
             </tbody>
+            <tfoot>
+              <tr>
+                <th scope="row">Total</th>
+                <td data-label="Requests">{costs.scaffoldingTotals.requests}</td>
+                <td data-label="Tokens">{mtok(costs.scaffoldingTotals.tokens)}</td>
+                <td data-label="Cost">{usd(costs.scaffoldingTotals.cost)}</td>
+              </tr>
+            </tfoot>
           </table>
 
           <h3 className="section-subtitle">What the numbers show</h3>
@@ -414,6 +435,13 @@ export default async function HowItsBuilt({ params }: { params: Promise<Params> 
                 </tr>
               ))}
             </tbody>
+            <tfoot>
+              <tr>
+                <th scope="row">Total</th>
+                <td className="cost-empty" colSpan={2} />
+                <td data-label="Most a month">{providersTotal}</td>
+              </tr>
+            </tfoot>
           </table>
 
           <h3 className="section-subtitle">Cost of reading one document</h3>
