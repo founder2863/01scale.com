@@ -2,7 +2,7 @@
 
 What it costs to build 01scale with Claude Code, per story. Generated from `docs/process/token-ledger.json` by `npm run costs`; do not edit by hand.
 
-Updated 2026-11-22. 219 requests across 3 session(s). Total **$331.50** for 601.7 million tokens.
+Updated 2026-11-22. 220 requests across 3 session(s). Total **$331.50** for 603.4 million tokens.
 
 ## Per story
 
@@ -49,8 +49,8 @@ Updated 2026-11-22. 219 requests across 3 session(s). Total **$331.50** for 601.
 | MVP1-E0-46 · Expensive Mistakes tab and four lessons | 2 | 3.44M | $1.27 | $0.00 | $1.27 | 100% |
 | MVP1-E0-48 · App pages with the module side menu | 2 | 3.80M | $1.29 | $0.00 | $1.29 | 100% |
 | MVP1-E0-49 · Section menu on phones, and Previous / Next | 2 | 4.57M | $1.19 | $0.00 | $1.19 | 100% |
-| MVP1-E8-09 · Human cost script and skill | 1 | 2.61M | $0.00 | $0.00 | $0.00 (part pending) | 100% |
-| **Total** | **139** | **499.16M** | **$142.08** | **$126.57** | **$268.65** (part pending) | **51%** |
+| MVP1-E8-09 · Human cost script and skill | 2 | 4.32M | $0.00 | $0.00 | $0.00 (part pending) | 83% |
+| **Total** | **140** | **500.87M** | **$142.08** | **$126.57** | **$268.65** (part pending) | **51%** |
 
 ## Scaffolding (not tied to a story)
 

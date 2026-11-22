@@ -498,19 +498,19 @@ export const costs = {
     {
       "key": "MVP1-E8-09",
       "name": "MVP1-E8-09 · Human cost script and skill",
-      "requests": 1,
-      "buildTokens": 2613353,
-      "reworkTokens": 0,
+      "requests": 2,
+      "buildTokens": 3588547,
+      "reworkTokens": 727467,
       "buildCost": 0,
       "reworkCost": 0,
       "totalCost": 0,
-      "yield": 100,
+      "yield": 83,
       "pending": true
     }
   ],
   "storyTotals": {
-    "requests": 139,
-    "tokens": 499164419,
+    "requests": 140,
+    "tokens": 500867080,
     "buildCost": 142.08,
     "reworkCost": 126.57,
     "cost": 268.65,
@@ -561,15 +561,15 @@ export const costs = {
     "cost": 62.85
   },
   "totals": {
-    "requests": 219,
-    "tokens": 601725650,
+    "requests": 220,
+    "tokens": 603428311,
     "cost": 331.5,
     "buildCost": 142.08,
     "reworkCost": 126.57,
     "scaffoldingCost": 62.85,
     "storyYield": 51,
     "overallYield": 42,
-    "pendingRequests": 9
+    "pendingRequests": 10
   },
   "byKind": {
     "input": 0.06,

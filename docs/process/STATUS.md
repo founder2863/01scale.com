@@ -22,7 +22,6 @@ Read this at the start of every session, after CLAUDE.md. Update it in the PR th
 
 ## Open questions waiting for Nikhil
 
-- AutoRep stories have no issues by design, so the human cost script never counts AUTOREP-E1-04 and AUTOREP-E6-03 as done, though they are built. Count them (for example from a status line in the epics file), or leave them out? (MVP1-E8-09 PR)
 - DocFlow V1 "What each step adds over time" also describes V2 and sits in Overview: keep, or move to the V2 page? (PR #144)
 
 ## Known issues
@@ -41,7 +40,7 @@ Read this at the start of every session, after CLAUDE.md. Update it in the PR th
 
 ## Costs on closed issues
 
-Every closed story issue (27 of them) carries its measured token cost and estimated human cost, at $1,000 per engineer-day (Nikhil: a good estimate for engineers). Combined ledger blocks (E0-22/23, E0-32 to E0-35, E0-36 to E0-42) were split by story size, and the comment says so. From now on the figures come from `npm run human-costs` (skill `estimate-human-cost`): on 22 Nov, 26 done stories in scope = 128 person-days = $128,000 so far (plus E8-01, $3,000, out of scope); every MVP1 and AutoRep V1 story = 103 stories, 619 person-days, $619,000 projected. The comments typed by hand earlier summed to about $137,000; the script's figure replaces it.
+Every closed story issue (27 of them) carries its measured token cost and estimated human cost, at $1,000 per engineer-day (Nikhil: a good estimate for engineers). Combined ledger blocks (E0-22/23, E0-32 to E0-35, E0-36 to E0-42) were split by story size, and the comment says so. From now on the figures come from `npm run human-costs` (skill `estimate-human-cost`): on 22 Nov, 27 done stories = 131 person-days = $131,000 so far; every MVP1 story (E8 included) and AutoRep V1 story = 113 stories, 691 person-days, $691,000 projected. Nikhil on PR #159: E8 work counts; AutoRep stories, which have no issues, are not counted as done. The comments typed by hand earlier summed to about $137,000; the script's figure replaces it.
 
 ## Next, in order (from CLAUDE.md and the epics)
 

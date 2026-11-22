@@ -3176,8 +3176,22 @@
       "models": [
         "claude-opus-5-5"
       ],
-      "tokens": 2613353,
-      "output_tokens": 18470,
+      "tokens": 3588547,
+      "output_tokens": 23376,
+      "cost_usd": null
+    },
+    {
+      "session": "43ccd0e7",
+      "n": 2,
+      "ts": "2026-11-22T19:35:03.303Z",
+      "area": "MVP1-E8-09",
+      "kind": "rework",
+      "summary": "Review: count E8 in the totals; AutoRep stories stay not done",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 727467,
+      "output_tokens": 3297,
       "cost_usd": null
     }
   ]

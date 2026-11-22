@@ -239,8 +239,9 @@ def main(argv):
     if proj["tbd"]:
         print(f"No size (TBD, not in totals): {', '.join(proj['tbd'])}")
     ex = data["excludedProjected"]
-    print(f"Out of scope ({', '.join(model['scope']['exclude_epics'])}): {ex['stories']} stories, ${ex['cost']:,}; "
-          f"done ${data['excludedSoFar']['cost']:,}")
+    if ex["stories"]:
+        print(f"Out of scope ({', '.join(model['scope']['exclude_epics'])}): {ex['stories']} stories, ${ex['cost']:,}; "
+              f"done ${data['excludedSoFar']['cost']:,}")
     print(f"Wrote {OUT}")
 
 

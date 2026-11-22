@@ -18,10 +18,8 @@
       "docs/epics/MVP1-EPICS.md",
       "docs/epics/AUTOREP-EPICS.md"
     ],
-    "exclude_epics": [
-      "MVP1-E8"
-    ],
-    "why": "MVP1 only: Platform Core, the platform services, DocFlow (E0 to E7) and AutoRep V1 (E1 to E6). E8 is the cost work itself and is out of the projection (docs/decisions/MVP1-E8.md); its stories are listed separately."
+    "exclude_epics": [],
+    "why": "MVP1 only: Platform Core, the platform services, DocFlow (E0 to E7), the cost work itself (E8; Nikhil on PR #159) and AutoRep V1 (E1 to E6). MVP2 is out."
   },
   "done": {
     "source": "Closed GitHub issues with state_reason completed, titled [ID] Title",

@@ -27,7 +27,7 @@ Commit `docs/process/cost-model.json` and `app/how-its-built/human-costs.ts` tog
 ## Steps
 
 1. `npm run human-costs`. It reads closed issues with `gh api search/issues` and saves them in the cost model, so the site build needs no network. Without network, `npm run human-costs -- --offline` rebuilds from the saved list and says so.
-2. Read the summary it prints: so far, projected, any story with no size (TBD), and the out-of-scope stories (E8).
+2. Read the summary it prints: so far, projected, and any story with no size (TBD).
 3. If you changed the script, `npm run test:costs`.
 4. `npm run build`, then state the two totals in the PR description.
 
@@ -36,6 +36,6 @@ Commit `docs/process/cost-model.json` and `app/how-its-built/human-costs.ts` tog
 - **Sizes only from the epics files.** A size is the `— S|M|L` at the end of the story's heading. A story without one is **TBD**: listed, left out of the totals, never guessed. To fix it, size the story in the epics file.
 - **The rate is an assumption** until `MVP1-E8-02` sets a loaded rate per role: $1,000 per person-day for an engineer (Nikhil, 22 Nov 2026). Say "assumption" wherever the figure appears: the issue comment, the PR, the page.
 - **Nothing entered by hand.** Never type a cost into `human-costs.ts`, the done list or a page; change the epics file or the cost model and run the script.
-- **Done means the issue was closed as completed.** A story built without an issue (AutoRep stories live in the file only) is not counted as done.
-- **Scope:** MVP1 (E0 to E7) and AutoRep V1 (E1 to E6). E8 is the cost work itself and is listed separately, never in the projection (`docs/decisions/MVP1-E8.md`).
+- **Done means the issue was closed as completed.** A story built without an issue (AutoRep stories live in the file only) is not counted as done (Nikhil on PR #159).
+- **Scope:** MVP1 (E0 to E8, the cost work included; Nikhil on PR #159) and AutoRep V1 (E1 to E6). MVP2 is out.
 - **Measured token cost** is the ledger's build + rework cost, the same as the Token Costs table. A ledger entry covering several stories ("MVP1-E0-36 to E0-42") is split by person-days and marked shared. An entry naming only an epic or no story is listed as unassigned, not spread over stories.
