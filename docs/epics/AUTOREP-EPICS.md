@@ -210,6 +210,17 @@ As the owner, I want each approved reply posted once, whatever retries happen.
 - **API design:** `503 demo_budget_reached` on `POST …/runs`.
 - **Database design:** No new tables.
 
+
+### AUTOREP-E6-03 · Overview diagram on AutoRep's page — S
+As a visitor opening AutoRep, I want one picture of how it works, so I understand the agents, the human step and what it runs on before reading the details.
+- **AC1:** The top of AutoRep V1's page (`/products/autorep`) shows a diagram laid out like Nikhil's reference image (22 Nov 2026): a title and the steps (Analyse → Research → Draft → Critique → Route → Publish); **Inputs**, the **LangGraph orchestration** and **Outputs** side by side; then **Data & infrastructure**, **Platform services reused**, **Agents: roles and responsibilities** and the **End-to-end flow**.
+- **AC2:** Its content follows this PRD, not the reference image where they differ: no vector database in V1; the Researcher uses web search with citations, the business profile, past replies and the review thread; the Critic, the risk router and the Publisher replace an auto-posting approval agent; Slack and analytics are V2; it runs as Python LangGraph on AWS Lambda with checkpoints in Neon Postgres.
+- **AC3:** The orchestration shows the parallel Analyst and Researcher, the Writer and Critic loop (up to 2 revisions), the risk router, and both branches: publish directly (4★ or more, no risk flag) or owner approval through Human Review with the Delivery email, then publish.
+- **AC4:** It is part of the page, not an image: readable from 320 to 1920 pixels wide, in light and dark mode; on a phone the columns stack.
+- **Service:** Site (`apps/web`)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
 ---
 
 ## AutoRep V2 (not designed yet)

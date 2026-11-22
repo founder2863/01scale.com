@@ -21,6 +21,7 @@ import {
   type Version,
 } from "./apps";
 import { products } from "./data";
+import { AutorepDiagram } from "./autorep-diagram";
 import { DocflowVision } from "./docflow-vision";
 import { Flow, flows } from "./flow";
 
@@ -131,6 +132,7 @@ function AppVersionBody({ app, version, children }: { app: AppKey; version: Vers
   const modules = products.filter((product) => product.group === phaseOf(version) && moduleSlugs.has(product.slug));
   return (
     <div className="container content">
+      {app === "autorep" && version === "V1" && <AutorepDiagram />}
       {entry.comingSoon ? (
         <section>
           <div className="coming-soon">
