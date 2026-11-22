@@ -108,6 +108,35 @@ def main():
             by_kind[k] = round(by_kind.get(k, 0) + v, 2)
     expensive = sorted((r for r in rows if r["cost_usd"]), key=lambda r: r["cost_usd"], reverse=True)[:5]
 
+    # Figures for the Expensive Mistakes tab (MVP1-E0-46), worked out here so no number on it is typed by hand.
+    def story_split(key):
+        mine = [r for r in rows if r["area"] == key]
+        build = sum(r["cost_usd"] or 0 for r in mine if r["kind"] == "build")
+        rework = sum(r["cost_usd"] or 0 for r in mine if r["kind"] == "rework")
+        reload = sum(r["cost_usd"] or 0 for r in mine if r["kind"] == "rework" and "after a long break" in r["summary"])
+        return {"build": money(build), "rework": money(rework), "reworkAfterBreak": money(reload),
+                "reworkRequests": sum(1 for r in mine if r["kind"] == "rework"),
+                "yield": round(100 * build / (build + rework)) if build + rework else None}
+
+    priced = [r for r in rows if r["cost_usd"] is not None]
+    after_break = [r["cost_usd"] for r in priced if "after a long break" in r["summary"]]
+    others = sorted(r["cost_usd"] for r in priced if "after a long break" not in r["summary"])
+    typical = others[len(others) // 2] if others else 0
+    late = [r for r in rows if "merged too late" in r["summary"]]
+    mistakes = {
+        "designRedo": story_split("DESIGN-ALL"),
+        "homePage": story_split("MVP1-E0-36-42"),
+        "reloads": {
+            "requests": len(after_break),
+            "cost": money(sum(after_break)),
+            "share": round(100 * sum(after_break) / (all_c + overhead)) if all_c else None,
+            "median": money(sorted(after_break)[len(after_break) // 2]) if after_break else None,
+            "typical": money(typical),
+            "extra": money(sum(after_break) - typical * len(after_break)),
+        },
+        "mergedTooSoon": {"requests": len(late), "cost": money(sum(r["cost_usd"] or 0 for r in late))},
+    }
+
     data = {
         "updated": max(r["ts"] for r in rows)[:10],
         "sessions": len(ledger["sessions"]),
@@ -117,6 +146,7 @@ def main():
         "scaffoldingTotals": scaffolding_totals,
         "totals": totals,
         "byKind": by_kind,
+        "mistakes": mistakes,
         "mostExpensive": [{"summary": r["summary"], "cost": money(r["cost_usd"]), "tokens": r["tokens"], "outputTokens": r["output_tokens"]} for r in expensive],
     }
     with open("app/how-its-built/costs.ts", "w") as f:

@@ -5,6 +5,7 @@ import { costs } from "../costs";
 import { constraints, paid, perExtraction, providers, providersTotal } from "../running-costs";
 import { designSkillCount, rulesHref, skillOrder, skills } from "../skills";
 import { builtTabs, type BuiltTab } from "../tabs";
+import { findMistake, mistakes } from "../mistakes";
 import YieldExplainer from "../yield-explainer";
 
 const REPO = "https://github.com/founder2863/01scale.com/blob/main";
@@ -25,23 +26,32 @@ const RATES = [
   { model: "Claude Fable 5.2", input: "$8", output: "$40", cacheRead: "$0.20", cacheWrite: "$16" },
 ];
 
-// Four addresses: /how-its-built (Skills, the default), /token-costs, /agents and /costs.
+// One address per tab (Skills, the default, is /how-its-built), plus one per expensive mistake.
 export const dynamicParams = false;
 
+// Each expensive mistake also has its own article page: /how-its-built/expensive-mistakes/<slug>.
 export function generateStaticParams(): Params[] {
-  return [{ tab: [] }, ...builtTabs.slice(1).map((item) => ({ tab: [item.slug] }))];
+  return [
+    { tab: [] },
+    ...builtTabs.slice(1).map((item) => ({ tab: [item.slug] })),
+    ...mistakes.map((item) => ({ tab: ["expensive-mistakes", item.slug] })),
+  ];
 }
 
 function resolve(params: Params): BuiltTab | null {
   // "/how-its-built/skills" is not a real address: Skills lives at "/how-its-built".
-  if ((params.tab?.length ?? 0) > 1 || params.tab?.[0] === "skills") return null;
+  const depth = params.tab?.length ?? 0;
+  if (depth > 2 || params.tab?.[0] === "skills") return null;
+  if (depth === 2) return params.tab?.[0] === "expensive-mistakes" && findMistake(params.tab[1]) ? "expensive-mistakes" : null;
   const found = builtTabs.find((item) => item.slug === (params.tab?.[0] ?? "skills"));
   return found ? found.slug : null;
 }
 
 export async function generateMetadata({ params }: { params: Promise<Params> }): Promise<Metadata> {
-  const tab = resolve(await params);
-  const label = builtTabs.find((item) => item.slug === tab)?.label;
+  const resolved = await params;
+  const tab = resolve(resolved);
+  const article = resolved.tab?.[1] ? findMistake(resolved.tab[1]) : undefined;
+  const label = article?.title ?? builtTabs.find((item) => item.slug === tab)?.label;
   return {
     title: tab === "skills" ? "How It's Built — 01scale" : `How It's Built · ${label} — 01scale`,
     description:
@@ -50,8 +60,10 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
 }
 
 export default async function HowItsBuilt({ params }: { params: Promise<Params> }) {
-  const tab = resolve(await params);
+  const resolved = await params;
+  const tab = resolve(resolved);
   if (!tab) notFound();
+  const article = resolved.tab?.[1] ? findMistake(resolved.tab[1]) : undefined;
   return (
     <>
       <section className="hero hero-small">
@@ -351,6 +363,61 @@ export default async function HowItsBuilt({ params }: { params: Promise<Params> 
             <a href={`${REPO}/docs/process/TOKEN-COSTS.md`}>The full ledger and method</a>.
           </p>
         </section>
+        )}
+
+        {tab === "expensive-mistakes" && !article && (
+        <section id="expensive-mistakes">
+          <h2 className="group-title">Expensive Mistakes</h2>
+          <p className="note">
+            Mistakes I paid for, what each one cost and what I do differently now. The costs in
+            this project are measured from the token ledger, never typed in.
+          </p>
+          <h3 className="section-subtitle">In this project</h3>
+          <ul className="mistake-list">
+            {mistakes.map((item) => (
+              <li key={item.slug}>
+                <Link className="card mistake-card" href={`/how-its-built/expensive-mistakes/${item.slug}`}>
+                  <span className="card-title">{item.title}</span>
+                  <span className="mistake-cost">{item.cost}</span>
+                  <span>{item.oneLine}</span>
+                  <span className="mistake-more">Read the lesson →</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <h3 className="section-subtitle">From my career</h3>
+          <div className="coming-soon">
+            <p className="coming-soon-title">Coming Soon...</p>
+            <p>Lessons from the platforms and products I led before 01scale.</p>
+          </div>
+        </section>
+        )}
+
+        {article && (
+        <article className="mistake-article" id={article.slug}>
+          <p className="eyebrow">
+            <Link href="/how-its-built/expensive-mistakes">Expensive Mistakes</Link>
+          </p>
+          <h2 className="group-title">{article.title}</h2>
+          <p className="mistake-cost">{article.cost}</p>
+          <p className="lead-small">{article.oneLine}</p>
+          {article.sections.map((section) => (
+            <section key={section.heading}>
+              <h3 className="section-subtitle">{section.heading}</h3>
+              {section.body}
+            </section>
+          ))}
+          <ul className="link-list">
+            {article.links.map((link) => (
+              <li key={link.href}>
+                <a href={link.href}>{link.label} →</a>
+              </li>
+            ))}
+          </ul>
+          <p className="note">
+            <Link href="/how-its-built/expensive-mistakes">← All expensive mistakes</Link>
+          </p>
+        </article>
         )}
 
         {tab === "agents" && (

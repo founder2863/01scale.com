@@ -505,6 +505,34 @@ export const costs = {
     "cache_read": 13.59,
     "cache_write": 55.62
   },
+  "mistakes": {
+    "designRedo": {
+      "build": 3.08,
+      "rework": 8.09,
+      "reworkAfterBreak": 0,
+      "reworkRequests": 1,
+      "yield": 28
+    },
+    "homePage": {
+      "build": 4.33,
+      "rework": 28.67,
+      "reworkAfterBreak": 23.42,
+      "reworkRequests": 11,
+      "yield": 13
+    },
+    "reloads": {
+      "requests": 13,
+      "cost": 102.28,
+      "share": 32,
+      "median": 8.13,
+      "typical": 0.51,
+      "extra": 95.71
+    },
+    "mergedTooSoon": {
+      "requests": 1,
+      "cost": 0.46
+    }
+  },
   "mostExpensive": [
     {
       "summary": "One skill per design document: recommendation",
