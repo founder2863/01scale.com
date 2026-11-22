@@ -36,7 +36,8 @@
     "MVP1-E0-43": "MVP1-E0-43 · Platform Architecture diagram",
     "AUTOREP-E6-03": "AUTOREP-E6-03 · AutoRep overview diagram",
     "MVP1-E8": "MVP1-E8 · Total projected cost (tab and stories)",
-    "MVP1-E0-44": "MVP1-E0-44 · Product names and versions (story)"
+    "MVP1-E0-44": "MVP1-E0-44 · Product names and versions (story)",
+    "MVP1-E0-47": "MVP1-E0-47 · Payments article on Expensive Mistakes"
   },
   "sessions": [
     {
@@ -74,6 +75,19 @@
         "2026-11-17T01:51:11Z",
         "2026-11-17T01:55:33Z"
       ]
+    },
+    {
+      "id": "cd3f30e4-4f55-5f8e-acd7-4ed82744b67c",
+      "tool_total_usd": 1.2458,
+      "rates_usd_per_million": {},
+      "by_kind_usd": {
+        "input": 0.0,
+        "output": 0.0,
+        "cache_read": 0.0,
+        "cache_write": 0.0
+      },
+      "overhead_usd": 0,
+      "splits": []
     }
   ],
   "requests": [
@@ -2761,6 +2775,62 @@
       ],
       "tokens": 2639133,
       "output_tokens": 1440,
+      "cost_usd": null
+    },
+    {
+      "session": "cd3f30e4",
+      "n": 193,
+      "ts": "2026-11-22T17:20:21.534Z",
+      "area": "MVP1-E0-47",
+      "kind": "build",
+      "summary": "Write the story, issue, Payments section, article page and draft PR",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 2166581,
+      "output_tokens": 13672,
+      "cost_usd": 1.2458
+    },
+    {
+      "session": "cd3f30e4",
+      "n": 194,
+      "ts": "2026-11-22T18:08:44.372Z",
+      "area": "MVP1-E0-47",
+      "kind": "build",
+      "summary": "Add the article text; restructure to one Payments heading (mixed: mostly build, some rework)",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 1042867,
+      "output_tokens": 14153,
+      "cost_usd": null
+    },
+    {
+      "session": "cd3f30e4",
+      "n": 195,
+      "ts": "2026-11-22T18:11:31.492Z",
+      "area": "MVP1-E0-47",
+      "kind": "build",
+      "summary": "Add the rest of the article with the agreed formatting and wording fixes",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 1341935,
+      "output_tokens": 12289,
+      "cost_usd": null
+    },
+    {
+      "session": "cd3f30e4",
+      "n": 196,
+      "ts": "2026-11-22T18:25:23.110Z",
+      "area": "MVP1-E0-47",
+      "kind": "build",
+      "summary": "Add the original post link and record token costs",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 701790,
+      "output_tokens": 1376,
       "cost_usd": null
     }
   ]

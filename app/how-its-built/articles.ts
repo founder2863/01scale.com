@@ -11,7 +11,7 @@ export type Article = {
   domain: string;
   source: string;
   published: string;
-  // The original post. Null until Nikhil gives the address; the page then shows no link.
+  // The original post. Null when there is no address yet; the page then shows no link.
   originalUrl: string | null;
   file: string;
 };
@@ -23,7 +23,7 @@ export const articles: Article[] = [
     domain: "Payments",
     source: "LinkedIn",
     published: "3 Nov 2026",
-    originalUrl: null,
+    originalUrl: "https://www.linkedin.com/pulse/beyond-happy-path-10-lessons-from-building-embedded-saas-shrivastava-3f79c/",
     file: "content/articles/beyond-the-happy-path.md",
   },
 ];
