@@ -899,6 +899,68 @@ As the owner, I want to refund a paid order in full, so a demo user who was char
 
 ---
 
+## E8 · Total projected cost: a human team versus Claude Code
+**Goal:** show, story by story, what the whole initiative would cost and how long it would take with a human team, what it costs built with Claude Code and one product manager, and the difference. Nikhil's request, 22 Nov 2026. Open questions are listed on PR #125 and answered before E8-02 starts.
+
+### MVP1-E8-01 · Rename Costs to Total Projected Cost, and split out Constraints — S
+- **AC1:** How It's Built's menu and tabs show **Total Projected Cost** at `/how-its-built/total-projected-cost`; `/how-its-built/costs` redirects there.
+- **AC2:** **Constraints** is its own tab, last, at `/how-its-built/constraints`, so its list can grow.
+- **AC3:** Until E8-02 to E8-07 are built, Total Projected Cost says "Coming Soon..." for the projection and keeps today's actual and running costs below it.
+- **Service:** Site (`apps/web`)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E8-02 · The cost model's assumptions — S
+- **AC1:** One data file holds every assumption, each with its source and date:
+  - the build team: 5 full-stack engineers, 2 product managers, 1 QA automation engineer, program management and engineering and product leadership;
+  - the go-to-market team: one person each in sales, marketing, support, customer success, finance, compliance and security;
+  - typical North American salaries per role, the loading for benefits and overhead, working hours a week and working weeks a year.
+- **AC2:** The page shows the assumptions in a table, so a reader can see and question every input.
+- **AC3:** A decision log entry records each choice and its alternatives.
+- **Service:** Site (`apps/web`)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E8-03 · Effort for every story — M
+- **AC1:** Every story in scope gets an effort in person-days, derived from its size (S, M, L) with a stated scale for a human team, split into engineering, QA and product time.
+- **AC2:** The sizes come from the epics files; a story with no size is listed as a gap, not guessed.
+- **Service:** Site (`apps/web`) and `scripts/`
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E8-04 · A dependency-aware timeline — M
+- **AC1:** The timeline respects the build order: Platform Core first, then the platform services, then the customer-facing apps. Work inside a layer runs in parallel across the 5 engineers; work that depends on another layer waits for it.
+- **AC2:** The page shows the timeline by phase and epic, with the critical path and the total weeks, and states how the parallel work was assigned.
+- **Service:** Site (`apps/web`) and `scripts/`
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E8-05 · The human team's cost, per story and in total — M
+- **AC1:** Each story shows its projected cost (its effort × the rates of the roles doing it); epics and phases show subtotals.
+- **AC2:** Program management, leadership and the go-to-market team are costed over the timeline they are needed, shown separately from the story costs.
+- **AC3:** The total is the sum of both, with the timeline from E8-04.
+- **Service:** Site (`apps/web`)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E8-06 · The cost of building it with Claude Code and one product manager — M
+- **AC1:** Each story shows its projected token cost at Claude API prices, from the token ledger: measured where the story is done, and projected from measured cost per story size where it is not.
+- **AC2:** The total adds one human product manager's cost over Claude's projected timeline.
+- **AC3:** Projections are labelled as projections, measured costs as measured.
+- **Service:** Site (`apps/web`) and `scripts/costs/`
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E8-07 · The difference — S
+- **AC1:** The page compares the two, per story and in total: cost, timeline and the difference in both, at the top of Total Projected Cost.
+- **AC2:** It states the caveats: what the human estimate includes that Claude's does not (go-to-market, leadership), and that the Claude figures are API prices, not a subscription.
+- **AC3:** It works from 320 to 1920 pixels wide, in light and dark mode.
+- **Service:** Site (`apps/web`)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+---
+
 ## Definition of done for MVP1
 - All stories pass their AC; E3 and E4 evals meet `EVALS.md` MVP1 thresholds on the holdout set.
 - The demo script in PRD §15 runs end to end on a phone in under 3 minutes.
