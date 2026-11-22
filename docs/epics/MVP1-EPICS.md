@@ -244,7 +244,7 @@ As the owner, I want every service's screens to share one look and one set of ba
 - **AC6:** The design rules in `docs/process/DESIGN-RULES.md` and the `design-ui-components` skill say to build on `ui-core` and never restyle its base components inside a service.
 - **Service:** Platform (`packages/ui-core`); every service's UI package; Site
 
-**Status: built (22 Nov 2026).** AC1 to AC4 and AC6 are built in `packages/ui-core` 0.1.0, and the site imports its tokens. AC5: every built component is shown live, from its package, in each of its designed states, on its module's UI Components section (`app/products/gallery/`), with a stand-in client fixed to each state and synthetic data. To complete the galleries for what a DocFlow user meets, ten more pieces were built: Identity's SessionProvider and useSession(), SignOutButton, RequireSignIn and SignInError; Upload's useUpload(), FileList, OpenFileButton and DeleteFileButton; Extraction's useExtractionJob(); and Payment's OrderList. The account screens (AccountDetails, PasswordChangeButton, DeleteAccountDialog, ApiKeysManager) and the admin screens (JobsTable, EvalCandidatesTable, AccuracyReport) are marked "Designed, not built yet" and come with their own stories (Nikhil's decision, 22 Nov 2026).
+**Status: built (22 Nov 2026).** AC1 to AC4 and AC6 are built in `packages/ui-core` 0.1.0, and the site imports its tokens. AC5: every built component is shown live, from its package, in each of its designed states, on its module's UI Components section (`app/products/gallery/`), with a stand-in client fixed to each state and synthetic data. To complete the galleries for what a DocFlow user meets, ten more pieces were built: Identity's SessionProvider and useSession(), SignOutButton, RequireSignIn and SignInError; Upload's useUpload(), FileList, OpenFileButton and DeleteFileButton; Extraction's useExtractionJob(); and Payment's OrderList. The account screens (AccountDetails, PasswordChangeButton, DeleteAccountDialog, ApiKeysManager) and the admin screens (JobsTable, EvalCandidatesTable, AccuracyReport) are marked "Designed, not built yet" and come with their own stories: `MVP1-E1-09`, `MVP1-E3-07` and `MVP1-E4-05` (Nikhil's decision, 22 Nov 2026). Closed with PRs #161, #162 and #163.
 - **API design:** No endpoints.
 - **Database design:** No tables.
 
@@ -689,6 +689,18 @@ As a user, I want to sign in with my Google account so I don't need another pass
 
 ---
 
+### MVP1-E1-09 · Account screens as UI components (`ui-identity`) — S
+As the owner, I want the account page's screens built as Identity's UI components, so any app can offer account management without building it again.
+- **AC1:** `AccountDetails`, `PasswordChangeButton`, `DeleteAccountDialog` and `ApiKeysManager` are built as designed in `docs/services/identity/account/UI-COMPONENTS.md`. `ApiKeysManager` shows a new key's secret once, with Copy, and never again. `DeleteAccountDialog` asks the person to type DELETE.
+- **AC2:** Each component is built in `packages/ui-identity` on `@01scale/ui-core`, calls only its own service's API through the package's client, and has every state its design lists (loading, empty, failed and each data state).
+- **AC3:** Each component is shown live, in each of its states, on its module's UI Components section, replacing "Designed, not built yet" (MVP1-E0-19 AC5).
+- **AC4:** Keyboard reachable, visible focus, labelled controls, WCAG AA contrast, usable at 320 pixels wide, in light and dark mode.
+- **Service:** Identity (`packages/ui-identity`); parent stories `MVP1-E1-05` (account page) and `MVP1-E0-06` (API keys)
+- **API design:** No new endpoints. Uses those of `MVP1-E1-05` and `MVP1-E0-06`.
+- **Database design:** No tables.
+
+**Status: not started (#164).** Added 22 Nov 2026 (Nikhil), when MVP1-E0-19 AC5 marked these components "Designed, not built yet".
+
 ## E2 · Document upload to S3 (MVP1 "b")
 **Goal:** files go from the browser straight to a private S3 bucket, safely.
 
@@ -824,6 +836,18 @@ As a user, I want to ask a question in plain language across my processed invoic
 
 ---
 
+### MVP1-E3-07 · Jobs table for the admin as a UI component (`ui-extraction`) — S
+As the owner, I want the admin's jobs table built as Extraction's UI component, so I can watch cost, speed and failures in any app.
+- **AC1:** `JobsTable` is built as designed in `docs/services/extraction/UI-COMPONENTS.md`: the last jobs with model, prompt version, pages, tokens, cost, time and outcome, with the failure rate, average cost and slowest time on top. To anyone who is not an admin it shows "Not found", as the API answers.
+- **AC2:** Each component is built in `packages/ui-extraction` on `@01scale/ui-core`, calls only its own service's API through the package's client, and has every state its design lists (loading, empty, failed and each data state).
+- **AC3:** Each component is shown live, in each of its states, on its module's UI Components section, replacing "Designed, not built yet" (MVP1-E0-19 AC5).
+- **AC4:** Keyboard reachable, visible focus, labelled controls, WCAG AA contrast, usable at 320 pixels wide, in light and dark mode.
+- **Service:** LLM Extraction (`packages/ui-extraction`); parent story `MVP1-E3-05`
+- **API design:** No new endpoints. Uses `GET /api/extraction/v1/admin/jobs` (`MVP1-E3-05`).
+- **Database design:** No tables.
+
+**Status: not started (#165).** Added 22 Nov 2026 (Nikhil), when MVP1-E0-19 AC5 marked this component "Designed, not built yet".
+
 ## E4 · Human review of low-confidence fields (MVP1 "d")
 **Goal:** a person checks only what the system is unsure about, quickly, with evidence beside each field.
 
@@ -866,6 +890,18 @@ As a user, I want to ask a question in plain language across my processed invoic
 - **Database design:** `review.eval_candidates` (id, task_id, reference, field_name, model_value jsonb, human_value jsonb, status `candidate|approved|rejected`, created_at). `task_id` references `review.tasks` with delete cascade, so candidates are deleted with the task and the account (decision on #41).
 
 ---
+
+### MVP1-E4-05 · Eval candidates and accuracy for the admin as UI components (`ui-review`) — S
+As the owner, I want the admin's eval-candidate and accuracy screens built as Review's UI components, so I can approve real model mistakes as eval cases and see how accurate the fields are, inside the app.
+- **AC1:** `EvalCandidatesTable` (corrections with both values, Approve and Reject) and `AccuracyReport` (per field, how often people corrected it and how well flagging caught it, as numbers only) are built as designed in `docs/services/review/UI-COMPONENTS.md`. Neither exports or copies user data (Nikhil's privacy rule; decision on #41).
+- **AC2:** Each component is built in `packages/ui-review` on `@01scale/ui-core`, calls only its own service's API through the package's client, and has every state its design lists (loading, empty, failed and each data state).
+- **AC3:** Each component is shown live, in each of its states, on its module's UI Components section, replacing "Designed, not built yet" (MVP1-E0-19 AC5).
+- **AC4:** Keyboard reachable, visible focus, labelled controls, WCAG AA contrast, usable at 320 pixels wide, in light and dark mode.
+- **Service:** Human Review (`packages/ui-review`); parent story `MVP1-E4-04`
+- **API design:** No new endpoints. Uses `GET` and `PATCH /api/review/v1/admin/eval-candidates` and `GET /api/review/v1/admin/accuracy` (`MVP1-E4-04`).
+- **Database design:** No tables.
+
+**Status: not started (#166).** Added 22 Nov 2026 (Nikhil), when MVP1-E0-19 AC5 marked these components "Designed, not built yet".
 
 ## E5 · JSON review, metadata and CSV (MVP1 "e")
 **Goal:** clean, trustworthy outputs the user can preview before paying.

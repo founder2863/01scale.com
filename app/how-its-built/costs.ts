@@ -568,8 +568,8 @@ export const costs = {
     },
     {
       "name": "Process",
-      "requests": 38,
-      "tokens": 92690756,
+      "requests": 39,
+      "tokens": 108810545,
       "cost": 24.75
     },
     {
@@ -580,22 +580,22 @@ export const costs = {
     }
   ],
   "scaffoldingTotals": {
-    "requests": 89,
-    "tokens": 128242004,
+    "requests": 90,
+    "tokens": 144361793,
     "cost": 66.47
   },
   "totals": {
-    "requests": 237,
-    "tokens": 696115222,
+    "requests": 238,
+    "tokens": 712235011,
     "cost": 349.72,
     "buildCost": 156.68,
     "reworkCost": 126.57,
     "scaffoldingCost": 66.47,
     "storyYield": 53,
-    "overallYield": 43,
-    "pendingRequests": 21,
-    "pendingEstimate": 15.5,
-    "pendingEstimated": 15
+    "overallYield": 42,
+    "pendingRequests": 22,
+    "pendingEstimate": 19.39,
+    "pendingEstimated": 16
   },
   "byKind": {
     "input": 0.06,

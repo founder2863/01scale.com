@@ -15,17 +15,17 @@ export const humanCosts = {
   },
   "scope": "MVP1 only: Platform Core, the platform services, DocFlow (E0 to E7), the cost work itself (E8; Nikhil on PR #159) and AutoRep V1 (E1 to E6). MVP2 is out.",
   "soFar": {
-    "stories": 27,
-    "personDays": 131,
-    "cost": 131000,
-    "tokenCost": 100.87,
+    "stories": 29,
+    "personDays": 147,
+    "cost": 147000,
+    "tokenCost": 115.83,
     "tbd": []
   },
   "projected": {
-    "stories": 113,
-    "personDays": 691,
-    "cost": 691000,
-    "tokenCost": 145.54,
+    "stories": 116,
+    "personDays": 700,
+    "cost": 700000,
+    "tokenCost": 160.14,
     "tbd": []
   },
   "excludedSoFar": {
@@ -50,14 +50,14 @@ export const humanCosts = {
         "stories": 49,
         "personDays": 303,
         "cost": 303000,
-        "tokenCost": 132.82,
+        "tokenCost": 147.42,
         "tbd": []
       },
       "soFar": {
-        "stories": 26,
-        "personDays": 128,
-        "cost": 128000,
-        "tokenCost": 100.87,
+        "stories": 27,
+        "personDays": 136,
+        "cost": 136000,
+        "tokenCost": 115.83,
         "tbd": []
       }
     },
@@ -65,9 +65,9 @@ export const humanCosts = {
       "epic": "MVP1-E1",
       "inScope": true,
       "projected": {
-        "stories": 8,
-        "personDays": 44,
-        "cost": 44000,
+        "stories": 9,
+        "personDays": 47,
+        "cost": 47000,
         "tokenCost": 10.13,
         "tbd": []
       },
@@ -101,9 +101,9 @@ export const humanCosts = {
       "epic": "MVP1-E3",
       "inScope": true,
       "projected": {
-        "stories": 6,
-        "personDays": 57,
-        "cost": 57000,
+        "stories": 7,
+        "personDays": 60,
+        "cost": 60000,
         "tokenCost": 0.84,
         "tbd": []
       },
@@ -119,9 +119,9 @@ export const humanCosts = {
       "epic": "MVP1-E4",
       "inScope": true,
       "projected": {
-        "stories": 4,
-        "personDays": 22,
-        "cost": 22000,
+        "stories": 5,
+        "personDays": 25,
+        "cost": 25000,
         "tokenCost": 0,
         "tbd": []
       },
@@ -198,9 +198,9 @@ export const humanCosts = {
         "tbd": []
       },
       "soFar": {
-        "stories": 1,
-        "personDays": 3,
-        "cost": 3000,
+        "stories": 2,
+        "personDays": 11,
+        "cost": 11000,
         "tokenCost": 0,
         "tbd": []
       }
@@ -593,12 +593,12 @@ export const humanCosts = {
       "size": "M",
       "personDays": 8,
       "cost": 8000,
-      "done": false,
-      "issue": null,
-      "closed": null,
-      "tokenCost": 0.36,
+      "done": true,
+      "issue": 96,
+      "closed": "2026-11-22",
+      "tokenCost": 14.96,
       "tokenCostShared": true,
-      "tokenCostPending": false
+      "tokenCostPending": true
     },
     {
       "id": "MVP1-E0-20",
@@ -1171,6 +1171,21 @@ export const humanCosts = {
       "tokenCostPending": false
     },
     {
+      "id": "MVP1-E1-09",
+      "title": "Account screens as UI components (`ui-identity`)",
+      "product": "MVP1",
+      "epic": "MVP1-E1",
+      "size": "S",
+      "personDays": 3,
+      "cost": 3000,
+      "done": false,
+      "issue": null,
+      "closed": null,
+      "tokenCost": null,
+      "tokenCostShared": false,
+      "tokenCostPending": false
+    },
+    {
       "id": "MVP1-E2-01",
       "title": "S3 bucket and IAM",
       "product": "MVP1",
@@ -1336,6 +1351,21 @@ export const humanCosts = {
       "tokenCostPending": false
     },
     {
+      "id": "MVP1-E3-07",
+      "title": "Jobs table for the admin as a UI component (`ui-extraction`)",
+      "product": "MVP1",
+      "epic": "MVP1-E3",
+      "size": "S",
+      "personDays": 3,
+      "cost": 3000,
+      "done": false,
+      "issue": null,
+      "closed": null,
+      "tokenCost": null,
+      "tokenCostShared": false,
+      "tokenCostPending": false
+    },
+    {
       "id": "MVP1-E4-01",
       "title": "Review queue",
       "product": "MVP1",
@@ -1383,6 +1413,21 @@ export const humanCosts = {
     {
       "id": "MVP1-E4-04",
       "title": "Corrections feed the eval set",
+      "product": "MVP1",
+      "epic": "MVP1-E4",
+      "size": "S",
+      "personDays": 3,
+      "cost": 3000,
+      "done": false,
+      "issue": null,
+      "closed": null,
+      "tokenCost": null,
+      "tokenCostShared": false,
+      "tokenCostPending": false
+    },
+    {
+      "id": "MVP1-E4-05",
+      "title": "Eval candidates and accuracy for the admin as UI components (`ui-review`)",
       "product": "MVP1",
       "epic": "MVP1-E4",
       "size": "S",
@@ -1688,9 +1733,9 @@ export const humanCosts = {
       "size": "M",
       "personDays": 8,
       "cost": 8000,
-      "done": false,
-      "issue": null,
-      "closed": null,
+      "done": true,
+      "issue": 156,
+      "closed": "2026-11-22",
       "tokenCost": null,
       "tokenCostShared": false,
       "tokenCostPending": true

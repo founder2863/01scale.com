@@ -342,7 +342,7 @@ MODULES = [
     ("login-using-aws", "Login using AWS", "MVP1", "Identity", "Sign up, sign in and password reset with AWS Cognito, integrated through standard OIDC.", "E1",
      ["MVP1-E1-01", "MVP1-E1-02", "MVP1-E1-03", "MVP1-E1-04", "MVP1-E1-06", "MVP1-E1-07", "MVP1-E1-08"]),
     ("account-management", "Account management", "MVP1", "Identity", "An account page to view and update your details, delete your account, and create API keys for AI agents.", "E1",
-     ["MVP1-E1-05", "MVP1-E0-06"]),
+     ["MVP1-E1-05", "MVP1-E0-06", "MVP1-E1-09"]),
     ("document-upload", "Document upload", "MVP1", "Upload", "Upload a file from the browser straight to a private AWS S3 bucket.", "E2", None),
     ("extraction-with-claude", "Extraction with Claude", "MVP1", "LLM Extraction", "Claude turns a document into structured data, with a confidence score and evidence for every field.", "E3", None),
     ("human-review", "Human review", "MVP1", "Human Review", "Review only the fields the system is unsure about, with the evidence beside each one.", "E4", None),
