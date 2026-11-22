@@ -961,6 +961,21 @@ As the owner, I want to refund a paid order in full, so a demo user who was char
 - **API design:** No endpoints.
 - **Database design:** No tables.
 
+
+### MVP1-E8-08 · Token estimate for every V1 story, and a story for every document — L
+As the owner, I want each V1 story's token cost estimated separately for its product work and its development work, and every document in the repository tied to a story, so the Claude Code projection (`MVP1-E8-06`) is complete and nothing written goes uncounted (Nikhil's request, 22 Nov 2026).
+- **AC1:** **Every document has a story.** An inventory lists every document in the repository (PRDs, epics, architecture and design documents, decision logs, reviews, skills, process documents, evals) and the story that produced it. A document with no story gets one, written and sized like any other, marked "backfilled" with the date the document was first written.
+- **AC2:** **Every V1 story gets two estimates,** in tokens and in dollars at Claude API prices:
+  - **product work:** discovery, PRD and story writing, design documents, reviews and decisions;
+  - **development work:** code, tests, the build, and fixing what review finds.
+- **AC3:** **Measured beats estimated.** Where the token ledger has measured a story, the measured figure is used and labelled "measured". Otherwise the estimate comes from the measured cost of comparable stories of the same size and kind, with the comparison named. A story that cannot be estimated yet shows TBD.
+- **AC4:** **Scope** is every V1 story: Platform Core, the platform services, DocFlow V1, AutoRep V1 and the 01scale site, matching E8's scope.
+- **AC5:** The estimates live in one data file next to the token ledger, and feed `MVP1-E8-06` (Claude Code cost per story) and `MVP1-E8-07` (the difference). The page lists them per story, with product and development shown separately and subtotals per epic and product.
+- **AC6:** `npm run costs` keeps working; the estimates never overwrite a measured cost.
+- **Service:** Site (`apps/web`), `scripts/costs/` and docs
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
 ---
 
 ## Definition of done for MVP1
