@@ -500,23 +500,31 @@ As a visitor on Platform Architecture, I want the diagram to show every business
 - **Database design:** No tables.
 
 
-### MVP1-E0-44 · App names with their version, in folders and documents — M
-As the owner, I want every app's folders and documents named the same way, `<app>-<version>`, so anyone can tell which app and which version a file belongs to (Nikhil's request, 22 Nov 2026; to be built later).
-- **AC1:** An inventory lists every app folder and document whose name lacks the app or the version, or mixes phases and apps. Found on 22 Nov 2026:
-  - PRDs: `docs/prd/MVP1-PRD.md` (DocFlow V1 and the platform) and `docs/prd/AUTOREP-PRD.md` (no version);
-  - epics: `docs/epics/MVP1-EPICS.md` and `docs/epics/AUTOREP-EPICS.md`;
-  - decision logs: `docs/decisions/AUTOREP-E1.md` next to `MVP1-E0.md`;
-  - `docs/services/docflow/`: an app's documents under services;
-  - site and design files: `app/products/docflow.ts`, `app/products/docflow-vision.tsx`, `scripts/site/docflow_design.py`.
-- **AC2:** App folders and documents follow `<app>-<version>`, lower case: for example `docflow-v1` and `autorep-v1`, with a document's own name inside the folder (for example `docs/apps/docflow-v1/PRD.md`). Platform documents, which belong to no app, keep their own names.
-- **AC3:** Every rename is a move (`git mv`), so history follows the file. Links in docs, the site and the design scripts are updated in the same PR, and a check finds no broken link. Any public address that changes redirects to the new one.
-- **AC4:** `CLAUDE.md` ("Where things live") and `docs/process/DESIGN-RULES.md` state the convention.
-- **AC5:** Content is not changed, only names and links.
-- **Open questions, answered before the story is built:**
-  1. Do story IDs follow the convention too (for example `AUTOREP-E1-01` → `AUTOREP-V1-E1-01`), and do GitHub issue titles change with them?
-  2. Do site addresses change (`/products/docflow` → `/products/docflow-v1`)? Today an app page is `/products/<app>`, with a tab per version (decided on PR #118).
-  3. `MVP1-PRD.md` holds both DocFlow V1 and the platform: split it into the platform's PRD and DocFlow V1's, or keep one?
-- **Service:** Site (`apps/web`), docs and design tooling
+### MVP1-E0-44 · Product names and versions in folders, documents and story IDs — L
+As the owner, I want every product's documents and stories named by product and version, in the same structure as the website, so anyone can tell which product and version a file or story belongs to (Nikhil's decisions, 22 Nov 2026; to be built later).
+- **AC1:** Documents follow the website's structure: product, then version, then fixed file names (`PRD.md`, `EPICS.md`, `DECISIONS.md`). A light scheme: one PRD for Platform Core, one for all platform services, one per app.
+  ```
+  docs/platform/core/v1/      PRD.md EPICS.md DECISIONS.md   (Platform Core)
+  docs/services/v1/           PRD.md EPICS.md DECISIONS.md   (all services, one release)
+  docs/services/<service>/v1/ the service's design documents  (versioned per service, as on the site)
+  docs/apps/docflow/v1/       PRD.md EPICS.md DECISIONS.md
+  docs/apps/autorep/v1/       PRD.md EPICS.md DECISIONS.md
+  docs/apps/01scale/v1/       PRD.md EPICS.md DECISIONS.md   (the site's own stories; not listed under Products)
+  ```
+  Architecture, process, evals and infrastructure documents stay where they are: they belong to no single product.
+- **AC2:** Today's documents are split into that structure: `MVP1-PRD.md` into Platform Core, services and DocFlow V1; `MVP1-EPICS.md` by each story's owner; `AUTOREP-PRD.md` and `AUTOREP-EPICS.md` into `apps/autorep/v1/`; the decision logs beside their product. Epic E0's stories about the site itself (home page, menus, product pages, How It's Built) go to `apps/01scale/v1/`. Content is not changed, only moved.
+- **AC3:** Story IDs take the product and version, keeping the epic and story numbers: `CORE-V1-E0-07`, `SVC-V1-E1-02`, `DOCFLOW-V1-E5-01`, `AUTOREP-V1-E2-03`, `01SCALE-V1-E0-14`. The 85 GitHub issues are retitled, each body gains "Previously `MVP1-E1-02`", and labels move from `mvp1`/`epic:E#` to the product and version. Merged pull requests, commit messages and dated reviews keep the old IDs: history is not rewritten.
+- **AC4:** Every rename is a move (`git mv`), so history follows the file. Website addresses do not change (`/products/docflow`, `/products/docflow/v2`; decided on PR #118); any repository link that changes is updated in the same PR, and a check finds no broken link.
+- **AC5:** Everything that names a path or an ID is updated in the same PR:
+  - `CLAUDE.md`: "Where things live", "Issue IDs", the workflow steps that name paths (4, 6, 8) and "Current status";
+  - `docs/process/DESIGN-RULES.md` and the 10 skills in `.claude/skills/`;
+  - the generators and checks: `scripts/site/build_products.py`, `render.py`, the `*_design.py` files, `platform_core.py`, `review_architecture.py` and `check_schema.mjs`;
+  - token costs: the story keys in `docs/process/token-ledger.json`, `scripts/costs/` and `TOKEN-COSTS.md`;
+  - the site's links to GitHub documents (`app/products/sections.tsx`, `apps.ts`, the app pages) and its Requirement EPIC section;
+  - story references in `ARCHITECTURE.md`, `API-DESIGN.md`, `DATABASE-DESIGN.md`, `EVALS.md`, the PRDs, decision logs and `README.md`.
+- **AC6:** `npm run site:data`, `npm run schema:check`, `npm run costs` and the build pass, and the site shows the same content as before.
+- **Estimate (22 Nov 2026, before the work):** about 20M tokens, mostly re-read context (cache reads), about **$12–25** at Claude Opus 5.5 API prices ($4/$20 per million in and out, $0.20 cache reads). Basis: 2,359 ID references in 174 files and 148 document paths, changed by script rather than by hand (about 40–60 tool calls, about $5–10); 85 issues retitled one call each (about $3–5); checks and fixes (about $4–10). Compared with the measured "API and database design for every story" ($11.17) and "design skills" ($20.66). Measured afterwards with `npm run costs`.
+- **Service:** Site (`apps/web`), docs, design tooling and GitHub issues
 - **API design:** No endpoints.
 - **Database design:** No tables.
 
