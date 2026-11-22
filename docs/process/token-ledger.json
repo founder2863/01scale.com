@@ -2829,8 +2829,36 @@
       "models": [
         "claude-opus-5-5"
       ],
-      "tokens": 701790,
-      "output_tokens": 1376,
+      "tokens": 1608416,
+      "output_tokens": 5507,
+      "cost_usd": null
+    },
+    {
+      "session": "cd3f30e4",
+      "n": 197,
+      "ts": "2026-11-22T18:28:10.621Z",
+      "area": "Questions and explanations",
+      "kind": "scaffolding",
+      "summary": "Where the rule to record token costs is written",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 183925,
+      "output_tokens": 745,
+      "cost_usd": null
+    },
+    {
+      "session": "cd3f30e4",
+      "n": 198,
+      "ts": "2026-11-22T18:31:14.720Z",
+      "area": "Process",
+      "kind": "scaffolding",
+      "summary": "Change the token-cost rule to every pull request (CLAUDE.md and skill)",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 747787,
+      "output_tokens": 1796,
       "cost_usd": null
     }
   ]
