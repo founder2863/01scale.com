@@ -6,6 +6,7 @@ import { constraints, paid, perExtraction, providers, providersTotal } from "../
 import { designSkillCount, rulesHref, skillOrder, skills } from "../skills";
 import { builtTabs, type BuiltTab } from "../tabs";
 import { findMistake, mistakes } from "../mistakes";
+import { articleDomains, articleHtml, articles, findArticle } from "../articles";
 import YieldExplainer from "../yield-explainer";
 
 const REPO = "https://github.com/founder2863/01scale.com/blob/main";
@@ -26,7 +27,8 @@ const RATES = [
   { model: "Claude Fable 5.2", input: "$8", output: "$40", cacheRead: "$0.20", cacheWrite: "$16" },
 ];
 
-// One address per tab (Skills, the default, is /how-its-built), plus one per expensive mistake.
+// One address per tab (Skills, the default, is /how-its-built), plus one per expensive mistake
+// and one per Lessons Learned article.
 export const dynamicParams = false;
 
 // Each expensive mistake also has its own article page: /how-its-built/expensive-mistakes/<slug>.
@@ -35,6 +37,7 @@ export function generateStaticParams(): Params[] {
     { tab: [] },
     ...builtTabs.slice(1).map((item) => ({ tab: [item.slug] })),
     ...mistakes.map((item) => ({ tab: ["expensive-mistakes", item.slug] })),
+    ...articles.map((item) => ({ tab: ["expensive-mistakes", item.slug] })),
   ];
 }
 
@@ -42,7 +45,10 @@ function resolve(params: Params): BuiltTab | null {
   // "/how-its-built/skills" is not a real address: Skills lives at "/how-its-built".
   const depth = params.tab?.length ?? 0;
   if (depth > 2 || params.tab?.[0] === "skills") return null;
-  if (depth === 2) return params.tab?.[0] === "expensive-mistakes" && findMistake(params.tab[1]) ? "expensive-mistakes" : null;
+  if (depth === 2) {
+    const slug = params.tab?.[1] ?? "";
+    return params.tab?.[0] === "expensive-mistakes" && (findMistake(slug) || findArticle(slug)) ? "expensive-mistakes" : null;
+  }
   const found = builtTabs.find((item) => item.slug === (params.tab?.[0] ?? "skills"));
   return found ? found.slug : null;
 }
@@ -50,7 +56,7 @@ function resolve(params: Params): BuiltTab | null {
 export async function generateMetadata({ params }: { params: Promise<Params> }): Promise<Metadata> {
   const resolved = await params;
   const tab = resolve(resolved);
-  const article = resolved.tab?.[1] ? findMistake(resolved.tab[1]) : undefined;
+  const article = resolved.tab?.[1] ? findMistake(resolved.tab[1]) ?? findArticle(resolved.tab[1]) : undefined;
   const label = article?.title ?? builtTabs.find((item) => item.slug === tab)?.label;
   return {
     title: tab === "skills" ? "How It's Built — 01scale" : `How It's Built · ${label} — 01scale`,
@@ -64,6 +70,8 @@ export default async function HowItsBuilt({ params }: { params: Promise<Params> 
   const tab = resolve(resolved);
   if (!tab) notFound();
   const article = resolved.tab?.[1] ? findMistake(resolved.tab[1]) : undefined;
+  const lesson = resolved.tab?.[1] ? findArticle(resolved.tab[1]) : undefined;
+  const lessonHtml = lesson ? articleHtml(lesson) : null;
   return (
     <>
       <section className="hero hero-small">
@@ -365,7 +373,7 @@ export default async function HowItsBuilt({ params }: { params: Promise<Params> 
         </section>
         )}
 
-        {tab === "expensive-mistakes" && !article && (
+        {tab === "expensive-mistakes" && !article && !lesson && (
         <section id="expensive-mistakes">
           <h2 className="group-title">Expensive Mistakes</h2>
           <p className="note">
@@ -390,7 +398,56 @@ export default async function HowItsBuilt({ params }: { params: Promise<Params> 
             <p className="coming-soon-title">Coming Soon...</p>
             <p>Lessons from the platforms and products I led before 01scale.</p>
           </div>
+          <h3 className="section-subtitle">Lessons Learned</h3>
+          <p className="note">What I have written about the domains I led, as published.</p>
+          {articleDomains.map((group) => (
+            <div key={group.domain}>
+              <h4 className="lesson-domain">{group.domain}</h4>
+              <ul className="mistake-list lesson-list">
+                {group.items.map((item) => (
+                  <li key={item.slug}>
+                    <Link className="card mistake-card" href={`/how-its-built/expensive-mistakes/${item.slug}`}>
+                      <span className="card-title">{item.title}</span>
+                      <span className="mistake-cost">
+                        {item.source} · {item.published}
+                      </span>
+                      <span className="mistake-more">Read the article →</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </section>
+        )}
+
+        {lesson && (
+        <article className="mistake-article lesson-article" id={lesson.slug}>
+          <p className="eyebrow">
+            <Link href="/how-its-built/expensive-mistakes">Expensive Mistakes</Link> · Lessons Learned ·{" "}
+            {lesson.domain}
+          </p>
+          <h2 className="group-title">{lesson.title}</h2>
+          <p className="note">
+            Originally published on {lesson.source}, {lesson.published}
+            {lesson.originalUrl && (
+              <>
+                {" · "}
+                <a href={lesson.originalUrl}>Read the original →</a>
+              </>
+            )}
+          </p>
+          {lessonHtml ? (
+            <div className="lesson-body" dangerouslySetInnerHTML={{ __html: lessonHtml }} />
+          ) : (
+            <div className="coming-soon">
+              <p className="coming-soon-title">Coming Soon...</p>
+            </div>
+          )}
+          <p className="note">
+            <Link href="/how-its-built/expensive-mistakes">← All expensive mistakes</Link>
+          </p>
+        </article>
         )}
 
         {article && (

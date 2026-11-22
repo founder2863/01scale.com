@@ -3103,3 +3103,33 @@ section[id] {
 .mistake-article li {
   overflow-wrap: anywhere;
 }
+
+/* Lessons Learned (MVP1-E0-47): published articles by domain, shown verbatim from Markdown. */
+.lesson-domain {
+  margin: 18px 0 10px;
+  color: var(--muted);
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.lesson-body img {
+  max-width: 100%;
+  height: auto;
+}
+
+.lesson-body pre {
+  overflow-x: auto;
+}
+
+.lesson-body blockquote {
+  margin: 16px 0;
+  padding-left: 14px;
+  border-left: 3px solid var(--brand-bright);
+  color: var(--muted);
+}
+
+/* Fill columns, so one article stays card-sized instead of stretching across the page. */
+.lesson-list {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+}

@@ -550,6 +550,17 @@ As a hiring manager, I want to read the mistakes Nikhil paid for, what each cost
 - **API design:** No endpoints.
 - **Database design:** No tables.
 
+### MVP1-E0-47 · Lessons Learned on the Expensive Mistakes tab, starting with Payments — S
+As a hiring manager, I want to read what Nikhil learned the hard way in the domains he led, in his own published words, so I can judge his judgement from real work before 01scale (Nikhil's request, 22 Nov 2026).
+- **AC1:** The Expensive Mistakes tab has a third section, **Lessons Learned**, after **From my career**, grouped by domain. The first heading is **Payments**.
+- **AC2:** Under Payments, one card for the LinkedIn article *Beyond the Happy Path* (title, "LinkedIn · 3 Nov 2026", link) opens `/how-its-built/expensive-mistakes/beyond-the-happy-path`.
+- **AC3:** The page shows the article verbatim from one Markdown file, `content/articles/beyond-the-happy-path.md`, rendered at build time; the text is Nikhil's and is never edited, summarized or drafted. Until the file has text, the page shows "Coming Soon...".
+- **AC4:** The page says "Originally published on LinkedIn, 3 Nov 2026" with a link to the original post, defined once with the article in `app/how-its-built/articles.ts`.
+- **AC5:** The section and page work from 320 to 1920 pixels wide, in light and dark mode.
+- **Service:** Site (`apps/web`)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
 ---
 
 ## E1 · Accounts with AWS Cognito (MVP1 "a")
