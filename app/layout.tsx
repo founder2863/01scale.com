@@ -5,6 +5,8 @@ import type { ReactNode } from "react";
 import HowItsBuiltMenu from "./how-its-built/menu";
 import PlatformMenu from "./platform/menu";
 import ProductsMenu from "./products/menu";
+import "@01scale/ui-core/tokens.css";
+import "@01scale/ui-core/styles.css";
 import "./globals.css";
 
 export const metadata: Metadata = {

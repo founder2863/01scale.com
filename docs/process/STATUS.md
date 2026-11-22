@@ -1,10 +1,11 @@
 # Status and handoff
 
-Read this at the start of every session, after CLAUDE.md. Update it in the PR that changes what it says (a story shipped, a decision made, a question answered). Last updated: 22 Nov 2026, with the PR for MVP1-E8-09 (human cost script and skill, issue #156).
+Read this at the start of every session, after CLAUDE.md. Update it in the PR that changes what it says (a story shipped, a decision made, a question answered). Last updated: 22 Nov 2026, with the branch for MVP1-E0-19 (design system) and the DocFlow V1 clickable prototype (MVP1-E0-18).
 
 ## Where things stand
 
-- **In flight:** the MVP1-E8-09 PR (branch `claude/funny-turing-jjts2u`). Every earlier PR is merged.
+- **In flight:** branch `claude/amazing-meitner-kpu3n6`: `packages/ui-core` (MVP1-E0-19) and the DocFlow V1 clickable prototype at `/products/docflow/try` (MVP1-E0-18 for DocFlow). No PR yet. Every earlier PR is merged.
+- **Workspaces:** the root `package.json` now has `"workspaces": ["packages/*"]`; the site stays at the root until E0-07 moves it to `apps/web`. Run `npm install` after pulling.
 - **The site** (Next.js at the repo root, not yet `apps/web`) has: Home (E0-36 to E0-42), Products with app pages (side menu, E0-48) and module pages (15 sections, phone Sections button and Previous / Next, E0-49), Platform (Core, Platform and Apps Architecture, E0-22, E0-23, E0-43), How It's Built (Skills, Token Costs, Agents, Total Projected Cost, Constraints, Expensive Mistakes with four project lessons and the Payments article, E0-45 to E0-47).
 - **No platform service is built.** Every API and table is designed in the stories; Identity and Upload have full design documents (`scripts/site/*_design.py`).
 - **Token costs** are recorded through the last request of session `fdd431bb` ($331.50 in the ledger; the tool stopped pricing this session's requests after 19:00 UTC, so its last six show as pending; they carry an upper-bound estimate of about $4.91 in `estimated_usd`, worked out by `scripts/costs/estimate_pending.py` and kept out of the measured totals). Session `43ccd0e7` (MVP1-E8-09) is recorded too: its four requests were never priced, estimated at about $2.47 the same way. In all, 10 of the 16 pending requests carry an estimate ($7.38); the other six are older and have none. New sessions add their own session to the ledger.
@@ -13,14 +14,18 @@ Read this at the start of every session, after CLAUDE.md. Update it in the PR th
 
 | State | Stories |
 |---|---|
-| Built, PR open | E8-09 (#156): `npm run human-costs`, skill `estimate-human-cost`, `docs/process/cost-model.json`, `app/how-its-built/human-costs.ts` |
+| Built on a branch, no PR yet | E0-19 except AC5 (`packages/ui-core` 0.1.0; site uses its tokens); E0-18 for the DocFlow app only (`/products/docflow/try`, against an in-browser mock) |
+| Built, merged | E8-09 (#156, PR #159) |
 | Built, issue closed | E0-10, E0-11, E0-12, E0-13 (#61), E0-17, E0-21, E0-22, E0-23, E0-31 (#109), E0-32 to E0-35, E0-36 to E0-43 (#148 to #155, created after the work), E0-45 to E0-49, E8-01 |
 | Built, no issue by design | AUTOREP-E1-04 and AUTOREP-E6-03 (AutoRep stories live in the file only) |
 | Placeholder only ("Coming Soon..." on every module page) | E0-14 Market Outlook (#84), E0-15 PRD Reference (#85), E0-16 MCP (#86), E0-20 Architecture (#97), E0-27 to E0-30 Metrics, Monetization, GTM, Support (#104 to #107) |
 | Story only, decided, not built | **E8-10 Total Projected Cost page (next; see below)**, E0-44 product names and versions (#133; build when Nikhil says go), E8-02 to E8-08 (#127 to #132, #135) |
-| Not started | E0-01 to E0-09 (foundation code), E0-18, E0-19, E0-24 (Built on: Platform Core components, not the app Built On section), E0-25, E0-26, and epics E1 to E7 |
+| Not started | E0-01 to E0-09 (foundation code), E0-18 per module, E0-24 (Built on: Platform Core components, not the app Built On section), E0-25, E0-26, and epics E1 to E7 |
 
 ## Open questions waiting for Nikhil
+
+- DocFlow prototype: keep it at `/products/docflow/try` (linked from the DocFlow V1 hero), or also place it as Try it inside DocFlow's User Journey section, as E0-18 AC1 describes for modules?
+- The prototype's components live in `app/products/docflow/try/components/`, one file per service, named as designed. Move each into `packages/ui-<service>` when its service is built (E0-07 AC6), or earlier?
 
 - DocFlow V1 "What each step adds over time" also describes V2 and sits in Overview: keep, or move to the V2 page? (PR #144)
 

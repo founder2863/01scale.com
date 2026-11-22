@@ -38,7 +38,8 @@ Every skill in `.claude/skills/design-*` and `publish-product-page` reads this f
 9. **Status is stated.** Every document opens with the version and whether it is designed or built.
 10. **Sample data is safe.** Use `example.com` addresses and made-up IDs. Never real names, emails, keys or secrets.
 11. **Security defaults.** Store hashes, never tokens or passwords. Other users' records return `404`. Never reveal whether an account exists. See `CLAUDE.md`, "Secure by default".
-12. **User data stays private.** A user's data never leaves that user's account: it is never seen by another user and never written to the public repository (code, docs, datasets, fixtures, eval reports, logs, issues or PR comments). Test data in the repository is synthetic or public with a clear licence. A design that exports, copies or publishes user data (for example to `evals/`) is a finding. Admin views of all users are for the owner only, behind `is_admin`.
+12. **Build on the design system.** A service's components (`packages/ui-<service>`) are built from `@01scale/ui-core` (`MVP1-E0-19`): its tokens for every colour, size and space, and its base components for every button, field, badge, dialog, tab and notice. Never restyle a base component inside a service; if one is missing or wrong, change `ui-core` and bump its version.
+13. **User data stays private.** A user's data never leaves that user's account: it is never seen by another user and never written to the public repository (code, docs, datasets, fixtures, eval reports, logs, issues or PR comments). Test data in the repository is synthetic or public with a clear licence. A design that exports, copies or publishes user data (for example to `evals/`) is a finding. Admin views of all users are for the owner only, behind `is_admin`.
 
 ## Definition of done for a module's design
 

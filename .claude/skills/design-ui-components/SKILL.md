@@ -23,6 +23,7 @@ Open with the **rules** all the module's components follow, and close with any *
 
 ## Rules that are easy to get wrong
 
+- Build on `@01scale/ui-core` (`MVP1-E0-19`, DESIGN-RULES rule 12): name the base components a component uses (Button, Input, Badge…) and never design a restyled copy of one.
 - A component calls only its own service's API. It never calls another service or reads another component's internals.
 - No tokens or secrets in browser JavaScript. Session cookies are HttpOnly.
 - Design the loading state so the page does not jump when data arrives.

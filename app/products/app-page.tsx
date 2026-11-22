@@ -370,6 +370,12 @@ export function appPage(app: AppKey) {
                 <span>{appLabel(app, version)}</span>
                 <span>{entry.status}</span>
               </p>
+              {app === "docflow" && version === "V1" ? (
+                // The clickable prototype of the whole journey (MVP1-E0-18, MVP1-E0-19).
+                <Link href="/products/docflow/try" className="button">
+                  Try the clickable prototype →
+                </Link>
+              ) : null}
             </div>
           </section>
           <VersionTabs label={APPS[app].name} versions={available} current={version} href={(v) => appHref(app, v)} />

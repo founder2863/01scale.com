@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Shared packages ship TypeScript source; Next compiles them (MVP1-E0-19).
+  transpilePackages: ["@01scale/ui-core"],
   // Old addresses from before the Products section existed.
   async redirects() {
     return [

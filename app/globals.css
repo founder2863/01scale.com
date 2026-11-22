@@ -1,33 +1,8 @@
 :root {
-  --brand: #0b00bf;
-  --brand-bright: #3d5afe;
-  --brand-glow: #00c8ff;
-  --bg: #ffffff;
-  --surface: #f5f5ff;
-  --text: #12123a;
-  --muted: #54567a;
-  --border: #dcdcf5;
-  --link: #0b00bf;
-  --chip-bg: #e9e8ff;
-  --chip-text: #0b00bf;
-  --shadow: 0 10px 30px rgba(11, 0, 191, 0.1);
+  /* Colours, type, radius and shadows come from @01scale/ui-core/tokens.css (MVP1-E0-19 AC4),
+     imported in app/layout.tsx. Only the site's own layout values live here. */
   --gutter: 16px;
   --header-height: 59px;
-  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #0a0a1f;
-    --surface: #14143a;
-    --text: #eeeeff;
-    --muted: #b1b3d6;
-    --border: #2b2b66;
-    --link: #a9a6ff;
-    --chip-bg: #24246a;
-    --chip-text: #cfcdff;
-    --shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-  }
 }
 
 @media (min-width: 768px) {
