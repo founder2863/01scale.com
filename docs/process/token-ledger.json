@@ -46,7 +46,7 @@
   "sessions": [
     {
       "id": "fdd431bb-4425-5e24-8859-562bd3231470",
-      "tool_total_usd": 328.7878,
+      "tool_total_usd": 330.2534,
       "rates_usd_per_million": {
         "claude-fable-5-2": {
           "input": 8.0,
@@ -759,7 +759,7 @@
       ],
       "tokens": 9488541,
       "output_tokens": 38191,
-      "cost_usd": 8.4324
+      "cost_usd": 8.4448
     },
     {
       "session": "fdd431bb",
@@ -773,7 +773,7 @@
       ],
       "tokens": 1320221,
       "output_tokens": 1588,
-      "cost_usd": 0.2199
+      "cost_usd": 0.2202
     },
     {
       "session": "fdd431bb",
@@ -787,7 +787,7 @@
       ],
       "tokens": 5404666,
       "output_tokens": 10549,
-      "cost_usd": 1.2425
+      "cost_usd": 1.2443
     },
     {
       "session": "fdd431bb",
@@ -801,7 +801,7 @@
       ],
       "tokens": 20858627,
       "output_tokens": 58241,
-      "cost_usd": 4.9978
+      "cost_usd": 5.0052
     },
     {
       "session": "fdd431bb",
@@ -815,7 +815,7 @@
       ],
       "tokens": 15653506,
       "output_tokens": 50838,
-      "cost_usd": 4.0197
+      "cost_usd": 4.0256
     },
     {
       "session": "fdd431bb",
@@ -829,7 +829,7 @@
       ],
       "tokens": 5810683,
       "output_tokens": 26668,
-      "cost_usd": 1.7262
+      "cost_usd": 1.7287
     },
     {
       "session": "fdd431bb",
@@ -843,7 +843,7 @@
       ],
       "tokens": 5154747,
       "output_tokens": 21440,
-      "cost_usd": 1.5081
+      "cost_usd": 1.5103
     },
     {
       "session": "fdd431bb",
@@ -857,7 +857,7 @@
       ],
       "tokens": 3491642,
       "output_tokens": 13548,
-      "cost_usd": 0.8678
+      "cost_usd": 0.8691
     },
     {
       "session": "fdd431bb",
@@ -871,7 +871,7 @@
       ],
       "tokens": 2668470,
       "output_tokens": 17297,
-      "cost_usd": 0.9409
+      "cost_usd": 0.9423
     },
     {
       "session": "fdd431bb",
@@ -885,7 +885,7 @@
       ],
       "tokens": 1892303,
       "output_tokens": 20689,
-      "cost_usd": 1.7691
+      "cost_usd": 1.7718
     },
     {
       "session": "fdd431bb",
@@ -899,7 +899,7 @@
       ],
       "tokens": 1391192,
       "output_tokens": 19776,
-      "cost_usd": 0.9471
+      "cost_usd": 0.9485
     },
     {
       "session": "fdd431bb",
@@ -913,7 +913,7 @@
       ],
       "tokens": 1105127,
       "output_tokens": 3689,
-      "cost_usd": 0.3046
+      "cost_usd": 0.305
     },
     {
       "session": "fdd431bb",
@@ -927,7 +927,7 @@
       ],
       "tokens": 4698308,
       "output_tokens": 24280,
-      "cost_usd": 2.9999
+      "cost_usd": 3.0043
     },
     {
       "session": "fdd431bb",
@@ -941,7 +941,7 @@
       ],
       "tokens": 237395,
       "output_tokens": 1213,
-      "cost_usd": 0.1147
+      "cost_usd": 0.1149
     },
     {
       "session": "fdd431bb",
@@ -955,7 +955,7 @@
       ],
       "tokens": 1452152,
       "output_tokens": 4351,
-      "cost_usd": 0.3752
+      "cost_usd": 0.3757
     },
     {
       "session": "fdd431bb",
@@ -969,7 +969,7 @@
       ],
       "tokens": 744217,
       "output_tokens": 3761,
-      "cost_usd": 0.2323
+      "cost_usd": 0.2326
     },
     {
       "session": "fdd431bb",
@@ -983,7 +983,7 @@
       ],
       "tokens": 13887191,
       "output_tokens": 51661,
-      "cost_usd": 4.0797
+      "cost_usd": 4.0857
     },
     {
       "session": "fdd431bb",
@@ -997,7 +997,7 @@
       ],
       "tokens": 339878,
       "output_tokens": 1437,
-      "cost_usd": 0.0882
+      "cost_usd": 0.0884
     },
     {
       "session": "fdd431bb",
@@ -1011,7 +1011,7 @@
       ],
       "tokens": 2832978,
       "output_tokens": 14115,
-      "cost_usd": 3.8426
+      "cost_usd": 3.8482
     },
     {
       "session": "fdd431bb",
@@ -1025,7 +1025,7 @@
       ],
       "tokens": 365607,
       "output_tokens": 2607,
-      "cost_usd": 0.1183
+      "cost_usd": 0.1185
     },
     {
       "session": "fdd431bb",
@@ -1039,7 +1039,7 @@
       ],
       "tokens": 2595487,
       "output_tokens": 6818,
-      "cost_usd": 0.5994
+      "cost_usd": 0.6003
     },
     {
       "session": "fdd431bb",
@@ -1053,7 +1053,7 @@
       ],
       "tokens": 2671924,
       "output_tokens": 7624,
-      "cost_usd": 0.6582
+      "cost_usd": 0.6592
     },
     {
       "session": "fdd431bb",
@@ -1067,7 +1067,7 @@
       ],
       "tokens": 15540941,
       "output_tokens": 45152,
-      "cost_usd": 4.2833
+      "cost_usd": 4.2896
     },
     {
       "session": "fdd431bb",
@@ -1081,7 +1081,7 @@
       ],
       "tokens": 12695273,
       "output_tokens": 16808,
-      "cost_usd": 2.4531
+      "cost_usd": 2.4567
     },
     {
       "session": "fdd431bb",
@@ -1095,7 +1095,7 @@
       ],
       "tokens": 10875540,
       "output_tokens": 16258,
-      "cost_usd": 2.1868
+      "cost_usd": 2.1901
     },
     {
       "session": "fdd431bb",
@@ -1121,7 +1121,7 @@
       ],
       "tokens": 6848352,
       "output_tokens": 8457,
-      "cost_usd": 1.3206
+      "cost_usd": 1.3226
     },
     {
       "session": "fdd431bb",
@@ -1135,7 +1135,7 @@
       ],
       "tokens": 5249378,
       "output_tokens": 6031,
-      "cost_usd": 0.942
+      "cost_usd": 0.9434
     },
     {
       "session": "fdd431bb",
@@ -1149,7 +1149,7 @@
       ],
       "tokens": 7810576,
       "output_tokens": 13892,
-      "cost_usd": 7.0502
+      "cost_usd": 7.0606
     },
     {
       "session": "fdd431bb",
@@ -1163,7 +1163,7 @@
       ],
       "tokens": 610148,
       "output_tokens": 1346,
-      "cost_usd": 0.1235
+      "cost_usd": 0.1237
     },
     {
       "session": "fdd431bb",
@@ -1177,7 +1177,7 @@
       ],
       "tokens": 3707683,
       "output_tokens": 7394,
-      "cost_usd": 0.7878
+      "cost_usd": 0.789
     },
     {
       "session": "fdd431bb",
@@ -1191,7 +1191,7 @@
       ],
       "tokens": 5007842,
       "output_tokens": 6700,
-      "cost_usd": 0.9287
+      "cost_usd": 0.9301
     },
     {
       "session": "fdd431bb",
@@ -1205,7 +1205,7 @@
       ],
       "tokens": 3808365,
       "output_tokens": 5384,
-      "cost_usd": 0.7064
+      "cost_usd": 0.7075
     },
     {
       "session": "fdd431bb",
@@ -1219,7 +1219,7 @@
       ],
       "tokens": 3830752,
       "output_tokens": 2339,
-      "cost_usd": 0.5914
+      "cost_usd": 0.5923
     },
     {
       "session": "fdd431bb",
@@ -1233,7 +1233,7 @@
       ],
       "tokens": 1927641,
       "output_tokens": 2117,
-      "cost_usd": 0.3445
+      "cost_usd": 0.345
     },
     {
       "session": "fdd431bb",
@@ -1248,7 +1248,7 @@
       ],
       "tokens": 1312405,
       "output_tokens": 3734,
-      "cost_usd": 0.2614
+      "cost_usd": 0.2617
     },
     {
       "session": "fdd431bb",
@@ -1262,7 +1262,7 @@
       ],
       "tokens": 1307609,
       "output_tokens": 1608,
-      "cost_usd": 0.2733
+      "cost_usd": 0.2737
     },
     {
       "session": "fdd431bb",
@@ -1276,7 +1276,7 @@
       ],
       "tokens": 654742,
       "output_tokens": 513,
-      "cost_usd": 0.0995
+      "cost_usd": 0.0996
     },
     {
       "session": "fdd431bb",
@@ -1290,7 +1290,7 @@
       ],
       "tokens": 3965720,
       "output_tokens": 4079,
-      "cost_usd": 0.717
+      "cost_usd": 0.7181
     },
     {
       "session": "fdd431bb",
@@ -1304,7 +1304,7 @@
       ],
       "tokens": 664568,
       "output_tokens": 503,
-      "cost_usd": 0.1004
+      "cost_usd": 0.1006
     },
     {
       "session": "fdd431bb",
@@ -1318,7 +1318,7 @@
       ],
       "tokens": 664944,
       "output_tokens": 354,
-      "cost_usd": 0.0967
+      "cost_usd": 0.0968
     },
     {
       "session": "fdd431bb",
@@ -1332,7 +1332,7 @@
       ],
       "tokens": 2005861,
       "output_tokens": 1617,
-      "cost_usd": 0.3591
+      "cost_usd": 0.3596
     },
     {
       "session": "fdd431bb",
@@ -1358,7 +1358,7 @@
       ],
       "tokens": 4072016,
       "output_tokens": 8849,
-      "cost_usd": 0.9053
+      "cost_usd": 0.9067
     },
     {
       "session": "fdd431bb",
@@ -1372,7 +1372,7 @@
       ],
       "tokens": 2771656,
       "output_tokens": 10350,
-      "cost_usd": 0.7421
+      "cost_usd": 0.7432
     },
     {
       "session": "fdd431bb",
@@ -1386,7 +1386,7 @@
       ],
       "tokens": 4213259,
       "output_tokens": 7460,
-      "cost_usd": 0.8366
+      "cost_usd": 0.8378
     },
     {
       "session": "fdd431bb",
@@ -1400,7 +1400,7 @@
       ],
       "tokens": 2842397,
       "output_tokens": 4768,
-      "cost_usd": 7.2363
+      "cost_usd": 7.247
     },
     {
       "session": "fdd431bb",
@@ -1414,7 +1414,7 @@
       ],
       "tokens": 1426392,
       "output_tokens": 1157,
-      "cost_usd": 6.9677
+      "cost_usd": 6.9779
     },
     {
       "session": "fdd431bb",
@@ -1428,7 +1428,7 @@
       ],
       "tokens": 2151338,
       "output_tokens": 3506,
-      "cost_usd": 0.4124
+      "cost_usd": 0.413
     },
     {
       "session": "fdd431bb",
@@ -1442,7 +1442,7 @@
       ],
       "tokens": 1440483,
       "output_tokens": 2210,
-      "cost_usd": 0.2656
+      "cost_usd": 0.266
     },
     {
       "session": "fdd431bb",
@@ -1456,7 +1456,7 @@
       ],
       "tokens": 722509,
       "output_tokens": 898,
-      "cost_usd": 0.1185
+      "cost_usd": 0.1187
     },
     {
       "session": "fdd431bb",
@@ -1470,7 +1470,7 @@
       ],
       "tokens": 3626476,
       "output_tokens": 3147,
-      "cost_usd": 0.6008
+      "cost_usd": 0.6017
     },
     {
       "session": "fdd431bb",
@@ -1484,7 +1484,7 @@
       ],
       "tokens": 1455884,
       "output_tokens": 747,
-      "cost_usd": 0.2208
+      "cost_usd": 0.2211
     },
     {
       "session": "fdd431bb",
@@ -1498,7 +1498,7 @@
       ],
       "tokens": 2188081,
       "output_tokens": 1042,
-      "cost_usd": 0.3333
+      "cost_usd": 0.3338
     },
     {
       "session": "fdd431bb",
@@ -1512,7 +1512,7 @@
       ],
       "tokens": 9622675,
       "output_tokens": 12759,
-      "cost_usd": 1.7742
+      "cost_usd": 1.7769
     },
     {
       "session": "fdd431bb",
@@ -1526,7 +1526,7 @@
       ],
       "tokens": 4541588,
       "output_tokens": 6200,
-      "cost_usd": 7.9984
+      "cost_usd": 8.0102
     },
     {
       "session": "fdd431bb",
@@ -1540,7 +1540,7 @@
       ],
       "tokens": 6941088,
       "output_tokens": 7059,
-      "cost_usd": 1.2431
+      "cost_usd": 1.2449
     },
     {
       "session": "fdd431bb",
@@ -1554,7 +1554,7 @@
       ],
       "tokens": 2338667,
       "output_tokens": 1630,
-      "cost_usd": 0.4014
+      "cost_usd": 0.4019
     },
     {
       "session": "fdd431bb",
@@ -1568,7 +1568,7 @@
       ],
       "tokens": 3953057,
       "output_tokens": 6430,
-      "cost_usd": 8.2777
+      "cost_usd": 8.2899
     },
     {
       "session": "fdd431bb",
@@ -1582,7 +1582,7 @@
       ],
       "tokens": 3195260,
       "output_tokens": 4303,
-      "cost_usd": 8.1808
+      "cost_usd": 8.1928
     },
     {
       "session": "fdd431bb",
@@ -1596,7 +1596,7 @@
       ],
       "tokens": 1601428,
       "output_tokens": 820,
-      "cost_usd": 0.2391
+      "cost_usd": 0.2395
     },
     {
       "session": "fdd431bb",
@@ -1610,7 +1610,7 @@
       ],
       "tokens": 1604153,
       "output_tokens": 895,
-      "cost_usd": 0.2511
+      "cost_usd": 0.2515
     },
     {
       "session": "fdd431bb",
@@ -1624,7 +1624,7 @@
       ],
       "tokens": 1608019,
       "output_tokens": 969,
-      "cost_usd": 0.2643
+      "cost_usd": 0.2647
     },
     {
       "session": "fdd431bb",
@@ -1638,7 +1638,7 @@
       ],
       "tokens": 3235913,
       "output_tokens": 2933,
-      "cost_usd": 0.5625
+      "cost_usd": 0.5633
     },
     {
       "session": "fdd431bb",
@@ -1652,7 +1652,7 @@
       ],
       "tokens": 2461535,
       "output_tokens": 2267,
-      "cost_usd": 0.4996
+      "cost_usd": 0.5003
     },
     {
       "session": "fdd431bb",
@@ -1666,7 +1666,7 @@
       ],
       "tokens": 824771,
       "output_tokens": 2033,
-      "cost_usd": 0.1674
+      "cost_usd": 0.1676
     },
     {
       "session": "fdd431bb",
@@ -1680,7 +1680,7 @@
       ],
       "tokens": 1651281,
       "output_tokens": 1237,
-      "cost_usd": 0.275
+      "cost_usd": 0.2754
     },
     {
       "session": "fdd431bb",
@@ -1694,7 +1694,7 @@
       ],
       "tokens": 827080,
       "output_tokens": 809,
-      "cost_usd": 0.1401
+      "cost_usd": 0.1403
     },
     {
       "session": "fdd431bb",
@@ -1708,7 +1708,7 @@
       ],
       "tokens": 5841160,
       "output_tokens": 5516,
-      "cost_usd": 1.033
+      "cost_usd": 1.0345
     },
     {
       "session": "fdd431bb",
@@ -1722,7 +1722,7 @@
       ],
       "tokens": 3360812,
       "output_tokens": 2016,
-      "cost_usd": 0.5196
+      "cost_usd": 0.5203
     },
     {
       "session": "fdd431bb",
@@ -1736,7 +1736,7 @@
       ],
       "tokens": 2529952,
       "output_tokens": 1237,
-      "cost_usd": 0.4013
+      "cost_usd": 0.4019
     },
     {
       "session": "fdd431bb",
@@ -1750,7 +1750,7 @@
       ],
       "tokens": 2537395,
       "output_tokens": 1955,
-      "cost_usd": 0.401
+      "cost_usd": 0.4016
     },
     {
       "session": "fdd431bb",
@@ -1764,7 +1764,7 @@
       ],
       "tokens": 847942,
       "output_tokens": 1186,
-      "cost_usd": 0.1507
+      "cost_usd": 0.1509
     },
     {
       "session": "fdd431bb",
@@ -1778,7 +1778,7 @@
       ],
       "tokens": 4253164,
       "output_tokens": 3433,
-      "cost_usd": 0.6981
+      "cost_usd": 0.6991
     },
     {
       "session": "fdd431bb",
@@ -1792,7 +1792,7 @@
       ],
       "tokens": 2562649,
       "output_tokens": 1031,
-      "cost_usd": 0.3961
+      "cost_usd": 0.3966
     },
     {
       "session": "fdd431bb",
@@ -1806,7 +1806,7 @@
       ],
       "tokens": 2573901,
       "output_tokens": 2147,
-      "cost_usd": 0.4333
+      "cost_usd": 0.4339
     },
     {
       "session": "fdd431bb",
@@ -1820,7 +1820,7 @@
       ],
       "tokens": 5178261,
       "output_tokens": 4018,
-      "cost_usd": 0.8395
+      "cost_usd": 0.8408
     },
     {
       "session": "fdd431bb",
@@ -1834,7 +1834,7 @@
       ],
       "tokens": 1742014,
       "output_tokens": 1193,
-      "cost_usd": 0.3299
+      "cost_usd": 0.3304
     },
     {
       "session": "fdd431bb",
@@ -1848,7 +1848,7 @@
       ],
       "tokens": 6129748,
       "output_tokens": 5903,
-      "cost_usd": 1.0353
+      "cost_usd": 1.0369
     },
     {
       "session": "fdd431bb",
@@ -1862,7 +1862,7 @@
       ],
       "tokens": 4408236,
       "output_tokens": 3631,
-      "cost_usd": 0.7201
+      "cost_usd": 0.7212
     },
     {
       "session": "fdd431bb",
@@ -1876,7 +1876,7 @@
       ],
       "tokens": 884497,
       "output_tokens": 1081,
-      "cost_usd": 0.1499
+      "cost_usd": 0.1501
     },
     {
       "session": "fdd431bb",
@@ -1890,7 +1890,7 @@
       ],
       "tokens": 1771172,
       "output_tokens": 994,
-      "cost_usd": 0.2802
+      "cost_usd": 0.2806
     },
     {
       "session": "fdd431bb",
@@ -1904,7 +1904,7 @@
       ],
       "tokens": 2663343,
       "output_tokens": 1369,
-      "cost_usd": 8.9485
+      "cost_usd": 8.9616
     },
     {
       "session": "fdd431bb",
@@ -1918,7 +1918,7 @@
       ],
       "tokens": 3565044,
       "output_tokens": 2848,
-      "cost_usd": 0.5829
+      "cost_usd": 0.5837
     },
     {
       "session": "fdd431bb",
@@ -1932,7 +1932,7 @@
       ],
       "tokens": 893537,
       "output_tokens": 1363,
-      "cost_usd": 0.1555
+      "cost_usd": 0.1558
     },
     {
       "session": "fdd431bb",
@@ -1946,7 +1946,7 @@
       ],
       "tokens": 4054132,
       "output_tokens": 13560,
-      "cost_usd": 1.5428
+      "cost_usd": 1.5451
     },
     {
       "session": "fdd431bb",
@@ -1960,7 +1960,7 @@
       ],
       "tokens": 239746,
       "output_tokens": 3771,
-      "cost_usd": 0.1682
+      "cost_usd": 0.1684
     },
     {
       "session": "fdd431bb",
@@ -1974,7 +1974,7 @@
       ],
       "tokens": 124141,
       "output_tokens": 2636,
-      "cost_usd": 0.1084
+      "cost_usd": 0.1085
     },
     {
       "session": "fdd431bb",
@@ -1988,7 +1988,7 @@
       ],
       "tokens": 1724987,
       "output_tokens": 20901,
-      "cost_usd": 1.1117
+      "cost_usd": 1.1133
     },
     {
       "session": "fdd431bb",
@@ -2002,7 +2002,7 @@
       ],
       "tokens": 849206,
       "output_tokens": 6603,
-      "cost_usd": 0.8711
+      "cost_usd": 0.8724
     },
     {
       "session": "fdd431bb",
@@ -2016,7 +2016,7 @@
       ],
       "tokens": 214575,
       "output_tokens": 1504,
-      "cost_usd": 0.0886
+      "cost_usd": 0.0888
     },
     {
       "session": "fdd431bb",
@@ -2030,7 +2030,7 @@
       ],
       "tokens": 5076346,
       "output_tokens": 19564,
-      "cost_usd": 1.6583
+      "cost_usd": 1.6607
     },
     {
       "session": "fdd431bb",
@@ -2044,7 +2044,7 @@
       ],
       "tokens": 522929,
       "output_tokens": 1030,
-      "cost_usd": 0.1121
+      "cost_usd": 0.1123
     },
     {
       "session": "fdd431bb",
@@ -2058,7 +2058,7 @@
       ],
       "tokens": 7335722,
       "output_tokens": 24773,
-      "cost_usd": 2.2056
+      "cost_usd": 2.2089
     },
     {
       "session": "fdd431bb",
@@ -2072,7 +2072,7 @@
       ],
       "tokens": 325580,
       "output_tokens": 714,
-      "cost_usd": 0.124
+      "cost_usd": 0.1242
     },
     {
       "session": "fdd431bb",
@@ -2086,7 +2086,7 @@
       ],
       "tokens": 4394188,
       "output_tokens": 12648,
-      "cost_usd": 1.1318
+      "cost_usd": 1.1335
     },
     {
       "session": "fdd431bb",
@@ -2100,7 +2100,7 @@
       ],
       "tokens": 347481,
       "output_tokens": 172,
-      "cost_usd": 0.0571
+      "cost_usd": 0.0572
     },
     {
       "session": "fdd431bb",
@@ -2114,7 +2114,7 @@
       ],
       "tokens": 710323,
       "output_tokens": 1222,
-      "cost_usd": 0.2168
+      "cost_usd": 0.2171
     },
     {
       "session": "fdd431bb",
@@ -2128,7 +2128,7 @@
       ],
       "tokens": 358381,
       "output_tokens": 1258,
-      "cost_usd": 0.0898
+      "cost_usd": 0.0899
     },
     {
       "session": "fdd431bb",
@@ -2142,7 +2142,7 @@
       ],
       "tokens": 4048002,
       "output_tokens": 11921,
-      "cost_usd": 1.0347
+      "cost_usd": 1.0362
     },
     {
       "session": "fdd431bb",
@@ -2156,7 +2156,7 @@
       ],
       "tokens": 383980,
       "output_tokens": 5684,
-      "cost_usd": 0.2254
+      "cost_usd": 0.2257
     },
     {
       "session": "fdd431bb",
@@ -2170,7 +2170,7 @@
       ],
       "tokens": 387240,
       "output_tokens": 3044,
-      "cost_usd": 0.1914
+      "cost_usd": 0.1916
     },
     {
       "session": "fdd431bb",
@@ -2184,7 +2184,7 @@
       ],
       "tokens": 389730,
       "output_tokens": 2282,
-      "cost_usd": 0.1444
+      "cost_usd": 0.1446
     },
     {
       "session": "fdd431bb",
@@ -2198,7 +2198,7 @@
       ],
       "tokens": 4110939,
       "output_tokens": 26691,
-      "cost_usd": 1.5942
+      "cost_usd": 1.5966
     },
     {
       "session": "fdd431bb",
@@ -2212,7 +2212,7 @@
       ],
       "tokens": 3519515,
       "output_tokens": 8281,
-      "cost_usd": 0.922
+      "cost_usd": 0.9233
     },
     {
       "session": "fdd431bb",
@@ -2226,7 +2226,7 @@
       ],
       "tokens": 10344428,
       "output_tokens": 28989,
-      "cost_usd": 2.578
+      "cost_usd": 2.5818
     },
     {
       "session": "fdd431bb",
@@ -2240,7 +2240,7 @@
       ],
       "tokens": 2495957,
       "output_tokens": 3112,
-      "cost_usd": 0.5092
+      "cost_usd": 0.5099
     },
     {
       "session": "fdd431bb",
@@ -2254,7 +2254,7 @@
       ],
       "tokens": 503922,
       "output_tokens": 3237,
-      "cost_usd": 4.7027
+      "cost_usd": 4.7097
     },
     {
       "session": "fdd431bb",
@@ -2268,7 +2268,7 @@
       ],
       "tokens": 506012,
       "output_tokens": 2021,
-      "cost_usd": 0.1533
+      "cost_usd": 0.1536
     },
     {
       "session": "fdd431bb",
@@ -2282,7 +2282,7 @@
       ],
       "tokens": 11087541,
       "output_tokens": 27897,
-      "cost_usd": 2.6549
+      "cost_usd": 2.6588
     },
     {
       "session": "fdd431bb",
@@ -2296,7 +2296,7 @@
       ],
       "tokens": 2233933,
       "output_tokens": 3514,
-      "cost_usd": 0.4877
+      "cost_usd": 0.4884
     },
     {
       "session": "fdd431bb",
@@ -2310,7 +2310,7 @@
       ],
       "tokens": 2818814,
       "output_tokens": 3292,
-      "cost_usd": 0.5284
+      "cost_usd": 0.5292
     },
     {
       "session": "fdd431bb",
@@ -2324,7 +2324,7 @@
       ],
       "tokens": 1139970,
       "output_tokens": 2129,
-      "cost_usd": 5.4686
+      "cost_usd": 5.4767
     },
     {
       "session": "fdd431bb",
@@ -2338,7 +2338,7 @@
       ],
       "tokens": 571249,
       "output_tokens": 618,
-      "cost_usd": 0.1042
+      "cost_usd": 0.1044
     },
     {
       "session": "fdd431bb",
@@ -2352,7 +2352,7 @@
       ],
       "tokens": 1743988,
       "output_tokens": 3971,
-      "cost_usd": 0.4677
+      "cost_usd": 0.4683
     },
     {
       "session": "fdd431bb",
@@ -2366,7 +2366,7 @@
       ],
       "tokens": 5365563,
       "output_tokens": 10455,
-      "cost_usd": 1.1645
+      "cost_usd": 1.1662
     },
     {
       "session": "fdd431bb",
@@ -2381,7 +2381,7 @@
       ],
       "tokens": 1224520,
       "output_tokens": 5823,
-      "cost_usd": 0.3206
+      "cost_usd": 0.321
     },
     {
       "session": "fdd431bb",
@@ -2395,7 +2395,7 @@
       ],
       "tokens": 1299365,
       "output_tokens": 5147,
-      "cost_usd": 0.8605
+      "cost_usd": 0.8618
     },
     {
       "session": "fdd431bb",
@@ -2409,7 +2409,7 @@
       ],
       "tokens": 8175193,
       "output_tokens": 23710,
-      "cost_usd": 2.0196
+      "cost_usd": 2.0225
     },
     {
       "session": "fdd431bb",
@@ -2423,7 +2423,7 @@
       ],
       "tokens": 1384775,
       "output_tokens": 1239,
-      "cost_usd": 0.2372
+      "cost_usd": 0.2375
     },
     {
       "session": "fdd431bb",
@@ -2437,7 +2437,7 @@
       ],
       "tokens": 3475766,
       "output_tokens": 3093,
-      "cost_usd": 0.5765
+      "cost_usd": 0.5773
     },
     {
       "session": "fdd431bb",
@@ -2451,7 +2451,7 @@
       ],
       "tokens": 4912504,
       "output_tokens": 5099,
-      "cost_usd": 0.8666
+      "cost_usd": 0.8679
     },
     {
       "session": "fdd431bb",
@@ -2465,7 +2465,7 @@
       ],
       "tokens": 5708221,
       "output_tokens": 9343,
-      "cost_usd": 1.1203
+      "cost_usd": 1.1219
     },
     {
       "session": "fdd431bb",
@@ -2479,7 +2479,7 @@
       ],
       "tokens": 4345900,
       "output_tokens": 6893,
-      "cost_usd": 0.8552
+      "cost_usd": 0.8564
     },
     {
       "session": "fdd431bb",
@@ -2493,7 +2493,7 @@
       ],
       "tokens": 2917197,
       "output_tokens": 1986,
-      "cost_usd": 0.4608
+      "cost_usd": 0.4615
     },
     {
       "session": "fdd431bb",
@@ -2507,7 +2507,7 @@
       ],
       "tokens": 6659168,
       "output_tokens": 8498,
-      "cost_usd": 8.1926
+      "cost_usd": 8.2047
     },
     {
       "session": "fdd431bb",
@@ -2521,7 +2521,7 @@
       ],
       "tokens": 1496704,
       "output_tokens": 1327,
-      "cost_usd": 0.2506
+      "cost_usd": 0.251
     },
     {
       "session": "fdd431bb",
@@ -2535,7 +2535,7 @@
       ],
       "tokens": 3013207,
       "output_tokens": 3659,
-      "cost_usd": 0.5631
+      "cost_usd": 0.5639
     },
     {
       "session": "fdd431bb",
@@ -2549,7 +2549,7 @@
       ],
       "tokens": 2275239,
       "output_tokens": 2069,
-      "cost_usd": 0.3902
+      "cost_usd": 0.3908
     },
     {
       "session": "fdd431bb",
@@ -2563,7 +2563,7 @@
       ],
       "tokens": 4590355,
       "output_tokens": 6375,
-      "cost_usd": 0.8659
+      "cost_usd": 0.8672
     },
     {
       "session": "fdd431bb",
@@ -2577,7 +2577,7 @@
       ],
       "tokens": 1539064,
       "output_tokens": 971,
-      "cost_usd": 0.2383
+      "cost_usd": 0.2386
     },
     {
       "session": "fdd431bb",
@@ -2591,7 +2591,7 @@
       ],
       "tokens": 7052031,
       "output_tokens": 14326,
-      "cost_usd": 1.512
+      "cost_usd": 1.5142
     },
     {
       "session": "fdd431bb",
@@ -2605,7 +2605,7 @@
       ],
       "tokens": 793087,
       "output_tokens": 1521,
-      "cost_usd": 7.7092
+      "cost_usd": 7.7206
     },
     {
       "session": "fdd431bb",
@@ -2619,7 +2619,7 @@
       ],
       "tokens": 793546,
       "output_tokens": 446,
-      "cost_usd": 7.6971
+      "cost_usd": 7.7084
     },
     {
       "session": "fdd431bb",
@@ -2633,7 +2633,7 @@
       ],
       "tokens": 5578660,
       "output_tokens": 4698,
-      "cost_usd": 0.9225
+      "cost_usd": 0.9238
     },
     {
       "session": "fdd431bb",
@@ -2647,7 +2647,7 @@
       ],
       "tokens": 6467619,
       "output_tokens": 10523,
-      "cost_usd": 1.348
+      "cost_usd": 1.35
     },
     {
       "session": "fdd431bb",
@@ -2661,7 +2661,7 @@
       ],
       "tokens": 6581095,
       "output_tokens": 9901,
-      "cost_usd": 9.0171
+      "cost_usd": 9.0304
     },
     {
       "session": "fdd431bb",
@@ -2675,7 +2675,7 @@
       ],
       "tokens": 5041623,
       "output_tokens": 8900,
-      "cost_usd": 8.9501
+      "cost_usd": 8.9633
     },
     {
       "session": "fdd431bb",
@@ -2689,7 +2689,7 @@
       ],
       "tokens": 846845,
       "output_tokens": 2291,
-      "cost_usd": 0.1791
+      "cost_usd": 0.1794
     },
     {
       "session": "fdd431bb",
@@ -2703,7 +2703,7 @@
       ],
       "tokens": 847078,
       "output_tokens": 225,
-      "cost_usd": 0.1408
+      "cost_usd": 0.141
     },
     {
       "session": "fdd431bb",
@@ -2717,7 +2717,7 @@
       ],
       "tokens": 847227,
       "output_tokens": 143,
-      "cost_usd": 0.1172
+      "cost_usd": 0.1174
     },
     {
       "session": "fdd431bb",
@@ -2731,7 +2731,7 @@
       ],
       "tokens": 849021,
       "output_tokens": 1734,
-      "cost_usd": 8.2499
+      "cost_usd": 8.262
     },
     {
       "session": "fdd431bb",
@@ -2757,7 +2757,7 @@
       ],
       "tokens": 856907,
       "output_tokens": 2003,
-      "cost_usd": 8.3368
+      "cost_usd": 8.3491
     },
     {
       "session": "fdd431bb",
@@ -2771,7 +2771,7 @@
       ],
       "tokens": 5191296,
       "output_tokens": 10789,
-      "cost_usd": 1.0983
+      "cost_usd": 1.1
     },
     {
       "session": "fdd431bb",
@@ -2785,7 +2785,7 @@
       ],
       "tokens": 8351015,
       "output_tokens": 20794,
-      "cost_usd": 2.7426
+      "cost_usd": 2.7466
     },
     {
       "session": "fdd431bb",
@@ -2799,7 +2799,7 @@
       ],
       "tokens": 289300,
       "output_tokens": 1076,
-      "cost_usd": 0.075
+      "cost_usd": 0.0751
     },
     {
       "session": "fdd431bb",
@@ -2813,7 +2813,7 @@
       ],
       "tokens": 584279,
       "output_tokens": 1665,
-      "cost_usd": 0.1374
+      "cost_usd": 0.1376
     },
     {
       "session": "fdd431bb",
@@ -2827,7 +2827,7 @@
       ],
       "tokens": 2579360,
       "output_tokens": 8938,
-      "cost_usd": 0.8016
+      "cost_usd": 0.8028
     },
     {
       "session": "fdd431bb",
@@ -2841,7 +2841,7 @@
       ],
       "tokens": 1926762,
       "output_tokens": 5099,
-      "cost_usd": 0.4791
+      "cost_usd": 0.4798
     },
     {
       "session": "fdd431bb",
@@ -2855,7 +2855,7 @@
       ],
       "tokens": 913026,
       "output_tokens": 2159,
-      "cost_usd": 0.2298
+      "cost_usd": 0.2301
     },
     {
       "session": "fdd431bb",
@@ -2869,7 +2869,7 @@
       ],
       "tokens": 185545,
       "output_tokens": 967,
-      "cost_usd": 0.0502
+      "cost_usd": 0.0503
     },
     {
       "session": "fdd431bb",
@@ -2883,7 +2883,7 @@
       ],
       "tokens": 3257679,
       "output_tokens": 19640,
-      "cost_usd": 1.2166
+      "cost_usd": 1.2184
     },
     {
       "session": "fdd431bb",
@@ -2898,7 +2898,7 @@
       ],
       "tokens": 450789,
       "output_tokens": 1452,
-      "cost_usd": 0.1532
+      "cost_usd": 0.1534
     },
     {
       "session": "fdd431bb",
@@ -2912,7 +2912,7 @@
       ],
       "tokens": 231946,
       "output_tokens": 1850,
-      "cost_usd": 0.1784
+      "cost_usd": 0.1787
     },
     {
       "session": "fdd431bb",
@@ -2926,7 +2926,7 @@
       ],
       "tokens": 233541,
       "output_tokens": 1513,
-      "cost_usd": 0.0901
+      "cost_usd": 0.0903
     },
     {
       "session": "fdd431bb",
@@ -2940,7 +2940,7 @@
       ],
       "tokens": 471918,
       "output_tokens": 2533,
-      "cost_usd": 0.1483
+      "cost_usd": 0.1485
     },
     {
       "session": "fdd431bb",
@@ -2954,7 +2954,7 @@
       ],
       "tokens": 477852,
       "output_tokens": 1463,
-      "cost_usd": 0.1099
+      "cost_usd": 0.11
     },
     {
       "session": "fdd431bb",
@@ -2968,7 +2968,7 @@
       ],
       "tokens": 3332945,
       "output_tokens": 15958,
-      "cost_usd": 1.1352
+      "cost_usd": 1.1369
     },
     {
       "session": "fdd431bb",
@@ -2982,7 +2982,7 @@
       ],
       "tokens": 275587,
       "output_tokens": 973,
-      "cost_usd": 0.1357
+      "cost_usd": 0.1359
     },
     {
       "session": "fdd431bb",
@@ -2996,7 +2996,7 @@
       ],
       "tokens": 4296591,
       "output_tokens": 11686,
-      "cost_usd": 1.0485
+      "cost_usd": 1.05
     },
     {
       "session": "fdd431bb",
@@ -3010,7 +3010,7 @@
       ],
       "tokens": 593073,
       "output_tokens": 1108,
-      "cost_usd": null
+      "cost_usd": 0.1572
     },
     {
       "session": "fdd431bb",
@@ -3022,8 +3022,36 @@
       "models": [
         "claude-opus-5-5"
       ],
-      "tokens": 1809416,
-      "output_tokens": 2471,
+      "tokens": 4284384,
+      "output_tokens": 9418,
+      "cost_usd": 0.9492
+    },
+    {
+      "session": "fdd431bb",
+      "n": 210,
+      "ts": "2026-11-22T19:00:46.384Z",
+      "area": "Questions and explanations",
+      "kind": "scaffolding",
+      "summary": "Explain where to see a change that was still in an open pull request",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 967219,
+      "output_tokens": 1340,
+      "cost_usd": null
+    },
+    {
+      "session": "fdd431bb",
+      "n": 211,
+      "ts": "2026-11-22T19:05:14.664Z",
+      "area": "Process",
+      "kind": "scaffolding",
+      "summary": "Write the status and handoff document for new sessions; list open issues; record token costs",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 2332560,
+      "output_tokens": 6857,
       "cost_usd": null
     },
     {
