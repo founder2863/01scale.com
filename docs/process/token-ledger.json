@@ -130,7 +130,7 @@
     },
     {
       "id": "4f156423-c77d-5a1f-9ee0-653fd2fda3eb",
-      "tool_total_usd": 0,
+      "tool_total_usd": 8.7231,
       "rates_usd_per_million": {},
       "by_kind_usd": {
         "input": 0.0,
@@ -3343,8 +3343,7 @@
       ],
       "tokens": 11931983,
       "output_tokens": 97110,
-      "cost_usd": null,
-      "estimated_usd": 5.6768
+      "cost_usd": 5.9187
     },
     {
       "session": "4f156423",
@@ -3356,10 +3355,39 @@
       "models": [
         "claude-opus-5-5"
       ],
-      "tokens": 6744823,
-      "output_tokens": 40959,
+      "tokens": 7919930,
+      "output_tokens": 45689,
+      "cost_usd": 2.8044
+    },
+    {
+      "session": "4f156423",
+      "n": 3,
+      "ts": "2026-11-22T20:59:13.232Z",
+      "area": "Process",
+      "kind": "scaffolding",
+      "summary": "Process: watch PR #161, check CI and comments, report the merge conflict and ask before resolving",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 2730952,
+      "output_tokens": 2531,
       "cost_usd": null,
-      "estimated_usd": 2.5474
+      "estimated_usd": 0.7176
+    },
+    {
+      "session": "4f156423",
+      "n": 4,
+      "ts": "2026-11-22T21:01:39.705Z",
+      "area": "Process",
+      "kind": "scaffolding",
+      "summary": "Process: merge main (E8-10) into the branch, keep both sides, regenerate cost files, fix a lost CSS brace, re-test",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 6139314,
+      "output_tokens": 10652,
+      "cost_usd": null,
+      "estimated_usd": 1.6309
     }
   ]
 }
