@@ -109,10 +109,10 @@ export const companies: readonly {
     dates: "Jan 2024 – Dec 2025",
     groups: [
       {
-        title: "Products",
+        title: "Products I owned and enabled",
         parts: [
           {
-            title: "SaaS",
+            title: "Enterprise SaaS",
             items: [
               "Tax",
               "Search",
@@ -139,7 +139,18 @@ export const companies: readonly {
           },
         ],
       },
-      { title: "Product areas", items: ["Strategy", "Roadmap", "MVP definition", "Metrics and OKRs"] },
+      {
+        title: "Product areas I owned",
+        items: [
+          "0→1",
+          "Strategy",
+          "Roadmap",
+          "MVP definition",
+          "Monetization",
+          "Pricing: take rates, seat rates, subscriptions, annual billing",
+          "Metrics and OKRs",
+        ],
+      },
       { title: "Commercial", items: ["Pricing", "Revenue model", "GTM", "Enablement of the CRO, CFO, COO and CCO functions"] },
       { title: "Technical & delivery", items: DELIVERY },
       { title: "Delivery mode", items: ["Embeddable components", "APIs"] },
@@ -169,9 +180,25 @@ export const companies: readonly {
     role: "Senior Manager, Platform Product Management (iPaaS)",
     dates: "Aug 2021 – Jan 2024",
     groups: [
-      { title: "Products", items: ["XTT", "Global Compliance", "MINT (P2P & O2C) use cases"] },
       {
-        title: "Product areas",
+        title: "Products I owned and enabled",
+        parts: [
+          {
+            title: "Enterprise SaaS",
+            items: [
+              "Extensible TraceLink Transfer (XTT)",
+              "Integrations",
+              "Network Administration",
+              "MINT",
+              "Compliance (US DSCSA and global equivalents)",
+              "EDI",
+            ],
+          },
+          { title: "Platform", items: ["B2B Messaging", "Canonical Data Models", "Transformations", "Network Objects"] },
+        ],
+      },
+      {
+        title: "Product areas I owned",
         items: [
           "Multi-enterprise data models (network partners)",
           "APIs",
@@ -186,7 +213,7 @@ export const companies: readonly {
       },
       { title: "Commercial", items: ["Enabling solutions consulting and sales"] },
       { title: "Technical & delivery", items: DELIVERY },
-      { title: "Delivery mode", items: ["Enterprise SaaS (XTT)", "Platform APIs"] },
+      { title: "Delivery mode", items: ["Enterprise SaaS (XTT)", "Platform APIs", "Network apps"] },
       { title: "Domain knowledge", items: ["Computer science", "Compliance", "Supply chain", "Financial operations"] },
     ],
   },
@@ -198,9 +225,15 @@ export const companies: readonly {
     role: "Lead AI Product Manager",
     dates: "Jan 2019 – Aug 2021",
     groups: [
-      { title: "Products", items: ["Instant Quote", "Underwriter AI Assistant", "Embeddable Insurance"] },
       {
-        title: "Product areas",
+        title: "Products I owned and enabled",
+        parts: [
+          { title: "Enterprise SaaS", items: ["Instant Quote", "Underwriter AI Assistant", "Embeddable Insurance", "Chubb Studio"] },
+          { title: "Platform", items: ["APIs", "MLOps"] },
+        ],
+      },
+      {
+        title: "Product areas I owned",
         items: ["ML/DL models", "Commercial data", "Entity resolution", "Risk data APIs", "MVP definition", "Program plan"],
       },
       {
@@ -217,15 +250,32 @@ export const companies: readonly {
 // ---------------------------------------------------------------- academics (E0-40)
 
 // No years on any degree (Nikhil's decision on PR #119).
+// Logo files supplied by Nikhil, trimmed and kept in public/logos/.
 export const academics = [
-  { school: "New York University", degree: "M.S., Management (Finance & Economics / Information Systems)", note: null },
+  {
+    school: "New York University",
+    degree: "M.S., Management (Finance & Economics / Information Systems)",
+    note: null,
+    logo: "/logos/nyu.png",
+  },
   {
     school: "The George Washington University",
     degree: "D.Eng, Systems Engineering/AI (ABD)",
     note: null,
+    logo: "/logos/gwu.png",
   },
-  { school: "Massachusetts Institute of Technology", degree: "Building AI Products & Services", note: null },
-  { school: "RGTU", degree: "B.S., Computer Science & Engineering", note: null },
+  {
+    school: "Massachusetts Institute of Technology",
+    degree: "Building AI Products & Services (MIT Professional Education)",
+    note: null,
+    logo: "/logos/mit.png",
+  },
+  {
+    school: "RGPV (RGTU)",
+    degree: "B.S., Computer Science & Engineering",
+    note: null,
+    logo: "/logos/rgtu.png",
+  },
 ] as const;
 
 export const certifications = [

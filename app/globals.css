@@ -2574,6 +2574,16 @@ section[id] {
   background: var(--surface);
 }
 
+.academics-logo {
+  display: block;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 10px;
+  border-radius: 12px;
+  background: #ffffff;
+  object-fit: contain;
+}
+
 .academics-school {
   margin: 0 0 4px;
   font-weight: 700;
