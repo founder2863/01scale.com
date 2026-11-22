@@ -902,7 +902,7 @@ As the owner, I want to refund a paid order in full, so a demo user who was char
 ## E8 · Total projected cost: a human team versus Claude Code
 **Goal:** show, story by story, what the whole initiative would cost and how long it would take with a human team, what it costs built with Claude Code and one product manager, and the difference. Nikhil's request, 22 Nov 2026; his answers on PR #125 are in `docs/decisions/MVP1-E8.md`.
 
-**Scope:** MVP1 only: Platform Core, the platform services and the DocFlow app (epics E0 to E7, without E8 itself). AutoRep and MVP2 are out. Any value not calculated yet shows **TBD**.
+**Scope:** MVP1 only: Platform Core, the platform services, the DocFlow app (epics E0 to E7, without E8 itself) and AutoRep V1, which is part of MVP1 (`docs/epics/AUTOREP-EPICS.md`, epics E1 to E6; Nikhil's correction on PR #125). MVP2 is out. Any value not calculated yet shows **TBD**.
 
 ### MVP1-E8-01 · Rename Costs to Total Projected Cost, and split out Constraints — S
 - **AC1:** How It's Built's menu and tabs show **Total Projected Cost** at `/how-its-built/total-projected-cost`; `/how-its-built/costs` redirects there.
@@ -924,7 +924,7 @@ As the owner, I want to refund a paid order in full, so a demo user who was char
 - **Database design:** No tables.
 
 ### MVP1-E8-03 · Effort for every story — M
-- **AC1:** Every MVP1 story gets an effort in person-days from its size, on the human scale (S ≈ 3, M ≈ 8, L ≈ 15, including tests, review and QA), split into engineering, QA and product time.
+- **AC1:** Every MVP1 story, including AutoRep V1's, gets an effort in person-days from its size, on the human scale (S ≈ 3, M ≈ 8, L ≈ 15, including tests, review and QA), split into engineering, QA and product time.
 - **AC2:** The sizes come from the epics files; a story with no size is listed as a gap, not guessed.
 - **Service:** Site (`apps/web`) and `scripts/`
 - **API design:** No endpoints.
