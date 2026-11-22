@@ -538,6 +538,18 @@ As a hiring manager, I want to see how many tokens 01scale has used so far besid
 - **API design:** No endpoints.
 - **Database design:** No tables.
 
+### MVP1-E0-46 · Expensive Mistakes tab: lessons with their measured cost — M
+As a hiring manager, I want to read the mistakes Nikhil paid for, what each cost and what he does differently now, so I can judge how he learns, not only what he built (Nikhil's request, 22 Nov 2026).
+- **AC1:** How It's Built has a sixth tab, **Expensive Mistakes**, at `/how-its-built/expensive-mistakes`, in the tab bar and the header menu. The name was chosen over "Lessons Learned" for being catchy and honest.
+- **AC2:** The tab has two sections: **In this project**, with a card per mistake (title, cost, one line, link), and **From my career**, showing "Coming Soon..." until Nikhil writes them. Career lessons are never drafted without him.
+- **AC3:** Each mistake has its own article at `/how-its-built/expensive-mistakes/<slug>`, no longer than one A4 page, with four parts: What happened, What it cost, Why it happened, What I do now, plus links to the evidence.
+- **AC4:** The first four articles, from this project's ledger: *Designed before the split* (redoing every story's API and database design for separate services), *Built before the words were final* (home page wording settled on the live page), *The cold-cache tax* (requests after a break of more than an hour) and *Merged too soon* (#119 and #120 merged before their last commits).
+- **AC5:** Every cost in an article comes from `app/how-its-built/costs.ts` (`mistakes`, worked out by `npm run costs` from `docs/process/token-ledger.json`), never typed into the page.
+- **AC6:** The tab and articles work from 320 to 1920 pixels wide, in light and dark mode.
+- **Service:** Site (`apps/web`) and repository tooling (`scripts/costs/build_costs.py`)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
 ---
 
 ## E1 · Accounts with AWS Cognito (MVP1 "a")
