@@ -42,7 +42,8 @@
     "MVP1-E0-46": "MVP1-E0-46 · Expensive Mistakes tab and four lessons",
     "MVP1-E0-48": "MVP1-E0-48 · App pages with the module side menu",
     "MVP1-E0-49": "MVP1-E0-49 · Section menu on phones, and Previous / Next",
-    "MVP1-E8-09": "MVP1-E8-09 · Human cost script and skill"
+    "MVP1-E8-09": "MVP1-E8-09 · Human cost script and skill",
+    "MVP1-E8-10": "MVP1-E8-10 · Total Projected Cost page, four tabs"
   },
   "sessions": [
     {
@@ -103,6 +104,19 @@
     {
       "id": "43ccd0e7-d7d4-5381-931f-2ee5e9fcd82e",
       "tool_total_usd": 0,
+      "rates_usd_per_million": {},
+      "by_kind_usd": {
+        "input": 0.0,
+        "output": 0.0,
+        "cache_read": 0.0,
+        "cache_write": 0.0
+      },
+      "overhead_usd": 0,
+      "splits": []
+    },
+    {
+      "id": "eb0039a2-e8ac-5e89-b640-8ccf33cad35b",
+      "tool_total_usd": 0.3248,
       "rates_usd_per_million": {},
       "by_kind_usd": {
         "input": 0.0,
@@ -3287,6 +3301,21 @@
       "output_tokens": 358,
       "cost_usd": null,
       "estimated_usd": 0.0769
+    },
+    {
+      "session": "eb0039a2",
+      "n": 1,
+      "ts": "2026-11-22T19:28:43.942Z",
+      "area": "MVP1-E8-10",
+      "kind": "build",
+      "summary": "Total Projected Cost: four tabs with their own addresses, human cost tables, phone tab picker, docs",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 3386558,
+      "output_tokens": 17315,
+      "cost_usd": null,
+      "estimated_usd": 1.6096
     }
   ]
 }

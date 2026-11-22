@@ -1708,7 +1708,7 @@ export const humanCosts = {
       "closed": null,
       "tokenCost": null,
       "tokenCostShared": false,
-      "tokenCostPending": false
+      "tokenCostPending": true
     },
     {
       "id": "AUTOREP-E1-01",
