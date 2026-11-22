@@ -557,7 +557,9 @@ export const costs = {
     "scaffoldingCost": 62.85,
     "storyYield": 51,
     "overallYield": 42,
-    "pendingRequests": 12
+    "pendingRequests": 12,
+    "pendingEstimate": 4.91,
+    "pendingEstimated": 6
   },
   "byKind": {
     "input": 0.06,

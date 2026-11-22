@@ -85,6 +85,9 @@ def main():
         "storyYield": round(100 * b_t / (b_t + r_t)) if b_t + r_t else None,
         "overallYield": round(100 * b_t / all_t) if all_t else None,
         "pendingRequests": sum(1 for r in rows if r["cost_usd"] is None),
+        # Upper-bound estimate for rows never priced by the tool (PR #158); kept out of every measured total.
+        "pendingEstimate": round(sum(r.get("estimated_usd") or 0 for r in rows if r["cost_usd"] is None), 2),
+        "pendingEstimated": sum(1 for r in rows if r["cost_usd"] is None and r.get("estimated_usd") is not None),
     }
     # The Total line under each table (Nikhil's request on PR #136).
     story_totals = {
@@ -183,6 +186,7 @@ def main():
         "",
         f"- Build {m(totals['buildCost'])}, rework {m(totals['reworkCost'])}, scaffolding {m(totals['scaffoldingCost'])}.",
         f"- Token yield across stories (build ÷ build + rework): {totals['storyYield']}%.",
+        *([f"- {totals['pendingEstimated']} pending request(s) were never priced by the tool; estimated at about ${totals['pendingEstimate']:,.2f} from their measured tokens at list prices (an upper bound), not included in the totals above."] if totals['pendingEstimated'] else []),
         f"- Share of all tokens that went into kept story work: {totals['overallYield']}%.",
         "",
         "## Definitions",

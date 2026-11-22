@@ -67,6 +67,7 @@ Updated 2026-11-22. 222 requests across 2 session(s). Total **$331.50** for 610.
 
 - Build $142.08, rework $126.57, scaffolding $62.85.
 - Token yield across stories (build ÷ build + rework): 51%.
+- 6 pending request(s) were never priced by the tool; estimated at about $4.91 from their measured tokens at list prices (an upper bound), not included in the totals above.
 - Share of all tokens that went into kept story work: 42%.
 
 ## Definitions
