@@ -37,6 +37,7 @@ Keeps a running ledger of what each story cost to build with Claude Code, and sp
 ## Rules that are easy to get wrong
 
 - Never enter a cost by hand. If the extractor reports `null`, the tool had not priced it yet: leave it `null` and it shows as pending. Re-run at the next update; earlier rows are refreshed by timestamp, so pending rows fill in.
+- If the session is ending and some rows are still `null`, they will never be priced. Run `python3 scripts/costs/estimate_pending.py <transcript> <requests.json>` and put each result in that row's `estimated_usd`, never in `cost_usd`. It is an upper bound shown apart from the measured totals (Nikhil's request on PR #158).
 - Record the session's `overhead_usd` (what the tool charged beyond the recorded responses). It is shown once, under scaffolding, never spread over stories.
 - Do not change past classifications without saying so in the pull request.
 - Tokens include context re-read from the cache. They are most of the volume but the cheapest part; the cost column is what matters for money.

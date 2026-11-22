@@ -1,5 +1,5 @@
 {
-  "about": "One row per request (or part of a request, cut at a split time) in a Claude Code session. Tokens and cost are measured from the session transcript by scripts/costs/extract_session.py; the story, kind and summary are assigned by hand. A cost of null means the tool had not priced it yet. Each session's overhead is what the tool charged beyond the responses in the transcript.",
+  "about": "One row per request (or part of a request, cut at a split time) in a Claude Code session. Tokens and cost are measured from the session transcript by scripts/costs/extract_session.py; the story, kind and summary are assigned by hand. A cost of null means the tool had not priced it yet. Each session's overhead is what the tool charged beyond the responses in the transcript. estimated_usd: only on rows the tool never priced (cost_usd null) after the session ended. Worked out by script from the request's own measured tokens by kind at Claude Opus 5.5 list prices ($4 input, $20 output, $0.20 cache read, $8 cache write per million). Checked against three priced requests, it runs 5-21% high, so it is an upper bound. Never added to measured totals (Nikhil's request on PR #158).",
   "stories": {
     "P0-SITE": "Phase 0 · Site launch (home page, demos, theme)",
     "DESIGN-ALL": "Design · API and database for every story",
@@ -3038,7 +3038,8 @@
       ],
       "tokens": 967219,
       "output_tokens": 1340,
-      "cost_usd": null
+      "cost_usd": null,
+      "estimated_usd": 0.3019
     },
     {
       "session": "fdd431bb",
@@ -3050,9 +3051,70 @@
       "models": [
         "claude-opus-5-5"
       ],
-      "tokens": 2332560,
-      "output_tokens": 6857,
-      "cost_usd": null
+      "tokens": 4048449,
+      "output_tokens": 9548,
+      "cost_usd": null,
+      "estimated_usd": 1.1525
+    },
+    {
+      "session": "fdd431bb",
+      "n": 212,
+      "ts": "2026-11-22T19:10:53.463Z",
+      "area": "Process",
+      "kind": "scaffolding",
+      "summary": "Close built issues with costs; create and close issues for stories built without one; add the closing rule",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 4663215,
+      "output_tokens": 17464,
+      "cost_usd": null,
+      "estimated_usd": 1.4804
+    },
+    {
+      "session": "fdd431bb",
+      "n": 213,
+      "ts": "2026-11-22T19:17:28.210Z",
+      "area": "Process",
+      "kind": "scaffolding",
+      "summary": "Add costs to seventeen closed issues; ask questions on a cost page story (mixed)",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 2269454,
+      "output_tokens": 9574,
+      "cost_usd": null,
+      "estimated_usd": 0.7378
+    },
+    {
+      "session": "fdd431bb",
+      "n": 214,
+      "ts": "2026-11-22T19:23:16.953Z",
+      "area": "MVP1-E8",
+      "kind": "build",
+      "summary": "Write the human cost script story and the four-tab cost page story",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 1943987,
+      "output_tokens": 6399,
+      "cost_usd": null,
+      "estimated_usd": 0.5642
+    },
+    {
+      "session": "fdd431bb",
+      "n": 215,
+      "ts": "2026-11-22T19:27:19.770Z",
+      "area": "Process",
+      "kind": "scaffolding",
+      "summary": "Record token costs before the session closes",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 392447,
+      "output_tokens": 420,
+      "cost_usd": null,
+      "estimated_usd": 0.678
     },
     {
       "session": "cd3f30e4",

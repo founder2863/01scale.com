@@ -368,6 +368,8 @@ export default async function HowItsBuilt({ params }: { params: Promise<Params> 
             pay at the rates Claude Code used; a subscription bills differently.{" "}
             {costs.totals.pendingRequests > 0 &&
               "Requests marked pending had not been priced by the tool when this was updated. "}
+            {costs.totals.pendingEstimated > 0 &&
+              `${costs.totals.pendingEstimated} of them never will be: their measured tokens at list prices put them at about ${usd(costs.totals.pendingEstimate)} at most, an estimate kept out of the totals. `}
             <a href={`${REPO}/docs/process/TOKEN-COSTS.md`}>The full ledger and method</a>.
           </p>
         </section>
