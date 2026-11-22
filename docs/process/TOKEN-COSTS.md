@@ -2,7 +2,7 @@
 
 What it costs to build 01scale with Claude Code, per story. Generated from `docs/process/token-ledger.json` by `npm run costs`; do not edit by hand.
 
-Updated 2026-11-22. 238 requests across 5 session(s). Total **$349.72** for 712.2 million tokens.
+Updated 2026-11-22. 239 requests across 5 session(s). Total **$349.72** for 725.3 million tokens.
 
 ## Per story
 
@@ -52,7 +52,8 @@ Updated 2026-11-22. 238 requests across 5 session(s). Total **$349.72** for 712.
 | MVP1-E8-09 · Human cost script and skill | 2 | 4.91M | $0.00 | $0.00 | $0.00 (part pending) | 73% |
 | MVP1-E8-10 · Total Projected Cost page, four tabs | 1 | 3.39M | $0.00 | $0.00 | $0.00 (part pending) | 100% |
 | MVP1-E0-19 · Design system (packages/ui-core), service UI packages (E0-07 AC6) and the DocFlow V1 clickable prototype (E0-18 for DocFlow) | 6 | 61.08M | $14.60 | $0.00 | $14.60 (part pending) | 60% |
-| **Total** | **148** | **567.87M** | **$156.68** | **$126.57** | **$283.25** (part pending) | **53%** |
+| MVP1-E1-09, E3-07, E4-05 · Account and admin UI components (ui-identity, ui-extraction, ui-review) | 1 | 7.85M | $0.00 | $0.00 | $0.00 (part pending) | 100% |
+| **Total** | **149** | **575.72M** | **$156.68** | **$126.57** | **$283.25** (part pending) | **53%** |
 
 ## Scaffolding (not tied to a story)
 
@@ -62,15 +63,15 @@ Updated 2026-11-22. 238 requests across 5 session(s). Total **$349.72** for 712.
 | Planning documents | 2 | 1.35M | $0.72 |
 | Questions and explanations | 25 | 19.06M | $21.58 |
 | Product discovery | 17 | 7.28M | $15.87 |
-| Process | 39 | 108.81M | $24.75 |
+| Process | 39 | 114.04M | $24.75 |
 | Tool overhead (background calls) | 0 | 0.00M | $1.65 |
-| **Total** | **90** | **144.36M** | **$66.47** |
+| **Total** | **90** | **149.59M** | **$66.47** |
 
 ## Totals
 
 - Build $156.68, rework $126.57, scaffolding $66.47.
 - Token yield across stories (build ÷ build + rework): 53%.
-- 16 pending request(s) were never priced by the tool; estimated at about $19.39 from their measured tokens at list prices (an upper bound), not included in the totals above.
+- 17 pending request(s) were never priced by the tool; estimated at about $22.98 from their measured tokens at list prices (an upper bound), not included in the totals above.
 - Share of all tokens that went into kept story work: 42%.
 
 ## Definitions

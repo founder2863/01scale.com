@@ -3,6 +3,9 @@
 
 import { STEP_NAMES, type ExtractedField, type Job, type StepName } from "@01scale/ui-extraction";
 import type { Message } from "@01scale/ui-delivery";
+import type { AdminJob, AdminJobsSummary } from "@01scale/ui-extraction";
+import type { ApiKey, Me } from "@01scale/ui-identity";
+import type { AccuracyReportData, EvalCandidate } from "@01scale/ui-review";
 import type { Order } from "@01scale/ui-payment";
 import type { ReviewField, Task } from "@01scale/ui-review";
 import type { UploadFile } from "@01scale/ui-upload";
@@ -128,3 +131,44 @@ export const DOCS: DocflowDocument[] = [
   { id: "doc-2", file_name: "receipt-scan.jpeg", file_id: "file-2", job_id: "job-2", review_task_id: "task-2", order_id: null, message_id: null, status: "needs_review", created_at: "2026-11-18T08:40:00Z", is_sample: false },
   { id: "doc-3", file_name: "statement.pdf", file_id: "file-3", job_id: null, review_task_id: null, order_id: null, message_id: null, status: "rejected", created_at: "2026-11-17T16:05:00Z", is_sample: false },
 ];
+
+// ---- Identity: account (MVP1-E1-09)
+
+export const ME: Me = { id: "usr-demo", email: "you@example.com", created_at: "2026-10-04T09:12:00Z" };
+
+export const API_KEYS: ApiKey[] = [
+  { id: "key-1", name: "Claude Desktop", prefix: "sk_01s_Hq7vT2mX", scopes: ["upload:write", "extraction:read", "docflow:read", "docflow:write"], last_used_at: "2026-11-21T18:02:00Z", expires_at: "2027-02-15T00:00:00Z", created_at: "2026-11-17T09:40:00Z" },
+  { id: "key-2", name: "Nightly export script", prefix: "sk_01s_Pz4kW9cL", scopes: ["docflow:read"], last_used_at: null, expires_at: "2026-12-20T00:00:00Z", created_at: "2026-11-20T12:00:00Z" },
+];
+
+export const NEW_SECRET = "sk_01s_Ab3dEx4mPl3S3cr3tN0tR3alXyZ0123456789abcdefgh";
+
+// ---- Extraction: admin (MVP1-E3-07)
+
+export const ADMIN_JOBS: { data: AdminJob[]; summary: AdminJobsSummary } = {
+  data: [
+    { id: "job-a", status: "extracted", model: "claude-opus-5-5", prompt_version: "extract-invoice/v1", pages: 2, tokens_in: 6210, tokens_out: 1480, cost_usd: "0.040830", duration_ms: 28900, error_code: null, created_at: "2026-11-22T09:14:12Z" },
+    { id: "job-b", status: "extracted", model: "claude-opus-5-5", prompt_version: "extract-invoice/v1", pages: 1, tokens_in: 3105, tokens_out: 910, cost_usd: "0.022140", duration_ms: 17400, error_code: null, created_at: "2026-11-22T08:51:40Z" },
+    { id: "job-c", status: "failed", model: "claude-opus-5-5", prompt_version: "extract-invoice/v1", pages: 3, tokens_in: 0, tokens_out: 0, cost_usd: "0.000000", duration_ms: 60000, error_code: "model_unavailable", created_at: "2026-11-21T22:03:05Z" },
+  ],
+  summary: { jobs: 100, failure_rate: 0.02, avg_cost_usd: "0.0412", p95_duration_ms: 41200 },
+};
+
+// ---- Review: admin (MVP1-E4-05). Made-up values, as every fixture here.
+
+export const CANDIDATES: EvalCandidate[] = [
+  { id: "cand-1", reference: "docflow:doc-1", field_name: "total", line_index: null, model_value: "1240.00", human_value: "1230.00", status: "candidate", created_at: "2026-11-21T09:15:30Z" },
+  { id: "cand-2", reference: "docflow:doc-2", field_name: "invoice_date", line_index: null, model_value: "2026-02-11", human_value: "2026-11-02", status: "candidate", created_at: "2026-11-20T14:02:10Z" },
+  { id: "cand-3", reference: "docflow:doc-3", field_name: "amount", line_index: 1, model_value: "350.00", human_value: "380.00", status: "approved", created_at: "2026-11-18T11:40:00Z" },
+];
+
+export const ACCURACY: AccuracyReportData = {
+  since: "2026-11-01",
+  totals: { tasks: 42, fields_reviewed: 798, corrected: 37, correction_rate: 0.046, corrections_flagged: 0.92 },
+  fields: [
+    { name: "total", reviewed: 42, flagged: 9, corrected: 6, not_present: 0, approved_mistakes: 5, correction_rate: 0.143 },
+    { name: "invoice_date", reviewed: 42, flagged: 12, corrected: 8, not_present: 0, approved_mistakes: 7, correction_rate: 0.19 },
+    { name: "vendor_tax_id", reviewed: 42, flagged: 11, corrected: 3, not_present: 8, approved_mistakes: 2, correction_rate: 0.071 },
+    { name: "vendor_name", reviewed: 42, flagged: 1, corrected: 0, not_present: 0, approved_mistakes: 0, correction_rate: 0 },
+  ],
+};
