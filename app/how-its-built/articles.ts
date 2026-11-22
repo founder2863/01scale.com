@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { marked } from "marked";
 
-// Lessons Learned (MVP1-E0-47): articles Nikhil has published elsewhere, grouped by domain and shown
+// Published articles on the Expensive Mistakes tab (MVP1-E0-47), one heading per domain, shown
 // verbatim from one Markdown file each in content/articles/. The text is his; never edit it here.
 
 export type Article = {
@@ -19,7 +19,7 @@ export type Article = {
 export const articles: Article[] = [
   {
     slug: "beyond-the-happy-path",
-    title: "Beyond the Happy Path",
+    title: "Beyond the Happy Path: 10 Lessons from Building Embedded Payments in Vertical SaaS",
     domain: "Payments",
     source: "LinkedIn",
     published: "3 Nov 2026",

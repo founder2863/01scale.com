@@ -3104,15 +3104,7 @@ section[id] {
   overflow-wrap: anywhere;
 }
 
-/* Lessons Learned (MVP1-E0-47): published articles by domain, shown verbatim from Markdown. */
-.lesson-domain {
-  margin: 18px 0 10px;
-  color: var(--muted);
-  font-size: 0.85rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
+/* Published articles on Expensive Mistakes (MVP1-E0-47), shown verbatim from Markdown. */
 .lesson-body img {
   max-width: 100%;
   height: auto;

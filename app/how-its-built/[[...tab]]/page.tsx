@@ -28,7 +28,7 @@ const RATES = [
 ];
 
 // One address per tab (Skills, the default, is /how-its-built), plus one per expensive mistake
-// and one per Lessons Learned article.
+// and one per published article (MVP1-E0-47).
 export const dynamicParams = false;
 
 // Each expensive mistake also has its own article page: /how-its-built/expensive-mistakes/<slug>.
@@ -398,11 +398,9 @@ export default async function HowItsBuilt({ params }: { params: Promise<Params> 
             <p className="coming-soon-title">Coming Soon...</p>
             <p>Lessons from the platforms and products I led before 01scale.</p>
           </div>
-          <h3 className="section-subtitle">Lessons Learned</h3>
-          <p className="note">What I have written about the domains I led, as published.</p>
           {articleDomains.map((group) => (
             <div key={group.domain}>
-              <h4 className="lesson-domain">{group.domain}</h4>
+              <h3 className="section-subtitle">{group.domain}</h3>
               <ul className="mistake-list lesson-list">
                 {group.items.map((item) => (
                   <li key={item.slug}>
@@ -424,8 +422,7 @@ export default async function HowItsBuilt({ params }: { params: Promise<Params> 
         {lesson && (
         <article className="mistake-article lesson-article" id={lesson.slug}>
           <p className="eyebrow">
-            <Link href="/how-its-built/expensive-mistakes">Expensive Mistakes</Link> · Lessons Learned ·{" "}
-            {lesson.domain}
+            <Link href="/how-its-built/expensive-mistakes">Expensive Mistakes</Link> · {lesson.domain}
           </p>
           <h2 className="group-title">{lesson.title}</h2>
           <p className="note">
