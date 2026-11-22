@@ -56,11 +56,11 @@ In embedded payments, money rarely moves between just two parties. A single paym
 - Who receives a revenue share, and when is it paid?
 - Who absorbs the cost of refunds, disputes and returned payments?
 
-Liability is part of the same design. In platform setups such as #StripeConnect, #WorldpayFor Platforms who pays processing fees and who is liable for refunds, disputes and negative balances depends on how charges are structured. When a merchant's balance goes negative after refunds or disputes, the platform is often the one left covering it.
+Liability is part of the same design. In platform setups such as Stripe Connect and Worldpay for Platforms, who pays processing fees and who is liable for refunds, disputes and negative balances depends on how charges are structured. When a merchant's balance goes negative after refunds or disputes, the platform is often the one left covering it.
 
 If fees are hard-coded around your first customer, every new contract becomes an engineering project, pricing changes need a code release, and finance teams can't explain statements to customers.
 
-What to do: build fees as configuration from day-1, not code, not any custom file. Support fee schedules per merchant or contract, with effective dates so old transactions keep old pricing. Model every party in the money flow and their split. Define rounding rules once. Show a clear fee breakdown on receipts and statements. And settle liability for refunds, disputes and negative balances in contracts before the first payment, not after the first loss.
+**What to do:** build fees as configuration from day one, not code, not any custom file. Support fee schedules per merchant or contract, with effective dates so old transactions keep old pricing. Model every party in the money flow and their split. Define rounding rules once. Show a clear fee breakdown on receipts and statements. And settle liability for refunds, disputes and negative balances in contracts before the first payment, not after the first loss.
 
 ## Lesson 2: Refunds return the payment, not the fee
 
@@ -72,13 +72,13 @@ This is why many government payment pages state that convenience fees are non-re
 
 Refunds have other traps too: partial refunds, refunds issued after the money has already been paid out to the merchant (which can push their balance negative), and ACH refunds, which are new outgoing payments rather than reversals of the original.
 
-What to do: decide the refund-fee policy for every contract (it belongs in the fee configuration from Lesson 1). State it clearly on the payment page, receipts and terms. Build refund flows that show the fee impact before the refund is issued. And include expected refund rates in your pricing model.
+**What to do:** decide the refund-fee policy for every contract (it belongs in the fee configuration from Lesson 1). State it clearly on the payment page, receipts and terms. Build refund flows that show the fee impact before the refund is issued. And include expected refund rates in your pricing model.
 
 ## Lesson 3: ACH settles fast for most payments, but the long tail is where the work is
 
 The vast majority of ACH payments are confirmed within 3–4 business days. That sounds reassuring, but the small share that isn't creates a disproportionate amount of support tickets, reconciliation breaks and finance escalations.
 
-Why 3–4 days and not 1? Under Nacha rules, an ACH debit itself settles between banks in one to two business days. But the payer's bank then has two banking days to return it for common reasons such as insufficient funds or a closed account. Most processors wait out that window before treating a payment as final, which is why merchants see 3–4 days.
+Why 3–4 days and not 1? Under NACHA rules, an ACH debit itself settles between banks in one to two business days. But the payer's bank then has two banking days to return it for common reasons such as insufficient funds or a closed account. Most processors wait out that window before treating a payment as final, which is why merchants see 3–4 days.
 
 The long tail comes from several causes:
 
@@ -89,22 +89,22 @@ The long tail comes from several causes:
 - Limits set by the payer's bank. Banks cap the size or daily total of ACH debits on some accounts, especially newer or smaller ones.
 - Unauthorized-debit disputes. ACH has no chargeback process. Instead, a consumer can sign a statement that a debit was unauthorized, and their bank can return it as late as 60 calendar days after settlement (R05, R07, R10, R11). Business accounts get a much shorter window, two banking days (R29). This means a "settled" consumer payment is not fully final for two months.
 - Processor risk holds. New merchants, unusually large payments or sudden volume spikes can trigger reviews or rolling reserves at the processor, delaying payouts.
-- Fraud monitoring. Since 2026, Nacha rules require originators, processors and banks to run risk-based fraud monitoring on ACH payments (phase 1 from March 20, 2026, phase 2 from June 2026). Payments that look unusual may get extra review.
+- Fraud monitoring. Since 2026, NACHA rules require originators, processors and banks to run risk-based fraud monitoring on ACH payments (phase 1 from March 20, 2026, phase 2 from June 2026). Payments that look unusual may get extra review.
 - Weekends and bank holidays. ACH only moves on banking days, so a payment made on a Friday before a long weekend can take a week.
 
-Many of these can be prevented before the first debit. Since March 19, 2021, Nacha has required businesses that debit consumer accounts online to validate the account before its first use, through micro-deposits, a prenote, or an instant account validation service. Validation catches mistyped, closed and invalid accounts before they become returns.
+Many of these can be prevented before the first debit. Since March 19, 2021, NACHA has required businesses that debit consumer accounts online to validate the account before its first use, through micro-deposits, a prenote, or an instant account validation service. Validation catches mistyped, closed and invalid accounts before they become returns.
 
-What to do: validate accounts before the first debit, show payers and merchants a clear "pending" state, track every return by reason code, build automatic re-presentment for insufficient funds (Nacha allows limited retries), and never retry unauthorized returns.
+**What to do:** validate accounts before the first debit, show payers and merchants a clear "pending" state, track every return by reason code, build automatic re-presentment for insufficient funds (NACHA allows limited retries), and never retry unauthorized returns.
 
 ## Lesson 4: Default transaction limits will block your largest customers
 
-Processors and their banks apply default limits to new merchants to contain fraud and credit risk: a maximum single transaction size, a daily total, and often a monthly total. Under Nacha rules, the bank that originates ACH payments is responsible for managing the risk of each originator, and limits are its main tool.
+Processors and their banks apply default limits to new merchants to contain fraud and credit risk: a maximum single transaction size, a daily total, and often a monthly total. Under NACHA rules, the bank that originates ACH payments is responsible for managing the risk of each originator, and limits are its main tool.
 
 Defaults are usually set for a typical small business. For enterprise and government customers, a single legitimate payment can exceed the default ceiling, and the payment simply fails, often at the worst possible moment, like a filing deadline.
 
 Limits can be raised, but only with evidence: historical transaction volumes, examples of large payments, bank statements, financial statements or contracts that show expected volume.
 
-What to do: ask enterprise customers about their largest expected payment during onboarding, request limit increases before go-live rather than after the first failure, and plan for seasonal peaks such as tax and renewal deadlines.
+**What to do:** ask enterprise customers about their largest expected payment during onboarding, request limit increases before go-live rather than after the first failure, and plan for seasonal peaks such as tax and renewal deadlines.
 
 ## Lesson 5: KYB onboarding stalls on finding the right person
 
@@ -120,7 +120,7 @@ Two common sources of confusion:
 - The control person is not necessarily the person who signs the agreement. The authorized signer accepts the terms; the control person is the senior official whose identity is verified. Onboarding flows should ask for both and explain the difference.
 - Government agencies and publicly listed companies are generally excluded from the beneficial ownership requirement under the rule. Even so, many processors still ask for a named authorized representative, so public-sector onboarding is not friction-free.
 
-What to do: explain upfront why the information is needed and who usually qualifies, allow onboarding to be saved and handed off to another person, and let teams start configuring while verification completes.
+**What to do:** explain upfront why the information is needed and who usually qualifies, allow onboarding to be saved and handed off to another person, and let teams start configuring while verification completes.
 
 ## Lesson 6: Business cards carry higher fees and eat margin fast
 
@@ -140,7 +140,7 @@ A natural reaction to Lesson 6 is "let's just not accept business cards." Under 
 
 This may change. A revised settlement between Visa, Mastercard and merchants, which received preliminary court approval in June 2026, would let US merchants choose whether to accept commercial, premium and standard consumer credit cards separately. It is not final yet, so product teams should design for today's rules while planning for more flexibility.
 
-What to do: handle business card costs through pricing, surcharging, enhanced data and ACH steering (Lesson 6), not through acceptance rules.
+**What to do:** handle business card costs through pricing, surcharging, enhanced data and ACH steering (Lesson 6), not through acceptance rules.
 
 ## Lesson 8: Reconciliation is slow because "settled" means different things on different days
 
@@ -154,7 +154,7 @@ Other complications:
 
 The foundation that makes this manageable is a proper ledger. Experienced payments engineers converge on the same principles: use double-entry bookkeeping so every movement of money has two sides that must balance; make entries append-only, so refunds and corrections are recorded as new entries rather than edits; and store amounts as whole numbers in the smallest currency unit (cents), because decimal rounding errors compound across millions of transactions.
 
-What to do: run reconciliation from your own ledger, not from bank deposits. Record every payment with its processor ID and expected settlement date, move it through clear states (pending, settled, paid out, refunded, returned), match payouts against the processor's itemized payout report, and keep an aging report of payments that haven't settled by their expected date. This turns reconciliation from a monthly fire drill into a daily exception list.
+**What to do:** run reconciliation from your own ledger, not from bank deposits. Record every payment with its processor ID and expected settlement date, move it through clear states (pending, settled, paid out, refunded, returned), match payouts against the processor's itemized payout report, and keep an aging report of payments that haven't settled by their expected date. This turns reconciliation from a monthly fire drill into a daily exception list.
 
 ## Lesson 9: ACH cut-off times are fixed by the system; your processor's are earlier
 
@@ -165,3 +165,81 @@ Your processor's cut-off is always earlier than these deadlines, because it need
 Two more details matter:
 
 - Same Day ACH has a per-payment limit of $1 million (rising to $10 million in September 2027). Larger payments settle next day.
+- Weekends and federal holidays don't count. A payment made at 5 p.m. ET on a Friday before a holiday Monday won't move until Tuesday.
+
+**What to do:** publish your actual cut-off times to customers, show the expected settlement date at checkout, and design payout schedules around the windows rather than around calendar days.
+
+## Lesson 10: Build idempotency in from the first transaction
+
+Payments have many failure points: a user double-clicks "Pay," a browser retries after a timeout, a mobile app resends on a reconnect, a message queue delivers the same event twice, a processor times out without telling you whether the charge went through, or a batch job restarts halfway. Every one of these can turn into a customer being charged twice.
+
+The fix is idempotency: every payment request carries a unique key, and the system guarantees that the same key can only ever create one payment. Repeating the request returns the original result instead of creating a new charge. Stripe popularized this pattern with its Idempotency-Key header.
+
+Webhooks, the notifications processors send when a payment succeeds, fails or is returned, need the same discipline. Processors retry them, so the same event can arrive more than once, and events can arrive out of order. Verify each webhook's signature, ignore events you've already processed, and never assume a "succeeded" event arrives before a "refunded" one.
+
+Practical rules:
+
+- Generate the key when the payment is created, not when it is sent, and reuse it on every retry.
+- Enforce uniqueness in the database, not just in application code.
+- When a processor call times out, check the payment status with the processor before retrying.
+- Track each payment in a clear state machine (created, submitted, pending, settled, refunded, returned) so recovery jobs know exactly what to do.
+
+ACH has its own duplicate protections. NACHA has a return code for duplicate entries (R24), and originators can reverse duplicate or erroneous entries within five banking days. But reversals are messy and visible to customers. It is far cheaper to never create the duplicate.
+
+Retrofitting idempotency after launch is painful, because every integration path has to be audited. Build it in from day one.
+
+## Why Vertical Embedding Changes the Game
+
+Most of these lessons get easier when payments are built into the workflow rather than bolted on.
+
+Horizontal payment platforms provide standardized tools that work across any industry. Vertically embedded payments are built into a specific workflow, such as a regulatory filing, a license renewal, a permit application or a subscription lifecycle. The payment is tied to the business record it belongs to.
+
+That tie is what makes the hard parts manageable. Fees and refund policies can be set per contract and per workflow (Lessons 1 and 2). Returns and holds can be handled in context, for example by pausing a license approval until a returned payment is resolved (Lesson 3). Limits and onboarding can be planned around known customer volumes (Lessons 4 and 5). Reconciliation improves because every payment maps to a specific filing or invoice (Lesson 8). And audit trails come built in, which matters enormously in regulated industries.
+
+The architectural shift is that transactions stop being isolated financial events and become part of the workflow's state: a payment moves a filing forward, a return moves it back.
+
+## What's Next: Agentic Commerce Is an Identity Problem
+
+Three trends will shape embedded payments over the next few years: payment orchestration across multiple PSPs to improve reliability and cost; real-time rails such as RTP, FedNow and Interac, which remove much of the settlement uncertainty in Lessons 3 and 8; and agentic commerce.
+
+Agentic commerce, where AI agents initiate purchases and payments on behalf of people and businesses, is the most interesting for product builders. At its core, it is an identity problem. Every agent-initiated payment needs answers to three questions: which agent is acting, on whose behalf, and within what limits. That requires machine identities and credentials for agents, scoped permissions such as spending caps, merchant restrictions and expiry dates, and an audit trail that links each payment back to the human or organization that delegated authority.
+
+PSPs and vertical platforms that solve this will become the trust and control layer for machine-initiated commerce.
+
+## The Takeaway
+
+For software companies, payments are one of the strongest revenue and retention levers available. But the hardest problems are rarely in the happy path. They live in fees, refunds, returns, limits, onboarding and reconciliation. Teams that design for those from day one build payments products customers trust, and that trust is what drives adoption.
+
+If you're building or scaling payments in vertical SaaS, I'd love to compare notes.
+
+## Sources
+
+- [NACHA, Risk Management Topics: Fraud Monitoring Phase 1](https://www.nacha.org/rules/risk-management-topics-fraud-monitoring-phase-1)
+- [NACHA, Risk Management Topics: Fraud Monitoring Phase 2](https://www.nacha.org/rules/risk-management-topics-fraud-monitoring-phase-2)
+- [NACHA, Supplementing Fraud Detection Standards for WEB Debits (account validation)](https://nacha.org/rules/supplementing-fraud-detection-standards-web-debits)
+- [NACHA, Same Day ACH $1 million limit](https://www.nacha.org/news/same-day-ach-1-million-transaction-limit-guidance)
+- [NACHA, Increasing the Same Day ACH dollar limit to $10 million](https://www.nacha.org/rules/increasing-same-day-ach-dollar-limit-10-million-0)
+- [Federal Reserve Financial Services, FedACH Processing Schedule](https://frbservices.org/resources/resource-centers/same-day-ach/fedach-processing-schedule.html)
+- [Modern Treasury, ACH return codes](https://www.moderntreasury.com/ach-return-codes/r10)
+- [Plaid, ACH return codes guide](https://plaid.com/en-eu/resources/ach/ach-return/)
+- [Stripe, Understanding fees for refunded payments](https://support.stripe.com/questions/understanding-fees-for-refunded-payments)
+- [Stripe, Connect risk management](https://docs.stripe.com/connect/manage-risk)
+- [Stripe, Connect refunds and disputes](https://docs.stripe.com/connect/marketplace/tasks/refunds-disputes)
+- [Stripe, Connect account balances](https://docs.stripe.com/connect/account-balances)
+- [Core Business Technologies, Convenience fees and service fees](https://www.corebt.com/convenience-fees-and-service-fees/)
+- [Checkout.com, Changes to Visa service fee rules](https://support.checkout.com/hc/en-us/articles/38814478450450-Changes-to-Visa-service-fee-rules-for-U-S-consumer-debit-and-consumer-prepaid-transactions)
+- [Payments Dive, Court approves Visa-Mastercard settlement (June 2026)](https://www.paymentsdive.com/news/court-approves-visa-mastercard-settlement/822440/)
+- [Visa Inc. Form 8-K, settlement terms (November 2025)](https://www.sec.gov/Archives/edgar/data/1403161/000140316125000093/v-20251110.htm)
+- [Arent Fox Schiff, Visa reduces merchant surcharge cap to 3%](https://www.afslaw.com/perspectives/alerts/visa-reduces-its-merchant-surcharge-cap-3-effective-april-15-2023-merchants)
+- [Visa Canada, Surcharging FAQ for businesses](https://www.visa.ca/content/dam/VCOM/regional/na/canada/Support/Documents/surcharging-faq-businesses-en.pdf)
+- [Corpay, Level 2 and Level 3 card data](https://www.corpay.com/en-SG/resources/blog/level-2-level-3-card-data)
+- [Checkout.com, Level 2 and Level 3 data in credit card processing](https://checkout.com/blog/level-2-and-level-3-data-in-credit-card-processing)
+- [Federal Reserve Bank of Minneapolis, Customer due diligence requirements](https://minneapolisfed.org/article/2016/customer-due-diligence-requirements)
+- [Toast, Q4 and Full Year 2025 Prepared Remarks](https://s28.q4cdn.com/141746709/files/doc_financials/2025/q4/Q4-25-Prepared-Remarks.pdf)
+- [Charge Forward, Embedded Payments Benchmarks (incl. Rainforest vertical SaaS study)](https://chargeforward.io/learn/research/embedded-payments-benchmarks/)
+- [Apideck, Embedded Finance for Vertical SaaS](https://www.apideck.com/blog/embedded-finance-vertical-saas)
+- [Square, Fees and pricing](https://squareup.com/help/us/en/article/5068-fees-and-pricing)
+- [Adyen, Pricing](https://www.adyen.com/pricing)
+- [Ramp, ACH processing fees](https://ramp.com/blog/ach-processing-fees)
+- [Johnson County (KS) Tax Office, Payment options](https://johnsoncountytaxoffice.org/payment-options)
+- [Ajit Singh, Payment System Design: Ledger, Idempotency, and Settlement](https://singhajit.com/payment-system-design/)
