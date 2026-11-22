@@ -232,15 +232,19 @@ As a hiring manager, I want to click through a module's journey with its real sc
 - **API design:** No new endpoints. The mock answers exactly as each service's API spec says, and once live the page calls the gateway like any client.
 - **Database design:** No tables.
 
+**Status: DocFlow V1 built as a whole-journey prototype (22 Nov 2026).** It sits in DocFlow's User Journey section (`/products/docflow/user-journey#try-it`), with a Try it link on the Overview and a full-screen copy at `/products/docflow/try` (Nikhil's decision, 22 Nov 2026). It runs the journey from sign-in to download against an in-browser mock of each service's designed API, with the written journey highlighted beside it, an API-call log, Reset and three failures (an unsupported file, a failed extraction, a declined card), plus a failed check at Complete review. Its screens come from the services' UI packages (`packages/ui-identity`, `ui-upload`, `ui-extraction`, `ui-review`, `ui-payment`, `ui-delivery`, `MVP1-E0-07` AC6), each calling only its own API through a client the app supplies. The per-module Try it in each service's User Journey section is still to build; the mock moves to service-kit's generator (`MVP1-E0-07` AC10).
+
 ### MVP1-E0-19 · Design system: shared tokens and base components (`packages/ui-core`) — M
 As the owner, I want every service's screens to share one look and one set of base components, so the platform looks like one product while each service stays independent.
-- **AC1:** `packages/ui-core` holds the **design tokens** (brand colours including `#0b00bf`, type, spacing, radius, shadows, light and dark themes) and **base components**: button, input, select, checkbox, card, badge, dialog, tabs, toast and form-field errors.
+- **AC1:** `packages/ui-core` holds the **design tokens** (brand colours including `#0b00bf`, type, spacing, radius, shadows, light and dark themes) and **base components**: button, input, select, checkbox, card, badge, dialog, tabs, toast and form-field errors, plus alert, progress bar, skeleton and spinner, which every service's loading and failure states need (added when building the DocFlow prototype, 22 Nov 2026).
 - **AC2:** Every base component is keyboard reachable, has visible focus, labelled controls and WCAG AA contrast, and works at 320 pixels wide in both themes, so every service gets accessibility for free.
 - **AC3:** It contains **no business logic and no calls to any service**. Each service's UI package (`packages/ui-<service>`) builds on it and pins its version, so services stay independent and update on their own schedule.
 - **AC4:** The site itself uses the same tokens, so the site and the services' components look the same.
 - **AC5:** The UI Components section of every module page shows each component **live, in each of its states** (loading, empty, error, success), from the same packages, as a component gallery.
 - **AC6:** The design rules in `docs/process/DESIGN-RULES.md` and the `design-ui-components` skill say to build on `ui-core` and never restyle its base components inside a service.
 - **Service:** Platform (`packages/ui-core`); every service's UI package; Site
+
+**Status: partly built (22 Nov 2026).** AC1 to AC4 and AC6 are built in `packages/ui-core` 0.1.0, and the site imports its tokens. AC5 (a live gallery in every module's UI Components section) waits for the service UI packages.
 - **API design:** No endpoints.
 - **Database design:** No tables.
 

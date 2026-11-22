@@ -52,17 +52,22 @@ export const coreComponents = [
     "purpose": "Shared design tokens and accessible base components (packages/ui-core), so every service's screens look like one product while each service still ships on its own.",
     "gives": [
       "Brand colours, type, spacing and light and dark themes",
-      "Base components: button, input, select, checkbox, card, badge, dialog, tabs, toast, form errors",
+      "Base components: button, input, select, checkbox, card, badge, dialog, tabs, toast, form errors, plus alert, progress bar, skeleton and spinner",
       "Keyboard access, visible focus and WCAG AA contrast built in",
-      "No business logic and no service calls; each service pins the version it uses"
+      "No business logic and no service calls; each service pins the version it uses",
+      "Used by the site and by the DocFlow V1 clickable prototype at /products/docflow/try"
     ],
-    "usage": null,
-    "status": "Planned",
+    "usage": {
+      "label": "Use it in any React app",
+      "lang": "tsx",
+      "code": "import \"@01scale/ui-core/tokens.css\";\nimport \"@01scale/ui-core/styles.css\";\nimport { Button, Input, Badge } from \"@01scale/ui-core\";\n\n<Input label=\"Invoice date\" hint=\"YYYY-MM-DD\" error={error} />\n<Badge tone=\"warning\" icon=\"⚑\">Check 0.66</Badge>\n<Button loading={saving}>Save</Button>"
+    },
+    "status": "Live",
     "version": "v1",
     "stories": [
       "MVP1-E0-19"
     ],
-    "docs": null
+    "docs": "https://github.com/founder2863/01scale.com/tree/main/packages/ui-core"
   },
   {
     "slug": "api-standards",

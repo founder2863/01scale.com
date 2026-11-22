@@ -43,7 +43,8 @@
     "MVP1-E0-48": "MVP1-E0-48 · App pages with the module side menu",
     "MVP1-E0-49": "MVP1-E0-49 · Section menu on phones, and Previous / Next",
     "MVP1-E8-09": "MVP1-E8-09 · Human cost script and skill",
-    "MVP1-E8-10": "MVP1-E8-10 · Total Projected Cost page, four tabs"
+    "MVP1-E8-10": "MVP1-E8-10 · Total Projected Cost page, four tabs",
+    "MVP1-E0-19": "MVP1-E0-19 · Design system (packages/ui-core), service UI packages (E0-07 AC6) and the DocFlow V1 clickable prototype (E0-18 for DocFlow)"
   },
   "sessions": [
     {
@@ -117,6 +118,19 @@
     {
       "id": "eb0039a2-e8ac-5e89-b640-8ccf33cad35b",
       "tool_total_usd": 0.3248,
+      "rates_usd_per_million": {},
+      "by_kind_usd": {
+        "input": 0.0,
+        "output": 0.0,
+        "cache_read": 0.0,
+        "cache_write": 0.0
+      },
+      "overhead_usd": 0,
+      "splits": []
+    },
+    {
+      "id": "4f156423-c77d-5a1f-9ee0-653fd2fda3eb",
+      "tool_total_usd": 8.7231,
       "rates_usd_per_million": {},
       "by_kind_usd": {
         "input": 0.0,
@@ -2957,6 +2971,20 @@
       "cost_usd": 0.0903
     },
     {
+      "session": "cd3f30e4",
+      "n": 193,
+      "ts": "2026-11-22T17:20:21.534Z",
+      "area": "MVP1-E0-47",
+      "kind": "build",
+      "summary": "Write the story, issue, Payments section, article page and draft PR",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 2166581,
+      "output_tokens": 13672,
+      "cost_usd": 1.2458
+    },
+    {
       "session": "fdd431bb",
       "n": 203,
       "ts": "2026-11-22T17:51:50.628Z",
@@ -2999,6 +3027,34 @@
       "cost_usd": 1.1369
     },
     {
+      "session": "cd3f30e4",
+      "n": 194,
+      "ts": "2026-11-22T18:08:44.372Z",
+      "area": "MVP1-E0-47",
+      "kind": "build",
+      "summary": "Add the article text; restructure to one Payments heading (mixed: mostly build, some rework)",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 1042867,
+      "output_tokens": 14153,
+      "cost_usd": null
+    },
+    {
+      "session": "cd3f30e4",
+      "n": 195,
+      "ts": "2026-11-22T18:11:31.492Z",
+      "area": "MVP1-E0-47",
+      "kind": "build",
+      "summary": "Add the rest of the article with the agreed formatting and wording fixes",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 1341935,
+      "output_tokens": 12289,
+      "cost_usd": null
+    },
+    {
       "session": "fdd431bb",
       "n": 206,
       "ts": "2026-11-22T18:20:33.119Z",
@@ -3025,6 +3081,62 @@
       "tokens": 4296591,
       "output_tokens": 11686,
       "cost_usd": 1.05
+    },
+    {
+      "session": "cd3f30e4",
+      "n": 196,
+      "ts": "2026-11-22T18:25:23.110Z",
+      "area": "MVP1-E0-47",
+      "kind": "build",
+      "summary": "Add the original post link and record token costs",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 1608416,
+      "output_tokens": 5507,
+      "cost_usd": null
+    },
+    {
+      "session": "cd3f30e4",
+      "n": 197,
+      "ts": "2026-11-22T18:28:10.621Z",
+      "area": "Questions and explanations",
+      "kind": "scaffolding",
+      "summary": "Where the rule to record token costs is written",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 183925,
+      "output_tokens": 745,
+      "cost_usd": null
+    },
+    {
+      "session": "cd3f30e4",
+      "n": 198,
+      "ts": "2026-11-22T18:31:14.720Z",
+      "area": "Process",
+      "kind": "scaffolding",
+      "summary": "Change the token-cost rule to every pull request (CLAUDE.md and skill)",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 1513465,
+      "output_tokens": 5464,
+      "cost_usd": null
+    },
+    {
+      "session": "cd3f30e4",
+      "n": 199,
+      "ts": "2026-11-22T18:34:26.024Z",
+      "area": "MVP1-E0-47",
+      "kind": "rework",
+      "summary": "Review: collapsible article sections and full-width text across the site",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 2208872,
+      "output_tokens": 7903,
+      "cost_usd": null
     },
     {
       "session": "fdd431bb",
@@ -3145,104 +3257,6 @@
       "estimated_usd": 0.678
     },
     {
-      "session": "cd3f30e4",
-      "n": 193,
-      "ts": "2026-11-22T17:20:21.534Z",
-      "area": "MVP1-E0-47",
-      "kind": "build",
-      "summary": "Write the story, issue, Payments section, article page and draft PR",
-      "models": [
-        "claude-opus-5-5"
-      ],
-      "tokens": 2166581,
-      "output_tokens": 13672,
-      "cost_usd": 1.2458
-    },
-    {
-      "session": "cd3f30e4",
-      "n": 194,
-      "ts": "2026-11-22T18:08:44.372Z",
-      "area": "MVP1-E0-47",
-      "kind": "build",
-      "summary": "Add the article text; restructure to one Payments heading (mixed: mostly build, some rework)",
-      "models": [
-        "claude-opus-5-5"
-      ],
-      "tokens": 1042867,
-      "output_tokens": 14153,
-      "cost_usd": null
-    },
-    {
-      "session": "cd3f30e4",
-      "n": 195,
-      "ts": "2026-11-22T18:11:31.492Z",
-      "area": "MVP1-E0-47",
-      "kind": "build",
-      "summary": "Add the rest of the article with the agreed formatting and wording fixes",
-      "models": [
-        "claude-opus-5-5"
-      ],
-      "tokens": 1341935,
-      "output_tokens": 12289,
-      "cost_usd": null
-    },
-    {
-      "session": "cd3f30e4",
-      "n": 196,
-      "ts": "2026-11-22T18:25:23.110Z",
-      "area": "MVP1-E0-47",
-      "kind": "build",
-      "summary": "Add the original post link and record token costs",
-      "models": [
-        "claude-opus-5-5"
-      ],
-      "tokens": 1608416,
-      "output_tokens": 5507,
-      "cost_usd": null
-    },
-    {
-      "session": "cd3f30e4",
-      "n": 197,
-      "ts": "2026-11-22T18:28:10.621Z",
-      "area": "Questions and explanations",
-      "kind": "scaffolding",
-      "summary": "Where the rule to record token costs is written",
-      "models": [
-        "claude-opus-5-5"
-      ],
-      "tokens": 183925,
-      "output_tokens": 745,
-      "cost_usd": null
-    },
-    {
-      "session": "cd3f30e4",
-      "n": 198,
-      "ts": "2026-11-22T18:31:14.720Z",
-      "area": "Process",
-      "kind": "scaffolding",
-      "summary": "Change the token-cost rule to every pull request (CLAUDE.md and skill)",
-      "models": [
-        "claude-opus-5-5"
-      ],
-      "tokens": 1513465,
-      "output_tokens": 5464,
-      "cost_usd": null
-    },
-    {
-      "session": "cd3f30e4",
-      "n": 199,
-      "ts": "2026-11-22T18:34:26.024Z",
-      "area": "MVP1-E0-47",
-      "kind": "rework",
-      "summary": "Review: collapsible article sections and full-width text across the site",
-      "models": [
-        "claude-opus-5-5"
-      ],
-      "tokens": 2208872,
-      "output_tokens": 7903,
-      "cost_usd": null
-    },
-    {
       "session": "43ccd0e7",
       "n": 1,
       "ts": "2026-11-22T19:27:48.924Z",
@@ -3256,6 +3270,21 @@
       "output_tokens": 23376,
       "cost_usd": null,
       "estimated_usd": 1.79
+    },
+    {
+      "session": "eb0039a2",
+      "n": 1,
+      "ts": "2026-11-22T19:28:43.942Z",
+      "area": "MVP1-E8-10",
+      "kind": "build",
+      "summary": "Total Projected Cost: four tabs with their own addresses, human cost tables, phone tab picker, docs",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 3386558,
+      "output_tokens": 17315,
+      "cost_usd": null,
+      "estimated_usd": 1.6096
     },
     {
       "session": "43ccd0e7",
@@ -3303,19 +3332,62 @@
       "estimated_usd": 0.0769
     },
     {
-      "session": "eb0039a2",
+      "session": "4f156423",
       "n": 1,
-      "ts": "2026-11-22T19:28:43.942Z",
-      "area": "MVP1-E8-10",
+      "ts": "2026-11-22T19:51:57.763Z",
+      "area": "MVP1-E0-19",
       "kind": "build",
-      "summary": "Total Projected Cost: four tabs with their own addresses, human cost tables, phone tab picker, docs",
+      "summary": "Build packages/ui-core (tokens and base components) and the DocFlow V1 clickable prototype on a mock of each service API; a mid-request scope change from design system only to a full prototype",
       "models": [
         "claude-opus-5-5"
       ],
-      "tokens": 3386558,
-      "output_tokens": 17315,
+      "tokens": 11931983,
+      "output_tokens": 97110,
+      "cost_usd": 5.9187
+    },
+    {
+      "session": "4f156423",
+      "n": 2,
+      "ts": "2026-11-22T20:23:04.700Z",
+      "area": "MVP1-E0-19",
+      "kind": "build",
+      "summary": "Move the prototype components into six service UI packages (MVP1-E0-07 AC6) and place Try it in the User Journey section with an Overview link; mostly new build, part rework of the placement",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 7919930,
+      "output_tokens": 45689,
+      "cost_usd": 2.8044
+    },
+    {
+      "session": "4f156423",
+      "n": 3,
+      "ts": "2026-11-22T20:59:13.232Z",
+      "area": "Process",
+      "kind": "scaffolding",
+      "summary": "Process: watch PR #161, check CI and comments, report the merge conflict and ask before resolving",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 2730952,
+      "output_tokens": 2531,
       "cost_usd": null,
-      "estimated_usd": 1.6096
+      "estimated_usd": 0.7176
+    },
+    {
+      "session": "4f156423",
+      "n": 4,
+      "ts": "2026-11-22T21:01:39.705Z",
+      "area": "Process",
+      "kind": "scaffolding",
+      "summary": "Process: merge main (E8-10) into the branch, keep both sides, regenerate cost files, fix a lost CSS brace, re-test",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 6139314,
+      "output_tokens": 10652,
+      "cost_usd": null,
+      "estimated_usd": 1.6309
     }
   ]
 }

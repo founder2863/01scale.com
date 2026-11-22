@@ -1,0 +1,592 @@
+/* The DocFlow prototype's layout. Colours, type and components come from @01scale/ui-core;
+   this file only arranges them ("df-" classes). Works from 320 to 1920 pixels, light and dark. */
+
+.df-proto {
+  container: df-proto / inline-size;
+  display: grid;
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+.df-stack {
+  display: grid;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.df-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+}
+
+.df-row-center {
+  justify-content: center;
+}
+
+.df-h3 {
+  margin: var(--space-2) 0 0;
+  font-size: var(--text-md);
+}
+
+.df-list {
+  margin: 4px 0 8px;
+  padding-left: 20px;
+}
+
+/* ---------------------------------------------------------------- Controls */
+
+.df-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2) var(--space-4);
+  padding: var(--space-2) var(--space-4);
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+}
+
+.df-controls-note {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--muted);
+  flex: 1 1 280px;
+}
+
+.df-controls .ui-checkbox {
+  padding-top: 0;
+  align-items: center;
+  font-size: var(--text-sm);
+}
+
+/* ------------------------------------------------------------------ Layout */
+
+.df-layout {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+}
+
+@container df-proto (min-width: 1000px) {
+  .df-layout {
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 360px);
+  }
+  .df-side {
+    position: sticky;
+    top: calc(var(--header-height) + 16px);
+    max-height: calc(100vh - var(--header-height) - 32px);
+    overflow: auto;
+  }
+}
+
+.df-app {
+  container: df-app / inline-size;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--bg);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  min-width: 0;
+}
+
+.df-appbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  min-height: 56px;
+  padding: var(--space-2) var(--space-4);
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.df-appname {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-weight: var(--weight-bold);
+  font-size: var(--text-lg);
+}
+
+.df-logo {
+  display: inline-grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: var(--brand);
+  color: var(--on-brand);
+  font-size: var(--text-md);
+}
+
+.df-stage {
+  padding: var(--space-3);
+  min-height: 420px;
+  background: var(--surface);
+}
+
+@container df-app (min-width: 640px) {
+  .df-stage {
+    padding: var(--space-5);
+  }
+}
+
+.df-stage [tabindex="-1"]:focus {
+  outline: none;
+}
+
+/* Split: the document beside the work, stacked on phones */
+
+.df-split {
+  display: grid;
+  gap: var(--space-4);
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@container df-app (min-width: 760px) {
+  .df-split {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+  .df-sticky {
+    position: sticky;
+    top: calc(var(--header-height) + 16px);
+    align-self: start;
+  }
+}
+
+/* -------------------------------------------------- Outside pages (stand-ins) */
+
+.df-outside {
+  display: grid;
+  gap: var(--space-3);
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.df-outside-label {
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--warning-bg);
+  color: var(--warning-text);
+  font-size: var(--text-sm);
+}
+
+.df-outside-box {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  border: 2px dashed var(--border-strong);
+  border-radius: var(--radius-lg);
+  background: var(--surface-raised);
+}
+
+.df-outside-title {
+  margin: 0;
+  font-size: var(--text-lg);
+}
+
+/* The sample invoice: always a white page, in both themes, like paper */
+
+.df-invoice {
+  margin: 0;
+  padding: var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: #ffffff;
+  color: #1d1d2b;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  box-shadow: var(--shadow-sm);
+  overflow-wrap: anywhere;
+}
+
+.df-invoice-top {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.df-invoice-meta {
+  text-align: right;
+}
+
+.df-invoice-word {
+  font-size: 1.1rem;
+  letter-spacing: 0.12em;
+  color: #0b00bf;
+}
+
+.df-invoice-to {
+  margin: var(--space-3) 0;
+}
+
+.df-invoice-label {
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  color: #54567a;
+}
+
+.df-invoice-lines {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.df-invoice-lines th,
+.df-invoice-lines td {
+  padding: 4px 6px;
+  border-bottom: 1px solid #e4e4f0;
+  text-align: left;
+  vertical-align: top;
+}
+
+.df-invoice-lines th:not(:first-child),
+.df-invoice-lines td:not(:first-child) {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.df-invoice-totals {
+  display: grid;
+  justify-items: end;
+  gap: 2px;
+  margin-top: var(--space-3);
+}
+
+.df-invoice-caption {
+  margin-top: var(--space-3);
+  color: #54567a;
+  font-size: 0.7rem;
+  text-align: center;
+}
+
+.df-smudge {
+  filter: blur(0.6px);
+}
+
+.df-mark {
+  background: #ffe066;
+  color: #1d1d2b;
+  border-radius: 3px;
+  padding: 0 2px;
+  box-shadow: 0 0 0 2px #ffe066;
+}
+
+.df-fieldlist {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.df-fieldrow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "name badge"
+    "value value";
+  gap: 2px var(--space-2);
+  align-items: center;
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: var(--surface-raised);
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+}
+
+.df-fieldname {
+  grid-area: name;
+  font-size: var(--text-sm);
+  color: var(--muted);
+}
+
+.df-fieldvalue {
+  grid-area: value;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  font-weight: var(--weight-medium);
+  overflow-wrap: anywhere;
+}
+
+.df-fieldrow > :last-child:not(.df-fieldvalue) {
+  grid-area: badge;
+  justify-self: end;
+}
+
+@container df-app (min-width: 560px) {
+  .df-fieldrow {
+    grid-template-columns: minmax(140px, 0.8fr) minmax(0, 1.4fr) auto;
+    grid-template-areas: "name value badge";
+  }
+}
+
+.df-flagged > .df-fieldrow {
+  border-left: 4px solid var(--warning-solid);
+  background: var(--warning-bg);
+}
+
+/* --------------------------------------------------------- Documents, results */
+
+.df-doclist {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.df-docrow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+  padding: var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface-raised);
+}
+
+.df-docname {
+  flex: 1 1 200px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-weight: var(--weight-medium);
+}
+
+.df-docdate {
+  display: block;
+  font-weight: var(--weight-regular);
+}
+
+.df-code {
+  max-height: 420px;
+  overflow: auto;
+  padding: var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  line-height: 1.6;
+}
+
+.df-json-block > summary {
+  cursor: pointer;
+  color: var(--muted);
+}
+
+.df-json-children {
+  padding-left: 18px;
+  border-left: 1px dotted var(--border-strong);
+  margin-left: 4px;
+}
+
+.df-json-line {
+  overflow-wrap: anywhere;
+}
+
+.df-json-key {
+  color: var(--link);
+}
+.df-json-string {
+  color: var(--success-text);
+}
+.df-json-number {
+  color: var(--warning-text);
+}
+.df-json-null {
+  color: var(--muted);
+  font-style: italic;
+}
+
+.df-tablebox {
+  max-height: 420px;
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+
+.df-table {
+  border-collapse: collapse;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.df-table th,
+.df-table td {
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+}
+
+.df-table th {
+  position: sticky;
+  top: 0;
+  background: var(--surface);
+  font-family: var(--mono);
+}
+
+/* -------------------------------------------------------------- Side panel */
+
+.df-side {
+  display: grid;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.df-panel {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface-raised);
+  padding: var(--space-3) var(--space-4);
+}
+
+.df-panel > summary {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-2);
+  min-height: 32px;
+  align-items: center;
+  cursor: pointer;
+}
+
+.df-journey {
+  display: grid;
+  gap: var(--space-2);
+  margin: var(--space-3) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.df-journey li {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
+  color: var(--muted);
+  font-size: var(--text-sm);
+}
+
+.df-journey li > span:last-child {
+  display: grid;
+  min-width: 0;
+}
+
+.df-journey-num {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid var(--border-strong);
+  font-size: 0.75rem;
+  font-weight: var(--weight-bold);
+}
+
+.df-journey-service {
+  font-size: var(--text-xs);
+}
+
+.df-journey-detail {
+  margin-top: 4px;
+  color: var(--text);
+}
+
+.df-journey-done {
+  color: var(--text) !important;
+}
+.df-journey-done .df-journey-num {
+  background: var(--success-bg);
+  color: var(--success-text);
+  border-color: var(--success-solid);
+}
+
+.df-journey-now {
+  background: var(--chip-bg);
+  color: var(--text) !important;
+}
+.df-journey-now .df-journey-num {
+  background: var(--brand);
+  color: var(--on-brand);
+  border-color: var(--brand);
+}
+
+.df-log {
+  display: grid;
+  gap: var(--space-2);
+  margin: var(--space-3) 0 0;
+  padding: 0;
+  list-style: none;
+  max-height: 420px;
+  overflow: auto;
+}
+
+.df-log li {
+  display: flex;
+  gap: var(--space-2);
+  align-items: flex-start;
+  font-size: var(--text-xs);
+}
+
+.df-log-main {
+  display: grid;
+  min-width: 0;
+}
+
+.df-log-main code {
+  font-family: var(--mono);
+  overflow-wrap: anywhere;
+  color: var(--text);
+}
+
+.df-log-status {
+  flex: none;
+  min-width: 36px;
+  padding: 1px 4px;
+  border-radius: var(--radius-sm);
+  font-family: var(--mono);
+  font-weight: var(--weight-bold);
+  text-align: center;
+}
+
+.df-log-ok {
+  background: var(--success-bg);
+  color: var(--success-text);
+}
+.df-log-warn {
+  background: var(--warning-bg);
+  color: var(--warning-text);
+}
+.df-log-bad {
+  background: var(--danger-bg);
+  color: var(--danger-text);
+}
+
+.df-summary {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.df-summary strong {
+  font-size: var(--text-lg);
+}

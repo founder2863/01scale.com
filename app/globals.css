@@ -1,33 +1,8 @@
 :root {
-  --brand: #0b00bf;
-  --brand-bright: #3d5afe;
-  --brand-glow: #00c8ff;
-  --bg: #ffffff;
-  --surface: #f5f5ff;
-  --text: #12123a;
-  --muted: #54567a;
-  --border: #dcdcf5;
-  --link: #0b00bf;
-  --chip-bg: #e9e8ff;
-  --chip-text: #0b00bf;
-  --shadow: 0 10px 30px rgba(11, 0, 191, 0.1);
+  /* Colours, type, radius and shadows come from @01scale/ui-core/tokens.css (MVP1-E0-19 AC4),
+     imported in app/layout.tsx. Only the site's own layout values live here. */
   --gutter: 16px;
   --header-height: 59px;
-  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #0a0a1f;
-    --surface: #14143a;
-    --text: #eeeeff;
-    --muted: #b1b3d6;
-    --border: #2b2b66;
-    --link: #a9a6ff;
-    --chip-bg: #24246a;
-    --chip-text: #cfcdff;
-    --shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-  }
 }
 
 @media (min-width: 768px) {
@@ -3311,6 +3286,39 @@ section[id] {
 
 .lesson-section > div {
   padding-bottom: 8px;
+}
+
+/* DocFlow Overview: the Try it call-out (MVP1-E0-18). */
+.try-callout {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--brand);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+
+.try-callout > div:first-child {
+  flex: 1 1 320px;
+}
+
+.try-callout .note {
+  margin-bottom: 0;
+}
+
+.try-callout-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3) var(--space-4);
+}
+
+.try-callout-actions .button {
+  margin-top: 0;
 }
 
 /* Total Projected Cost: four tabs (MVP1-E8-10). On a desktop, one row under the page's own tabs.

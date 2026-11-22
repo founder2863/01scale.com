@@ -1,0 +1,20 @@
+{
+  "name": "@01scale/ui-core",
+  "version": "0.1.0",
+  "private": true,
+  "description": "01scale design system: design tokens and base React components shared by every service's UI package (MVP1-E0-19). No business logic, no service calls.",
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./tokens.css": "./src/tokens.css",
+    "./styles.css": "./src/styles.css"
+  },
+  "sideEffects": [
+    "*.css"
+  ],
+  "peerDependencies": {
+    "react": ">=19"
+  }
+}

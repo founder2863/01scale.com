@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { appHref, appLabel } from "./apps";
 import { Flow, flowSteps, PRODUCT_NAME } from "./flow";
+import DocFlowPrototype from "./docflow/try/prototype";
 
 const whyBuild = [
   {
@@ -55,6 +56,22 @@ const endProduct = [
 export function DocflowOverview() {
   return (
     <>
+      <section id="try-it" className="try-callout">
+        <div>
+          <h2 className="group-title">Try it</h2>
+          <p className="note">
+            Click through the whole {PRODUCT_NAME} V1 journey: sign in, upload an invoice, watch it being read, check the
+            flagged fields, pay in test mode and download the results. Every screen is built from the platform
+            services&apos; components.
+          </p>
+        </div>
+        <div className="try-callout-actions">
+          <Link href="/products/docflow/user-journey#try-it" className="button button-solid">
+            Try the clickable prototype →
+          </Link>
+          <Link href="/products/docflow/try">Open it full screen</Link>
+        </div>
+      </section>
       <section id="what">
         <h2 className="group-title">What the product is</h2>
         <div className="two-col">
@@ -141,6 +158,15 @@ export function DocflowOverview() {
 
 export function DocflowJourney() {
   return (
+    <>
+    <section id="try-it">
+      <h2 className="group-title">Try it</h2>
+      <p className="note">
+        The journey, clickable (MVP1-E0-18). The written step for where you are is highlighted beside the screens,
+        with every API call the step makes. <Link href="/products/docflow/try">Open it full screen →</Link>
+      </p>
+      <DocFlowPrototype />
+    </section>
     <section id="flow">
       <h2 className="group-title">The whole flow</h2>
       <p className="note">
@@ -154,6 +180,7 @@ export function DocflowJourney() {
         calls.
       </p>
     </section>
+    </>
   );
 }
 

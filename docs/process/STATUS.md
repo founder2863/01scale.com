@@ -1,10 +1,12 @@
 # Status and handoff
 
-Read this at the start of every session, after CLAUDE.md. Update it in the PR that changes what it says (a story shipped, a decision made, a question answered). Last updated: 22 Nov 2026, with the PR for MVP1-E8-10 (Total Projected Cost page, four tabs).
+Read this at the start of every session, after CLAUDE.md. Update it in the PR that changes what it says (a story shipped, a decision made, a question answered). Last updated: 22 Nov 2026, with the PR for MVP1-E0-19 (design system), the service UI packages and the DocFlow V1 clickable prototype (MVP1-E0-18), after merging main with MVP1-E8-10.
 
 ## Where things stand
 
-- **In flight:** the MVP1-E8-10 PR (branch `claude/determined-volta-2beh2c`). Every earlier PR is merged, E8-09 (#159) included.
+- **In flight:** PR #161 (branch `claude/amazing-meitner-kpu3n6`): `packages/ui-core` (MVP1-E0-19), the six service UI packages (`packages/ui-<service>`, MVP1-E0-07 AC6) and the DocFlow V1 clickable prototype in DocFlow's User Journey section, with a Try it link on its Overview and a full-screen copy at `/products/docflow/try` (MVP1-E0-18 for DocFlow). Every earlier PR is merged, E8-09 (#159) and E8-10 (#160) included.
+- **Service UI packages:** each `packages/ui-<service>` defines the client it needs from its own API (`createClientContext` in ui-core); the app supplies it: the mock in `app/products/docflow/try/mock-platform.ts` today, the gateway once the service is built. DocFlow's own sections and the Cognito and Stripe stand-ins stay in the app (Nikhil, 22 Nov 2026).
+- **Workspaces:** the root `package.json` now has `"workspaces": ["packages/*"]`; the site stays at the root until E0-07 moves it to `apps/web`. Run `npm install` after pulling.
 - **The site** (Next.js at the repo root, not yet `apps/web`) has: Home (E0-36 to E0-42), Products with app pages (side menu, E0-48) and module pages (15 sections, phone Sections button and Previous / Next, E0-49), Platform (Core, Platform and Apps Architecture, E0-22, E0-23, E0-43), How It's Built (Skills, Token Costs, Agents, Total Projected Cost with four tabs (E8-10), Constraints, Expensive Mistakes with four project lessons and the Payments article, E0-45 to E0-47).
 - **No platform service is built.** Every API and table is designed in the stories; Identity and Upload have full design documents (`scripts/site/*_design.py`).
 - **Token costs** are recorded through the last request of session `fdd431bb` ($331.50 in the ledger; the tool stopped pricing this session's requests after 19:00 UTC, so its last six show as pending; they carry an upper-bound estimate of about $4.91 in `estimated_usd`, worked out by `scripts/costs/estimate_pending.py` and kept out of the measured totals). Session `43ccd0e7` (MVP1-E8-09) is recorded too: its four requests were never priced, estimated at about $2.47 the same way. In all, 10 of the 16 pending requests carry an estimate ($7.38); the other six are older and have none. New sessions add their own session to the ledger.
@@ -13,13 +15,13 @@ Read this at the start of every session, after CLAUDE.md. Update it in the PR th
 
 | State | Stories |
 |---|---|
-| Built, PR merged | E8-09 (#156, PR #159): `npm run human-costs`, skill `estimate-human-cost`, `docs/process/cost-model.json`, `app/how-its-built/human-costs.ts` |
-| Built, PR open | E8-10 (#157): Total Projected Cost with four tabs (Actual Token Cost So Far, Estimated Human Cost So Far, Projected Token Cost as Coming Soon until E8-06, Projected Human Cost) |
+| Built, PR open | E0-19 except AC5 (PR #161; `packages/ui-core` 0.1.0, site uses its tokens); E0-18 for the DocFlow app only (User Journey section, against an in-browser mock); E0-07 AC6 in part (the six service UI packages exist, against a mock client) |
+| Built, PR merged | E8-09 (#156, PR #159): `npm run human-costs`, skill `estimate-human-cost`, `docs/process/cost-model.json`, `app/how-its-built/human-costs.ts`; E8-10 (#157, PR #160): Total Projected Cost with four tabs (Actual Token Cost So Far, Estimated Human Cost So Far, Projected Token Cost as Coming Soon until E8-06, Projected Human Cost) |
 | Built, issue closed | E0-10, E0-11, E0-12, E0-13 (#61), E0-17, E0-21, E0-22, E0-23, E0-31 (#109), E0-32 to E0-35, E0-36 to E0-43 (#148 to #155, created after the work), E0-45 to E0-49, E8-01 |
 | Built, no issue by design | AUTOREP-E1-04 and AUTOREP-E6-03 (AutoRep stories live in the file only) |
 | Placeholder only ("Coming Soon..." on every module page) | E0-14 Market Outlook (#84), E0-15 PRD Reference (#85), E0-16 MCP (#86), E0-20 Architecture (#97), E0-27 to E0-30 Metrics, Monetization, GTM, Support (#104 to #107) |
 | Story only, decided, not built | E0-44 product names and versions (#133; build when Nikhil says go), E8-02 to E8-08 (#127 to #132, #135) |
-| Not started | E0-01 to E0-09 (foundation code), E0-18, E0-19, E0-24 (Built on: Platform Core components, not the app Built On section), E0-25, E0-26, and epics E1 to E7 |
+| Not started | E0-01 to E0-09 (foundation code, except E0-07 AC6 above), E0-18 per module, E0-24 (Built on: Platform Core components, not the app Built On section), E0-25, E0-26, and epics E1 to E7 |
 
 ## Open questions waiting for Nikhil
 
@@ -45,7 +47,7 @@ Every closed story issue (27 of them) carries its measured token cost and estima
 
 ## Next, in order (from CLAUDE.md and the epics)
 
-0. **After the E8-10 PR merges:** close its issue with costs (CLAUDE.md step 8, skill `estimate-human-cost`). Projected Token Cost stays "Coming Soon..." until E8-06.
+0. **E8-10 is merged (PR #160):** close its issue #157 with costs (CLAUDE.md step 8, skill `estimate-human-cost`). Projected Token Cost stays "Coming Soon..." until E8-06. After PR #161 merges, E0-19 stays open for AC5 (component galleries).
 1. E0-07 service template, then E0-08 gateway, then the rest of E0.
 2. E1 Identity with Cognito.
 3. Whenever Nikhil says go: E0-44 rename, E8-02 onward.

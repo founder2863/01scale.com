@@ -1,0 +1,124 @@
+/* @01scale/ui-extraction: styles for Extraction's own components, from ui-core tokens only. */
+
+.ui-extraction-steps {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ui-extraction-step {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--muted);
+}
+
+.ui-extraction-step-icon {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid var(--border-strong);
+  font-size: 0.8rem;
+}
+
+.ui-extraction-step-running {
+  color: var(--text);
+  font-weight: var(--weight-medium);
+}
+.ui-extraction-step-running .ui-extraction-step-icon {
+  color: var(--link);
+  border-color: var(--brand);
+}
+.ui-extraction-step-done {
+  color: var(--text);
+}
+.ui-extraction-step-done .ui-extraction-step-icon {
+  background: var(--success-bg);
+  color: var(--success-text);
+  border-color: var(--success-solid);
+}
+.ui-extraction-step-failed {
+  color: var(--danger-text);
+}
+.ui-extraction-step-failed .ui-extraction-step-icon {
+  background: var(--danger-bg);
+  border-color: var(--danger-solid);
+}
+
+.ui-extraction-fields {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  container-type: inline-size;
+}
+
+.ui-extraction-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "name badge"
+    "value value";
+  gap: 2px var(--space-2);
+  align-items: center;
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: var(--surface-raised);
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ui-extraction-row:hover {
+  border-color: var(--border);
+}
+
+.ui-extraction-row-name {
+  grid-area: name;
+  font-size: var(--text-sm);
+  color: var(--muted);
+}
+
+.ui-extraction-row-value {
+  grid-area: value;
+  font-weight: var(--weight-medium);
+  overflow-wrap: anywhere;
+}
+
+.ui-extraction-row > .ui-badge {
+  grid-area: badge;
+  justify-self: end;
+}
+
+@container (min-width: 480px) {
+  .ui-extraction-row {
+    grid-template-columns: minmax(130px, 0.8fr) minmax(0, 1.4fr) auto;
+    grid-template-areas: "name value badge";
+  }
+}
+
+.ui-extraction-fields-flagged > .ui-extraction-row {
+  border-left: 4px solid var(--warning-solid);
+  background: var(--warning-bg);
+}
+
+.ui-extraction-evidence {
+  font-size: var(--text-sm);
+}
+.ui-extraction-evidence p {
+  margin: 0;
+}
+.ui-extraction-evidence ul {
+  margin: 4px 0 0;
+  padding-left: 18px;
+  color: var(--muted);
+}

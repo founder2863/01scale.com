@@ -1,0 +1,39 @@
+/* @01scale/ui-upload: styles for Upload's own components, from ui-core tokens only. */
+
+.ui-upload-dropzone {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-2);
+  padding: var(--space-5) var(--space-3);
+  border: 2px dashed var(--border-strong);
+  border-radius: var(--radius-lg);
+  background: var(--surface-raised);
+  text-align: center;
+  transition: border-color var(--motion), background var(--motion);
+}
+
+.ui-upload-dropzone-active {
+  border-color: var(--brand);
+  background: var(--chip-bg);
+}
+
+.ui-upload-dropzone-icon {
+  font-size: 2rem;
+  color: var(--link);
+  line-height: 1;
+}
+
+.ui-upload-dropzone-title {
+  margin: 0;
+  font-weight: var(--weight-bold);
+}
+
+.ui-upload-preview {
+  display: block;
+  width: 100%;
+  min-height: 420px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: #ffffff;
+  object-fit: contain;
+}
