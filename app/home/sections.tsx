@@ -42,6 +42,8 @@ export function Academics() {
         <ul className="academics-grid">
           {academics.map((item) => (
             <li key={item.school}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img className="academics-logo" src={item.logo} alt="" width={64} height={64} />
               <p className="academics-school">{item.school}</p>
               <p className="academics-degree">{item.degree}</p>
               {item.note && <p className="academics-note">{item.note}</p>}
