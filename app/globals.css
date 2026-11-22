@@ -984,6 +984,156 @@ section[id] {
   border-left: 1px solid var(--border);
 }
 
+/* Phones and tablets (MVP1-E0-49): one "Sections" button that stays in view and opens the
+   whole grouped list, instead of a long row to swipe. The side menu is for desktops only. */
+.side-tabs {
+  display: none;
+}
+
+.section-picker {
+  position: sticky;
+  top: var(--header-height);
+  z-index: 5;
+  margin: 0 calc(-1 * var(--gutter)) 24px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+
+.section-picker summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px var(--gutter);
+  cursor: pointer;
+  list-style: none;
+}
+
+.section-picker summary::-webkit-details-marker {
+  display: none;
+}
+
+.section-picker summary:focus-visible {
+  outline: 2px solid var(--brand-bright);
+  outline-offset: -2px;
+}
+
+.section-picker-where {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.section-picker-where .side-tabs-heading {
+  padding: 0;
+}
+
+.section-picker-current {
+  overflow: hidden;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.section-picker-label {
+  flex: 0 0 auto;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: var(--chip-bg);
+  color: var(--chip-text);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.section-picker-label::after {
+  content: " ▾";
+}
+
+.section-picker[open] .section-picker-label::after {
+  content: " ▴";
+}
+
+.section-picker-list {
+  display: grid;
+  gap: 14px;
+  max-height: calc(100vh - var(--header-height) - 80px);
+  max-height: calc(100dvh - var(--header-height) - 80px);
+  padding: 4px var(--gutter) 16px;
+  overflow-y: auto;
+}
+
+.section-picker-list .side-tabs-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-picker-list .side-tabs-heading,
+.section-picker-list .side-tabs-group + .side-tabs-group .side-tabs-heading {
+  flex: 0 0 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.section-picker-list a {
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: var(--chip-bg);
+  color: var(--chip-text);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.section-picker-list a[aria-current="page"] {
+  background: var(--brand);
+  color: #ffffff;
+}
+
+/* Previous / Next at the end of each section (MVP1-E0-49). */
+.section-pager {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+
+.section-pager-link {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text);
+  text-decoration: none;
+}
+
+.section-pager-link:hover,
+.section-pager-link:focus-visible {
+  border-color: var(--brand-bright);
+}
+
+.section-pager-next {
+  grid-column: 2;
+  text-align: right;
+}
+
+.section-pager-dir {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.section-pager-name {
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
 /* Read Me link blocks (MVP1-E0-21 AC5): "At a glance" and "Go deeper". */
 .section-links {
   margin: 0 0 24px;
@@ -1053,7 +1203,13 @@ section[id] {
     padding-bottom: 96px;
   }
 
+  .section-picker {
+    display: none;
+  }
+
   .side-tabs {
+    display: flex;
+    position: sticky;
     top: calc(var(--header-height) + 24px);
     align-self: start;
     flex-direction: column;

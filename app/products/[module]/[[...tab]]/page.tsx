@@ -5,6 +5,7 @@ import { products } from "../../data";
 import { APPS, appHref, appLabel, serviceHref, serviceKeysOf, serviceLabel, versionOf } from "../../apps";
 import { appsUsing, Flow } from "../../flow";
 import { details } from "../../details";
+import { SectionMenu, SectionPager } from "../../section-menu";
 import { TabContent } from "../../sections";
 import { DEFAULT_TAB, tabGroups, tabHref, tabs, type TabSlug } from "../../tabs";
 
@@ -110,25 +111,16 @@ export default async function ProductPage({ params }: { params: Promise<Params> 
       ))}
 
       <div className="container product-layout">
-        <nav className="side-tabs" aria-label={`${product.title} sections`}>
-          {tabGroups.map((group) => (
-            <div className="side-tabs-group" key={group.heading}>
-              <span className="side-tabs-heading">{group.heading}</span>
-              {group.tabs.map((item) => (
-                <Link
-                  key={item.slug}
-                  href={tabHref(product.slug, item.slug as TabSlug)}
-                  aria-current={item.slug === tab.slug ? "page" : undefined}
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </div>
-          ))}
-        </nav>
+        <SectionMenu
+          label={product.title}
+          groups={tabGroups}
+          current={tab.slug}
+          href={(slug) => tabHref(product.slug, slug as TabSlug)}
+        />
 
         <div className="product-content guide">
           <TabContent product={product} tab={tab.slug as TabSlug} />
+          <SectionPager groups={tabGroups} current={tab.slug} href={(slug) => tabHref(product.slug, slug as TabSlug)} />
         </div>
       </div>
     </>
