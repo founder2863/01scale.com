@@ -1,6 +1,6 @@
 # Status and handoff
 
-Read this at the start of every session, after CLAUDE.md. Update it in the PR that changes what it says (a story shipped, a decision made, a question answered). Last updated: 22 Nov 2026, after PR #146.
+Read this at the start of every session, after CLAUDE.md. Update it in the PR that changes what it says (a story shipped, a decision made, a question answered). Last updated: 22 Nov 2026, after PR #146 and the issue clean-up (#61, #109, #148 to #155 closed with costs).
 
 ## Where things stand
 
@@ -13,9 +13,8 @@ Read this at the start of every session, after CLAUDE.md. Update it in the PR th
 
 | State | Stories |
 |---|---|
-| Built, issue closed | E0-10, E0-11, E0-12, E0-17, E0-21, E0-22, E0-23, E0-32, E0-33, E0-34, E0-35, E0-45, E0-46, E0-47, E0-48, E0-49, E8-01 |
-| **Built, issue still open** | E0-13 Token cost tracking (#61), E0-31 Costs tab (#109; reshaped by E8-01 into Total Projected Cost and Constraints) |
-| Built, no issue was created | E0-36 to E0-42 (home page), E0-43 (architecture diagram), AUTOREP-E1-04 and AUTOREP-E6-03 (AutoRep stories live in the file only, by design) |
+| Built, issue closed | E0-10, E0-11, E0-12, E0-13 (#61), E0-17, E0-21, E0-22, E0-23, E0-31 (#109), E0-32 to E0-35, E0-36 to E0-43 (#148 to #155, created after the work), E0-45 to E0-49, E8-01 |
+| Built, no issue by design | AUTOREP-E1-04 and AUTOREP-E6-03 (AutoRep stories live in the file only) |
 | Placeholder only ("Coming Soon..." on every module page) | E0-14 Market Outlook (#84), E0-15 PRD Reference (#85), E0-16 MCP (#86), E0-20 Architecture (#97), E0-27 to E0-30 Metrics, Monetization, GTM, Support (#104 to #107) |
 | Story only, decided, not built | E0-44 product names and versions (#133; build when Nikhil says go), E8-02 to E8-08 (#127 to #132, #135) |
 | Not started | E0-01 to E0-09 (foundation code), E0-18, E0-19, E0-24 (Built on: Platform Core components, not the app Built On section), E0-25, E0-26, and epics E1 to E7 |
@@ -23,7 +22,7 @@ Read this at the start of every session, after CLAUDE.md. Update it in the PR th
 ## Open questions waiting for Nikhil
 
 - DocFlow V1 "What each step adds over time" also describes V2 and sits in Overview: keep, or move to the V2 page? (PR #144)
-- Close #61 and #109, which are built?
+- Add the token and development cost to the issues closed before the cost rule (E0-10 to E0-12, E0-17, E0-21 to E0-23, E0-32 to E0-35, E0-45 to E0-49, E8-01)? #61, #109 and #148 to #155 already have them.
 
 ## Known issues
 
