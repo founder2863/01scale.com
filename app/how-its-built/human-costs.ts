@@ -1995,7 +1995,7 @@ export const humanCosts = {
       "closed": null,
       "tokenCost": null,
       "tokenCostShared": false,
-      "tokenCostPending": false
+      "tokenCostPending": true
     },
     {
       "id": "MVP1-E8-10",

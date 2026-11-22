@@ -38,6 +38,7 @@ LEDGER = {
         "MVP1-E0-01": "MVP1-E0-01 · Database",
         "MVP1-E0-01-02": "MVP1-E0-01 to E0-02 · Database and audit (stories)",
         "MVP1-E1": "MVP1-E1 · Login design",
+        "MVP1-E1-01": "MVP1-E1-01 · Login",
     },
     "requests": [
         {"area": "MVP1-E0-01", "kind": "build", "cost_usd": 2.0},
@@ -45,6 +46,7 @@ LEDGER = {
         {"area": "MVP1-E0-01", "kind": "scaffolding", "cost_usd": 50.0},
         {"area": "MVP1-E0-01-02", "kind": "build", "cost_usd": 11.0},
         {"area": "MVP1-E1", "kind": "build", "cost_usd": 4.0},
+        {"area": "MVP1-E1-01", "kind": "build", "cost_usd": None},
     ],
 }
 
@@ -96,7 +98,8 @@ def test_measured_token_cost_from_ledger():
     assert rows["MVP1-E0-01"]["tokenCost"] == 6.0
     assert rows["MVP1-E0-01"]["tokenCostShared"] is True
     assert rows["MVP1-E0-02"]["tokenCost"] == 8.0
-    assert rows["MVP1-E1-01"]["tokenCost"] is None
+    # Measured but not priced yet: pending, not $0.
+    assert rows["MVP1-E1-01"]["tokenCost"] is None and rows["MVP1-E1-01"]["tokenCostPending"] is True
     assert [u["key"] for u in data()["ledgerUnassigned"]] == ["MVP1-E1"]
 
 

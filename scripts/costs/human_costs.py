@@ -95,8 +95,9 @@ def measured_token_costs(ledger, stories):
         rows = [r for r in ledger["requests"] if r["area"] == key and r["kind"] in ("build", "rework")]
         if not rows:
             continue
-        cost = sum(r["cost_usd"] or 0 for r in rows)
-        pending = any(r["cost_usd"] is None for r in rows)
+        priced = [r["cost_usd"] for r in rows if r["cost_usd"] is not None]
+        cost = sum(priced) if priced else None  # None: the tool has not priced any of it yet
+        pending = len(priced) < len(rows)
         ids = ledger_story_ids(name, known)
         if not ids:
             unassigned.append({"key": key, "name": name, "cost": money(cost), "pending": pending})
@@ -105,8 +106,9 @@ def measured_token_costs(ledger, stories):
         if any(w is None for w in weights):
             weights = [1] * len(ids)
         for sid, w in zip(ids, weights):
-            entry = per_story.setdefault(sid, {"cost": 0.0, "shared": False, "pending": False, "keys": []})
-            entry["cost"] += cost * w / sum(weights)
+            entry = per_story.setdefault(sid, {"cost": None, "shared": False, "pending": False, "keys": []})
+            if cost is not None:
+                entry["cost"] = (entry["cost"] or 0) + cost * w / sum(weights)
             entry["shared"] = entry["shared"] or len(ids) > 1
             entry["pending"] = entry["pending"] or pending
             entry["keys"].append(key)
@@ -158,7 +160,7 @@ def build(model, stories, ledger):
             "done": bool(d),
             "issue": d["issue"] if d else None,
             "closed": d["closed"] if d else None,
-            "tokenCost": money(t["cost"]) if t else None,
+            "tokenCost": money(t["cost"]) if t else None,  # None: no measured cost (yet)
             "tokenCostShared": t["shared"] if t else False,
             "tokenCostPending": t["pending"] if t else False,
         })
