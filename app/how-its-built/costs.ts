@@ -105,9 +105,9 @@ export const costs = {
       "requests": 6,
       "buildTokens": 9488541,
       "reworkTokens": 27372363,
-      "buildCost": 8.43,
-      "reworkCost": 5.52,
-      "totalCost": 13.95,
+      "buildCost": 8.44,
+      "reworkCost": 5.53,
+      "totalCost": 13.97,
       "yield": 26,
       "pending": false
     },
@@ -117,9 +117,9 @@ export const costs = {
       "requests": 4,
       "buildTokens": 20858627,
       "reworkTokens": 12646959,
-      "buildCost": 5.0,
+      "buildCost": 5.01,
       "reworkCost": 2.23,
-      "totalCost": 7.22,
+      "totalCost": 7.24,
       "yield": 62,
       "pending": false
     },
@@ -129,9 +129,9 @@ export const costs = {
       "requests": 1,
       "buildTokens": 15653506,
       "reworkTokens": 0,
-      "buildCost": 4.02,
+      "buildCost": 4.03,
       "reworkCost": 0,
-      "totalCost": 4.02,
+      "totalCost": 4.03,
       "yield": 100,
       "pending": false
     },
@@ -143,7 +143,7 @@ export const costs = {
       "reworkTokens": 14935667,
       "buildCost": 1.73,
       "reworkCost": 2.52,
-      "totalCost": 4.24,
+      "totalCost": 4.25,
       "yield": 28,
       "pending": false
     },
@@ -166,8 +166,8 @@ export const costs = {
       "buildTokens": 5154747,
       "reworkTokens": 4541588,
       "buildCost": 1.51,
-      "reworkCost": 8.0,
-      "totalCost": 9.51,
+      "reworkCost": 8.01,
+      "totalCost": 9.52,
       "yield": 53,
       "pending": false
     },
@@ -190,8 +190,8 @@ export const costs = {
       "buildTokens": 1892303,
       "reworkTokens": 7148317,
       "buildCost": 1.77,
-      "reworkCost": 16.46,
-      "totalCost": 18.23,
+      "reworkCost": 16.48,
+      "totalCost": 18.25,
       "yield": 21,
       "pending": false
     },
@@ -213,9 +213,9 @@ export const costs = {
       "requests": 3,
       "buildTokens": 5803435,
       "reworkTokens": 13887191,
-      "buildCost": 3.3,
-      "reworkCost": 4.08,
-      "totalCost": 7.38,
+      "buildCost": 3.31,
+      "reworkCost": 4.09,
+      "totalCost": 7.4,
       "yield": 29,
       "pending": false
     },
@@ -226,8 +226,8 @@ export const costs = {
       "buildTokens": 0,
       "reworkTokens": 47673952,
       "buildCost": 0,
-      "reworkCost": 19.56,
-      "totalCost": 19.56,
+      "reworkCost": 19.59,
+      "totalCost": 19.59,
       "yield": 0,
       "pending": false
     },
@@ -273,9 +273,9 @@ export const costs = {
       "requests": 2,
       "buildTokens": 5614053,
       "reworkTokens": 0,
-      "buildCost": 7.98,
+      "buildCost": 7.99,
       "reworkCost": 0,
-      "totalCost": 7.98,
+      "totalCost": 7.99,
       "yield": 100,
       "pending": false
     },
@@ -285,9 +285,9 @@ export const costs = {
       "requests": 2,
       "buildTokens": 5814557,
       "reworkTokens": 0,
-      "buildCost": 0.93,
+      "buildCost": 0.94,
       "reworkCost": 0,
-      "totalCost": 0.93,
+      "totalCost": 0.94,
       "yield": 100,
       "pending": false
     },
@@ -297,9 +297,9 @@ export const costs = {
       "requests": 1,
       "buildTokens": 4054132,
       "reworkTokens": 0,
-      "buildCost": 1.54,
+      "buildCost": 1.55,
       "reworkCost": 0,
-      "totalCost": 1.54,
+      "totalCost": 1.55,
       "yield": 100,
       "pending": false
     },
@@ -311,7 +311,7 @@ export const costs = {
       "reworkTokens": 849206,
       "buildCost": 1.11,
       "reworkCost": 0.87,
-      "totalCost": 1.98,
+      "totalCost": 1.99,
       "yield": 67,
       "pending": false
     },
@@ -346,8 +346,8 @@ export const costs = {
       "buildTokens": 4741669,
       "reworkTokens": 4048002,
       "buildCost": 1.19,
-      "reworkCost": 1.03,
-      "totalCost": 2.22,
+      "reworkCost": 1.04,
+      "totalCost": 2.23,
       "yield": 54,
       "pending": false
     },
@@ -357,7 +357,7 @@ export const costs = {
       "requests": 2,
       "buildTokens": 4110939,
       "reworkTokens": 3519515,
-      "buildCost": 1.59,
+      "buildCost": 1.6,
       "reworkCost": 0.92,
       "totalCost": 2.52,
       "yield": 54,
@@ -370,8 +370,8 @@ export const costs = {
       "buildTokens": 10344428,
       "reworkTokens": 18636245,
       "buildCost": 2.58,
-      "reworkCost": 4.18,
-      "totalCost": 6.76,
+      "reworkCost": 4.19,
+      "totalCost": 6.77,
       "yield": 36,
       "pending": false
     },
@@ -382,8 +382,8 @@ export const costs = {
       "buildTokens": 16064641,
       "reworkTokens": 38065528,
       "buildCost": 4.37,
-      "reworkCost": 28.89,
-      "totalCost": 33.25,
+      "reworkCost": 28.93,
+      "totalCost": 33.3,
       "yield": 30,
       "pending": false
     },
@@ -417,9 +417,9 @@ export const costs = {
       "requests": 3,
       "buildTokens": 13048714,
       "reworkTokens": 5041623,
-      "buildCost": 10.37,
-      "reworkCost": 8.95,
-      "totalCost": 19.32,
+      "buildCost": 10.38,
+      "reworkCost": 8.96,
+      "totalCost": 19.34,
       "yield": 72,
       "pending": false
     },
@@ -429,9 +429,9 @@ export const costs = {
       "requests": 6,
       "buildTokens": 7744069,
       "reworkTokens": 289300,
-      "buildCost": 17.86,
-      "reworkCost": 0.07,
-      "totalCost": 17.94,
+      "buildCost": 17.89,
+      "reworkCost": 0.08,
+      "totalCost": 17.97,
       "yield": 96,
       "pending": false
     },
@@ -477,9 +477,9 @@ export const costs = {
       "requests": 2,
       "buildTokens": 3804863,
       "reworkTokens": 0,
-      "buildCost": 1.28,
+      "buildCost": 1.29,
       "reworkCost": 0,
-      "totalCost": 1.28,
+      "totalCost": 1.29,
       "yield": 100,
       "pending": false
     },
@@ -489,9 +489,9 @@ export const costs = {
       "requests": 2,
       "buildTokens": 4572178,
       "reworkTokens": 0,
-      "buildCost": 1.18,
+      "buildCost": 1.19,
       "reworkCost": 0,
-      "totalCost": 1.18,
+      "totalCost": 1.19,
       "yield": 100,
       "pending": false
     }
@@ -499,9 +499,9 @@ export const costs = {
   "storyTotals": {
     "requests": 138,
     "tokens": 496551066,
-    "buildCost": 141.94,
-    "reworkCost": 126.41,
-    "cost": 268.35,
+    "buildCost": 142.08,
+    "reworkCost": 126.57,
+    "cost": 268.65,
     "yield": 51,
     "pending": true
   },
@@ -520,21 +520,21 @@ export const costs = {
     },
     {
       "name": "Questions and explanations",
-      "requests": 24,
-      "tokens": 18097149,
-      "cost": 21.55
+      "requests": 25,
+      "tokens": 19064368,
+      "cost": 21.58
     },
     {
       "name": "Product discovery",
       "requests": 17,
       "tokens": 7275067,
-      "cost": 15.86
+      "cost": 15.87
     },
     {
       "name": "Process",
-      "requests": 28,
-      "tokens": 62202455,
-      "cost": 20.01
+      "requests": 29,
+      "tokens": 67009983,
+      "cost": 21.14
     },
     {
       "name": "Tool overhead (background calls)",
@@ -544,19 +544,19 @@ export const costs = {
     }
   ],
   "scaffoldingTotals": {
-    "requests": 78,
-    "tokens": 96786484,
-    "cost": 61.69
+    "requests": 80,
+    "tokens": 102561231,
+    "cost": 62.85
   },
   "totals": {
-    "requests": 216,
-    "tokens": 593337550,
-    "cost": 330.04,
-    "buildCost": 141.94,
-    "reworkCost": 126.41,
-    "scaffoldingCost": 61.69,
+    "requests": 218,
+    "tokens": 599112297,
+    "cost": 331.5,
+    "buildCost": 142.08,
+    "reworkCost": 126.57,
+    "scaffoldingCost": 62.85,
     "storyYield": 51,
-    "overallYield": 43,
+    "overallYield": 42,
     "pendingRequests": 8
   },
   "byKind": {
@@ -575,18 +575,18 @@ export const costs = {
     },
     "homePage": {
       "build": 4.37,
-      "rework": 28.89,
-      "reworkAfterBreak": 23.6,
+      "rework": 28.93,
+      "reworkAfterBreak": 23.63,
       "reworkRequests": 11,
       "yield": 13
     },
     "reloads": {
       "requests": 13,
-      "cost": 103.05,
+      "cost": 103.2,
       "share": 31,
-      "median": 8.19,
+      "median": 8.2,
       "typical": 0.49,
-      "extra": 96.71
+      "extra": 96.86
     },
     "mergedTooSoon": {
       "requests": 1,
@@ -608,19 +608,19 @@ export const costs = {
     },
     {
       "summary": "Record the cost-model answers and open the E8 issues (after a long break)",
-      "cost": 9.02,
+      "cost": 9.03,
       "tokens": 6581095,
       "outputTokens": 9901
     },
     {
       "summary": "Add AutoRep to the E8 scope; write the naming story (mixed, after a long break)",
-      "cost": 8.95,
+      "cost": 8.96,
       "tokens": 5041623,
       "outputTokens": 8900
     },
     {
       "summary": "Explain a merge conflict (after a long break)",
-      "cost": 8.95,
+      "cost": 8.96,
       "tokens": 2663343,
       "outputTokens": 1369
     }

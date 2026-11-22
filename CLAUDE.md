@@ -1,6 +1,6 @@
 # CLAUDE.md — 01scale
 
-Context for Claude Code sessions in this repo. Read this first, then the doc for the phase you're working on.
+Context for Claude Code sessions in this repo. Read this first, then `docs/process/STATUS.md` (where things stand), then the doc for the phase you're working on. Work one story per session: long sessions cost more on every step.
 
 ## What this is
 01scale.com is Nikhil Shrivastava's live portfolio of working prototypes. It shows hiring managers for platform product leadership roles his hands-on experience building with AI.
@@ -30,6 +30,7 @@ Nikhil is a platform & AI product leader (17+ years: identity, payments, integra
 | Per-service developer guide, user journeys, UI components, API spec, data model and schema | `docs/services/<service>/` (Identity login: `docs/services/identity/`) |
 | Infrastructure setup steps | `docs/infra/` (Cognito: `docs/infra/cognito.md`) |
 | Design rules shared by the design skills | `docs/process/DESIGN-RULES.md` (skills in `.claude/skills/`) |
+| **Status and handoff: what is built, open questions, known issues, next work (read at the start of every session)** | `docs/process/STATUS.md` |
 | Token cost ledger and table | `docs/process/token-ledger.json`, `docs/process/TOKEN-COSTS.md` |
 | Eval plan (LLM outputs) | `docs/evals/EVALS.md` |
 | Architecture reviews (skill `review-architecture`) | `docs/architecture/reviews/<date>-<phase>.md` |
@@ -91,7 +92,7 @@ Nikhil is a platform & AI product leader (17+ years: identity, payments, integra
 11. **Merge conflicts: ask Nikhil first (his rule).** When a PR or branch has a merge conflict, do not resolve it and do not merge. First explain briefly to Nikhil: which files conflict and why, what each side changed, and the past decisions involved (with their issue or PR numbers). Then ask how he wants it resolved, and act only on his answer.
 
 ## Current status
-- Phase 0 (foundation): site live at 01scale.com on Vercel, with Home, Products (a page per module), Platform (Core and Architecture) and How It's Built.
+- Phase 0 (foundation): site live at 01scale.com on Vercel, with Home, Products (apps with a side menu, a page per module), Platform (Core and Architecture) and How It's Built (six tabs). Details, story states and open questions: `docs/process/STATUS.md`.
 - Architecture decided: independent services behind a gateway, one repo, Vercel (+ Lambda for Extraction later), one Neon project with a schema per service.
 - All APIs and tables are designed in the stories by owning service; none is built yet. The current code is still a single Next.js app at the repo root; moving it to `apps/web` is part of `MVP1-E0-07`.
 - MVP1 stories exist as GitHub issues labelled `mvp1`, `epic:<E#>`, `service:<name>`.
