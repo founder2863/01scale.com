@@ -470,7 +470,7 @@ As a hiring manager landing on 01scale, I want one picture of what Nikhil built 
 - **Database design:** No tables.
 
 ### MVP1-E0-40 · Academics — S
-- **AC1:** Four cards with no years: New York University (M.S., Management), The George Washington University (Engineer / Applied Scientist degree, post-master's; Doctor of Engineering, ABD: everything completed except the praxis, Nikhil's wording on PR #119), MIT (Building AI Products & Services) and RGTU (B.S., Computer Science & Engineering). Certifications as chips.
+- **AC1:** Four cards with no years: New York University (M.S., Management), The George Washington University (D.Eng, Systems Engineering/AI (ABD), Nikhil's wording on PR #119), MIT (Building AI Products & Services) and RGTU (B.S., Computer Science & Engineering). Certifications as chips.
 - **Service:** Site (`apps/web`)
 - **API design:** No endpoints.
 - **Database design:** No tables.

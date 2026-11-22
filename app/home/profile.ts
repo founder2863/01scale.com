@@ -310,8 +310,8 @@ export const academics = [
   { school: "New York University", degree: "M.S., Management (Finance & Economics / Information Systems)", note: null },
   {
     school: "The George Washington University",
-    degree: "Engineer / Applied Scientist degree (post-master's), Systems Engineering & AI",
-    note: "Doctor of Engineering, ABD: everything completed except the praxis",
+    degree: "D.Eng, Systems Engineering/AI (ABD)",
+    note: null,
   },
   { school: "Massachusetts Institute of Technology", degree: "Building AI Products & Services", note: null },
   { school: "RGTU", degree: "B.S., Computer Science & Engineering", note: null },
