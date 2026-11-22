@@ -2482,79 +2482,80 @@ section[id] {
   font-size: 0.75rem;
 }
 
-.brand-panel .plain-list {
-  margin-bottom: 0;
+/* Companies worked for (MVP1-E0-38, E0-39): role and dates, then one card per category. */
+.company-role {
+  margin: 4px 0 12px;
 }
 
-.resp-map {
-  display: grid;
-  gap: 12px;
-  margin: 16px 0 12px;
+.company-role .card-title {
+  margin: 0 0 2px;
 }
 
-.resp-layer {
-  padding: 12px;
-  border: 1.5px solid var(--link);
-  border-radius: 14px;
-}
-
-.resp-layer-platform {
-  background: var(--chip-bg);
-}
-
-.resp-layer-name {
-  margin: 0 0 8px;
-  color: var(--muted);
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.resp-layer ul {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+.company-role .note {
   margin: 0;
-  padding: 0;
-  list-style: none;
 }
 
-.resp-layer button {
-  padding: 7px 12px;
-  border: 1.5px solid var(--link);
-  border-radius: 10px;
-  background: var(--bg);
-  color: var(--text);
-  font: inherit;
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
+.owned-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
 }
 
-.resp-layer-platform button {
-  border-color: var(--brand);
-  border-radius: 999px;
-  background: var(--brand);
-  color: #ffffff;
+.owned-card {
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
 }
 
-.resp-layer button[aria-pressed="true"] {
-  outline: 3px solid var(--brand-glow);
-  outline-offset: 2px;
-}
-
-.resp-group {
-  margin: 12px 0 6px;
-  color: var(--muted);
-  font-size: 0.72rem;
+.owned-title {
+  margin: 0 0 10px;
+  color: var(--link);
+  font-size: 0.78rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
-.resp-panel {
-  margin-bottom: 8px;
+.owned-text {
+  margin: 0;
+}
+
+.owned-part + .owned-part {
+  margin-top: 10px;
+}
+
+.owned-part-title {
+  margin: 0 0 6px;
+  font-weight: 700;
+}
+
+.owned-link {
+  text-decoration: none;
+}
+
+.owned-link:hover {
+  text-decoration: underline;
+}
+
+.owned-legend {
+  margin-top: 10px;
+}
+
+@media (min-width: 768px) {
+  .owned-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .owned-card-wide {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 1200px) {
+  .owned-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
 .academics-grid {
