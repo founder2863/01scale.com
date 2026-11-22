@@ -1,10 +1,10 @@
 # Status and handoff
 
-Read this at the start of every session, after CLAUDE.md. Update it in the PR that changes what it says (a story shipped, a decision made, a question answered). Last updated: 22 Nov 2026, after PR #146 and the issue clean-up (#61, #109, #148 to #155 closed with costs).
+Read this at the start of every session, after CLAUDE.md. Update it in the PR that changes what it says (a story shipped, a decision made, a question answered). Last updated: 22 Nov 2026, with the PR for MVP1-E8-09 (human cost script and skill, issue #156).
 
 ## Where things stand
 
-- **Nothing is in flight.** Every PR up to #146 is merged; no branch holds unmerged work.
+- **In flight:** the MVP1-E8-09 PR (branch `claude/funny-turing-jjts2u`). Every earlier PR is merged.
 - **The site** (Next.js at the repo root, not yet `apps/web`) has: Home (E0-36 to E0-42), Products with app pages (side menu, E0-48) and module pages (15 sections, phone Sections button and Previous / Next, E0-49), Platform (Core, Platform and Apps Architecture, E0-22, E0-23, E0-43), How It's Built (Skills, Token Costs, Agents, Total Projected Cost, Constraints, Expensive Mistakes with four project lessons and the Payments article, E0-45 to E0-47).
 - **No platform service is built.** Every API and table is designed in the stories; Identity and Upload have full design documents (`scripts/site/*_design.py`).
 - **Token costs** are recorded through the last request of session `fdd431bb` ($331.50 over 218 requests; its last two requests show as pending because the tool had not priced them yet, and stay pending since that session has ended). New sessions add their own session to the ledger.
@@ -13,14 +13,16 @@ Read this at the start of every session, after CLAUDE.md. Update it in the PR th
 
 | State | Stories |
 |---|---|
+| Built, PR open | E8-09 (#156): `npm run human-costs`, skill `estimate-human-cost`, `docs/process/cost-model.json`, `app/how-its-built/human-costs.ts` |
 | Built, issue closed | E0-10, E0-11, E0-12, E0-13 (#61), E0-17, E0-21, E0-22, E0-23, E0-31 (#109), E0-32 to E0-35, E0-36 to E0-43 (#148 to #155, created after the work), E0-45 to E0-49, E8-01 |
 | Built, no issue by design | AUTOREP-E1-04 and AUTOREP-E6-03 (AutoRep stories live in the file only) |
 | Placeholder only ("Coming Soon..." on every module page) | E0-14 Market Outlook (#84), E0-15 PRD Reference (#85), E0-16 MCP (#86), E0-20 Architecture (#97), E0-27 to E0-30 Metrics, Monetization, GTM, Support (#104 to #107) |
-| Story only, decided, not built | **E8-09 human cost script and skill, then E8-10 Total Projected Cost page (next; see below)**, E0-44 product names and versions (#133; build when Nikhil says go), E8-02 to E8-08 (#127 to #132, #135) |
+| Story only, decided, not built | **E8-10 Total Projected Cost page (next; see below)**, E0-44 product names and versions (#133; build when Nikhil says go), E8-02 to E8-08 (#127 to #132, #135) |
 | Not started | E0-01 to E0-09 (foundation code), E0-18, E0-19, E0-24 (Built on: Platform Core components, not the app Built On section), E0-25, E0-26, and epics E1 to E7 |
 
 ## Open questions waiting for Nikhil
 
+- AutoRep stories have no issues by design, so the human cost script never counts AUTOREP-E1-04 and AUTOREP-E6-03 as done, though they are built. Count them (for example from a status line in the epics file), or leave them out? (MVP1-E8-09 PR)
 - DocFlow V1 "What each step adds over time" also describes V2 and sits in Overview: keep, or move to the V2 page? (PR #144)
 
 ## Known issues
@@ -39,11 +41,11 @@ Read this at the start of every session, after CLAUDE.md. Update it in the PR th
 
 ## Costs on closed issues
 
-Every closed story issue (27 of them) carries its measured token cost and estimated human cost: about $117 of tokens against about $137,000 for a human team, at $1,000 per engineer-day (Nikhil: a good estimate for engineers). Combined ledger blocks (E0-22/23, E0-32 to E0-35, E0-36 to E0-42) were split by story size, and the comment says so.
+Every closed story issue (27 of them) carries its measured token cost and estimated human cost, at $1,000 per engineer-day (Nikhil: a good estimate for engineers). Combined ledger blocks (E0-22/23, E0-32 to E0-35, E0-36 to E0-42) were split by story size, and the comment says so. From now on the figures come from `npm run human-costs` (skill `estimate-human-cost`): on 22 Nov, 26 done stories in scope = 128 person-days = $128,000 so far (plus E8-01, $3,000, out of scope); every MVP1 and AutoRep V1 story = 103 stories, 619 person-days, $619,000 projected. The comments typed by hand earlier summed to about $137,000; the script's figure replaces it.
 
 ## Next, in order (from CLAUDE.md and the epics)
 
-0. **Next session:** "Read CLAUDE.md and docs/process/STATUS.md, then build MVP1-E8-09 (human cost script and skill)." The session after: "Build MVP1-E8-10 (Total Projected Cost page, four tabs)."
+0. **Next session:** "Read CLAUDE.md and docs/process/STATUS.md, then build MVP1-E8-10 (Total Projected Cost page, four tabs)." It reads `app/how-its-built/human-costs.ts` (from E8-09).
 1. E0-07 service template, then E0-08 gateway, then the rest of E0.
 2. E1 Identity with Cognito.
 3. Whenever Nikhil says go: E0-44 rename, E8-02 onward.

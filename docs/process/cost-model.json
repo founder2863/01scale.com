@@ -1,0 +1,168 @@
+{
+  "about": "The human team's cost model, read by scripts/costs/human_costs.py (npm run human-costs). Sizes and the rate are Nikhil's decisions (docs/decisions/MVP1-E8.md, 22 Nov 2026). The rate is an assumption until MVP1-E8-02 sets a loaded rate per role. The done list is written by the script from closed GitHub issues, so the site build needs no network; never edit it by hand.",
+  "person_days_per_size": {
+    "S": 3,
+    "M": 8,
+    "L": 15
+  },
+  "rates_usd_per_person_day": {
+    "engineer": {
+      "rate": 1000,
+      "source": "Nikhil, 22 Nov 2026: a good estimate for engineers",
+      "assumption": true
+    }
+  },
+  "default_role": "engineer",
+  "scope": {
+    "epics_files": [
+      "docs/epics/MVP1-EPICS.md",
+      "docs/epics/AUTOREP-EPICS.md"
+    ],
+    "exclude_epics": [
+      "MVP1-E8"
+    ],
+    "why": "MVP1 only: Platform Core, the platform services, DocFlow (E0 to E7) and AutoRep V1 (E1 to E6). E8 is the cost work itself and is out of the projection (docs/decisions/MVP1-E8.md); its stories are listed separately."
+  },
+  "done": {
+    "source": "Closed GitHub issues with state_reason completed, titled [ID] Title",
+    "repo": "founder2863/01scale.com",
+    "fetched": "2026-11-22",
+    "stories": [
+      {
+        "id": "MVP1-E0-10",
+        "issue": 56,
+        "closed": "2026-11-16"
+      },
+      {
+        "id": "MVP1-E0-11",
+        "issue": 58,
+        "closed": "2026-11-16"
+      },
+      {
+        "id": "MVP1-E0-12",
+        "issue": 60,
+        "closed": "2026-11-17"
+      },
+      {
+        "id": "MVP1-E0-13",
+        "issue": 61,
+        "closed": "2026-11-22"
+      },
+      {
+        "id": "MVP1-E0-17",
+        "issue": 89,
+        "closed": "2026-11-19"
+      },
+      {
+        "id": "MVP1-E0-21",
+        "issue": 98,
+        "closed": "2026-11-21"
+      },
+      {
+        "id": "MVP1-E0-22",
+        "issue": 99,
+        "closed": "2026-11-21"
+      },
+      {
+        "id": "MVP1-E0-23",
+        "issue": 100,
+        "closed": "2026-11-21"
+      },
+      {
+        "id": "MVP1-E0-31",
+        "issue": 109,
+        "closed": "2026-11-22"
+      },
+      {
+        "id": "MVP1-E0-32",
+        "issue": 113,
+        "closed": "2026-11-21"
+      },
+      {
+        "id": "MVP1-E0-33",
+        "issue": 114,
+        "closed": "2026-11-21"
+      },
+      {
+        "id": "MVP1-E0-34",
+        "issue": 115,
+        "closed": "2026-11-21"
+      },
+      {
+        "id": "MVP1-E0-35",
+        "issue": 116,
+        "closed": "2026-11-21"
+      },
+      {
+        "id": "MVP1-E0-36",
+        "issue": 148,
+        "closed": "2026-11-22"
+      },
+      {
+        "id": "MVP1-E0-37",
+        "issue": 149,
+        "closed": "2026-11-22"
+      },
+      {
+        "id": "MVP1-E0-38",
+        "issue": 150,
+        "closed": "2026-11-22"
+      },
+      {
+        "id": "MVP1-E0-39",
+        "issue": 151,
+        "closed": "2026-11-22"
+      },
+      {
+        "id": "MVP1-E0-40",
+        "issue": 152,
+        "closed": "2026-11-22"
+      },
+      {
+        "id": "MVP1-E0-41",
+        "issue": 153,
+        "closed": "2026-11-22"
+      },
+      {
+        "id": "MVP1-E0-42",
+        "issue": 154,
+        "closed": "2026-11-22"
+      },
+      {
+        "id": "MVP1-E0-43",
+        "issue": 155,
+        "closed": "2026-11-22"
+      },
+      {
+        "id": "MVP1-E0-45",
+        "issue": 137,
+        "closed": "2026-11-22"
+      },
+      {
+        "id": "MVP1-E0-46",
+        "issue": 139,
+        "closed": "2026-11-22"
+      },
+      {
+        "id": "MVP1-E0-47",
+        "issue": 141,
+        "closed": "2026-11-22"
+      },
+      {
+        "id": "MVP1-E0-48",
+        "issue": 143,
+        "closed": "2026-11-22"
+      },
+      {
+        "id": "MVP1-E0-49",
+        "issue": 145,
+        "closed": "2026-11-22"
+      },
+      {
+        "id": "MVP1-E8-01",
+        "issue": 126,
+        "closed": "2026-11-22"
+      }
+    ]
+  }
+}
