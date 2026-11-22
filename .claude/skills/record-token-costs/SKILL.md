@@ -1,6 +1,6 @@
 ---
 name: record-token-costs
-description: Record what a piece of work cost in tokens and dollars, by story, and update the Token Costs table on the How It's Built page. Use at the end of every story or pull request, at the end of a working session, or when asked about token cost, spend, rework cost or token yield.
+description: Record what a piece of work cost in tokens and dollars, by story, and update the Token Costs table on the How It's Built page. Use in every pull request before it is marked ready for review (Nikhil's rule), at the end of a working session, or when asked about token cost, spend, rework cost or token yield.
 ---
 
 # Record token costs
