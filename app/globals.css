@@ -2482,43 +2482,17 @@ section[id] {
   font-size: 0.75rem;
 }
 
-.brand-panel .plain-list {
-  margin-bottom: 0;
+/* Companies worked for (MVP1-E0-38, E0-39): role and dates, then one card per category. */
+.company-role {
+  margin: 4px 0 12px;
 }
 
-/* What I owned (MVP1-E0-39): company tabs, then one card per category. */
-.owned-tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 14px;
+.company-role .card-title {
+  margin: 0 0 2px;
 }
 
-.owned-tabs button {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 14px 6px 6px;
-  border: 1.5px solid var(--border);
-  border-radius: 999px;
-  background: var(--bg);
-  color: var(--text);
-  font: inherit;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.owned-tabs button img {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.owned-tabs button[aria-selected="true"] {
-  border-color: var(--brand);
-  background: var(--brand);
-  color: #ffffff;
+.company-role .note {
+  margin: 0;
 }
 
 .owned-grid {
