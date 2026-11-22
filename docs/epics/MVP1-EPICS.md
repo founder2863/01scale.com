@@ -562,6 +562,17 @@ As a visitor, I want an app's page to have the same side menu as a module page, 
 - **API design:** No endpoints.
 - **Database design:** No tables.
 
+### MVP1-E0-49 · Section menu on phones, and Previous / Next — S
+As a visitor on a phone, I want to reach any section of a module or app page without swiping along a long row, and to read on to the next section, so the pages are as easy to use as on a desktop (Nikhil's decision, 22 Nov 2026: Option A with Previous / Next).
+- **AC1:** Below desktop width, module and app pages show one **Sections** button instead of the row of sections. It shows the current group and section, stays in view under the header, and opens the whole list grouped under its four headings, so any section is two taps away with no sideways swiping. It closes on the page it opens.
+- **AC2:** It works without JavaScript (an HTML `details` element), by keyboard, with a visible focus, and the list scrolls inside itself when it is taller than the screen.
+- **AC3:** At desktop width the side menu is unchanged.
+- **AC4:** Every section ends with **Previous** and **Next** links to the sections before and after it, in menu order; the first has no Previous and the last no Next.
+- **AC5:** Module and app pages share one menu component, so they cannot drift apart. It works from 320 to 1920 pixels wide, in light and dark mode.
+- **Service:** Site (`apps/web`)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
 ---
 
 ## E1 · Accounts with AWS Cognito (MVP1 "a")

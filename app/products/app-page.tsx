@@ -23,6 +23,7 @@ import {
 import { products } from "./data";
 import { AutorepDiagram } from "./autorep-diagram";
 import { DocflowJourney, DocflowOverview, DocflowWhyComponents } from "./docflow-vision";
+import { SectionMenu, SectionPager } from "./section-menu";
 import { APP_DEFAULT_TAB, appTabGroups, appTabs, type AppTab } from "./app-tabs";
 
 const GITHUB = "https://github.com/founder2863/01scale.com/blob/main";
@@ -309,24 +310,10 @@ function AppSection({ app, version, tab }: { app: AppKey; version: Version; tab:
 function SideMenuBody({ app, version, tab }: { app: AppKey; version: Version; tab: AppTab }) {
   return (
     <div className="container product-layout">
-      <nav className="side-tabs" aria-label={`${appLabel(app, version)} sections`}>
-        {appTabGroups.map((group) => (
-          <div className="side-tabs-group" key={group.heading}>
-            <span className="side-tabs-heading">{group.heading}</span>
-            {group.tabs.map((item) => (
-              <Link
-                key={item.slug}
-                href={appTabHref(app, item.slug)}
-                aria-current={item.slug === tab.slug ? "page" : undefined}
-              >
-                {item.label}
-              </Link>
-            ))}
-          </div>
-        ))}
-      </nav>
+      <SectionMenu label={appLabel(app, version)} groups={appTabGroups} current={tab.slug} href={(slug) => appTabHref(app, slug)} />
       <div className="product-content content">
         <AppSection app={app} version={version} tab={tab} />
+        <SectionPager groups={appTabGroups} current={tab.slug} href={(slug) => appTabHref(app, slug)} />
       </div>
     </div>
   );
