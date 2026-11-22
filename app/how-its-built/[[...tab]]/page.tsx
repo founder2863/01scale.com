@@ -4,7 +4,9 @@ import { notFound } from "next/navigation";
 import { costs } from "../costs";
 import { constraints, paid, perExtraction, providers, providersTotal } from "../running-costs";
 import { designSkillCount, rulesHref, skillOrder, skills } from "../skills";
-import { builtTabs, type BuiltTab } from "../tabs";
+import { builtTabs, costTabs, type BuiltTab, type CostTab } from "../tabs";
+import { humanCosts } from "../human-costs";
+import { CostPager, CostTabs } from "../cost-tabs";
 import { findMistake, mistakes } from "../mistakes";
 import { articleBody, articleDomains, articles, findArticle } from "../articles";
 import YieldExplainer from "../yield-explainer";
@@ -13,6 +15,10 @@ const REPO = "https://github.com/founder2863/01scale.com/blob/main";
 
 function usd(value: number | null) {
   return value === null ? "pending" : `$${value.toFixed(2)}`;
+}
+
+function dollars(value: number) {
+  return `$${value.toLocaleString("en-US")}`;
 }
 
 function mtok(value: number) {
@@ -32,10 +38,12 @@ const RATES = [
 export const dynamicParams = false;
 
 // Each expensive mistake also has its own article page: /how-its-built/expensive-mistakes/<slug>.
+// Total Projected Cost has four tabs; the first is the tab's own address (MVP1-E8-10).
 export function generateStaticParams(): Params[] {
   return [
     { tab: [] },
     ...builtTabs.slice(1).map((item) => ({ tab: [item.slug] })),
+    ...costTabs.slice(1).map((item) => ({ tab: ["total-projected-cost", item.slug] })),
     ...mistakes.map((item) => ({ tab: ["expensive-mistakes", item.slug] })),
     ...articles.map((item) => ({ tab: ["expensive-mistakes", item.slug] })),
   ];
@@ -47,6 +55,9 @@ function resolve(params: Params): BuiltTab | null {
   if (depth > 2 || params.tab?.[0] === "skills") return null;
   if (depth === 2) {
     const slug = params.tab?.[1] ?? "";
+    if (params.tab?.[0] === "total-projected-cost") {
+      return costTabs.slice(1).some((item) => item.slug === slug) ? "total-projected-cost" : null;
+    }
     return params.tab?.[0] === "expensive-mistakes" && (findMistake(slug) || findArticle(slug)) ? "expensive-mistakes" : null;
   }
   const found = builtTabs.find((item) => item.slug === (params.tab?.[0] ?? "skills"));
@@ -57,7 +68,8 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   const resolved = await params;
   const tab = resolve(resolved);
   const article = resolved.tab?.[1] ? findMistake(resolved.tab[1]) ?? findArticle(resolved.tab[1]) : undefined;
-  const label = article?.title ?? builtTabs.find((item) => item.slug === tab)?.label;
+  const costLabel = tab === "total-projected-cost" && resolved.tab?.[1] ? costTabs.find((item) => item.slug === resolved.tab?.[1])?.label : undefined;
+  const label = article?.title ?? costLabel ?? builtTabs.find((item) => item.slug === tab)?.label;
   return {
     title: tab === "skills" ? "How It's Built — 01scale" : `How It's Built · ${label} — 01scale`,
     description:
@@ -72,6 +84,9 @@ export default async function HowItsBuilt({ params }: { params: Promise<Params> 
   const article = resolved.tab?.[1] ? findMistake(resolved.tab[1]) : undefined;
   const lesson = resolved.tab?.[1] ? findArticle(resolved.tab[1]) : undefined;
   const lessonBody = lesson ? articleBody(lesson) : null;
+  const costTab: CostTab = (tab === "total-projected-cost" && (resolved.tab?.[1] as CostTab | undefined)) || "actual-token-cost";
+  const doneStories = humanCosts.stories.filter((story) => story.done);
+  const scopedEpics = humanCosts.epics.filter((epic) => epic.inScope);
   return (
     <>
       <section className="hero hero-small">
@@ -503,103 +518,226 @@ export default async function HowItsBuilt({ params }: { params: Promise<Params> 
         {tab === "total-projected-cost" && (
         <section id="total-projected-cost">
           <h2 className="group-title">
-            Total Projected Cost <span className="status">In design</span>
+            Total Projected Cost <span className="status">In progress</span>
           </h2>
-          <div className="coming-soon">
-            <p className="coming-soon-title">Coming Soon...</p>
-            <p>
-              The projected cost of building the whole platform, story by
-              story, with a human team (engineers, product, QA, program and
-              leadership, plus one person in each go-to-market function),
-              against building it with Claude Code and one product manager,
-              and the difference between the two (epic MVP1-E8).
-            </p>
-          </div>
           <p className="note">
-            Until then, this page shows what 01scale has cost so far and what
-            it costs to run. Visitors pay nothing: every cost lands on me, so
-            every service has a ceiling, listed under{" "}
+            What 01scale has cost with Claude Code, against what a human team
+            would cost for the same stories, so far and projected to the end of
+            MVP1. Visitors pay nothing: every cost lands on me, so every service
+            has a ceiling, listed under{" "}
             <Link href="/how-its-built/constraints">Constraints</Link>.
           </p>
 
-          <h3 className="section-subtitle">Development cost</h3>
-          <div className="stat-row">
-            <div className="stat">
-              <span className="stat-value">{usd(costs.totals.cost)}</span>
-              <span className="stat-label">Tokens so far, at API rates</span>
-            </div>
-            <div className="stat">
-              <span className="stat-value">{costs.totals.storyYield}%</span>
-              <span className="stat-label">Token yield across stories</span>
-            </div>
-          </div>
-          <p className="note">
-            This is what the tokens Claude Code used would cost an API
-            customer. It is not what I pay: building runs on my Claude Pro
-            subscription. The breakdown by story is in{" "}
-            <Link href="/how-its-built/token-costs">Token Costs</Link>.
-          </p>
+          <CostTabs current={costTab} />
 
-          <h3 className="section-subtitle">What I actually pay</h3>
-          <dl className="decisions cost-paid">
-            {paid.map((row) => (
-              <div key={row.item}>
-                <dt>
-                  {row.item} · {row.amount}
-                </dt>
-                <dd>{row.covers}</dd>
+          {costTab === "actual-token-cost" && (
+          <div className="cost-panel">
+            <h3 className="section-subtitle">Development cost</h3>
+            <div className="stat-row">
+              <div className="stat">
+                <span className="stat-value">{usd(costs.totals.cost)}</span>
+                <span className="stat-label">Tokens so far, at API rates</span>
               </div>
-            ))}
-          </dl>
+              <div className="stat">
+                <span className="stat-value">{costs.totals.storyYield}%</span>
+                <span className="stat-label">Token yield across stories</span>
+              </div>
+            </div>
+            <p className="note">
+              This is what the tokens Claude Code used would cost an API
+              customer. It is not what I pay: building runs on my Claude Pro
+              subscription. Build and rework, request by request, are in{" "}
+              <Link href="/how-its-built/token-costs">Token Costs</Link>.
+            </p>
 
-          <h3 className="section-subtitle">Usage cost, by provider</h3>
-          <table className="cost-table cost-table-text">
-            <thead>
-              <tr>
-                <th scope="col">Provider</th>
-                <th scope="col">Bills for</th>
-                <th scope="col">Covered by</th>
-                <th scope="col">Most it can cost a month</th>
-              </tr>
-            </thead>
-            <tbody>
-              {providers.map((row) => (
-                <tr key={row.name}>
-                  <th scope="row">{row.name}</th>
-                  <td data-label="Bills for">{row.billsFor}</td>
-                  <td data-label="Covered by">{row.coveredBy}</td>
-                  <td data-label="Most a month">{row.ceiling}</td>
+            <h3 className="section-subtitle">Cost of each story so far</h3>
+            <table className="cost-table cost-table-small">
+              <thead>
+                <tr>
+                  <th scope="col">Story</th>
+                  <th scope="col">Tokens</th>
+                  <th scope="col">Cost</th>
                 </tr>
+              </thead>
+              <tbody>
+                {costs.stories.map((story) => (
+                  <tr key={story.key}>
+                    <th scope="row">{story.name}</th>
+                    <td data-label="Tokens">{mtok(story.buildTokens + story.reworkTokens)}</td>
+                    <td data-label="Cost">
+                      {usd(story.totalCost)}
+                      {story.pending && <span className="cost-pending"> + pending</span>}
+                    </td>
+                  </tr>
+                ))}
+                <tr>
+                  <th scope="row">Scaffolding, not tied to a story</th>
+                  <td data-label="Tokens">{mtok(costs.scaffoldingTotals.tokens)}</td>
+                  <td data-label="Cost">{usd(costs.scaffoldingTotals.cost)}</td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th scope="row">Total</th>
+                  <td data-label="Tokens">{mtok(costs.totals.tokens)}</td>
+                  <td data-label="Cost">{usd(costs.totals.cost)}</td>
+                </tr>
+              </tfoot>
+            </table>
+
+            <h3 className="section-subtitle">What I actually pay</h3>
+            <dl className="decisions cost-paid">
+              {paid.map((row) => (
+                <div key={row.item}>
+                  <dt>
+                    {row.item} · {row.amount}
+                  </dt>
+                  <dd>{row.covers}</dd>
+                </div>
               ))}
-            </tbody>
-            <tfoot>
-              <tr>
-                <th scope="row">Total</th>
-                <td className="cost-empty" colSpan={2} />
-                <td data-label="Most a month">{providersTotal}</td>
-              </tr>
-            </tfoot>
-          </table>
+            </dl>
 
-          <h3 className="section-subtitle">Cost of reading one document</h3>
-          <div className="cards">
-            {perExtraction.map((row) => (
-              <div className="card" key={row.model}>
-                <p className="card-title">
-                  {row.model} · {row.cost}
-                </p>
-                <p>
-                  {row.detail}. That is {row.perMonth}.
-                </p>
-              </div>
-            ))}
+            <h3 className="section-subtitle">Usage cost, by provider</h3>
+            <table className="cost-table cost-table-text">
+              <thead>
+                <tr>
+                  <th scope="col">Provider</th>
+                  <th scope="col">Bills for</th>
+                  <th scope="col">Covered by</th>
+                  <th scope="col">Most it can cost a month</th>
+                </tr>
+              </thead>
+              <tbody>
+                {providers.map((row) => (
+                  <tr key={row.name}>
+                    <th scope="row">{row.name}</th>
+                    <td data-label="Bills for">{row.billsFor}</td>
+                    <td data-label="Covered by">{row.coveredBy}</td>
+                    <td data-label="Most a month">{row.ceiling}</td>
+                  </tr>
+                ))}
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th scope="row">Total</th>
+                  <td className="cost-empty" colSpan={2} />
+                  <td data-label="Most a month">{providersTotal}</td>
+                </tr>
+              </tfoot>
+            </table>
+
+            <h3 className="section-subtitle">Cost of reading one document</h3>
+            <div className="cards">
+              {perExtraction.map((row) => (
+                <div className="card" key={row.model}>
+                  <p className="card-title">
+                    {row.model} · {row.cost}
+                  </p>
+                  <p>
+                    {row.detail}. That is {row.perMonth}.
+                  </p>
+                </div>
+              ))}
+            </div>
+            <p className="note">
+              Estimates until the Extraction service is built and measures every
+              job. The month starts on Opus 5.5; when its $5 is used, Haiku 5.5
+              takes over and the extraction page says so.
+            </p>
           </div>
-          <p className="note">
-            Estimates until the Extraction service is built and measures every
-            job. The month starts on Opus 5.5; when its $5 is used, Haiku 5.5
-            takes over and the extraction page says so.
-          </p>
+          )}
 
+          {costTab === "estimated-human-cost" && (
+          <div className="cost-panel">
+            <div className="stat-row">
+              <div className="stat">
+                <span className="stat-value">{dollars(humanCosts.soFar.cost)}</span>
+                <span className="stat-label">Estimated human cost so far</span>
+              </div>
+              <div className="stat">
+                <span className="stat-value">{humanCosts.soFar.personDays}</span>
+                <span className="stat-label">Person-days, {humanCosts.soFar.stories} stories done</span>
+              </div>
+              <div className="stat">
+                <span className="stat-value">{usd(humanCosts.soFar.tokenCost)}</span>
+                <span className="stat-label">Measured token cost of the same stories</span>
+              </div>
+            </div>
+            <HumanCostNote />
+
+            <h3 className="section-subtitle">Each story done</h3>
+            <HumanStoryTable stories={doneStories} total={humanCosts.soFar} showDone={false} />
+          </div>
+          )}
+
+          {costTab === "projected-token-cost" && (
+          <div className="cost-panel">
+            <div className="coming-soon">
+              <p className="coming-soon-title">Coming Soon...</p>
+              <p>
+                What every MVP1 story, AutoRep V1 included, will cost to build
+                with Claude Code, product and development work shown
+                separately: measured where a story is done, estimated from
+                comparable stories where it is not (story MVP1-E8-06).
+              </p>
+            </div>
+          </div>
+          )}
+
+          {costTab === "projected-human-cost" && (
+          <div className="cost-panel">
+            <div className="stat-row">
+              <div className="stat">
+                <span className="stat-value">{dollars(humanCosts.projected.cost)}</span>
+                <span className="stat-label">Projected human cost of MVP1</span>
+              </div>
+              <div className="stat">
+                <span className="stat-value">{humanCosts.projected.personDays}</span>
+                <span className="stat-label">Person-days, {humanCosts.projected.stories} stories</span>
+              </div>
+              <div className="stat">
+                <span className="stat-value">{humanCosts.soFar.stories} of {humanCosts.projected.stories}</span>
+                <span className="stat-label">Stories done</span>
+              </div>
+            </div>
+            <HumanCostNote />
+
+            <h3 className="section-subtitle">By epic</h3>
+            <table className="cost-table cost-table-small">
+              <thead>
+                <tr>
+                  <th scope="col">Epic</th>
+                  <th scope="col">Stories</th>
+                  <th scope="col">Person-days</th>
+                  <th scope="col">Human cost</th>
+                </tr>
+              </thead>
+              <tbody>
+                {scopedEpics.map((epic) => (
+                  <tr key={epic.epic}>
+                    <th scope="row">{epic.epic}</th>
+                    <td data-label="Stories">{epic.projected.stories}</td>
+                    <td data-label="Person-days">{epic.projected.personDays}</td>
+                    <td data-label="Human cost">{dollars(epic.projected.cost)}</td>
+                  </tr>
+                ))}
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th scope="row">Total</th>
+                  <td data-label="Stories">{humanCosts.projected.stories}</td>
+                  <td data-label="Person-days">{humanCosts.projected.personDays}</td>
+                  <td data-label="Human cost">{dollars(humanCosts.projected.cost)}</td>
+                </tr>
+              </tfoot>
+            </table>
+
+            <h3 className="section-subtitle">Every story</h3>
+            <HumanStoryTable stories={humanCosts.stories} total={humanCosts.projected} showDone />
+          </div>
+          )}
+
+          <CostPager current={costTab} />
         </section>
         )}
 
@@ -639,5 +777,79 @@ export default async function HowItsBuilt({ params }: { params: Promise<Params> 
         )}
       </div>
     </>
+  );
+}
+
+// The rate and sizes behind the human cost, always shown as an assumption (MVP1-E8-09, E8-10).
+function HumanCostNote() {
+  const sizes = Object.entries(humanCosts.personDaysPerSize)
+    .map(([size, days]) => `${size} ${days}`)
+    .join(", ");
+  return (
+    <p className="note">
+      Assumption: one {humanCosts.rate.role} at {dollars(humanCosts.rate.usdPerPersonDay)} per
+      person-day ({humanCosts.rate.source}), and person-days per story size of {sizes}. Sizes come
+      from the epics files; a story without a size shows TBD. {humanCosts.scope} Worked out by{" "}
+      <a href={`${REPO}/scripts/costs/human_costs.py`}>one script</a>, updated {humanCosts.updated}.
+    </p>
+  );
+}
+
+// Typed loosely, so a story without a size (TBD) or a measured cost renders without a code change.
+type HumanStory = {
+  id: string;
+  title: string;
+  size: string | null;
+  personDays: number | null;
+  cost: number | null;
+  done: boolean;
+  tokenCost: number | null;
+  tokenCostShared: boolean;
+  tokenCostPending: boolean;
+};
+type HumanTotal = { personDays: number; cost: number; tokenCost: number };
+
+function HumanStoryTable({ stories, total, showDone }: { stories: readonly HumanStory[]; total: HumanTotal; showDone: boolean }) {
+  return (
+    <table className="cost-table">
+      <thead>
+        <tr>
+          <th scope="col">Story</th>
+          <th scope="col">Size</th>
+          <th scope="col">Person-days</th>
+          <th scope="col">Human cost</th>
+          <th scope="col">Token cost</th>
+          {showDone && <th scope="col">Done</th>}
+        </tr>
+      </thead>
+      <tbody>
+        {stories.map((story) => (
+          <tr key={story.id}>
+            <th scope="row">
+              {story.id} · {story.title}
+            </th>
+            <td data-label="Size">{story.size ?? "TBD"}</td>
+            <td data-label="Person-days">{story.personDays ?? "TBD"}</td>
+            <td data-label="Human cost">{story.cost === null ? "TBD" : dollars(story.cost)}</td>
+            <td data-label="Token cost">
+              {story.tokenCost === null ? "not measured" : usd(story.tokenCost)}
+              {story.tokenCostShared && <span className="cost-pending"> shared</span>}
+              {story.tokenCostPending && <span className="cost-pending"> + pending</span>}
+            </td>
+            {showDone && <td data-label="Done">{story.done ? "Yes" : "No"}</td>}
+          </tr>
+        ))}
+      </tbody>
+      <tfoot>
+        <tr>
+          <th scope="row">Total</th>
+          <td className="cost-empty" />
+          <td data-label="Person-days">{total.personDays}</td>
+          <td data-label="Human cost">{dollars(total.cost)}</td>
+          <td data-label="Token cost">{usd(total.tokenCost)}</td>
+          {showDone && <td className="cost-empty" />}
+        </tr>
+      </tfoot>
+    </table>
   );
 }

@@ -12,3 +12,14 @@ export const builtTabs = [
 ] as const;
 
 export type BuiltTab = (typeof builtTabs)[number]["slug"];
+
+// The four tabs of Total Projected Cost (MVP1-E8-10), each with its own address. The first opens
+// at "/how-its-built/total-projected-cost".
+export const costTabs = [
+  { slug: "actual-token-cost", label: "Actual Token Cost So Far", href: "/how-its-built/total-projected-cost" },
+  { slug: "estimated-human-cost", label: "Estimated Human Cost So Far", href: "/how-its-built/total-projected-cost/estimated-human-cost" },
+  { slug: "projected-token-cost", label: "Projected Token Cost", href: "/how-its-built/total-projected-cost/projected-token-cost" },
+  { slug: "projected-human-cost", label: "Projected Human Cost", href: "/how-its-built/total-projected-cost/projected-human-cost" },
+] as const;
+
+export type CostTab = (typeof costTabs)[number]["slug"];

@@ -1080,6 +1080,7 @@ As the owner, I want the human team's cost worked out by one script from the sto
 - **Database design:** No tables.
 
 ### MVP1-E8-10 · Total Projected Cost page: four tabs, so far and projected — M
+**Status:** Done (22 Nov 2026). Each tab has its own address: `/how-its-built/total-projected-cost` (Actual Token Cost So Far) and `/how-its-built/total-projected-cost/<estimated-human-cost|projected-token-cost|projected-human-cost>`.
 As a hiring manager, I want to compare what 01scale cost with Claude Code against what a human team would cost, so far and projected, so I can judge the claim with numbers (Nikhil's decisions, 22 Nov 2026).
 - **AC1:** The Total Projected Cost tab has four tabs on one row: **Actual Token Cost So Far**, **Estimated Human Cost So Far**, **Projected Token Cost** and **Projected Human Cost**. On a phone they follow the site's phone pattern for many tabs (MVP1-E0-49).
 - **AC2:** **Actual Token Cost So Far:** the ledger total and the cost of each done story, from `costs.ts`. Today's content (what is actually paid, usage cost by provider, the cost of reading one document) moves here, unchanged.
