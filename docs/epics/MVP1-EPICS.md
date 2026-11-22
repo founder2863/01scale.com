@@ -1063,6 +1063,28 @@ As the owner, I want each V1 story's token cost estimated separately for its pro
 - **API design:** No endpoints.
 - **Database design:** No tables.
 
+### MVP1-E8-09 · Human cost script and skill — M
+As the owner, I want the human team's cost worked out by one script from the stories, so the site, the issues and the projections all use the same numbers and none is typed by hand (Nikhil's request, 22 Nov 2026).
+- **AC1:** `docs/process/cost-model.json` holds the cost model: person-days per size (S 3, M 8, L 15, from `docs/decisions/MVP1-E8.md`) and a loaded rate per role. Until MVP1-E8-02 sets the other roles, it has one: engineer, $1,000 per person-day (Nikhil, 22 Nov 2026).
+- **AC2:** `npm run human-costs` (`scripts/costs/human_costs.py`) reads every story's ID, title and size from the epics files (MVP1 and AutoRep V1), and which stories are done from closed GitHub issues (`gh api search/issues`), saved into the cost model file so the site build needs no network. It writes `app/how-its-built/human-costs.ts` with, per story and in total: size, person-days, estimated human cost, and the measured token cost from the ledger where there is one.
+- **AC3:** Two totals: **estimated human cost so far** (done stories) and **projected human cost** (every MVP1 story, AutoRep V1 included). A story without a size is listed as TBD, not guessed.
+- **AC4:** A skill, `estimate-human-cost`, says when to run it (when an issue is closed, when stories are added or resized) and the rules: sizes only from the epics files, the rate always shown as an assumption until E8-02, nothing entered by hand. CLAUDE.md step 8 points to it for the cost on a closed issue.
+- **AC5:** Tested with Vitest or a Python test on a small sample epics file: sizes parsed, a missing size reported as TBD, the totals add up.
+- **Service:** Repository tooling (`scripts/costs/`) and Site data
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E8-10 · Total Projected Cost page: four tabs, so far and projected — M
+As a hiring manager, I want to compare what 01scale cost with Claude Code against what a human team would cost, so far and projected, so I can judge the claim with numbers (Nikhil's decisions, 22 Nov 2026).
+- **AC1:** The Total Projected Cost tab has four tabs on one row: **Actual Token Cost So Far**, **Estimated Human Cost So Far**, **Projected Token Cost** and **Projected Human Cost**. On a phone they follow the site's phone pattern for many tabs (MVP1-E0-49).
+- **AC2:** **Actual Token Cost So Far:** the ledger total and the cost of each done story, from `costs.ts`. Today's content (what is actually paid, usage cost by provider, the cost of reading one document) moves here, unchanged.
+- **AC3:** **Estimated Human Cost So Far:** each done story's size, person-days and cost, and the total, from `human-costs.ts` (MVP1-E8-09), with the rate shown as an assumption.
+- **AC4:** **Projected Human Cost:** every MVP1 story, AutoRep V1 included, from `human-costs.ts`. **Projected Token Cost** shows "Coming Soon..." until MVP1-E8-06 projects it; no figure is invented.
+- **AC5:** Every figure comes from generated data, never typed into the page. It works from 320 to 1920 pixels wide, in light and dark mode.
+- **Service:** Site (`apps/web`)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
 ---
 
 ## Definition of done for MVP1

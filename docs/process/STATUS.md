@@ -16,13 +16,12 @@ Read this at the start of every session, after CLAUDE.md. Update it in the PR th
 | Built, issue closed | E0-10, E0-11, E0-12, E0-13 (#61), E0-17, E0-21, E0-22, E0-23, E0-31 (#109), E0-32 to E0-35, E0-36 to E0-43 (#148 to #155, created after the work), E0-45 to E0-49, E8-01 |
 | Built, no issue by design | AUTOREP-E1-04 and AUTOREP-E6-03 (AutoRep stories live in the file only) |
 | Placeholder only ("Coming Soon..." on every module page) | E0-14 Market Outlook (#84), E0-15 PRD Reference (#85), E0-16 MCP (#86), E0-20 Architecture (#97), E0-27 to E0-30 Metrics, Monetization, GTM, Support (#104 to #107) |
-| Story only, decided, not built | E0-44 product names and versions (#133; build when Nikhil says go), E8-02 to E8-08 (#127 to #132, #135) |
+| Story only, decided, not built | **E8-09 human cost script and skill, then E8-10 Total Projected Cost page (next; see below)**, E0-44 product names and versions (#133; build when Nikhil says go), E8-02 to E8-08 (#127 to #132, #135) |
 | Not started | E0-01 to E0-09 (foundation code), E0-18, E0-19, E0-24 (Built on: Platform Core components, not the app Built On section), E0-25, E0-26, and epics E1 to E7 |
 
 ## Open questions waiting for Nikhil
 
 - DocFlow V1 "What each step adds over time" also describes V2 and sits in Overview: keep, or move to the V2 page? (PR #144)
-- Add the token and development cost to the issues closed before the cost rule (E0-10 to E0-12, E0-17, E0-21 to E0-23, E0-32 to E0-35, E0-45 to E0-49, E8-01)? #61, #109 and #148 to #155 already have them.
 
 ## Known issues
 
@@ -38,8 +37,13 @@ Read this at the start of every session, after CLAUDE.md. Update it in the PR th
 - **Stack only when needed.** If a branch builds on an open PR, say "merge #N first" in the description; when the first merges, merge main into the second.
 - **Merge conflicts:** explain and ask first (CLAUDE.md step 11).
 
+## Costs on closed issues
+
+Every closed story issue (27 of them) carries its measured token cost and estimated human cost: about $117 of tokens against about $137,000 for a human team, at $1,000 per engineer-day (Nikhil: a good estimate for engineers). Combined ledger blocks (E0-22/23, E0-32 to E0-35, E0-36 to E0-42) were split by story size, and the comment says so.
+
 ## Next, in order (from CLAUDE.md and the epics)
 
+0. **Next session:** "Read CLAUDE.md and docs/process/STATUS.md, then build MVP1-E8-09 (human cost script and skill)." The session after: "Build MVP1-E8-10 (Total Projected Cost page, four tabs)."
 1. E0-07 service template, then E0-08 gateway, then the rest of E0.
 2. E1 Identity with Cognito.
 3. Whenever Nikhil says go: E0-44 rename, E8-02 onward.
