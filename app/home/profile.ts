@@ -266,12 +266,12 @@ export const academics = [
   },
   {
     school: "Massachusetts Institute of Technology",
-    degree: "Building AI Products & Services",
+    degree: "Building AI Products & Services (MIT Professional Education)",
     note: null,
     logo: "/logos/mit.png",
   },
   {
-    school: "RGTU",
+    school: "RGPV (RGTU)",
     degree: "B.S., Computer Science & Engineering",
     note: null,
     logo: "/logos/rgtu.png",
