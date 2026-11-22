@@ -1,10 +1,10 @@
 # Status and handoff
 
-Read this at the start of every session, after CLAUDE.md. Update it in the PR that changes what it says (a story shipped, a decision made, a question answered). Last updated: 22 Nov 2026, with the PR for MVP1-E0-19 AC5 (live component galleries on module pages).
+Read this at the start of every session, after CLAUDE.md. Update it in the PR that changes what it says (a story shipped, a decision made, a question answered). Last updated: 22 Nov 2026, with the PR that closes MVP1-E0-19 (#96) and adds stories MVP1-E1-09, E3-07 and E4-05.
 
 ## Where things stand
 
-- **In flight:** the DocFlow prototype design fixes (branch `claude/amazing-meitner-kpu3n6`): one page scroll (a step bar above the app, API calls folded under it), only the flagged fields after extraction, and a four-field preview before payment, enforced by DocFlow's API (`MVP1-E5-03` AC1 changed, AC3 added; Nikhil, 22 Nov 2026). Also fixes a wide CSV pushing the results page sideways (ui-core 0.1.1). Every earlier PR is merged, #162 (E0-19 AC5) included.
+- **In flight:** the PR adding stories `MVP1-E1-09` (#164), `MVP1-E3-07` (#165) and `MVP1-E4-05` (#166): the 7 account and admin UI components the galleries mark "Designed, not built yet", and the human-cost refresh after closing E0-19 (#96). Every earlier PR is merged, #163 (prototype review fixes) included.
 - **Service UI packages:** each `packages/ui-<service>` defines the client it needs from its own API (`createClientContext` in ui-core); the app supplies it: the mock in `app/products/docflow/try/mock-platform.ts` today, the gateway once the service is built. DocFlow's own sections and the Cognito and Stripe stand-ins stay in the app (Nikhil, 22 Nov 2026).
 - **Workspaces:** the root `package.json` now has `"workspaces": ["packages/*"]`; the site stays at the root until E0-07 moves it to `apps/web`. Run `npm install` after pulling.
 - **The site** (Next.js at the repo root, not yet `apps/web`) has: Home (E0-36 to E0-42), Products with app pages (side menu, E0-48) and module pages (15 sections, phone Sections button and Previous / Next, E0-49), Platform (Core, Platform and Apps Architecture, E0-22, E0-23, E0-43), How It's Built (Skills, Token Costs, Agents, Total Projected Cost with four tabs (E8-10), Constraints, Expensive Mistakes with four project lessons and the Payments article, E0-45 to E0-47).
@@ -15,13 +15,12 @@ Read this at the start of every session, after CLAUDE.md. Update it in the PR th
 
 | State | Stories |
 |---|---|
-| Built, PR merged | E0-19 AC5 (PR #162): live component galleries (`app/products/gallery/`); account and admin components are marked "Designed, not built yet" |
-| Built, PR merged | E0-19 AC1 to AC4 and AC6 (PR #161; `packages/ui-core` 0.1.0, site uses its tokens); E0-18 for the DocFlow app only (User Journey section, against an in-browser mock); E0-07 AC6 in part (the six service UI packages exist, against a mock client) |
+| Built, PR merged | E0-18 for the DocFlow app only (User Journey section, against an in-browser mock); E0-07 AC6 in part (the six service UI packages exist, against a mock client) |
 | Built, PR merged | E8-09 (#156, PR #159): `npm run human-costs`, skill `estimate-human-cost`, `docs/process/cost-model.json`, `app/how-its-built/human-costs.ts`; E8-10 (#157, PR #160): Total Projected Cost with four tabs (Actual Token Cost So Far, Estimated Human Cost So Far, Projected Token Cost as Coming Soon until E8-06, Projected Human Cost) |
-| Built, issue closed | E0-10, E0-11, E0-12, E0-13 (#61), E0-17, E0-21, E0-22, E0-23, E0-31 (#109), E0-32 to E0-35, E0-36 to E0-43 (#148 to #155, created after the work), E0-45 to E0-49, E8-01 |
+| Built, issue closed | E0-19 (#96, PRs #161 to #163: `packages/ui-core`, live galleries, DocFlow prototype fixes), E0-10, E0-11, E0-12, E0-13 (#61), E0-17, E0-21, E0-22, E0-23, E0-31 (#109), E0-32 to E0-35, E0-36 to E0-43 (#148 to #155, created after the work), E0-45 to E0-49, E8-01 |
 | Built, no issue by design | AUTOREP-E1-04 and AUTOREP-E6-03 (AutoRep stories live in the file only) |
 | Placeholder only ("Coming Soon..." on every module page) | E0-14 Market Outlook (#84), E0-15 PRD Reference (#85), E0-16 MCP (#86), E0-20 Architecture (#97), E0-27 to E0-30 Metrics, Monetization, GTM, Support (#104 to #107) |
-| Story only, decided, not built | E0-44 product names and versions (#133; build when Nikhil says go), E8-02 to E8-08 (#127 to #132, #135) |
+| Story only, decided, not built | E1-09 (#164), E3-07 (#165), E4-05 (#166): the account and admin UI components; E0-44 product names and versions (#133; build when Nikhil says go), E8-02 to E8-08 (#127 to #132, #135) |
 | Not started | E0-01 to E0-09 (foundation code, except E0-07 AC6 above), E0-18 per module, E0-24 (Built on: Platform Core components, not the app Built On section), E0-25, E0-26, and epics E1 to E7 |
 
 ## Open questions waiting for Nikhil
@@ -44,11 +43,11 @@ Read this at the start of every session, after CLAUDE.md. Update it in the PR th
 
 ## Costs on closed issues
 
-Every closed story issue (27 of them) carries its measured token cost and estimated human cost, at $1,000 per engineer-day (Nikhil: a good estimate for engineers). Combined ledger blocks (E0-22/23, E0-32 to E0-35, E0-36 to E0-42) were split by story size, and the comment says so. From now on the figures come from `npm run human-costs` (skill `estimate-human-cost`): on 22 Nov, 27 done stories = 131 person-days = $131,000 so far; every MVP1 story (E8 included) and AutoRep V1 story = 113 stories, 691 person-days, $691,000 projected. Nikhil on PR #159: E8 work counts; AutoRep stories, which have no issues, are not counted as done. The comments typed by hand earlier summed to about $137,000; the script's figure replaces it.
+Every closed story issue (27 of them) carries its measured token cost and estimated human cost, at $1,000 per engineer-day (Nikhil: a good estimate for engineers). Combined ledger blocks (E0-22/23, E0-32 to E0-35, E0-36 to E0-42) were split by story size, and the comment says so. From now on the figures come from `npm run human-costs` (skill `estimate-human-cost`): on 22 Nov, 27 done stories = 131 person-days = $131,000 so far; every MVP1 story (E8 included) and AutoRep V1 story = 113 stories, 691 person-days, $691,000 projected. Nikhil on PR #159: E8 work counts; AutoRep stories, which have no issues, are not counted as done. The comments typed by hand earlier summed to about $137,000; the script's figure replaces it. After closing E0-19 and adding three stories (22 Nov, later): 29 done stories = 147 person-days = $147,000 so far; 116 stories, 700 person-days, $700,000 projected.
 
 ## Next, in order (from CLAUDE.md and the epics)
 
-0. **E8-10 is merged (PR #160):** close its issue #157 with costs (CLAUDE.md step 8, skill `estimate-human-cost`). Projected Token Cost stays "Coming Soon..." until E8-06. When the E0-19 AC5 PR merges, close E0-19's issue with its costs (it spans PR #161 and that PR). E0-18 stays open until Try it is on every module page.
+0. **E8-10 is merged (PR #160):** close its issue #157 with costs (CLAUDE.md step 8, skill `estimate-human-cost`). Projected Token Cost stays "Coming Soon..." until E8-06. E0-19 is closed (#96). E0-18 stays open until Try it is on every module page.
 1. E0-07 service template, then E0-08 gateway, then the rest of E0.
 2. E1 Identity with Cognito.
 3. Whenever Nikhil says go: E0-44 rename, E8-02 onward.

@@ -2,7 +2,7 @@
 
 What it costs to build 01scale with Claude Code, per story. Generated from `docs/process/token-ledger.json` by `npm run costs`; do not edit by hand.
 
-Updated 2026-11-22. 237 requests across 5 session(s). Total **$349.72** for 696.1 million tokens.
+Updated 2026-11-22. 238 requests across 5 session(s). Total **$349.72** for 712.2 million tokens.
 
 ## Per story
 
@@ -62,16 +62,16 @@ Updated 2026-11-22. 237 requests across 5 session(s). Total **$349.72** for 696.
 | Planning documents | 2 | 1.35M | $0.72 |
 | Questions and explanations | 25 | 19.06M | $21.58 |
 | Product discovery | 17 | 7.28M | $15.87 |
-| Process | 38 | 92.69M | $24.75 |
+| Process | 39 | 108.81M | $24.75 |
 | Tool overhead (background calls) | 0 | 0.00M | $1.65 |
-| **Total** | **89** | **128.24M** | **$66.47** |
+| **Total** | **90** | **144.36M** | **$66.47** |
 
 ## Totals
 
 - Build $156.68, rework $126.57, scaffolding $66.47.
 - Token yield across stories (build ÷ build + rework): 53%.
-- 15 pending request(s) were never priced by the tool; estimated at about $15.50 from their measured tokens at list prices (an upper bound), not included in the totals above.
-- Share of all tokens that went into kept story work: 43%.
+- 16 pending request(s) were never priced by the tool; estimated at about $19.39 from their measured tokens at list prices (an upper bound), not included in the totals above.
+- Share of all tokens that went into kept story work: 42%.
 
 ## Definitions
 

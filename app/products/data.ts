@@ -395,6 +395,33 @@ export const products = [
         ],
         "evals": "",
         "service": "Identity, plus every service"
+      },
+      {
+        "id": "MVP1-E1-09",
+        "title": "Account screens as UI components (`ui-identity`)",
+        "size": "S",
+        "pending": "**Status: not started.** Added 22 Nov 2026 (Nikhil), when MVP1-E0-19 AC5 marked these components \"Designed, not built yet\".",
+        "story": "As the owner, I want the account page's screens built as Identity's UI components, so any app can offer account management without building it again.",
+        "acs": [
+          {
+            "label": "AC1",
+            "text": "`AccountDetails`, `PasswordChangeButton`, `DeleteAccountDialog` and `ApiKeysManager` are built as designed in `docs/services/identity/account/UI-COMPONENTS.md`. `ApiKeysManager` shows a new key's secret once, with Copy, and never again. `DeleteAccountDialog` asks the person to type DELETE."
+          },
+          {
+            "label": "AC2",
+            "text": "Each component is built in `packages/ui-identity` on `@01scale/ui-core`, calls only its own service's API through the package's client, and has every state its design lists (loading, empty, failed and each data state)."
+          },
+          {
+            "label": "AC3",
+            "text": "Each component is shown live, in each of its states, on its module's UI Components section, replacing \"Designed, not built yet\" (MVP1-E0-19 AC5)."
+          },
+          {
+            "label": "AC4",
+            "text": "Keyboard reachable, visible focus, labelled controls, WCAG AA contrast, usable at 320 pixels wide, in light and dark mode."
+          }
+        ],
+        "evals": "",
+        "service": "Identity (`packages/ui-identity`); parent stories `MVP1-E1-05` (account page) and `MVP1-E0-06` (API keys)"
       }
     ],
     "endpoints": [
@@ -475,6 +502,10 @@ export const products = [
       {
         "story": "MVP1-E1-05",
         "text": "The account page is composed by the app: it reads `GET /api/identity/v1/me`, `GET /api/docflow/v1/stats` and `GET /api/payment/v1/orders`."
+      },
+      {
+        "story": "MVP1-E1-09",
+        "text": "No new endpoints. Uses those of `MVP1-E1-05` and `MVP1-E0-06`."
       }
     ],
     "dbNotes": [
@@ -487,6 +518,11 @@ export const products = [
         "story": "MVP1-E0-06",
         "title": "Agent access: API keys and MCP",
         "text": "`identity.api_keys` (id, user_id → users, name, prefix, key_hash unique, scopes text[], last_used_at, expires_at, revoked_at, created_at). Only the SHA-256 hash of the secret is stored; `prefix` (first 8 characters) is kept for display."
+      },
+      {
+        "story": "MVP1-E1-09",
+        "title": "Account screens as UI components (`ui-identity`)",
+        "text": "No tables."
       }
     ]
   },
@@ -937,6 +973,33 @@ export const products = [
         ],
         "evals": "RAG-1 retrieval recall, RAG-2 faithfulness, RAG-3 refusal on unanswerable questions, RAG-4 latency and cost (see `EVALS.md`).",
         "service": "LLM Extraction (index and answers); DocFlow composes the \"Ask\" box on `/documents`"
+      },
+      {
+        "id": "MVP1-E3-07",
+        "title": "Jobs table for the admin as a UI component (`ui-extraction`)",
+        "size": "S",
+        "pending": "**Status: not started.** Added 22 Nov 2026 (Nikhil), when MVP1-E0-19 AC5 marked this component \"Designed, not built yet\".",
+        "story": "As the owner, I want the admin's jobs table built as Extraction's UI component, so I can watch cost, speed and failures in any app.",
+        "acs": [
+          {
+            "label": "AC1",
+            "text": "`JobsTable` is built as designed in `docs/services/extraction/UI-COMPONENTS.md`: the last jobs with model, prompt version, pages, tokens, cost, time and outcome, with the failure rate, average cost and slowest time on top. To anyone who is not an admin it shows \"Not found\", as the API answers."
+          },
+          {
+            "label": "AC2",
+            "text": "Each component is built in `packages/ui-extraction` on `@01scale/ui-core`, calls only its own service's API through the package's client, and has every state its design lists (loading, empty, failed and each data state)."
+          },
+          {
+            "label": "AC3",
+            "text": "Each component is shown live, in each of its states, on its module's UI Components section, replacing \"Designed, not built yet\" (MVP1-E0-19 AC5)."
+          },
+          {
+            "label": "AC4",
+            "text": "Keyboard reachable, visible focus, labelled controls, WCAG AA contrast, usable at 320 pixels wide, in light and dark mode."
+          }
+        ],
+        "evals": "",
+        "service": "LLM Extraction (`packages/ui-extraction`); parent story `MVP1-E3-05`"
       }
     ],
     "endpoints": [
@@ -1005,6 +1068,10 @@ export const products = [
       {
         "story": "MVP1-E3-04",
         "text": "No new endpoints. The component polls `GET /jobs/{jobId}`, reads `GET /jobs/{jobId}/fields`, and shows the file through Upload `download-url`."
+      },
+      {
+        "story": "MVP1-E3-07",
+        "text": "No new endpoints. Uses `GET /api/extraction/v1/admin/jobs` (`MVP1-E3-05`)."
       }
     ],
     "dbNotes": [
@@ -1037,6 +1104,11 @@ export const products = [
         "story": "MVP1-E3-06",
         "title": "Ask questions about my documents (RAG)",
         "text": "`extraction.passages` (id, job_id → jobs on delete cascade, owner_id, page, text, embedding `vector`, created_at); an approximate-nearest-neighbour index on `embedding` (pgvector, HNSW) and an index on `owner_id`. `extraction.questions` (id, owner_id, model, prompt_version, tokens_in, tokens_out, cost_usd, duration_ms, found, created_at): no question or answer text is stored."
+      },
+      {
+        "story": "MVP1-E3-07",
+        "title": "Jobs table for the admin as a UI component (`ui-extraction`)",
+        "text": "No tables."
       }
     ]
   },
@@ -1142,6 +1214,33 @@ export const products = [
         ],
         "evals": "",
         "service": "Human Review"
+      },
+      {
+        "id": "MVP1-E4-05",
+        "title": "Eval candidates and accuracy for the admin as UI components (`ui-review`)",
+        "size": "S",
+        "pending": "**Status: not started.** Added 22 Nov 2026 (Nikhil), when MVP1-E0-19 AC5 marked these components \"Designed, not built yet\".",
+        "story": "As the owner, I want the admin's eval-candidate and accuracy screens built as Review's UI components, so I can approve real model mistakes as eval cases and see how accurate the fields are, inside the app.",
+        "acs": [
+          {
+            "label": "AC1",
+            "text": "`EvalCandidatesTable` (corrections with both values, Approve and Reject) and `AccuracyReport` (per field, how often people corrected it and how well flagging caught it, as numbers only) are built as designed in `docs/services/review/UI-COMPONENTS.md`. Neither exports or copies user data (Nikhil's privacy rule; decision on #41)."
+          },
+          {
+            "label": "AC2",
+            "text": "Each component is built in `packages/ui-review` on `@01scale/ui-core`, calls only its own service's API through the package's client, and has every state its design lists (loading, empty, failed and each data state)."
+          },
+          {
+            "label": "AC3",
+            "text": "Each component is shown live, in each of its states, on its module's UI Components section, replacing \"Designed, not built yet\" (MVP1-E0-19 AC5)."
+          },
+          {
+            "label": "AC4",
+            "text": "Keyboard reachable, visible focus, labelled controls, WCAG AA contrast, usable at 320 pixels wide, in light and dark mode."
+          }
+        ],
+        "evals": "",
+        "service": "Human Review (`packages/ui-review`); parent story `MVP1-E4-04`"
       }
     ],
     "endpoints": [
@@ -1202,7 +1301,12 @@ export const products = [
         "story": "MVP1-E4-04"
       }
     ],
-    "apiNotes": [],
+    "apiNotes": [
+      {
+        "story": "MVP1-E4-05",
+        "text": "No new endpoints. Uses `GET` and `PATCH /api/review/v1/admin/eval-candidates` and `GET /api/review/v1/admin/accuracy` (`MVP1-E4-04`)."
+      }
+    ],
     "dbNotes": [
       {
         "story": "MVP1-E4-01",
@@ -1223,6 +1327,11 @@ export const products = [
         "story": "MVP1-E4-04",
         "title": "Corrections feed the eval set",
         "text": "`review.eval_candidates` (id, task_id, reference, field_name, model_value jsonb, human_value jsonb, status `candidate|approved|rejected`, created_at). `task_id` references `review.tasks` with delete cascade, so candidates are deleted with the task and the account (decision on #41)."
+      },
+      {
+        "story": "MVP1-E4-05",
+        "title": "Eval candidates and accuracy for the admin as UI components (`ui-review`)",
+        "text": "No tables."
       }
     ]
   },
