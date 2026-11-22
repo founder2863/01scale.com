@@ -522,22 +522,22 @@ export const costs = {
     {
       "key": "MVP1-E0-19",
       "name": "MVP1-E0-19 · Design system (packages/ui-core), service UI packages (E0-07 AC6) and the DocFlow V1 clickable prototype (E0-18 for DocFlow)",
-      "requests": 3,
-      "buildTokens": 31245106,
-      "reworkTokens": 0,
-      "buildCost": 8.72,
+      "requests": 4,
+      "buildTokens": 36887681,
+      "reworkTokens": 9369832,
+      "buildCost": 14.6,
       "reworkCost": 0,
-      "totalCost": 8.72,
-      "yield": 100,
+      "totalCost": 14.6,
+      "yield": 80,
       "pending": true
     }
   ],
   "storyTotals": {
-    "requests": 145,
-    "tokens": 538037332,
-    "buildCost": 150.8,
+    "requests": 146,
+    "tokens": 553049739,
+    "buildCost": 156.68,
     "reworkCost": 126.57,
-    "cost": 277.37,
+    "cost": 283.25,
     "yield": 54,
     "pending": true
   },
@@ -570,7 +570,7 @@ export const costs = {
       "name": "Process",
       "requests": 37,
       "tokens": 92156916,
-      "cost": 21.14
+      "cost": 24.75
     },
     {
       "name": "Tool overhead (background calls)",
@@ -582,20 +582,20 @@ export const costs = {
   "scaffoldingTotals": {
     "requests": 88,
     "tokens": 127708164,
-    "cost": 62.85
+    "cost": 66.47
   },
   "totals": {
-    "requests": 233,
-    "tokens": 665745496,
-    "cost": 340.23,
-    "buildCost": 150.8,
+    "requests": 234,
+    "tokens": 680757903,
+    "cost": 349.72,
+    "buildCost": 156.68,
     "reworkCost": 126.57,
-    "scaffoldingCost": 62.85,
+    "scaffoldingCost": 66.47,
     "storyYield": 54,
     "overallYield": 44,
-    "pendingRequests": 21,
-    "pendingEstimate": 16.65,
-    "pendingEstimated": 15
+    "pendingRequests": 18,
+    "pendingEstimate": 11.67,
+    "pendingEstimated": 12
   },
   "byKind": {
     "input": 0.06,
@@ -623,8 +623,8 @@ export const costs = {
       "cost": 103.2,
       "share": 30,
       "median": 8.2,
-      "typical": 0.49,
-      "extra": 96.85
+      "typical": 0.51,
+      "extra": 96.57
     },
     "mergedTooSoon": {
       "requests": 1,
