@@ -336,7 +336,6 @@ function ExtractScreen({ doc, file, setDoc, go }: ScreenProps & { file: PickedFi
   const docflow = useDocflow();
   const [job, setJob] = useState<Job | null>(null);
   const [retrying, setRetrying] = useState(false);
-  const [showAll, setShowAll] = useState(false);
 
   return (
     <Card title={<span tabIndex={-1}>Reading {file.name}</span>} actions={<BackButton onClick={() => go("documents")} />}>
@@ -367,13 +366,13 @@ function ExtractScreen({ doc, file, setDoc, go }: ScreenProps & { file: PickedFi
           <NextStepButton job={job} onReview={() => go("review")} onContinue={() => go("results")} />
           {job?.status === "extracted" ? (
             <>
-              <h3 className="df-h3">{showAll ? `All ${job.fields_total} fields` : `The ${job.fields_flagged} fields to check`}</h3>
-              <FieldList key={String(showAll)} jobId={job.id} flaggedOnly={!showAll} />
-              <div>
-                <Button size="sm" variant="ghost" onClick={() => setShowAll((v) => !v)}>
-                  {showAll ? `Show only the ${job.fields_flagged} to check` : `Show all ${job.fields_total} fields`}
-                </Button>
-              </div>
+              <h3 className="df-h3">The {job.fields_flagged} fields to check</h3>
+              <FieldList jobId={job.id} flaggedOnly />
+              {job.fields_total > job.fields_flagged ? (
+                <p className="df-locked-note">
+                  <span aria-hidden="true">🔒</span> The other {job.fields_total - job.fields_flagged} fields were read with high confidence. They unlock after payment.
+                </p>
+              ) : null}
             </>
           ) : null}
         </div>
@@ -409,6 +408,8 @@ function ReviewScreen({ doc, file, setDoc, go }: ScreenProps & { file: PickedFil
               setFailed(null);
             }}
             onFocusEvidence={setQuote}
+            // Before payment, only the flagged fields (MVP1-E5-03 AC4).
+            allowShowAll={doc.status === "paid"}
           />
           {failed ? (
             <Alert
@@ -507,6 +508,7 @@ function ResultsScreen({ doc, setDoc, go }: ScreenProps) {
                     <ResultsFieldEditor
                       taskId={doc.review_task_id!}
                       checks={outputs.checks}
+                      locked={outputs.locked}
                       onSaved={async () => {
                         await load();
                         toast.show("Saved. The previews now use the corrected value.", "success");

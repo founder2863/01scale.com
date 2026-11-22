@@ -199,7 +199,7 @@ JOURNEYS = [
     journey("Upload to results", "Someone with an invoice", "Starts on My documents.", ["MVP1-E0-09", "MVP1-E2-05"], [
         ("Sees My documents, or 'Upload your first invoice' with a sample invoice to try.", "DocFlow lists the person's documents with status and next action."),
         ("Uploads, sees a preview of the file, and taps Continue to the extraction page.", "DocFlow starts the document, Upload stores and checks the file, DocFlow starts Extraction, and the upload screen shows Upload's `FilePreview`."),
-        ("Watches the steps, then sees 'Review 3 flagged fields'.", "Extraction tells DocFlow it finished; DocFlow sends the fields to Review."),
+        ("Watches the steps, then sees 'Review 3 flagged fields' and the three fields; the fields read with high confidence stay hidden until payment.", "Extraction tells DocFlow it finished; DocFlow sends the fields to Review."),
         ("Checks the flagged fields and taps Complete review.", "DocFlow re-checks the values with Extraction and completes the review."),
     ], "The results can be previewed, built from Review's values; downloads are locked until payment."),
     journey("Preview, pay and download", "Someone with reviewed results", "Opens the results.", ["MVP1-E5-01", "MVP1-E5-03", "MVP1-E6-01", "MVP1-E7-01", "MVP1-E7-02"], [
@@ -234,7 +234,7 @@ COMPONENTS = [
     component("CsvPreview", "Component", "The CSV as a table that scrolls inside its own box.",
         [("documentId", "string", "The document.")], ["Loading", "Shown", "Not ready", "Failed: Retry"], ["`GET /documents/{documentId}/outputs/csv/preview`"]),
     component("ResultsFieldEditor", "Page section", "The results page's Edit beside each value. It places Review's `FieldDecision` component for that field, then refreshes the previews and checks. DocFlow adds no editing logic of its own.",
-        [("documentId", "string", "The document."), ("taskId", "string", "Its Review task.")], ["Viewing", "Editing (Review's component)", "Saved: previews refreshed", "Check failed after saving: the warning", "Failed: Retry"], ["`GET /documents/{documentId}/outputs`", "Review `PATCH /tasks/{taskId}/fields/{fieldId}`, through Review's component"]),
+        [("documentId", "string", "The document."), ("taskId", "string", "Its Review task."), ("locked", "boolean", "From the outputs request. While locked, only the flagged fields are listed.")], ["Before payment: the flagged fields only, and how many more fields unlock after payment", "Viewing", "Editing (Review's component)", "Saved: previews refreshed", "Check failed after saving: the warning", "Failed: Retry"], ["`GET /documents/{documentId}/outputs`", "Review `PATCH /tasks/{taskId}/fields/{fieldId}`, through Review's component"]),
     component("DownloadButtons", "Component", "Download JSON and Download CSV; 'Pay to download' while locked.",
         [("documentId", "string", "The document."), ("locked", "boolean", "From the outputs request.")], ["Locked", "Unlocked", "Working"], ["`GET /documents/{documentId}/outputs/{format}/download`"]),
 ]

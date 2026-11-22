@@ -1116,7 +1116,7 @@ export const docflow = {
           "system": "DocFlow starts the document, Upload stores and checks the file, DocFlow starts Extraction, and the upload screen shows Upload's `FilePreview`."
         },
         {
-          "person": "Watches the steps, then sees 'Review 3 flagged fields'.",
+          "person": "Watches the steps, then sees 'Review 3 flagged fields' and the three fields; the fields read with high confidence stay hidden until payment.",
           "system": "Extraction tells DocFlow it finished; DocFlow sends the fields to Review."
         },
         {
@@ -1302,9 +1302,15 @@ export const docflow = {
           "name": "taskId",
           "type": "string",
           "meaning": "Its Review task."
+        },
+        {
+          "name": "locked",
+          "type": "boolean",
+          "meaning": "From the outputs request. While locked, only the flagged fields are listed."
         }
       ],
       "states": [
+        "Before payment: the flagged fields only, and how many more fields unlock after payment",
         "Viewing",
         "Editing (Review's component)",
         "Saved: previews refreshed",

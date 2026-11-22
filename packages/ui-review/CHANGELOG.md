@@ -1,5 +1,9 @@
 # @01scale/ui-review changelog
 
+## 0.1.2 — 22 Nov 2026
+
+- ReviewQueue: `allowShowAll` (default true) lets an app hide the 'Show all fields' toggle, for example until payment.
+
 ## 0.1.1 — 22 Nov 2026
 
 - Uses `@01scale/ui-core` 0.1.1 (a wide tab panel no longer widens the page).

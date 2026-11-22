@@ -174,7 +174,7 @@ export function CsvPreview({ values, preview }: { values: InvoiceValues; preview
 }
 
 /** ResultsFieldEditor: Edit beside each value, placing Review's FieldDecision for that field. */
-export function ResultsFieldEditor({ taskId, checks, onSaved }: { taskId: string; checks: CheckResult[]; onSaved: () => void }) {
+export function ResultsFieldEditor({ taskId, checks, onSaved, locked = false }: { taskId: string; checks: CheckResult[]; onSaved: () => void; locked?: boolean }) {
   const review = useReviewClient();
   const [fields, setFields] = useState<ReviewField[] | null>(null);
   const [editing, setEditing] = useState<string | null>(null);
@@ -188,11 +188,15 @@ export function ResultsFieldEditor({ taskId, checks, onSaved }: { taskId: string
   }, [taskId]);
 
   if (!fields) return <Skeleton height={200} />;
+  // Before payment, only the flagged fields; the ones read with high confidence unlock after payment (MVP1-E5-03 AC4).
+  const shown = locked ? fields.filter((f) => f.flagged) : fields;
+  const hidden = fields.length - shown.length;
   const failedFields = new Set(checks.filter((c) => !c.passed).flatMap((c) => c.fields));
   const key = (f: ReviewField) => (f.line_index === null ? f.name : `line_items[${f.line_index}].${f.name}`);
   return (
+    <div className="df-stack">
     <ul className="df-fieldlist">
-      {fields.map((field) =>
+      {shown.map((field) =>
         editing === field.id ? (
           <li key={field.id}>
             <FieldDecision
@@ -224,6 +228,12 @@ export function ResultsFieldEditor({ taskId, checks, onSaved }: { taskId: string
         ),
       )}
     </ul>
+    {hidden ? (
+      <p className="df-locked-note">
+        <span aria-hidden="true">🔒</span> {hidden} more field{hidden === 1 ? " was" : "s were"} read with high confidence. They unlock after payment.
+      </p>
+    ) : null}
+    </div>
   );
 }
 

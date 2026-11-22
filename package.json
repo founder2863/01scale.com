@@ -18,7 +18,7 @@
     "@01scale/ui-extraction": "0.2.1",
     "@01scale/ui-identity": "0.2.1",
     "@01scale/ui-payment": "0.2.1",
-    "@01scale/ui-review": "0.1.1",
+    "@01scale/ui-review": "0.1.2",
     "@01scale/ui-upload": "0.2.1",
     "@vercel/analytics": "^2.0.1",
     "marked": "^15.0.12",

@@ -1,6 +1,6 @@
 {
   "name": "@01scale/ui-review",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": true,
   "description": "UI components of the 01scale Review service (MVP1-E0-07 AC6). They call only the Review API, through a client the app supplies.",
   "type": "module",

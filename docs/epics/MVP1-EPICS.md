@@ -892,6 +892,7 @@ As a user, I want to ask a question in plain language across my processed invoic
 ### MVP1-E5-03 · Locked preview — S
 - **AC1:** Before payment, I can see a short preview of both outputs on screen: four fields (vendor, invoice number, date and total) and how many more fields and line items unlock after payment. Download buttons show "Pay to download". After payment I see everything. (Changed 22 Nov 2026, Nikhil: a full preview gave the results away before payment.)
 - **AC3:** The preview limit is enforced on the server, like the download lock, so the full results cannot be read through the API before payment.
+- **AC4:** Before payment, DocFlow's screens list only the flagged fields: after extraction, in the review and in the results page's Edit values. The fields read with high confidence stay hidden, with a line saying how many unlock after payment (Nikhil, 22 Nov 2026).
 - **AC2:** The download endpoints return 402 until the order is paid, enforced on the server.
 - **Service:** DocFlow app
 - **API design:**

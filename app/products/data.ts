@@ -1307,6 +1307,10 @@ export const products = [
             "text": "The preview limit is enforced on the server, like the download lock, so the full results cannot be read through the API before payment."
           },
           {
+            "label": "AC4",
+            "text": "Before payment, DocFlow's screens list only the flagged fields: after extraction, in the review and in the results page's Edit values. The fields read with high confidence stay hidden, with a line saying how many unlock after payment (Nikhil, 22 Nov 2026)."
+          },
+          {
             "label": "AC2",
             "text": "The download endpoints return 402 until the order is paid, enforced on the server."
           }

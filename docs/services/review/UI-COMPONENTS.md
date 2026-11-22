@@ -21,6 +21,7 @@ What the Human Review service ships for apps to use, as the package `packages/ui
 |---|---|---|
 | `taskId` | string | The task. |
 | `showAll` | boolean, optional | Include unflagged fields. Default false; a 'Show all fields' toggle is built in. |
+| `allowShowAll` | boolean, optional | Whether the 'Show all fields' toggle is offered. Default true; an app can hide it, for example until something is paid for. |
 
 **States:** Loading: placeholder rows; Open: fields with their status; All resolved: a short 'All checked' message; Completed: marked 'Finished', values still editable; Failed: 'Couldn't load this review.' and Retry.
 

@@ -355,6 +355,7 @@ const GALLERIES: Record<(typeof GALLERY_MODULES)[number], Record<string, Demo[]>
       { state: "After payment", note: "A wide table scrolls sideways inside its own box.", render: () => <CsvPreview values={VALUES} /> },
     ],
     ResultsFieldEditor: [
+      { state: "Before payment", render: () => <Review client={reviewClient(reviewFields(true))}><ResultsFieldEditor taskId="task-demo" checks={runChecks(VALUES)} onSaved={() => {}} locked /></Review> },
       { state: "Viewing", note: "Select Edit beside a value: Review's FieldDecision opens in place.", render: () => <Review client={reviewClient(reviewFields(true))}><ResultsFieldEditor taskId="task-demo" checks={runChecks(VALUES)} onSaved={() => {}} /></Review> },
       {
         state: "Check failed",
