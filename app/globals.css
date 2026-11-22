@@ -3287,3 +3287,36 @@ section[id] {
 .lesson-section > div {
   padding-bottom: 8px;
 }
+
+/* DocFlow Overview: the Try it call-out (MVP1-E0-18). */
+.try-callout {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--brand);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+
+.try-callout > div:first-child {
+  flex: 1 1 320px;
+}
+
+.try-callout .note {
+  margin-bottom: 0;
+}
+
+.try-callout-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3) var(--space-4);
+}
+
+.try-callout-actions .button {
+  margin-top: 0;
+}

@@ -1,19 +1,71 @@
 "use client";
 
-// Human Review's components (docs/services/review/UI-COMPONENTS.md). Evidence is always beside the
-// value it supports; on phones every action is a button at least 44 pixels tall.
+// @01scale/ui-review: Human Review's components (docs/services/review/UI-COMPONENTS.md). They work
+// for any set of fields: labels come from field names, checks from field types. Evidence is always
+// beside the value it supports. Re-checking values against document rules is the app's step.
 
 import { useEffect, useState } from "react";
-import { Alert, Badge, Button, Checkbox, Input, ProgressBar, Skeleton } from "@01scale/ui-core";
-import type { ReviewField, Task } from "../mock-platform";
-import { formatHint, validateValue } from "../mock-platform";
-import { fieldLabel } from "../sample-invoice";
-import { ConfidenceBadge, FieldEvidence } from "./extraction";
-import { messageFor, useService } from "./platform-context";
+import { Alert, Badge, Button, Checkbox, Input, ProgressBar, Skeleton, createClientContext, labelFromName, problemMessage } from "@01scale/ui-core";
+
+// ---- Types, as the Review API returns them
+
+export type FieldType = "text" | "date" | "money" | "number" | "currency";
+export type ReviewField = {
+  id: string;
+  name: string;
+  line_index: number | null;
+  type: FieldType;
+  original_value: string | null;
+  value: string | null;
+  confidence: number;
+  source_page: number | null;
+  source_quote: string | null;
+  flagged: boolean;
+  flag_reasons: string[];
+  status: "pending" | "accepted" | "edited" | "not_present";
+};
+export type Task = { id: string; status: "open" | "completed"; resolved: number; total_flagged: number; can_complete: boolean };
+export type Decision = "accept" | "edit" | "not_present";
+
+export type ReviewClient = {
+  /** GET /tasks/{taskId} */
+  getTask: (taskId: string) => Promise<{ task: Task; fields: ReviewField[] }>;
+  /** PATCH /tasks/{taskId}/fields/{fieldId} */
+  decide: (taskId: string, fieldId: string, action: Decision, value?: string) => Promise<{ field: ReviewField; resolved: number; can_complete: boolean }>;
+};
+
+const { Provider, useClient } = createClientContext<ReviewClient>("Review");
+export const ReviewClientProvider = Provider;
+/** The client, for an app that builds its own screen on this API. */
+export const useReviewClient = useClient;
+
+// ---- Checks by field type: the same in the edit box and in the API
+
+export function validateValue(type: FieldType, value: string): string | null {
+  const v = value.trim();
+  if (!v) return "Enter a value, or choose Not on document.";
+  if (type === "date") {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(v)) return "Use the format YYYY-MM-DD, for example 2026-11-02.";
+    const d = new Date(`${v}T00:00:00Z`);
+    if (Number.isNaN(d.getTime()) || d.toISOString().slice(0, 10) !== v) return "That date does not exist.";
+  }
+  if (type === "money" && !/^-?\d+(\.\d{2})$/.test(v)) return "Use digits with two decimals, for example 380.00.";
+  if (type === "number" && !/^\d+(\.\d+)?$/.test(v)) return "Use digits only, for example 4.";
+  if (type === "currency" && !/^[A-Z]{3}$/.test(v)) return "Use a three-letter currency code, for example USD.";
+  return null;
+}
+
+export function formatHint(type: FieldType): string | undefined {
+  return { date: "YYYY-MM-DD", money: "Digits with two decimals", number: "Digits", currency: "Three letters, like USD", text: undefined }[type];
+}
+
+// ---- Components
 
 /** ResolvedCounter: 'N of M resolved', with a bar. */
 export function ResolvedCounter({ resolved, total }: { resolved: number; total: number }) {
-  return <ProgressBar value={resolved} max={total} label={resolved === total ? "All checked" : "Flagged fields checked"} valueText={`${resolved} of ${total} resolved`} />;
+  return (
+    <ProgressBar value={resolved} max={total} label={resolved === total ? "All checked" : "Flagged fields checked"} valueText={`${resolved} of ${total} resolved`} />
+  );
 }
 
 const STATUS_BADGE: Record<ReviewField["status"], { tone: "neutral" | "success" | "info" | "warning"; text: string }> = {
@@ -35,20 +87,22 @@ export function FieldDecision({
   taskId: string;
   field: ReviewField;
   onDecided: (field: ReviewField) => void;
+  /** Called with the field's quote when it gets focus, so the app can highlight it on the document. */
   onFocusEvidence?: (quote: string | null) => void;
   startEditing?: boolean;
+  /** Value and buttons only, for an edit beside a value elsewhere. */
   compact?: boolean;
 }) {
-  const review = useService("review");
+  const review = useClient();
   const [editing, setEditing] = useState(startEditing);
   const [draft, setDraft] = useState(field.value ?? "");
   const [touched, setTouched] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const invalid = touched ? validateValue(field.type, draft) : null;
-  const label = fieldLabel(field.name, field.line_index);
+  const label = labelFromName(field.name, field.line_index);
 
-  async function decide(action: "accept" | "edit" | "not_present") {
+  async function decide(action: Decision) {
     if (action === "edit") {
       setTouched(true);
       if (validateValue(field.type, draft)) return;
@@ -58,9 +112,9 @@ export function FieldDecision({
     try {
       const result = await review.decide(taskId, field.id, action, draft);
       setEditing(false);
-      onDecided(result.field as ReviewField);
+      onDecided(result.field);
     } catch (e) {
-      setError(messageFor(e));
+      setError(problemMessage(e));
     } finally {
       setSaving(false);
     }
@@ -68,17 +122,21 @@ export function FieldDecision({
 
   const badge = STATUS_BADGE[field.status];
   return (
-    <div className={`df-decision${field.status === "pending" ? " df-decision-pending" : ""}`} onFocus={() => onFocusEvidence?.(field.source_quote)} onMouseEnter={() => onFocusEvidence?.(field.source_quote)}>
-      <div className="df-decision-head">
+    <div
+      className={`ui-review-decision${field.status === "pending" ? " ui-review-decision-pending" : ""}`}
+      onFocus={() => onFocusEvidence?.(field.source_quote)}
+      onMouseEnter={() => onFocusEvidence?.(field.source_quote)}
+    >
+      <div className="ui-review-decision-head">
         <strong>{label}</strong>
-        <span className="df-row">
-          {!compact ? <ConfidenceBadge confidence={field.confidence} flagged={field.flagged} /> : null}
+        <span className="ui-inline">
+          {!compact ? <Badge tone={field.flagged ? "warning" : "neutral"} icon={field.flagged ? "⚑" : undefined}>Confidence {field.confidence.toFixed(2)}</Badge> : null}
           <Badge tone={badge.tone}>{badge.text}</Badge>
         </span>
       </div>
       {editing ? (
         <form
-          className="df-stack"
+          className="ui-stack"
           onSubmit={(e) => {
             e.preventDefault();
             void decide("edit");
@@ -96,7 +154,7 @@ export function FieldDecision({
             }}
             error={invalid}
           />
-          <div className="df-row">
+          <div className="ui-inline">
             <Button type="submit" size="sm" loading={saving}>
               Save
             </Button>
@@ -107,7 +165,7 @@ export function FieldDecision({
         </form>
       ) : (
         <>
-          <p className="df-decision-value">
+          <p className="ui-review-decision-value">
             {field.status === "edited" ? (
               <>
                 <del className="ui-hint">{field.original_value ?? "empty"}</del> → <strong>{field.value}</strong>
@@ -118,9 +176,30 @@ export function FieldDecision({
               <em className="ui-hint">{field.status === "not_present" ? "Not on the document" : "Not found on the document"}</em>
             )}
           </p>
-          {!compact ? <FieldEvidence field={field} /> : null}
-          <div className="df-row">
-            <Button size="sm" variant={field.status === "accepted" ? "secondary" : "primary"} loading={saving} disabled={!field.value && !field.original_value} onClick={() => decide("accept")}>
+          {!compact ? (
+            <div className="ui-review-evidence">
+              {field.source_quote ? (
+                <p>
+                  <span className="ui-hint">On page {field.source_page}:</span> <q>{field.source_quote}</q>
+                </p>
+              ) : null}
+              {field.flag_reasons.length ? (
+                <ul>
+                  {field.flag_reasons.map((reason) => (
+                    <li key={reason}>{reason}</li>
+                  ))}
+                </ul>
+              ) : null}
+            </div>
+          ) : null}
+          <div className="ui-inline">
+            <Button
+              size="sm"
+              variant={field.status === "accepted" ? "secondary" : "primary"}
+              loading={saving}
+              disabled={!field.value && !field.original_value}
+              onClick={() => decide("accept")}
+            >
               Accept
             </Button>
             <Button size="sm" variant="secondary" disabled={saving} onClick={() => setEditing(true)}>
@@ -143,7 +222,7 @@ export function FieldDecision({
   );
 }
 
-/** ReviewQueue: the task's fields, flagged first, each with its decision, and the counter. */
+/** ReviewQueue: the task's flagged fields with their decisions, the counter, and 'Show all fields'. */
 export function ReviewQueue({
   taskId,
   onChanged,
@@ -153,7 +232,7 @@ export function ReviewQueue({
   onChanged?: (task: Task, fields: ReviewField[]) => void;
   onFocusEvidence?: (quote: string | null) => void;
 }) {
-  const review = useService("review");
+  const review = useClient();
   const [data, setData] = useState<{ task: Task; fields: ReviewField[] } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [showAll, setShowAll] = useState(false);
@@ -165,7 +244,7 @@ export function ReviewQueue({
       setData(next);
       onChanged?.(next.task, next.fields);
     } catch (e) {
-      setError(messageFor(e));
+      setError(problemMessage(e));
     }
   }
   useEffect(() => {
@@ -181,7 +260,7 @@ export function ReviewQueue({
     );
   if (!data)
     return (
-      <div className="df-stack" aria-busy="true">
+      <div className="ui-stack" aria-busy="true">
         <Skeleton height={20} />
         <Skeleton height={140} />
         <Skeleton height={140} />
@@ -191,19 +270,21 @@ export function ReviewQueue({
   const flagged = data.fields.filter((f) => f.flagged);
   const rest = data.fields.filter((f) => !f.flagged);
   return (
-    <div className="df-stack">
+    <div className="ui-stack">
       <ResolvedCounter resolved={data.task.resolved} total={data.task.total_flagged} />
       {data.task.resolved === data.task.total_flagged ? <Alert tone="success">All checked. Complete the review when you&apos;re ready.</Alert> : null}
       {flagged.map((field) => (
         <FieldDecision key={field.id} taskId={taskId} field={field} onDecided={load} onFocusEvidence={onFocusEvidence} />
       ))}
       <Checkbox label={`Show all fields (${rest.length} more, already accepted)`} checked={showAll} onChange={(e) => setShowAll(e.target.checked)} />
-      {showAll ? rest.map((field) => <FieldDecision key={field.id} taskId={taskId} field={field} onDecided={load} onFocusEvidence={onFocusEvidence} compact />) : null}
+      {showAll
+        ? rest.map((field) => <FieldDecision key={field.id} taskId={taskId} field={field} onDecided={load} onFocusEvidence={onFocusEvidence} compact />)
+        : null}
     </div>
   );
 }
 
-/** CompleteReviewButton: disabled until every flagged field is decided. The app can supply its own complete step. */
+/** CompleteReviewButton: disabled until every flagged field is decided. The app supplies the complete step. */
 export function CompleteReviewButton({
   task,
   complete,
@@ -232,7 +313,7 @@ export function CompleteReviewButton({
         }
       }}
     >
-      {!task ? "Complete review" : left > 0 ? `${left} field${left === 1 ? "" : "s"} left` : "Complete review"}
+      {!task || left === 0 ? "Complete review" : `${left} field${left === 1 ? "" : "s"} left`}
     </Button>
   );
 }

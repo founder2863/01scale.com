@@ -88,14 +88,6 @@ export const SAMPLE_FIELDS: SampleField[] = [
 
 export const SAMPLE_FILE_NAME = "sample-invoice-northwind.pdf";
 export const SAMPLE_FILE_SIZE = 48_213;
-export const SAMPLE_PAGE_TEXT = "Northwind Paper Co. Invoice NW-2026-0187 …";
-
-/** Human labels for field names; the platform components derive them from the schema the same way. */
-export function fieldLabel(name: string, lineIndex: number | null = null): string {
-  const label = name.replace(/_/g, " ").replace(/^./, (c) => c.toUpperCase()).replace("Vendor tax id", "Vendor tax ID");
-  return lineIndex === null ? label : `Line ${lineIndex + 1} · ${label.toLowerCase()}`;
-}
-
 /** The sample invoice drawn as a page, so the prototype has a document to look at. */
 export function SampleInvoice({ highlight }: { highlight?: string | null }) {
   const mark = (quote: string, text: string = quote) =>

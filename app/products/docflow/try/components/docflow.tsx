@@ -1,15 +1,14 @@
 "use client";
 
-// DocFlow's own page sections (docs/services/docflow/UI-COMPONENTS.md). Everything else on
-// DocFlow's pages comes from the services' components.
+// DocFlow's own page sections (docs/services/docflow/UI-COMPONENTS.md). They belong to the app,
+// not to a platform package: everything else on DocFlow's pages comes from the services' packages.
 
 import { useEffect, useMemo, useState } from "react";
-import { Alert, Badge, Button, Skeleton, Tabs, useToast } from "@01scale/ui-core";
-import type { CheckResult, DocflowDocument, DocStatus, InvoiceValues, LineItem, Outputs, ReviewField } from "../mock-platform";
+import { Alert, Badge, Button, Skeleton, labelFromName, problemMessage, useToast } from "@01scale/ui-core";
+import { FieldDecision, useReviewClient, type ReviewField } from "@01scale/ui-review";
+import type { CheckResult, DocflowDocument, DocStatus, InvoiceValues } from "../mock-platform";
 import { buildCsv } from "../mock-platform";
-import { fieldLabel } from "../sample-invoice";
-import { messageFor, useService } from "./platform-context";
-import { FieldDecision } from "./review";
+import { useDocflow } from "../clients";
 
 const STATUS: Record<DocStatus, { tone: "neutral" | "info" | "success" | "warning" | "danger"; text: string; next: string }> = {
   pending_upload: { tone: "neutral", text: "Uploading", next: "Open" },
@@ -24,7 +23,7 @@ const STATUS: Record<DocStatus, { tone: "neutral" | "info" | "success" | "warnin
 
 /** DocumentsList: my documents with status and next action; an empty state with the sample invoice. */
 export function DocumentsList({ onOpen, emptyState }: { onOpen: (doc: DocflowDocument) => void; emptyState: React.ReactNode }) {
-  const docflow = useService("docflow");
+  const docflow = useDocflow();
   const [docs, setDocs] = useState<DocflowDocument[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -33,7 +32,7 @@ export function DocumentsList({ onOpen, emptyState }: { onOpen: (doc: DocflowDoc
     try {
       setDocs((await docflow.list()).data);
     } catch (e) {
-      setError(messageFor(e));
+      setError(problemMessage(e));
     }
   }
   useEffect(() => {
@@ -148,7 +147,7 @@ export function CsvPreview({ values }: { values: InvoiceValues }) {
 
 /** ResultsFieldEditor: Edit beside each value, placing Review's FieldDecision for that field. */
 export function ResultsFieldEditor({ taskId, checks, onSaved }: { taskId: string; checks: CheckResult[]; onSaved: () => void }) {
-  const review = useService("review");
+  const review = useReviewClient();
   const [fields, setFields] = useState<ReviewField[] | null>(null);
   const [editing, setEditing] = useState<string | null>(null);
 
@@ -183,13 +182,13 @@ export function ResultsFieldEditor({ taskId, checks, onSaved }: { taskId: string
         ) : (
           <li key={field.id} className={failedFields.has(key(field)) ? "df-flagged" : undefined}>
             <div className="df-fieldrow">
-              <span className="df-fieldname">{fieldLabel(field.name, field.line_index)}</span>
+              <span className="df-fieldname">{labelFromName(field.name, field.line_index)}</span>
               <span className="df-fieldvalue">
                 {field.value ?? <em className="ui-hint">empty</em>}
                 {field.status === "edited" ? <Badge tone="info"> Edited</Badge> : null}
                 {failedFields.has(key(field)) ? <Badge tone="warning" icon="!">Check failed</Badge> : null}
               </span>
-              <Button size="sm" variant="ghost" onClick={() => setEditing(field.id)} aria-label={`Edit ${fieldLabel(field.name, field.line_index)}`}>
+              <Button size="sm" variant="ghost" onClick={() => setEditing(field.id)} aria-label={`Edit ${labelFromName(field.name, field.line_index)}`}>
                 Edit
               </Button>
             </div>
@@ -202,7 +201,7 @@ export function ResultsFieldEditor({ taskId, checks, onSaved }: { taskId: string
 
 /** DownloadButtons: Download JSON and Download CSV; 'Pay to download' while locked. */
 export function DownloadButtons({ documentId, locked, fileStem }: { documentId: string; locked: boolean; fileStem: string }) {
-  const docflow = useService("docflow");
+  const docflow = useDocflow();
   const toast = useToast();
   const [working, setWorking] = useState<"json" | "csv" | null>(null);
 
@@ -219,7 +218,7 @@ export function DownloadButtons({ documentId, locked, fileStem }: { documentId: 
       setTimeout(() => URL.revokeObjectURL(url), 1000);
       toast.show(`Downloaded ${fileStem}.${format}`, "success");
     } catch (e) {
-      toast.show(messageFor(e), "danger");
+      toast.show(problemMessage(e), "danger");
     } finally {
       setWorking(null);
     }
@@ -241,4 +240,3 @@ export function DownloadButtons({ documentId, locked, fileStem }: { documentId: 
   );
 }
 
-export type { Outputs, LineItem };

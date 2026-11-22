@@ -8,17 +8,23 @@
 // answer from an in-browser mock (mock-platform.ts) until they are built.
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Alert, Badge, Button, Card, Checkbox, Skeleton, Tabs, ToastProvider, useToast } from "@01scale/ui-core";
-import { ApiError, createPlatform, type CheckResult, type DocflowDocument, type Job, type LogEntry, type Order, type Outputs, type Settings, type Task } from "./mock-platform";
-import { SAMPLE_FILE_NAME, SAMPLE_FILE_SIZE } from "./sample-invoice";
+import { Alert, Badge, Button, Card, Checkbox, Skeleton, Tabs, ToastProvider, problemMessage, useToast } from "@01scale/ui-core";
+import { MessageStatus } from "@01scale/ui-delivery";
+import { ExtractionProgress, FieldList, NextStepButton, type Job } from "@01scale/ui-extraction";
+import { CreateAccountButton, SignInButton, UserMenu } from "@01scale/ui-identity";
+import { formatAmount, OrderStatus, PaymentSummary, usePaymentClient, type Order } from "@01scale/ui-payment";
+import { CompleteReviewButton, ReviewQueue, type Task } from "@01scale/ui-review";
+import { FilePreview, UploadArea, type PickedFile } from "@01scale/ui-upload";
+import "@01scale/ui-extraction/styles.css";
+import "@01scale/ui-identity/styles.css";
+import "@01scale/ui-payment/styles.css";
+import "@01scale/ui-review/styles.css";
+import "@01scale/ui-upload/styles.css";
+import { ApiError, createPlatform, type CheckResult, type DocflowDocument, type LogEntry, type Outputs, type Settings } from "./mock-platform";
+import { SAMPLE_FILE_NAME, SAMPLE_FILE_SIZE, SampleInvoice } from "./sample-invoice";
 import { CsvPreview, DocumentsList, DownloadButtons, JsonPreview, ResultsFieldEditor } from "./components/docflow";
-import { MessageStatus } from "./components/delivery";
-import { ExtractionProgress, FieldList, NextStepButton } from "./components/extraction";
-import { CognitoStandIn, CreateAccountButton, SignInButton, UserMenu } from "./components/identity";
-import { formatAmount, OrderStatus, PaymentSummary, StripeCheckoutStandIn } from "./components/payment";
-import { PlatformProvider, messageFor, useService } from "./components/platform-context";
-import { CompleteReviewButton, ReviewQueue } from "./components/review";
-import { FilePreview, UploadArea, type PickedFile } from "./components/upload";
+import { ServiceClients, useDocflow } from "./clients";
+import { CognitoStandIn, StripeCheckoutStandIn } from "./stand-ins";
 import "./prototype.css";
 
 type Screen = "welcome" | "signin" | "documents" | "upload" | "uploaded" | "extract" | "review" | "results" | "checkout" | "success";
@@ -102,15 +108,18 @@ function Prototype() {
     go(next[document.status]);
   }
 
-  const sample: PickedFile = { name: SAMPLE_FILE_NAME, mime: "application/pdf", size: SAMPLE_FILE_SIZE, objectUrl: null, isSample: true };
+  const sample: PickedFile = { name: SAMPLE_FILE_NAME, mime: "application/pdf", size: SAMPLE_FILE_SIZE, objectUrl: null, sample: true };
 
   const uploadArea = (
     <UploadArea
-      sample={sample}
+      title="Drop an invoice here, or choose a file"
+      sample={{ label: "Try the sample invoice", file: sample }}
+      footnote="Prototype: your file never leaves this browser tab. Extraction is simulated, so the fields shown afterwards are the sample invoice's."
       create={async (file) => {
-        const { document } = await platform.docflow.create(file.name, file.mime, file.size, file.isSample);
+        // DocFlow wraps Upload in its own process: it records the document, then Upload makes the file.
+        const { document } = await platform.docflow.create(file.name, file.mime, file.size, !!file.sample);
         setFiles((all) => ({ ...all, [document.id]: file }));
-        return { fileId: document.file_id, documentId: document.id };
+        return { fileId: document.file_id, reference: document.id };
       }}
       complete={async (documentId) => {
         const { document } = await platform.docflow.uploadComplete(documentId);
@@ -123,7 +132,7 @@ function Prototype() {
   const file = doc ? files[doc.id] ?? sample : sample;
 
   return (
-    <PlatformProvider value={platform}>
+    <ServiceClients platform={platform}>
       <div className="df-proto ui-root">
         <div className="df-controls">
           <p className="df-controls-note">
@@ -224,7 +233,7 @@ function Prototype() {
               {screen === "uploaded" && doc ? (
                 <Card title={<span tabIndex={-1}>{file.name}</span>} subtitle="Uploaded and checked. Extraction has started.">
                   <div className="df-stack">
-                    <FilePreview file={file} />
+                    <FilePreview file={file} fallback={<SampleInvoice />} />
                     <Button block onClick={() => go("extract")}>
                       Continue
                     </Button>
@@ -294,7 +303,7 @@ function Prototype() {
           </aside>
         </div>
       </div>
-    </PlatformProvider>
+    </ServiceClients>
   );
 }
 
@@ -319,7 +328,7 @@ function ExtractScreen({ doc, file, setDoc, go }: ScreenProps & { file: PickedFi
     <Card title={<span tabIndex={-1}>Reading {file.name}</span>} actions={<BackButton onClick={() => go("documents")} />}>
       <div className="df-split">
         <div className="df-split-doc">
-          <FilePreview file={file} />
+          <FilePreview file={file} fallback={<SampleInvoice />} />
         </div>
         <div className="df-stack">
           <ExtractionProgress
@@ -369,7 +378,7 @@ function ReviewScreen({ doc, file, setDoc, go }: ScreenProps & { file: PickedFil
     <Card title={<span tabIndex={-1}>Check the flagged fields</span>} subtitle="The highlighted text on the invoice is where each value came from." actions={<BackButton onClick={() => go("documents")} />}>
       <div className="df-split">
         <div className="df-split-doc df-sticky">
-          <FilePreview file={file} highlight={quote} />
+          <FilePreview file={file} fallback={<SampleInvoice highlight={quote} />} />
         </div>
         <div className="df-stack" ref={queue}>
           <ReviewQueue
@@ -418,7 +427,7 @@ function ReviewScreen({ doc, file, setDoc, go }: ScreenProps & { file: PickedFil
                 return true;
               } catch (e) {
                 if (e instanceof ApiError && e.problem.code === "checks_failed") setFailed(e.problem.failed ?? []);
-                else setError(messageFor(e));
+                else setError(problemMessage(e));
                 return false;
               }
             }}
@@ -502,7 +511,7 @@ function ResultsScreen({ doc, setDoc, go }: ScreenProps) {
               go("checkout");
             } catch (e) {
               if (e instanceof ApiError && e.problem.code === "already_paid") go("success");
-              else toast.show(messageFor(e), "danger");
+              else toast.show(problemMessage(e), "danger");
             }
           }}
         />
@@ -514,7 +523,7 @@ function ResultsScreen({ doc, setDoc, go }: ScreenProps) {
 // ------------------------------------------------------------------ Checkout and success
 
 function CheckoutScreen({ orderId, onPaid, onCancel }: { orderId: string; onPaid: (orderId: string) => void; onCancel: () => void }) {
-  const payment = usePayment();
+  const payment = usePaymentClient();
   const [order, setOrder] = useState<Order | null>(null);
   useEffect(() => {
     void payment.getOrder(orderId).then((r) => setOrder(r.order));
@@ -566,12 +575,4 @@ function SuccessScreen({ doc, setDoc, go }: ScreenProps) {
       </div>
     </Card>
   );
-}
-
-// The app's own screens call DocFlow's API (and read an order on its return page, as designed).
-function useDocflow() {
-  return useService("docflow");
-}
-function usePayment() {
-  return useService("payment");
 }

@@ -8,3 +8,5 @@ export { Card, Badge, Alert, ProgressBar, Skeleton, Spinner, type CardProps, typ
 export { Dialog } from "./dialog";
 export { Tabs, type TabItem } from "./tabs";
 export { ToastProvider, useToast, type ToastTone } from "./toast";
+export { createClientContext } from "./client";
+export { problemMessage, labelFromName } from "./text";

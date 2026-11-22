@@ -1,33 +1,74 @@
 "use client";
 
-// LLM Extraction's components (docs/services/extraction/UI-COMPONENTS.md). Confidence is shown by
-// colour and by words and numbers together, never colour alone.
+// @01scale/ui-extraction: LLM Extraction's components (docs/services/extraction/UI-COMPONENTS.md).
+// They work for any schema: labels come from field names. Confidence is shown by colour and by
+// words and numbers together, never colour alone.
 
 import { useEffect, useRef, useState } from "react";
-import { Alert, Badge, Button, Skeleton } from "@01scale/ui-core";
-import type { ExtractedField, Job, StepName } from "../mock-platform";
-import { fieldLabel } from "../sample-invoice";
-import { messageFor, useService } from "./platform-context";
+import { Alert, Badge, Button, Skeleton, createClientContext, labelFromName, problemMessage } from "@01scale/ui-core";
+
+// ---- Types, as the Extraction API returns them
+
+export type StepName = "fetching_file" | "reading_text" | "reading_document" | "checking_rules" | "saving";
+export const STEP_NAMES: readonly StepName[] = ["fetching_file", "reading_text", "reading_document", "checking_rules", "saving"];
+export type Step = { name: StepName; state: "waiting" | "running" | "done" | "failed" };
+export type Job = {
+  id: string;
+  file_id: string;
+  schema: string;
+  status: "queued" | "processing" | "extracted" | "failed";
+  steps: Step[];
+  fields_total: number;
+  fields_flagged: number;
+  error_code: string | null;
+  error_message: string | null;
+  retryable: boolean;
+};
+export type ExtractedField = {
+  id: string;
+  name: string;
+  line_index: number | null;
+  value: string | null;
+  confidence: number;
+  source_page: number | null;
+  source_quote: string | null;
+  flagged: boolean;
+  flag_reasons: string[];
+};
+
+export type ExtractionClient = {
+  /** GET /jobs/{jobId} */
+  getJob: (jobId: string) => Promise<{ job: Job }>;
+  /** GET /jobs/{jobId}/fields */
+  getFields: (jobId: string, flagged?: boolean) => Promise<{ data: ExtractedField[] }>;
+};
+
+const { Provider, useClient } = createClientContext<ExtractionClient>("Extraction");
+export const ExtractionClientProvider = Provider;
+/** The client, for an app that builds its own screen on this API. */
+export const useExtractionClient = useClient;
 
 const STEP_LABEL: Record<StepName, string> = {
   fetching_file: "Fetching the file",
   reading_text: "Reading the text",
-  reading_document: "Reading the invoice with Claude",
-  checking_rules: "Checking the invoice's rules",
+  reading_document: "Reading the document with Claude",
+  checking_rules: "Checking the rules",
   saving: "Saving the fields",
 };
 
-/** ExtractionProgress: the steps of a running job, ticking off as they finish. Polls every 2 s (here 0.5 s). */
+/** ExtractionProgress: the steps of a running job, ticking off as they finish. */
 export function ExtractionProgress({
   jobId,
   onFinished,
   onRetry,
+  pollMs = 2000,
 }: {
   jobId: string;
   onFinished: (job: Job) => void;
   onRetry?: () => void;
+  pollMs?: number;
 }) {
-  const extraction = useService("extraction");
+  const extraction = useClient();
   const [job, setJob] = useState<Job | null>(null);
   const [lost, setLost] = useState(false);
   const finished = useRef(false);
@@ -39,7 +80,7 @@ export function ExtractionProgress({
     async function poll() {
       // Polling pauses while the tab is hidden and stops as soon as the job ends.
       if (document.hidden) {
-        timer = setTimeout(poll, 500);
+        timer = setTimeout(poll, pollMs);
         return;
       }
       try {
@@ -57,7 +98,7 @@ export function ExtractionProgress({
       } catch {
         setLost(true);
       }
-      timer = setTimeout(poll, 500);
+      timer = setTimeout(poll, pollMs);
     }
     void poll();
     return () => {
@@ -67,14 +108,14 @@ export function ExtractionProgress({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [jobId]);
 
-  const steps = job?.steps ?? (Object.keys(STEP_LABEL) as StepName[]).map((name) => ({ name, state: "waiting" as const }));
+  const steps = job?.steps ?? STEP_NAMES.map((name) => ({ name, state: "waiting" as const }));
   const current = steps.find((s) => s.state === "running");
   return (
-    <div className="df-stack">
-      <ol className="df-steps">
+    <div className="ui-stack">
+      <ol className="ui-extraction-steps">
         {steps.map((step) => (
-          <li key={step.name} className={`df-step df-step-${step.state}`}>
-            <span className="df-step-icon" aria-hidden="true">
+          <li key={step.name} className={`ui-extraction-step ui-extraction-step-${step.state}`}>
+            <span className="ui-extraction-step-icon" aria-hidden="true">
               {step.state === "done" ? "✓" : step.state === "failed" ? "✕" : step.state === "running" ? <span className="ui-spinner" /> : "○"}
             </span>
             <span>{STEP_LABEL[step.name]}</span>
@@ -86,7 +127,7 @@ export function ExtractionProgress({
         {job?.status === "extracted" ? "Extraction finished." : current ? `${STEP_LABEL[current.name]}…` : ""}
       </p>
       {lost ? <Alert tone="warning">Reconnecting…</Alert> : null}
-      {job?.status === "queued" || !job ? <p className="ui-hint">Queued: starting in a moment.</p> : null}
+      {!job || job.status === "queued" ? <p className="ui-hint">Queued: starting in a moment.</p> : null}
       {job?.status === "failed" ? (
         <Alert
           tone="danger"
@@ -113,7 +154,8 @@ export function ExtractionProgress({
 
 /** ConfidenceBadge: High from 0.85, Check from 0.6, Low below; a flag icon when flagged. */
 export function ConfidenceBadge({ confidence, flagged }: { confidence: number; flagged: boolean }) {
-  const [tone, word] = confidence >= 0.85 ? (["success", "High"] as const) : confidence >= 0.6 ? (["warning", "Check"] as const) : (["danger", "Low"] as const);
+  const [tone, word] =
+    confidence >= 0.85 ? (["success", "High"] as const) : confidence >= 0.6 ? (["warning", "Check"] as const) : (["danger", "Low"] as const);
   return (
     <Badge tone={tone} icon={flagged ? "⚑" : undefined} title={flagged ? "Flagged for a person to check" : undefined}>
       {word} {confidence.toFixed(2)}
@@ -125,7 +167,7 @@ export function ConfidenceBadge({ confidence, flagged }: { confidence: number; f
 /** FieldEvidence: the exact quote, its page, and why the field was flagged. */
 export function FieldEvidence({ field }: { field: Pick<ExtractedField, "source_quote" | "source_page" | "flag_reasons"> }) {
   return (
-    <div className="df-evidence">
+    <div className="ui-extraction-evidence">
       {field.source_quote ? (
         <p>
           <span className="ui-hint">On page {field.source_page}:</span> <q>{field.source_quote}</q>
@@ -144,18 +186,18 @@ export function FieldEvidence({ field }: { field: Pick<ExtractedField, "source_q
   );
 }
 
-/** FieldList: header fields, then line items, each with value, confidence and flag. */
+/** FieldList: every field with its value, confidence and flag. */
 export function FieldList({ jobId, onSelect, flaggedOnly = false }: { jobId: string; onSelect?: (field: ExtractedField) => void; flaggedOnly?: boolean }) {
-  const extraction = useService("extraction");
+  const extraction = useClient();
   const [fields, setFields] = useState<ExtractedField[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   async function load() {
     setError(null);
     try {
-      setFields((await extraction.getFields("browser", jobId, flaggedOnly)).data);
+      setFields((await extraction.getFields(jobId, flaggedOnly)).data);
     } catch (e) {
-      setError(messageFor(e));
+      setError(problemMessage(e));
     }
   }
   useEffect(() => {
@@ -171,19 +213,19 @@ export function FieldList({ jobId, onSelect, flaggedOnly = false }: { jobId: str
     );
   if (!fields)
     return (
-      <div className="df-stack" aria-busy="true">
+      <div className="ui-stack" aria-busy="true">
         {Array.from({ length: 6 }, (_, i) => (
           <Skeleton key={i} height={40} />
         ))}
       </div>
     );
   return (
-    <ul className="df-fieldlist">
+    <ul className="ui-extraction-fields">
       {fields.map((field) => (
-        <li key={field.id} className={field.flagged ? "df-flagged" : undefined}>
-          <button type="button" className="df-fieldrow ui-focusable" onClick={() => onSelect?.(field)}>
-            <span className="df-fieldname">{fieldLabel(field.name, field.line_index)}</span>
-            <span className="df-fieldvalue">{field.value ?? <em className="ui-hint">Not found on the document</em>}</span>
+        <li key={field.id} className={field.flagged ? "ui-extraction-fields-flagged" : undefined}>
+          <button type="button" className="ui-extraction-row ui-focusable" onClick={() => onSelect?.(field)}>
+            <span className="ui-extraction-row-name">{labelFromName(field.name, field.line_index)}</span>
+            <span className="ui-extraction-row-value">{field.value ?? <em className="ui-hint">Not found on the document</em>}</span>
             <ConfidenceBadge confidence={field.confidence} flagged={field.flagged} />
           </button>
         </li>

@@ -8,7 +8,16 @@
 //
 // Every call is written to a log so the visitor can watch which service answers each step.
 
-import { SAMPLE_FIELDS, SAMPLE_PAGE_TEXT, type InvoiceFieldName } from "./sample-invoice";
+import type { ExtractedField, Job, StepName } from "@01scale/ui-extraction";
+import { STEP_NAMES } from "@01scale/ui-extraction";
+import type { FieldType, ReviewField, Task } from "@01scale/ui-review";
+import { validateValue } from "@01scale/ui-review";
+import type { Order } from "@01scale/ui-payment";
+import type { Message } from "@01scale/ui-delivery";
+import { SAMPLE_FIELDS, type InvoiceFieldName } from "./sample-invoice";
+
+// The types come from each service's UI package, so the mock and the components cannot drift apart.
+export type { ExtractedField, Job, ReviewField, Task, Order, Message, FieldType, StepName };
 
 // ------------------------------------------------------------------ Shared types
 
@@ -44,60 +53,7 @@ export type UploadFile = {
   rejection_detail: string | null;
 };
 
-// Extraction
-export type StepName = "fetching_file" | "reading_text" | "reading_document" | "checking_rules" | "saving";
-export const STEP_NAMES: readonly StepName[] = ["fetching_file", "reading_text", "reading_document", "checking_rules", "saving"];
-export type Step = { name: StepName; state: "waiting" | "running" | "done" | "failed" };
-export type Job = {
-  id: string;
-  file_id: string;
-  schema: "invoice-v1";
-  status: "queued" | "processing" | "extracted" | "failed";
-  steps: Step[];
-  fields_total: number;
-  fields_flagged: number;
-  error_code: string | null;
-  error_message: string | null;
-  retryable: boolean;
-};
-export type ExtractedField = {
-  id: string;
-  name: InvoiceFieldName;
-  line_index: number | null;
-  value: string | null;
-  confidence: number;
-  source_page: number | null;
-  source_quote: string | null;
-  flagged: boolean;
-  flag_reasons: string[];
-};
 export type CheckResult = { rule: string; passed: boolean; message: string; fields: string[] };
-
-// Review
-export type FieldType = "text" | "date" | "money" | "number" | "currency";
-export type ReviewField = Omit<ExtractedField, "value"> & {
-  type: FieldType;
-  original_value: string | null;
-  value: string | null;
-  status: "pending" | "accepted" | "edited" | "not_present";
-};
-export type Task = { id: string; status: "open" | "completed"; resolved: number; total_flagged: number; can_complete: boolean };
-
-// Payment
-export type Order = {
-  id: string;
-  app: string;
-  reference: string;
-  description: string;
-  amount: number;
-  currency: string;
-  status: "pending" | "paid" | "expired" | "failed";
-  checkout_url: string;
-  paid_at: string | null;
-};
-
-// Delivery
-export type Message = { id: string; channel: "email"; to: string; template: string; status: "queued" | "sent" | "failed" };
 
 // DocFlow
 export type DocStatus =
@@ -183,27 +139,8 @@ const HEADER_ORDER: InvoiceFieldName[] = [
   "payment_terms",
 ];
 
-/** Field validation used by Review's edit box: the same checks for any field of the type. */
-export function validateValue(type: FieldType, value: string): string | null {
-  const v = value.trim();
-  if (!v) return "Enter a value, or choose Not on document.";
-  if (type === "date") {
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(v)) return "Use the format YYYY-MM-DD, for example 2026-11-02.";
-    const d = new Date(`${v}T00:00:00Z`);
-    if (Number.isNaN(d.getTime()) || d.toISOString().slice(0, 10) !== v) return "That date does not exist.";
-  }
-  if (type === "money" && !/^-?\d+(\.\d{2})$/.test(v)) return "Use digits with two decimals, for example 380.00.";
-  if (type === "number" && !/^\d+(\.\d+)?$/.test(v)) return "Use digits only, for example 4.";
-  if (type === "currency" && !/^[A-Z]{3}$/.test(v)) return "Use a three-letter currency code, for example USD.";
-  return null;
-}
-
-export function formatHint(type: FieldType): string | undefined {
-  return { date: "YYYY-MM-DD", money: "Digits with two decimals", number: "Digits", currency: "Three letters, like USD", text: undefined }[type];
-}
-
 /** Builds the invoice-v1 values object (as Extraction's check endpoint and DocFlow's outputs use it). */
-export function toValues(fields: { name: InvoiceFieldName; line_index: number | null; value: string | null }[]): InvoiceValues {
+export function toValues(fields: { name: string; line_index: number | null; value: string | null }[]): InvoiceValues {
   const values: InvoiceValues = {};
   for (const name of HEADER_ORDER) values[name] = null;
   const lines: LineItem[] = [];
@@ -444,7 +381,7 @@ export function createPlatform(settings: Settings, onLog: (entry: LogEntry) => v
           task: { id: uuid(), status: "open" as const, resolved: 0, total_flagged: 0, can_complete: false },
           fields: fields.map((f) => ({
             ...f,
-            type: FIELD_TYPES[f.name],
+            type: FIELD_TYPES[f.name as InvoiceFieldName],
             original_value: f.value,
             status: (f.flagged ? "pending" : "accepted") as ReviewField["status"],
           })),
@@ -717,7 +654,7 @@ export function createPlatform(settings: Settings, onLog: (entry: LogEntry) => v
     },
   };
 
-  return { identity, upload, extraction, review, payment, delivery, docflow, sampleText: SAMPLE_PAGE_TEXT };
+  return { identity, upload, extraction, review, payment, delivery, docflow };
 }
 
 function short(id: string) {

@@ -1,0 +1,18 @@
+{
+  "name": "@01scale/ui-delivery",
+  "version": "0.1.0",
+  "private": true,
+  "description": "UI components of the 01scale Delivery service (MVP1-E0-07 AC6). They call only the Delivery API, through a client the app supplies.",
+  "type": "module",
+  "main": "src/index.tsx",
+  "types": "src/index.tsx",
+  "exports": {
+    ".": "./src/index.tsx"
+  },
+  "dependencies": {
+    "@01scale/ui-core": "0.1.0"
+  },
+  "peerDependencies": {
+    "react": ">=19"
+  }
+}

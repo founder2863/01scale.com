@@ -1,0 +1,14 @@
+/* @01scale/ui-payment: styles for Payment's own components, from ui-core tokens only. */
+
+.ui-payment-summary {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.ui-payment-summary strong {
+  font-size: var(--text-lg);
+}

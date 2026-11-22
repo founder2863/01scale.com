@@ -4,7 +4,8 @@ Read this at the start of every session, after CLAUDE.md. Update it in the PR th
 
 ## Where things stand
 
-- **In flight:** branch `claude/amazing-meitner-kpu3n6`: `packages/ui-core` (MVP1-E0-19) and the DocFlow V1 clickable prototype at `/products/docflow/try` (MVP1-E0-18 for DocFlow). No PR yet. Every earlier PR is merged.
+- **In flight:** branch `claude/amazing-meitner-kpu3n6`: `packages/ui-core` (MVP1-E0-19), the six service UI packages (`packages/ui-<service>`, MVP1-E0-07 AC6) and the DocFlow V1 clickable prototype in DocFlow's User Journey section, with a Try it link on its Overview and a full-screen copy at `/products/docflow/try` (MVP1-E0-18 for DocFlow). Every earlier PR is merged.
+- **Service UI packages:** each `packages/ui-<service>` defines the client it needs from its own API (`createClientContext` in ui-core); the app supplies it: the mock in `app/products/docflow/try/mock-platform.ts` today, the gateway once the service is built. DocFlow's own sections and the Cognito and Stripe stand-ins stay in the app (Nikhil, 22 Nov 2026).
 - **Workspaces:** the root `package.json` now has `"workspaces": ["packages/*"]`; the site stays at the root until E0-07 moves it to `apps/web`. Run `npm install` after pulling.
 - **The site** (Next.js at the repo root, not yet `apps/web`) has: Home (E0-36 to E0-42), Products with app pages (side menu, E0-48) and module pages (15 sections, phone Sections button and Previous / Next, E0-49), Platform (Core, Platform and Apps Architecture, E0-22, E0-23, E0-43), How It's Built (Skills, Token Costs, Agents, Total Projected Cost, Constraints, Expensive Mistakes with four project lessons and the Payments article, E0-45 to E0-47).
 - **No platform service is built.** Every API and table is designed in the stories; Identity and Upload have full design documents (`scripts/site/*_design.py`).
@@ -14,7 +15,7 @@ Read this at the start of every session, after CLAUDE.md. Update it in the PR th
 
 | State | Stories |
 |---|---|
-| Built on a branch, no PR yet | E0-19 except AC5 (`packages/ui-core` 0.1.0; site uses its tokens); E0-18 for the DocFlow app only (`/products/docflow/try`, against an in-browser mock) |
+| Built on a branch, PR open | E0-19 except AC5 (`packages/ui-core` 0.1.0; site uses its tokens); E0-18 for the DocFlow app only (User Journey section, against an in-browser mock); E0-07 AC6 in part (the six service UI packages exist, against a mock client) |
 | Built, merged | E8-09 (#156, PR #159) |
 | Built, issue closed | E0-10, E0-11, E0-12, E0-13 (#61), E0-17, E0-21, E0-22, E0-23, E0-31 (#109), E0-32 to E0-35, E0-36 to E0-43 (#148 to #155, created after the work), E0-45 to E0-49, E8-01 |
 | Built, no issue by design | AUTOREP-E1-04 and AUTOREP-E6-03 (AutoRep stories live in the file only) |
@@ -23,9 +24,6 @@ Read this at the start of every session, after CLAUDE.md. Update it in the PR th
 | Not started | E0-01 to E0-09 (foundation code), E0-18 per module, E0-24 (Built on: Platform Core components, not the app Built On section), E0-25, E0-26, and epics E1 to E7 |
 
 ## Open questions waiting for Nikhil
-
-- DocFlow prototype: keep it at `/products/docflow/try` (linked from the DocFlow V1 hero), or also place it as Try it inside DocFlow's User Journey section, as E0-18 AC1 describes for modules?
-- The prototype's components live in `app/products/docflow/try/components/`, one file per service, named as designed. Move each into `packages/ui-<service>` when its service is built (E0-07 AC6), or earlier?
 
 - DocFlow V1 "What each step adds over time" also describes V2 and sits in Overview: keep, or move to the V2 page? (PR #144)
 
