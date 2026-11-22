@@ -184,12 +184,12 @@ export default async function HowItsBuilt({ params }: { params: Promise<Params> 
 
           <div className="stat-row">
             <div className="stat">
-              <span className="stat-value">{mtok(costs.totals.tokens)}</span>
-              <span className="stat-label">Total tokens so far</span>
-            </div>
-            <div className="stat">
               <span className="stat-value">{usd(costs.totals.cost)}</span>
               <span className="stat-label">Total so far</span>
+            </div>
+            <div className="stat">
+              <span className="stat-value">{mtok(costs.totals.tokens)}</span>
+              <span className="stat-label">Total tokens so far</span>
             </div>
             <div className="stat">
               <span className="stat-value">{usd(costs.totals.buildCost)}</span>
