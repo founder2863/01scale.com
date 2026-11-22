@@ -2,7 +2,7 @@
 
 What it costs to build 01scale with Claude Code, per story. Generated from `docs/process/token-ledger.json` by `npm run costs`; do not edit by hand.
 
-Updated 2026-11-22. 198 requests across 2 session(s). Total **$319.55** for 562.7 million tokens.
+Updated 2026-11-22. 199 requests across 2 session(s). Total **$319.55** for 565.7 million tokens.
 
 ## Per story
 
@@ -44,8 +44,8 @@ Updated 2026-11-22. 198 requests across 2 session(s). Total **$319.55** for 562.
 | AUTOREP-E6-03 · AutoRep overview diagram | 2 | 8.59M | $1.74 | $0.00 | $1.74 | 100% |
 | MVP1-E8 · Total projected cost (tab and stories) | 3 | 18.09M | $10.29 | $8.88 | $19.17 | 72% |
 | MVP1-E0-44 · Product names and versions (story) | 5 | 7.74M | $17.73 | $0.00 | $17.73 | 100% |
-| MVP1-E0-47 · Payments article on Expensive Mistakes | 4 | 6.16M | $1.25 | $0.00 | $1.25 (part pending) | 100% |
-| **Total** | **125** | **476.35M** | **$136.80** | **$124.50** | **$261.30** (part pending) | **50%** |
+| MVP1-E0-47 · Payments article on Expensive Mistakes | 5 | 8.37M | $1.25 | $0.00 | $1.25 (part pending) | 74% |
+| **Total** | **126** | **478.56M** | **$136.80** | **$124.50** | **$261.30** (part pending) | **50%** |
 
 ## Scaffolding (not tied to a story)
 
@@ -55,9 +55,9 @@ Updated 2026-11-22. 198 requests across 2 session(s). Total **$319.55** for 562.
 | Planning documents | 2 | 1.35M | $0.72 |
 | Questions and explanations | 23 | 17.62M | $21.33 |
 | Product discovery | 17 | 7.28M | $15.81 |
-| Process | 25 | 52.74M | $17.00 |
+| Process | 25 | 53.50M | $17.00 |
 | Tool overhead (background calls) | 0 | 0.00M | $1.65 |
-| **Total** | **73** | **86.39M** | **$58.25** |
+| **Total** | **73** | **87.16M** | **$58.25** |
 
 ## Totals
 

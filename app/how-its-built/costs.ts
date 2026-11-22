@@ -438,19 +438,19 @@ export const costs = {
     {
       "key": "MVP1-E0-47",
       "name": "MVP1-E0-47 · Payments article on Expensive Mistakes",
-      "requests": 4,
+      "requests": 5,
       "buildTokens": 6159799,
-      "reworkTokens": 0,
+      "reworkTokens": 2208872,
       "buildCost": 1.25,
       "reworkCost": 0,
       "totalCost": 1.25,
-      "yield": 100,
+      "yield": 74,
       "pending": true
     }
   ],
   "storyTotals": {
-    "requests": 125,
-    "tokens": 476347994,
+    "requests": 126,
+    "tokens": 478556866,
     "buildCost": 136.8,
     "reworkCost": 124.5,
     "cost": 261.3,
@@ -485,7 +485,7 @@ export const costs = {
     {
       "name": "Process",
       "requests": 25,
-      "tokens": 52738127,
+      "tokens": 53503805,
       "cost": 17.0
     },
     {
@@ -497,19 +497,19 @@ export const costs = {
   ],
   "scaffoldingTotals": {
     "requests": 73,
-    "tokens": 86393515,
+    "tokens": 87159193,
     "cost": 58.25
   },
   "totals": {
-    "requests": 198,
-    "tokens": 562741509,
+    "requests": 199,
+    "tokens": 565716059,
     "cost": 319.55,
     "buildCost": 136.8,
     "reworkCost": 124.5,
     "scaffoldingCost": 58.25,
     "storyYield": 50,
     "overallYield": 42,
-    "pendingRequests": 6
+    "pendingRequests": 7
   },
   "byKind": {
     "input": 0.06,

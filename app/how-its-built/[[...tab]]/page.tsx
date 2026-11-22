@@ -6,7 +6,7 @@ import { constraints, paid, perExtraction, providers, providersTotal } from "../
 import { designSkillCount, rulesHref, skillOrder, skills } from "../skills";
 import { builtTabs, type BuiltTab } from "../tabs";
 import { findMistake, mistakes } from "../mistakes";
-import { articleDomains, articleHtml, articles, findArticle } from "../articles";
+import { articleBody, articleDomains, articles, findArticle } from "../articles";
 import YieldExplainer from "../yield-explainer";
 
 const REPO = "https://github.com/founder2863/01scale.com/blob/main";
@@ -71,7 +71,7 @@ export default async function HowItsBuilt({ params }: { params: Promise<Params> 
   if (!tab) notFound();
   const article = resolved.tab?.[1] ? findMistake(resolved.tab[1]) : undefined;
   const lesson = resolved.tab?.[1] ? findArticle(resolved.tab[1]) : undefined;
-  const lessonHtml = lesson ? articleHtml(lesson) : null;
+  const lessonBody = lesson ? articleBody(lesson) : null;
   return (
     <>
       <section className="hero hero-small">
@@ -434,8 +434,18 @@ export default async function HowItsBuilt({ params }: { params: Promise<Params> 
               </>
             )}
           </p>
-          {lessonHtml ? (
-            <div className="lesson-body" dangerouslySetInnerHTML={{ __html: lessonHtml }} />
+          {lessonBody ? (
+            <div className="lesson-body">
+              <div dangerouslySetInnerHTML={{ __html: lessonBody.intro }} />
+              {lessonBody.sections.map((section) => (
+                <details className="lesson-section" key={section.heading}>
+                  <summary>
+                    <h2 dangerouslySetInnerHTML={{ __html: section.heading }} />
+                  </summary>
+                  <div dangerouslySetInnerHTML={{ __html: section.html }} />
+                </details>
+              ))}
+            </div>
           ) : (
             <div className="coming-soon">
               <p className="coming-soon-title">Coming Soon...</p>

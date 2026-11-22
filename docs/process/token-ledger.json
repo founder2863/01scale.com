@@ -2857,8 +2857,22 @@
       "models": [
         "claude-opus-5-5"
       ],
-      "tokens": 747787,
-      "output_tokens": 1796,
+      "tokens": 1513465,
+      "output_tokens": 5464,
+      "cost_usd": null
+    },
+    {
+      "session": "cd3f30e4",
+      "n": 199,
+      "ts": "2026-11-22T18:34:26.024Z",
+      "area": "MVP1-E0-47",
+      "kind": "rework",
+      "summary": "Review: collapsible article sections and full-width text across the site",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 2208872,
+      "output_tokens": 7903,
       "cost_usd": null
     }
   ]

@@ -36,9 +36,24 @@ export const articleDomains = [...new Set(articles.map((item) => item.domain))].
 
 export const findArticle = (slug: string) => articles.find((item) => item.slug === slug);
 
-// The article as HTML, read and rendered at build time. Null while the file is empty, so the page
-// shows "Coming Soon..." instead of inventing text. The file is in the repository, so it is trusted.
-export function articleHtml(article: Article): string | null {
+// The article as HTML, read and rendered at build time, split at each "##" heading so every section
+// can be collapsed. The text before the first heading is the introduction and always shows. Null while
+// the file is empty, so the page shows "Coming Soon..." instead of inventing text. The file is in the
+// repository, so it is trusted.
+export type ArticleBody = { intro: string; sections: { heading: string; html: string }[] };
+
+export function articleBody(article: Article): ArticleBody | null {
   const markdown = readFileSync(path.join(process.cwd(), article.file), "utf8");
-  return markdown.trim() ? (marked.parse(markdown, { async: false }) as string) : null;
+  if (!markdown.trim()) return null;
+  const render = (text: string) => marked.parse(text, { async: false }) as string;
+  const [intro, ...rest] = markdown.split(/^## /m);
+  return {
+    intro: render(intro),
+    sections: rest.map((chunk) => {
+      const newline = chunk.indexOf("\n");
+      const title = newline === -1 ? chunk : chunk.slice(0, newline);
+      const body = newline === -1 ? "" : chunk.slice(newline + 1);
+      return { heading: marked.parseInline(title.trim(), { async: false }) as string, html: render(body) };
+    }),
+  };
 }
