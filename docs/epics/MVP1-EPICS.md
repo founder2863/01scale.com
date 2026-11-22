@@ -1,7 +1,7 @@
 # MVP1 — Epics and issues
 
 Source: `docs/prd/MVP1-PRD.md`. Evals: `docs/evals/EVALS.md`.
-Each story becomes one GitHub issue: `[ID] Title`. Size: S ≈ half a day, M ≈ 1–2 days, L ≈ 3+ days.
+Each story becomes one GitHub issue: `[ID] Title`. Size, in person-days for a human team including tests, review and QA: S ≈ 3, M ≈ 8, L ≈ 15 (Nikhil's decision on PR #125; it replaced S ≈ half a day, M ≈ 1–2 days, L ≈ 3+ days).
 Acceptance criteria (AC) use Given / When / Then. A story is done when all its AC pass, tests exist for its logic, and its evals (if any) meet thresholds.
 
 **Architecture.** 01scale is a set of independent platform services (Identity, Upload, LLM Extraction, Human Review, Payment, Delivery) behind one gateway, and DocFlow is the first app assembled from them. See `docs/architecture/ARCHITECTURE.md`. Every story names the **Service** that owns it and carries an **API design** (endpoints, request, response, errors) and a **Database design** (tables in that service's own schema). They are the contract for the story: review them before code is written, and change the story first if the design needs to change. Shared rules are in `docs/architecture/API-DESIGN.md` and `docs/architecture/DATABASE-DESIGN.md`. Nothing here is built until its story is picked up.
@@ -900,7 +900,9 @@ As the owner, I want to refund a paid order in full, so a demo user who was char
 ---
 
 ## E8 · Total projected cost: a human team versus Claude Code
-**Goal:** show, story by story, what the whole initiative would cost and how long it would take with a human team, what it costs built with Claude Code and one product manager, and the difference. Nikhil's request, 22 Nov 2026. Open questions are listed on PR #125 and answered before E8-02 starts.
+**Goal:** show, story by story, what the whole initiative would cost and how long it would take with a human team, what it costs built with Claude Code and one product manager, and the difference. Nikhil's request, 22 Nov 2026; his answers on PR #125 are in `docs/decisions/MVP1-E8.md`.
+
+**Scope:** MVP1 only: Platform Core, the platform services and the DocFlow app (epics E0 to E7, without E8 itself). AutoRep and MVP2 are out. Any value not calculated yet shows **TBD**.
 
 ### MVP1-E8-01 · Rename Costs to Total Projected Cost, and split out Constraints — S
 - **AC1:** How It's Built's menu and tabs show **Total Projected Cost** at `/how-its-built/total-projected-cost`; `/how-its-built/costs` redirects there.
@@ -912,9 +914,9 @@ As the owner, I want to refund a paid order in full, so a demo user who was char
 
 ### MVP1-E8-02 · The cost model's assumptions — S
 - **AC1:** One data file holds every assumption, each with its source and date:
-  - the build team: 5 full-stack engineers, 2 product managers, 1 QA automation engineer, program management and engineering and product leadership;
-  - the go-to-market team: one person each in sales, marketing, support, customer success, finance, compliance and security;
-  - typical North American salaries per role, the loading for benefits and overhead, working hours a week and working weeks a year.
+  - the build team: 5 full-stack engineers, 2 product managers, 1 QA automation engineer, 1 program manager, 1 engineering manager and 1 head of product;
+  - the go-to-market team: one person each in sales, marketing, support, customer success, finance, compliance and security, onboarded once development reaches 50%;
+  - typical North American salaries per role in USD, loaded for benefits, taxes and overhead, plus working hours a week and working weeks a year.
 - **AC2:** The page shows the assumptions in a table, so a reader can see and question every input.
 - **AC3:** A decision log entry records each choice and its alternatives.
 - **Service:** Site (`apps/web`)
@@ -922,7 +924,7 @@ As the owner, I want to refund a paid order in full, so a demo user who was char
 - **Database design:** No tables.
 
 ### MVP1-E8-03 · Effort for every story — M
-- **AC1:** Every story in scope gets an effort in person-days, derived from its size (S, M, L) with a stated scale for a human team, split into engineering, QA and product time.
+- **AC1:** Every MVP1 story gets an effort in person-days from its size, on the human scale (S ≈ 3, M ≈ 8, L ≈ 15, including tests, review and QA), split into engineering, QA and product time.
 - **AC2:** The sizes come from the epics files; a story with no size is listed as a gap, not guessed.
 - **Service:** Site (`apps/web`) and `scripts/`
 - **API design:** No endpoints.
@@ -937,15 +939,15 @@ As the owner, I want to refund a paid order in full, so a demo user who was char
 
 ### MVP1-E8-05 · The human team's cost, per story and in total — M
 - **AC1:** Each story shows its projected cost (its effort × the rates of the roles doing it); epics and phases show subtotals.
-- **AC2:** Program management, leadership and the go-to-market team are costed over the timeline they are needed, shown separately from the story costs.
+- **AC2:** The program manager, engineering manager and head of product are costed over the whole timeline; the seven go-to-market roles from the point development reaches 50%. Both are shown separately from the story costs.
 - **AC3:** The total is the sum of both, with the timeline from E8-04.
 - **Service:** Site (`apps/web`)
 - **API design:** No endpoints.
 - **Database design:** No tables.
 
 ### MVP1-E8-06 · The cost of building it with Claude Code and one product manager — M
-- **AC1:** Each story shows its projected token cost at Claude API prices, from the token ledger: measured where the story is done, and projected from measured cost per story size where it is not.
-- **AC2:** The total adds one human product manager's cost over Claude's projected timeline.
+- **AC1:** Each story shows its projected token cost at Claude API prices, from the token ledger: measured where the story is done, and projected from the measured design cost per story size, times a stated multiplier for writing code and tests, where it is not.
+- **AC2:** The total adds one human product manager, full-time over Claude's projected timeline.
 - **AC3:** Projections are labelled as projections, measured costs as measured.
 - **Service:** Site (`apps/web`) and `scripts/costs/`
 - **API design:** No endpoints.

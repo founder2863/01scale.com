@@ -1,7 +1,7 @@
 # AutoRep — Epics and stories
 
 Source: `docs/prd/AUTOREP-PRD.md`. Decisions: `docs/decisions/AUTOREP-E1.md`. Evals: `docs/evals/EVALS.md`.
-Stories stay in this file, with no GitHub issues, like MVP2 (Nikhil's decision, 21 Nov 2026). IDs: `AUTOREP-E1-01` = AutoRep, epic 1, story 1. Size: S ≈ half a day, M ≈ 1–2 days, L ≈ 3+ days.
+Stories stay in this file, with no GitHub issues, like MVP2 (Nikhil's decision, 21 Nov 2026). IDs: `AUTOREP-E1-01` = AutoRep, epic 1, story 1. Size, in person-days for a human team including tests, review and QA: S ≈ 3, M ≈ 8, L ≈ 15 (Nikhil's decision on PR #125; it replaced S ≈ half a day, M ≈ 1–2 days, L ≈ 3+ days).
 
 **Architecture.** AutoRep is an app on the 01scale platform, like DocFlow, with one deliberate difference for V1: it holds its own multi-agent graph (ARCHITECTURE.md §13). It calls Identity, Human Review and Delivery through the gateway, unchanged, and never reads their data. Its own data lives in the `autorep` schema. Every story names its **Service** and has an **API design** and a **Database design**; nothing is built until its story is picked up.
 
