@@ -530,11 +530,23 @@ export const costs = {
       "totalCost": 14.6,
       "yield": 60,
       "pending": true
+    },
+    {
+      "key": "MVP1-E1-09-E4-05",
+      "name": "MVP1-E1-09, E3-07, E4-05 · Account and admin UI components (ui-identity, ui-extraction, ui-review)",
+      "requests": 1,
+      "buildTokens": 7850330,
+      "reworkTokens": 0,
+      "buildCost": 0,
+      "reworkCost": 0,
+      "totalCost": 0,
+      "yield": 100,
+      "pending": true
     }
   ],
   "storyTotals": {
-    "requests": 148,
-    "tokens": 567873218,
+    "requests": 149,
+    "tokens": 575723548,
     "buildCost": 156.68,
     "reworkCost": 126.57,
     "cost": 283.25,
@@ -569,7 +581,7 @@ export const costs = {
     {
       "name": "Process",
       "requests": 39,
-      "tokens": 108810545,
+      "tokens": 114042733,
       "cost": 24.75
     },
     {
@@ -581,21 +593,21 @@ export const costs = {
   ],
   "scaffoldingTotals": {
     "requests": 90,
-    "tokens": 144361793,
+    "tokens": 149593981,
     "cost": 66.47
   },
   "totals": {
-    "requests": 238,
-    "tokens": 712235011,
+    "requests": 239,
+    "tokens": 725317529,
     "cost": 349.72,
     "buildCost": 156.68,
     "reworkCost": 126.57,
     "scaffoldingCost": 66.47,
     "storyYield": 53,
     "overallYield": 42,
-    "pendingRequests": 22,
-    "pendingEstimate": 19.39,
-    "pendingEstimated": 16
+    "pendingRequests": 23,
+    "pendingEstimate": 22.98,
+    "pendingEstimated": 17
   },
   "byKind": {
     "input": 0.06,

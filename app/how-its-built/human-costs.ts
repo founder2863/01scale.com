@@ -1182,8 +1182,8 @@ export const humanCosts = {
       "issue": null,
       "closed": null,
       "tokenCost": null,
-      "tokenCostShared": false,
-      "tokenCostPending": false
+      "tokenCostShared": true,
+      "tokenCostPending": true
     },
     {
       "id": "MVP1-E2-01",
@@ -1362,8 +1362,8 @@ export const humanCosts = {
       "issue": null,
       "closed": null,
       "tokenCost": null,
-      "tokenCostShared": false,
-      "tokenCostPending": false
+      "tokenCostShared": true,
+      "tokenCostPending": true
     },
     {
       "id": "MVP1-E4-01",
@@ -1437,8 +1437,8 @@ export const humanCosts = {
       "issue": null,
       "closed": null,
       "tokenCost": null,
-      "tokenCostShared": false,
-      "tokenCostPending": false
+      "tokenCostShared": true,
+      "tokenCostPending": true
     },
     {
       "id": "MVP1-E5-01",
