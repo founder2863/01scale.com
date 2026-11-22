@@ -7,7 +7,7 @@ Read this at the start of every session, after CLAUDE.md. Update it in the PR th
 - **In flight:** the MVP1-E8-09 PR (branch `claude/funny-turing-jjts2u`). Every earlier PR is merged.
 - **The site** (Next.js at the repo root, not yet `apps/web`) has: Home (E0-36 to E0-42), Products with app pages (side menu, E0-48) and module pages (15 sections, phone Sections button and Previous / Next, E0-49), Platform (Core, Platform and Apps Architecture, E0-22, E0-23, E0-43), How It's Built (Skills, Token Costs, Agents, Total Projected Cost, Constraints, Expensive Mistakes with four project lessons and the Payments article, E0-45 to E0-47).
 - **No platform service is built.** Every API and table is designed in the stories; Identity and Upload have full design documents (`scripts/site/*_design.py`).
-- **Token costs** are recorded through the last request of session `fdd431bb` ($331.50 over 218 requests; its last two requests show as pending because the tool had not priced them yet, and stay pending since that session has ended). New sessions add their own session to the ledger.
+- **Token costs** are recorded through the last request of session `fdd431bb` ($331.50 in the ledger; the tool stopped pricing this session's requests after 19:00 UTC, so its last six show as pending; they carry an upper-bound estimate of about $4.91 in `estimated_usd`, worked out by `scripts/costs/estimate_pending.py` and kept out of the measured totals). New sessions add their own session to the ledger.
 
 ## Stories by state (site and process stories, epic E0 and E8)
 

@@ -414,14 +414,14 @@ export const costs = {
     {
       "key": "MVP1-E8",
       "name": "MVP1-E8 · Total projected cost (tab and stories)",
-      "requests": 3,
-      "buildTokens": 13048714,
+      "requests": 4,
+      "buildTokens": 14992701,
       "reworkTokens": 5041623,
       "buildCost": 10.38,
       "reworkCost": 8.96,
       "totalCost": 19.34,
-      "yield": 72,
-      "pending": false
+      "yield": 75,
+      "pending": true
     },
     {
       "key": "MVP1-E0-44",
@@ -500,17 +500,17 @@ export const costs = {
       "name": "MVP1-E8-09 · Human cost script and skill",
       "requests": 2,
       "buildTokens": 3588547,
-      "reworkTokens": 727467,
+      "reworkTokens": 1322068,
       "buildCost": 0,
       "reworkCost": 0,
       "totalCost": 0,
-      "yield": 83,
+      "yield": 73,
       "pending": true
     }
   ],
   "storyTotals": {
-    "requests": 140,
-    "tokens": 500867080,
+    "requests": 141,
+    "tokens": 503405668,
     "buildCost": 142.08,
     "reworkCost": 126.57,
     "cost": 268.65,
@@ -544,8 +544,8 @@ export const costs = {
     },
     {
       "name": "Process",
-      "requests": 29,
-      "tokens": 67009983,
+      "requests": 34,
+      "tokens": 76967789,
       "cost": 21.14
     },
     {
@@ -556,20 +556,22 @@ export const costs = {
     }
   ],
   "scaffoldingTotals": {
-    "requests": 80,
-    "tokens": 102561231,
+    "requests": 85,
+    "tokens": 112519037,
     "cost": 62.85
   },
   "totals": {
-    "requests": 220,
-    "tokens": 603428311,
+    "requests": 226,
+    "tokens": 615924705,
     "cost": 331.5,
     "buildCost": 142.08,
     "reworkCost": 126.57,
     "scaffoldingCost": 62.85,
     "storyYield": 51,
     "overallYield": 42,
-    "pendingRequests": 10
+    "pendingRequests": 16,
+    "pendingEstimate": 7.38,
+    "pendingEstimated": 10
   },
   "byKind": {
     "input": 0.06,

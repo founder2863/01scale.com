@@ -2107,7 +2107,7 @@ export const humanCosts = {
       "key": "MVP1-E8",
       "name": "MVP1-E8 · Total projected cost (tab and stories)",
       "cost": 19.34,
-      "pending": false
+      "pending": true
     }
   ]
 } as const;
