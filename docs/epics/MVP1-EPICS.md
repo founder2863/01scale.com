@@ -460,10 +460,10 @@ As a hiring manager landing on 01scale, I want one picture of what Nikhil built 
 - **API design:** No endpoints.
 - **Database design:** No tables.
 
-### MVP1-E0-39 · What I owned at GovOS (responsibilities) — M
-- **AC1:** An interactive map of Nikhil's functional responsibilities chart: a Products layer (No Code Builder, Pay, Pay Portal, Financial Reporting, ID Verification, and payments for Tax, Search, Records and Submit Online) and a Platform layer (Gateway, Tenant, Authentication, Payment, Notification, Audit, LLM, Reporting, Provisioning, Playground), with the domain knowledge as chips.
-- **AC2:** Product names are Nikhil's fictional names: BLT → Tax, CS → Search, CR → Records, eSub → Submit Online, Studio → No Code Builder. The company is named.
-- **AC3:** Tapping a part shows what Nikhil did there (the lifecycle, the features, the commercial work). A part 01scale rebuilds links to it ("Rebuilding it here").
+### MVP1-E0-39 · What I owned — M
+- **AC1:** One tab per company: GovOS, TraceLink and Chubb, with their logos (Nikhil's rewrite on PR #119). Each tab shows Nikhil's categories as cards: **Products**, **Product areas**, **Commercial**, **Technical & delivery**, **Delivery mode** and **Domain knowledge**; GovOS also has **Customer management**.
+- **AC2:** GovOS's products are split into **SaaS** (Tax, Search, Records, Submit Online, No Code Builder, his fictional names for BLT, CS, CR, eSub and Studio) and **Platform** (Pay, ID Verification, Authentication, Gateway, Tenant, Notification, Audit, LLM, Reporting, Provisioning, Playground).
+- **AC3:** A platform part that 01scale rebuilds links to its page here, marked ↗.
 - **AC4:** It works with touch and keyboard, from 320 to 1920 pixels wide, in light and dark mode.
 - **Service:** Site (`apps/web`)
 - **API design:** No endpoints.

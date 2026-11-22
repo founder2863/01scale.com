@@ -2,73 +2,76 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { responsibilities } from "./profile";
+import { ownership, type OwnershipGroup } from "./profile";
 
-// What Nikhil owned (MVP1-E0-39): the products and the platform under them, from his functional
-// responsibilities chart. Tap a part to see what he did there; parts 01scale rebuilds link to it.
-export function Responsibilities() {
-  const all = responsibilities.layers.flatMap((layer) => layer.nodes);
-  const [open, setOpen] = useState<string>(all[0].key);
-  const node = all.find((item) => item.key === open);
+function Chips({ items }: { items: NonNullable<OwnershipGroup["items"]> }) {
   return (
-    <section className="home-section" aria-labelledby="responsibilities-title">
-      <div className="container">
-        <h2 className="home-title" id="responsibilities-title">{responsibilities.title}</h2>
-        <p className="note">{responsibilities.intro}</p>
+    <ul className="link-list">
+      {items.map((item) =>
+        typeof item === "string" ? (
+          <li key={item}>
+            <span className="status">{item}</span>
+          </li>
+        ) : (
+          // A part 01scale rebuilds links to it.
+          <li key={item.label}>
+            <Link className="status owned-link" href={item.href} title="Rebuilt on 01scale">
+              {item.label} ↗
+            </Link>
+          </li>
+        ),
+      )}
+    </ul>
+  );
+}
 
-        <div className="resp-map">
-          {responsibilities.layers.map((layer) => (
-            <div className={`resp-layer resp-layer-${layer.name.toLowerCase()}`} key={layer.name}>
-              <p className="resp-layer-name">{layer.name}</p>
-              <ul>
-                {layer.nodes.map((item) => (
-                  <li key={item.key}>
-                    <button
-                      type="button"
-                      aria-pressed={item.key === open}
-                      aria-controls="resp-panel"
-                      onClick={() => setOpen(item.key)}
-                    >
-                      {item.name}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
+// What Nikhil owned (MVP1-E0-39): one tab per company, then his categories as cards.
+export function Responsibilities() {
+  const [open, setOpen] = useState<string>(ownership[0].key);
+  const company = ownership.find((item) => item.key === open)!;
+  const rebuilds = company.groups.some((group) =>
+    [...(group.items ?? []), ...(group.parts ?? []).flatMap((part) => part.items)].some((item) => typeof item !== "string"),
+  );
+  return (
+    <section className="home-section" aria-labelledby="owned-title">
+      <div className="container">
+        <h2 className="home-title" id="owned-title">What I owned</h2>
+        <div className="owned-tabs" role="tablist" aria-label="Companies">
+          {ownership.map((item) => (
+            <button
+              key={item.key}
+              type="button"
+              role="tab"
+              id={`owned-tab-${item.key}`}
+              aria-selected={item.key === open}
+              aria-controls="owned-panel"
+              onClick={() => setOpen(item.key)}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={item.logo} alt="" width={28} height={28} />
+              {item.name}
+            </button>
           ))}
         </div>
 
-        {node && (
-          <div className="card resp-panel" id="resp-panel" aria-live="polite">
-            <p className="card-title">{node.name}</p>
-            {node.groups.map((group) => (
-              <div key={group.title}>
-                <p className="resp-group">{group.title}</p>
-                <ul className="link-list">
-                  {group.items.map((item) => (
-                    <li key={item}>
-                      <span className="status">{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-            {node.rebuild && (
-              <p className="doc-link">
-                <Link href={node.rebuild.href}>Rebuilding it here: {node.rebuild.label} →</Link>
-              </p>
-            )}
-          </div>
-        )}
-
-        <p className="resp-group">Domain knowledge</p>
-        <ul className="link-list">
-          {responsibilities.domains.map((domain) => (
-            <li key={domain}>
-              <span className="status">{domain}</span>
-            </li>
+        <div className="owned-grid" id="owned-panel" role="tabpanel" aria-labelledby={`owned-tab-${company.key}`}>
+          {company.groups.map((group) => (
+            <div className={group.parts ? "owned-card owned-card-wide" : "owned-card"} key={group.title}>
+              <p className="owned-title">{group.title}</p>
+              {group.text && <p className="owned-text">{group.text}</p>}
+              {group.items && <Chips items={group.items} />}
+              {group.parts?.map((part) => (
+                <div className="owned-part" key={part.title}>
+                  <p className="owned-part-title">{part.title}</p>
+                  <Chips items={part.items} />
+                </div>
+              ))}
+            </div>
           ))}
-        </ul>
+        </div>
+        {rebuilds && (
+          <p className="note owned-legend">↗ Rebuilt on 01scale: opens the service or component that rebuilds it here.</p>
+        )}
       </div>
     </section>
   );
