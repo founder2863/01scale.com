@@ -74,15 +74,15 @@ export const numbers = [
   { figure: "17+", label: "years in platform, identity, payments and AI", source: "Career" },
 ] as const;
 
-// ---------------------------------------------------------------- brands (E0-38)
+// ---------------------------------------------------------------- companies worked for (E0-38)
 
 export const brands = [
   {
     key: "govos",
     name: "GovOS",
     note: "now Neumo",
-    // Logo files are added once Nikhil uploads them; until then the name is shown as a wordmark.
-    logo: null as string | null,
+    // Logo files supplied by Nikhil, kept in the repository (public/logos/).
+    logo: "/logos/govos.jpg" as string | null,
     role: "Group Product Manager (operated as Head), Platform & Payments",
     dates: "Jan 2024 – Dec 2025",
     results: [
@@ -95,7 +95,7 @@ export const brands = [
     key: "tracelink",
     name: "TraceLink",
     note: null,
-    logo: null as string | null,
+    logo: "/logos/tracelink.jpg" as string | null,
     role: "Senior Manager, Platform Product Management (iPaaS)",
     dates: "Aug 2021 – Jan 2024",
     results: [
@@ -107,7 +107,7 @@ export const brands = [
     key: "chubb",
     name: "Chubb",
     note: null,
-    logo: null as string | null,
+    logo: "/logos/chubb.jpg" as string | null,
     role: "Lead AI Product Manager",
     dates: "Jan 2019 – Aug 2021",
     results: [

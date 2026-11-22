@@ -453,9 +453,9 @@ As a hiring manager landing on 01scale, I want one picture of what Nikhil built 
 - **API design:** No endpoints.
 - **Database design:** No tables.
 
-### MVP1-E0-38 · Where I built it (brands) — S
+### MVP1-E0-38 · Companies worked for — S
 - **AC1:** Three companies only: GovOS (now Neumo), TraceLink and Chubb (Nikhil's decision on PR #119). Tapping one shows the role, dates and two or three results.
-- **AC2:** Logos are files kept in the repository, not loaded from another site. Until Nikhil supplies them, each company shows as a wordmark.
+- **AC2:** The section is titled "Companies worked for" (Nikhil's wording on PR #119). Logos are the files Nikhil supplied, kept in the repository (`public/logos/`), not loaded from another site; each shows with the company name under it.
 - **Service:** Site (`apps/web`)
 - **API design:** No endpoints.
 - **Database design:** No tables.

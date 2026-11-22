@@ -2466,9 +2466,10 @@ section[id] {
 }
 
 .brand-tile img {
-  max-width: 100%;
-  max-height: 40px;
-  object-fit: contain;
+  width: 64px;
+  height: 64px;
+  border-radius: 12px;
+  object-fit: cover;
 }
 
 .brand-wordmark {
@@ -2679,4 +2680,11 @@ section[id] {
 
 .home-contact p {
   margin: 0 0 16px;
+}
+
+@media (min-width: 900px) {
+  .brand-tile img {
+    width: 88px;
+    height: 88px;
+  }
 }
