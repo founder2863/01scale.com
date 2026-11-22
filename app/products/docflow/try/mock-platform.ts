@@ -77,11 +77,26 @@ export type DocflowDocument = {
   created_at: string;
   is_sample: boolean;
 };
+export type Preview = { limited: boolean; fields_hidden: number; line_items_hidden: number };
 export type Outputs = {
   locked: boolean;
+  /** Before payment, only the preview fields (MVP1-E5-03 AC1 and AC3, enforced here, on the server's side). */
   values: InvoiceValues;
+  preview: Preview;
   checks: CheckResult[];
 };
+
+/** The four fields a person sees before paying (Nikhil, 22 Nov 2026). */
+export const PREVIEW_FIELDS = ["vendor_name", "invoice_number", "invoice_date", "total"] as const;
+
+/** Cuts the values down to the preview fields, and counts what is held back. */
+export function limitToPreview(values: InvoiceValues): { values: InvoiceValues; preview: Preview } {
+  const lines = (values.line_items as LineItem[]) ?? [];
+  const header = Object.keys(values).filter((k) => k !== "line_items");
+  const kept: InvoiceValues = {};
+  for (const k of PREVIEW_FIELDS) kept[k] = values[k] ?? null;
+  return { values: kept, preview: { limited: true, fields_hidden: header.length - PREVIEW_FIELDS.length, line_items_hidden: lines.length } };
+}
 export type InvoiceValues = Record<string, string | null | LineItem[]>;
 export type LineItem = { description: string | null; quantity: string | null; unit_price: string | null; amount: string | null };
 
@@ -613,9 +628,12 @@ export function createPlatform(settings: Settings, onLog: (entry: LogEntry) => v
       const doc = own(id);
       const values = await review.values("docflow", doc.review_task_id!);
       const results = runChecks(values);
+      const locked = doc.status !== "paid";
+      const shown = locked ? limitToPreview(values) : { values, preview: { limited: false, fields_hidden: 0, line_items_hidden: 0 } };
       return call("browser", "GET", `/api/docflow/v1/documents/${short(id)}/outputs`, () => ({
-        locked: doc.status !== "paid",
-        values,
+        locked,
+        values: shown.values,
+        preview: shown.preview,
         checks: results,
       }), 200, 100);
     },

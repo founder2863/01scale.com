@@ -4,6 +4,7 @@
 .df-proto {
   container: df-proto / inline-size;
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-4);
   min-width: 0;
 }
@@ -67,21 +68,8 @@
 
 .df-layout {
   display: grid;
-  gap: var(--space-4);
+  gap: var(--space-3);
   grid-template-columns: minmax(0, 1fr);
-  align-items: start;
-}
-
-@container df-proto (min-width: 1000px) {
-  .df-layout {
-    grid-template-columns: minmax(0, 1fr) minmax(300px, 360px);
-  }
-  .df-side {
-    position: sticky;
-    top: calc(var(--header-height) + 16px);
-    max-height: calc(100vh - var(--header-height) - 32px);
-    overflow: auto;
-  }
 }
 
 .df-app {
@@ -373,8 +361,7 @@
 }
 
 .df-code {
-  max-height: 420px;
-  overflow: auto;
+  overflow-x: auto;
   padding: var(--space-3);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
@@ -414,8 +401,7 @@
 }
 
 .df-tablebox {
-  max-height: 420px;
-  overflow: auto;
+  overflow-x: auto;
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
 }
@@ -440,13 +426,108 @@
   font-family: var(--mono);
 }
 
-/* -------------------------------------------------------------- Side panel */
+/* ---------------------------------------------------------------- Stepper */
 
-.df-side {
+.df-stepper {
   display: grid;
-  gap: var(--space-3);
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface-raised);
+}
+
+.df-stepper-dots {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.df-dot {
+  display: flex;
+  align-items: center;
+  flex: 1 1 0;
   min-width: 0;
 }
+
+.df-dot:last-child {
+  flex: none;
+}
+
+/* The line to the next dot. */
+.df-dot:not(:last-child)::after {
+  content: "";
+  flex: 1;
+  height: 2px;
+  margin: 0 4px;
+  background: var(--border);
+}
+
+.df-dot-done:not(:last-child)::after {
+  background: var(--success-solid);
+}
+
+.df-dot > span[aria-hidden] {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid var(--border-strong);
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: var(--weight-bold);
+}
+
+.df-dot-done > span[aria-hidden] {
+  background: var(--success-bg);
+  color: var(--success-text);
+  border-color: var(--success-solid);
+}
+
+.df-dot-now > span[aria-hidden] {
+  background: var(--brand);
+  color: var(--on-brand);
+  border-color: var(--brand);
+}
+
+/* Eight dots still fit on the narrowest phone. */
+@container df-proto (max-width: 360px) {
+  .df-stepper {
+    padding: var(--space-3);
+  }
+  .df-dot > span[aria-hidden] {
+    width: 20px;
+    height: 20px;
+    font-size: 0.65rem;
+  }
+  .df-dot:not(:last-child)::after {
+    margin: 0 2px;
+  }
+}
+
+.df-stepper-text {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px var(--space-2);
+  margin: 0;
+  font-size: var(--text-sm);
+}
+
+.df-stepper-service {
+  color: var(--muted);
+}
+
+.df-stepper-detail {
+  flex-basis: 100%;
+  color: var(--muted);
+}
+
+/* -------------------------------------------------------------- API calls */
 
 .df-panel {
   border: 1px solid var(--border);
@@ -458,73 +539,10 @@
 .df-panel > summary {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
   gap: var(--space-2);
   min-height: 32px;
   align-items: center;
   cursor: pointer;
-}
-
-.df-journey {
-  display: grid;
-  gap: var(--space-2);
-  margin: var(--space-3) 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-.df-journey li {
-  display: flex;
-  gap: var(--space-3);
-  padding: var(--space-2);
-  border-radius: var(--radius-md);
-  color: var(--muted);
-  font-size: var(--text-sm);
-}
-
-.df-journey li > span:last-child {
-  display: grid;
-  min-width: 0;
-}
-
-.df-journey-num {
-  display: inline-grid;
-  place-items: center;
-  flex: none;
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  border: 1px solid var(--border-strong);
-  font-size: 0.75rem;
-  font-weight: var(--weight-bold);
-}
-
-.df-journey-service {
-  font-size: var(--text-xs);
-}
-
-.df-journey-detail {
-  margin-top: 4px;
-  color: var(--text);
-}
-
-.df-journey-done {
-  color: var(--text) !important;
-}
-.df-journey-done .df-journey-num {
-  background: var(--success-bg);
-  color: var(--success-text);
-  border-color: var(--success-solid);
-}
-
-.df-journey-now {
-  background: var(--chip-bg);
-  color: var(--text) !important;
-}
-.df-journey-now .df-journey-num {
-  background: var(--brand);
-  color: var(--on-brand);
-  border-color: var(--brand);
 }
 
 .df-log {
@@ -533,8 +551,6 @@
   margin: var(--space-3) 0 0;
   padding: 0;
   list-style: none;
-  max-height: 420px;
-  overflow: auto;
 }
 
 .df-log li {
@@ -589,4 +605,14 @@
 
 .df-summary strong {
   font-size: var(--text-lg);
+}
+
+.df-locked-note {
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--chip-bg);
+  color: var(--chip-text);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
 }

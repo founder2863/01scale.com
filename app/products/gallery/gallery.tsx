@@ -62,7 +62,7 @@ import "../docflow/try/prototype.css";
 import { DocflowClientProvider } from "../docflow/try/clients";
 import { CsvPreview, DocumentsList, DownloadButtons, JsonPreview, ResultsFieldEditor } from "../docflow/try/components/docflow";
 import type { Platform } from "../docflow/try/mock-platform";
-import { runChecks } from "../docflow/try/mock-platform";
+import { limitToPreview, runChecks } from "../docflow/try/mock-platform";
 import { SampleInvoice } from "../docflow/try/sample-invoice";
 import { GALLERY_MODULES } from "./modules";
 import { DOCS, FIELDS, FILES, JOBS, MESSAGE, ORDER, ORDERS, RECEIPT_IMAGE, VALUES, fail, never, ok, problem, reviewFields, task, unavailable } from "./fixtures";
@@ -346,8 +346,14 @@ const GALLERIES: Record<(typeof GALLERY_MODULES)[number], Record<string, Demo[]>
       { state: "Loaded", render: () => <Docflow client={{ list: ok({ data: DOCS, next_cursor: null }) }}><DocumentsList onOpen={() => {}} emptyState={null} /></Docflow> },
       { state: "Failed", render: () => <Docflow client={{ list: unavailable }}><DocumentsList onOpen={() => {}} emptyState={null} /></Docflow> },
     ],
-    JsonPreview: [{ state: "Shown", render: () => <JsonPreview values={VALUES} /> }],
-    CsvPreview: [{ state: "Shown", render: () => <CsvPreview values={VALUES} /> }],
+    JsonPreview: [
+      { state: "Before payment", render: () => <JsonPreview {...limitToPreview(VALUES)} /> },
+      { state: "After payment", render: () => <JsonPreview values={VALUES} /> },
+    ],
+    CsvPreview: [
+      { state: "Before payment", render: () => <CsvPreview {...limitToPreview(VALUES)} /> },
+      { state: "After payment", note: "A wide table scrolls sideways inside its own box.", render: () => <CsvPreview values={VALUES} /> },
+    ],
     ResultsFieldEditor: [
       { state: "Viewing", note: "Select Edit beside a value: Review's FieldDecision opens in place.", render: () => <Review client={reviewClient(reviewFields(true))}><ResultsFieldEditor taskId="task-demo" checks={runChecks(VALUES)} onSaved={() => {}} /></Review> },
       {

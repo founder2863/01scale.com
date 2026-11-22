@@ -23,7 +23,7 @@ What a person sees across the whole DocFlow journey, and where DocFlow's own ste
 
 | Step | The person | The system |
 |---|---|---|
-| 1 | Reads the full JSON (with folding) and the CSV on screen; download buttons say 'Pay to download'. | DocFlow builds the results from Review's latest values for preview; downloads answer 402 until paid. |
+| 1 | Sees a preview of the JSON and the CSV: four fields, and how many more unlock after payment; download buttons say 'Pay to download'. | DocFlow builds a limited preview from Review's latest values; downloads answer 402 until paid. |
 | 2 | Taps Pay $5.00 and pays on Stripe's page. | DocFlow's server asks Payment for an order at $5.00. |
 | 3 | Lands on the success page: 'Confirming payment…', then the buttons work. | The success page polls the order; Payment's event tells DocFlow it is paid; DocFlow asks Delivery to email. |
 | 4 | Taps Download CSV; opens it in Excel with correct characters. | DocFlow checks the order is paid, builds the CSV from Review's latest values and returns it. The CSV is UTF-8 with a BOM. |

@@ -877,7 +877,7 @@ As a user, I want to ask a question in plain language across my processed invoic
 - **Service:** DocFlow app
 - **API design:**
   - `GET /api/docflow/v1/documents/{documentId}/outputs` (signed in) — Results status: whether download is unlocked and whether the current values pass every check. → `200 {locked, formats: ["json", "csv"], checks: {passed, failed[]}, last_changed_at}`.
-  - `GET /api/docflow/v1/documents/{documentId}/outputs/{format}/preview` (signed in) — Preview the JSON or CSV on screen before paying. `format = json|csv` → `200` with `application/json` (`{data, metadata}`) or `text/csv`, sent `Content-Disposition: inline`.
+  - `GET /api/docflow/v1/documents/{documentId}/outputs/{format}/preview` (signed in) — Preview the JSON or CSV on screen. `format = json|csv` → `200` with `application/json` (`{data, metadata}`) or `text/csv`, sent `Content-Disposition: inline`. Before payment, four fields only, with `preview: {limited, fields_hidden, line_items_hidden}` (`MVP1-E5-03`).
 - **Database design:** No new tables; the JSON is built from the review task's final values and the job's metadata, both read through their APIs.
 
 ### MVP1-E5-02 · CSV export — S
@@ -890,7 +890,8 @@ As a user, I want to ask a question in plain language across my processed invoic
 - **Database design:** No schema change.
 
 ### MVP1-E5-03 · Locked preview — S
-- **AC1:** Before payment, I can see a full preview of both outputs on screen, but download buttons show "Pay to download".
+- **AC1:** Before payment, I can see a short preview of both outputs on screen: four fields (vendor, invoice number, date and total) and how many more fields and line items unlock after payment. Download buttons show "Pay to download". After payment I see everything. (Changed 22 Nov 2026, Nikhil: a full preview gave the results away before payment.)
+- **AC3:** The preview limit is enforced on the server, like the download lock, so the full results cannot be read through the API before payment.
 - **AC2:** The download endpoints return 402 until the order is paid, enforced on the server.
 - **Service:** DocFlow app
 - **API design:**

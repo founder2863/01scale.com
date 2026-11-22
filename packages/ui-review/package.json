@@ -1,6 +1,6 @@
 {
   "name": "@01scale/ui-review",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "description": "UI components of the 01scale Review service (MVP1-E0-07 AC6). They call only the Review API, through a client the app supplies.",
   "type": "module",
@@ -11,7 +11,7 @@
     "./styles.css": "./src/styles.css"
   },
   "dependencies": {
-    "@01scale/ui-core": "0.1.0"
+    "@01scale/ui-core": "0.1.1"
   },
   "peerDependencies": {
     "react": ">=19"
