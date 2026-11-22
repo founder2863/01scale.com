@@ -376,7 +376,6 @@ h1 {
 }
 
 .lead {
-  max-width: 46rem;
   margin: 0;
   color: rgba(255, 255, 255, 0.92);
   font-size: clamp(1.1rem, 1.6vw, 1.3rem);
@@ -449,14 +448,7 @@ section[id] {
   scroll-margin-top: calc(var(--header-height) + 16px);
 }
 
-/* Long text stays readable on wide screens; grids and tables use the full width. */
-
-.note,
-.content > section > p,
-.plain-list,
-.flow {
-  max-width: 80ch;
-}
+/* Text uses the full width of the screen on every device, like grids and tables (Nikhil, PR #142). */
 
 .note {
   margin: 0 0 16px;
@@ -1270,12 +1262,6 @@ section[id] {
   min-width: 0;
 }
 
-.product-content > p,
-.product-content > .plain-list,
-.product-content > .flow,
-.story > p {
-  max-width: 80ch;
-}
 
 .guide h2 {
   display: flex;
@@ -3211,7 +3197,7 @@ section[id] {
 }
 
 /* Expensive Mistakes (MVP1-E0-46): a card per mistake, then one article page each,
-   kept to the width of a printed page so an article reads like one A4 sheet. */
+   using the full width of the screen. */
 .mistake-list {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
@@ -3246,10 +3232,6 @@ section[id] {
   font-size: 0.9rem;
 }
 
-.mistake-article {
-  max-width: 72ch;
-}
-
 .mistake-article .lead-small {
   font-size: 1.1rem;
   color: var(--text);
@@ -3258,4 +3240,75 @@ section[id] {
 .mistake-article p,
 .mistake-article li {
   overflow-wrap: anywhere;
+}
+
+/* Published articles on Expensive Mistakes (MVP1-E0-47), shown verbatim from Markdown. */
+.lesson-body img {
+  max-width: 100%;
+  height: auto;
+}
+
+.lesson-body pre {
+  overflow-x: auto;
+}
+
+.lesson-body blockquote {
+  margin: 16px 0;
+  padding-left: 14px;
+  border-left: 3px solid var(--brand-bright);
+  color: var(--muted);
+}
+
+/* Fill columns, so one article stays card-sized instead of stretching across the page. */
+.lesson-list {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+}
+
+/* Each article section folds under its heading (Nikhil, PR #142); the introduction always shows. */
+.lesson-section {
+  border-top: 1px solid var(--border);
+}
+
+.lesson-section:last-child {
+  border-bottom: 1px solid var(--border);
+}
+
+.lesson-section summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 0;
+  cursor: pointer;
+  list-style: none;
+}
+
+.lesson-section summary::-webkit-details-marker {
+  display: none;
+}
+
+.lesson-section summary::after {
+  content: "+";
+  margin-left: auto;
+  color: var(--brand-bright);
+  font-size: 1.4rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.lesson-section[open] summary::after {
+  content: "−";
+}
+
+.lesson-section summary h2 {
+  margin: 0;
+  font-size: clamp(1.05rem, 2.5vw, 1.35rem);
+}
+
+.lesson-section summary:focus-visible {
+  outline: 2px solid var(--brand-bright);
+  outline-offset: 2px;
+}
+
+.lesson-section > div {
+  padding-bottom: 8px;
 }
