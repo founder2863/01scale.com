@@ -550,6 +550,19 @@ As a hiring manager, I want to read the mistakes Nikhil paid for, what each cost
 - **API design:** No endpoints.
 - **Database design:** No tables.
 
+### MVP1-E0-47 · Payments lessons on the Expensive Mistakes tab — S
+As a hiring manager, I want to read what Nikhil learned the hard way in the domains he led, in his own published words, so I can judge his judgement from real work before 01scale (Nikhil's request, 22 Nov 2026).
+- **AC1:** The Expensive Mistakes tab has a third section, **Payments**, after **From my career**. Everything about payments goes under that one heading, with no "Lessons Learned" layer above it (Nikhil, PR #142); a later domain gets its own heading the same way.
+- **AC2:** Under Payments, one card for the LinkedIn article *Beyond the Happy Path: 10 Lessons from Building Embedded Payments in Vertical SaaS* (title, "LinkedIn · 3 Nov 2026", link) opens `/how-its-built/expensive-mistakes/beyond-the-happy-path`.
+- **AC3:** The page shows the article verbatim from one Markdown file, `content/articles/beyond-the-happy-path.md`, rendered at build time; the text is Nikhil's and is never edited, summarized or drafted. Until the file has text, the page shows "Coming Soon...". Only formatting is added: the section and lesson titles become headings, bullets become lists, "What to do:" is bold and each source's title links to it; the LinkedIn byline is left out because the page shows the title and source. Three wording fixes were approved by Nikhil on PR #142: NACHA in capitals throughout, "Stripe Connect and Worldpay for Platforms," for the hashtags in Lesson 1, and "day one" for "day-1".
+- **AC4:** The page says "Originally published on LinkedIn, 3 Nov 2026" with a link to the original post, defined once with the article in `app/how-its-built/articles.ts`.
+- **AC5:** The section and page work from 320 to 1920 pixels wide, in light and dark mode.
+- **AC6:** Each section of the article (every `##` heading in the Markdown) folds under its heading and starts closed; the introduction always shows (Nikhil, PR #142).
+- **AC7:** Text on every page of the site runs the full width of the screen on every device, like grids and tables: no reading-width caps on paragraphs, notes, lists or lead text (Nikhil, PR #142).
+- **Service:** Site (`apps/web`)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
 ---
 
 ## E1 · Accounts with AWS Cognito (MVP1 "a")
