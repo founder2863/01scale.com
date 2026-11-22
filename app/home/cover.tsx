@@ -1,4 +1,4 @@
-import { cover } from "./profile";
+import { cover, nameStrip } from "./profile";
 
 // The arc that links one area's functional expertise to the previous area's (MVP1-E0-36 AC2).
 function Arc() {
@@ -16,6 +16,12 @@ function Arc() {
 export function Cover() {
   return (
     <section className="cover" aria-labelledby="cover-title">
+      <div className="container">
+        <p className="name-strip">
+          <strong>{nameStrip.name}</strong>
+          <span>{nameStrip.headline}</span>
+        </p>
+      </div>
       <div className="container cover-grid">
         <div className="cover-intro">
           <h2 id="cover-title">{cover.title}</h2>
@@ -40,7 +46,6 @@ export function Cover() {
         {cover.areas.map((area, index) => (
           <article className="cover-area" key={area.title}>
             <h3>{area.title}</h3>
-            <p className="cover-metric">{area.metric}</p>
             <ul className="cover-apps" aria-label={`${area.title}: apps`}>
               {area.apps.map((app) => (
                 <li key={app}>{app}</li>

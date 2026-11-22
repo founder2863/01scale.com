@@ -435,12 +435,56 @@ As a visitor on a module page, I want to see every app that uses this module and
 - **Database design:** No tables.
 
 
-### MVP1-E0-36 · Home page cover: apps and platforms I launched, enabled and scaled — S
-As a hiring manager landing on 01scale, I want one picture of what Nikhil built across his career, so I understand his strengths before opening any product.
-- **AC1:** The home page opens, below the hero, with a cover titled "Apps & platforms I launched, enabled and scaled", from Nikhil's own summary graphic (21 Nov 2026). It has three areas: **Embedded Products Platform** ($100M+ GTV · $4M+ ARR), **Integration Platform (iPaaS)** (300K+ partners self-integrating) and **Data & AI APIs** (+20–40% quote-to-bind).
-- **AC2:** Each area shows its apps (the app layer), the platform capabilities under them (the platform layer) and Nikhil's functional expertise, with a legend for the three, and arcs that link the expertise across areas.
-- **AC3:** It is built as part of the page, not an image: readable from 320 to 1920 pixels wide, in light and dark mode. On a phone the areas stack and the arcs are hidden.
-- **AC4:** The words and figures live in one data file (`app/home/profile.ts`), with the other home page content that follows (numbers, experience, responsibilities, academics, recommendations), so a figure is changed in one place.
+### MVP1-E0-36 · Home page cover, order and snapshot — S
+As a hiring manager landing on 01scale, I want one picture of what Nikhil built across his career, then who he is and what the site is, so I understand his strengths before opening any product.
+- **AC1:** The home page opens with a name strip, "Nikhil Shrivastava · Platform & AI Product Leader", and the cover titled "Apps & platforms I launched, enabled and scaled", from Nikhil's own summary graphic: **Embedded Products Platform**, **Integration Platform (iPaaS)** and **Data & AI APIs** (Nikhil's decisions on PR #119).
+- **AC2:** Each area shows its apps (the app layer), the platform capabilities under them (the platform layer) and Nikhil's functional expertise, with a legend and arcs that link the expertise across areas. The areas' figures are in the numbers section (`MVP1-E0-37`), not on the cover.
+- **AC3:** The order is: name strip and cover, hero headline, snapshot (three cards in one row: Who I am, Who this site is for, What this site is), then `E0-37` to `E0-42`: numbers, brands, responsibilities, academics, recommendations, LinkedIn, contact.
+- **AC4:** The cover is part of the page, not an image: readable from 320 to 1920 pixels wide, in light and dark mode. On a phone the areas stack and the arcs are hidden.
+- **AC5:** All home page words and figures live in one data file, `app/home/profile.ts`. Where Nikhil's résumés differ, his answers on PR #119 decide.
+- **Service:** Site (`apps/web`)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E0-37 · In numbers — S
+- **AC1:** Eight figures with a label and a source: $100M+ GTV in 18 months, $4M+ platform ARR, 300K+ partners self-integrating, +20–40% quote-to-bind, 1B+ regulated transactions a year, 6 months → 2–4 weeks product launches, 50+ engineers led, 17+ years.
+- **AC2:** Four columns on a desktop, two on a phone. No count-up animation.
+- **Service:** Site (`apps/web`)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E0-38 · Where I built it (brands) — S
+- **AC1:** Three companies only: GovOS (now Neumo), TraceLink and Chubb (Nikhil's decision on PR #119). Tapping one shows the role, dates and two or three results.
+- **AC2:** Logos are files kept in the repository, not loaded from another site. Until Nikhil supplies them, each company shows as a wordmark.
+- **Service:** Site (`apps/web`)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E0-39 · What I owned at GovOS (responsibilities) — M
+- **AC1:** An interactive map of Nikhil's functional responsibilities chart: a Products layer (No Code Builder, Pay, Pay Portal, Financial Reporting, ID Verification, and payments for Tax, Search, Records and Submit Online) and a Platform layer (Gateway, Tenant, Authentication, Payment, Notification, Audit, LLM, Reporting, Provisioning, Playground), with the domain knowledge as chips.
+- **AC2:** Product names are Nikhil's fictional names: BLT → Tax, CS → Search, CR → Records, eSub → Submit Online, Studio → No Code Builder. The company is named.
+- **AC3:** Tapping a part shows what Nikhil did there (the lifecycle, the features, the commercial work). A part 01scale rebuilds links to it ("Rebuilding it here").
+- **AC4:** It works with touch and keyboard, from 320 to 1920 pixels wide, in light and dark mode.
+- **Service:** Site (`apps/web`)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E0-40 · Academics — S
+- **AC1:** Four cards with no years: New York University (M.S., Management), The George Washington University (Engineer / Applied Scientist degree, post-master's, with doctoral-level coursework in the Doctor of Engineering program), MIT (Building AI Products & Services) and RGTU (B.S., Computer Science & Engineering). Certifications as chips.
+- **Service:** Site (`apps/web`)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E0-41 · What leaders say (recommendations) — S
+- **AC1:** Six recommendations from LinkedIn, as on Nikhil's other site: the quote, the recommender's role and company, and "via LinkedIn". No names and no photos.
+- **AC2:** Cards, all visible (three columns on a desktop, one on a phone), not an auto-scrolling carousel.
+- **Service:** Site (`apps/web`)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E0-42 · LinkedIn and contact — S
+- **AC1:** A LinkedIn card with Nikhil's headline, his published articles, and links to his profile and articles. No embedded feed, so no LinkedIn scripts or cookies on the site.
+- **AC2:** Contact is a LinkedIn message: a "Message me on LinkedIn" button that opens his profile. No form and no phone number.
 - **Service:** Site (`apps/web`)
 - **API design:** No endpoints.
 - **Database design:** No tables.

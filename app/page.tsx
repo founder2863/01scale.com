@@ -1,9 +1,16 @@
 import Link from "next/link";
+import { Brands } from "./home/brands";
 import { Cover } from "./home/cover";
+import { Responsibilities } from "./home/responsibilities";
+import { Academics, Contact, LinkedIn, Numbers, Recommendations, Snapshot } from "./home/sections";
 
+// The home page, in Nikhil's order (MVP1-E0-36 to E0-42): cover, hero, snapshot, numbers,
+// brands, responsibilities, academics, recommendations, LinkedIn, contact.
 export default function Home() {
   return (
     <>
+      <Cover />
+
       <section className="hero">
         <div className="container">
           <p className="eyebrow">Product portfolio</p>
@@ -18,37 +25,14 @@ export default function Home() {
         </div>
       </section>
 
-      <Cover />
-
-      <div className="container content cards">
-        <section className="card">
-          <p className="eyebrow">What this site is</p>
-          <p>
-            Each module is a small, working slice of a real product: sign-in,
-            document upload, AI extraction, human review, payment and delivery.
-            The first product is DocFlow, which turns an uploaded invoice into
-            reviewed, structured data.
-          </p>
-        </section>
-
-        <section className="card">
-          <p className="eyebrow">Who I am</p>
-          <p>
-            I&apos;m Nikhil Shrivastava, a platform and AI product leader with
-            17+ years in regulated SaaS: identity, payments, integrations and
-            AI.
-          </p>
-        </section>
-
-        <section className="card">
-          <p className="eyebrow">Who this is for</p>
-          <p>
-            Hiring managers and teams looking for a platform product leader who
-            can show the work, not only describe it. Each demo is something you
-            can try yourself as it ships.
-          </p>
-        </section>
-      </div>
+      <Snapshot />
+      <Numbers />
+      <Brands />
+      <Responsibilities />
+      <Academics />
+      <Recommendations />
+      <LinkedIn />
+      <Contact />
     </>
   );
 }
