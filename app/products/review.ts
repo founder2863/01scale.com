@@ -1519,6 +1519,11 @@ export const review = {
           "name": "showAll",
           "type": "boolean, optional",
           "meaning": "Include unflagged fields. Default false; a 'Show all fields' toggle is built in."
+        },
+        {
+          "name": "allowShowAll",
+          "type": "boolean, optional",
+          "meaning": "Whether the 'Show all fields' toggle is offered. Default true; an app can hide it, for example until something is paid for."
         }
       ],
       "states": [

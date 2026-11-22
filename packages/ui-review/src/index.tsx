@@ -227,10 +227,13 @@ export function ReviewQueue({
   taskId,
   onChanged,
   onFocusEvidence,
+  allowShowAll = true,
 }: {
   taskId: string;
   onChanged?: (task: Task, fields: ReviewField[]) => void;
   onFocusEvidence?: (quote: string | null) => void;
+  /** Whether the 'Show all fields' toggle is offered. An app can hide it, for example until payment. */
+  allowShowAll?: boolean;
 }) {
   const review = useClient();
   const [data, setData] = useState<{ task: Task; fields: ReviewField[] } | null>(null);
@@ -276,8 +279,10 @@ export function ReviewQueue({
       {flagged.map((field) => (
         <FieldDecision key={field.id} taskId={taskId} field={field} onDecided={load} onFocusEvidence={onFocusEvidence} />
       ))}
-      <Checkbox label={`Show all fields (${rest.length} more, already accepted)`} checked={showAll} onChange={(e) => setShowAll(e.target.checked)} />
-      {showAll
+      {allowShowAll ? (
+        <Checkbox label={`Show all fields (${rest.length} more, already accepted)`} checked={showAll} onChange={(e) => setShowAll(e.target.checked)} />
+      ) : null}
+      {allowShowAll && showAll
         ? rest.map((field) => <FieldDecision key={field.id} taskId={taskId} field={field} onDecided={load} onFocusEvidence={onFocusEvidence} compact />)
         : null}
     </div>

@@ -90,7 +90,9 @@ function Prototype() {
   }
 
   // Back on the results after paying, the journey is complete.
+  const [showAllCalls, setShowAllCalls] = useState(false);
   const stepIndex = screen === "results" && doc?.status === "paid" ? JOURNEY.length - 1 : JOURNEY.findIndex((s) => s.screens.includes(screen));
+  const current = Math.max(0, stepIndex);
 
   async function openDocument(d: DocflowDocument) {
     const { document } = await platform.docflow.get(d.id);
@@ -152,6 +154,33 @@ function Prototype() {
             </Button>
           </div>
         </div>
+
+        {/* The written journey, one line: where you are, which service answers, what happens (E0-18 AC1). */}
+        <nav className="df-stepper" aria-label="The journey">
+          <ol className="df-stepper-dots">
+            {JOURNEY.map((step, i) => (
+              <li
+                key={step.title}
+                className={i === current ? "df-dot df-dot-now" : i < current ? "df-dot df-dot-done" : "df-dot"}
+                aria-current={i === current ? "step" : undefined}
+                title={step.title}
+              >
+                <span aria-hidden="true">{i < current ? "✓" : i + 1}</span>
+                <span className="ui-visually-hidden">
+                  {step.title}
+                  {i < current ? ", done" : ""}
+                </span>
+              </li>
+            ))}
+          </ol>
+          <p className="df-stepper-text">
+            <strong>
+              Step {current + 1} of {JOURNEY.length} · {JOURNEY[current].title}
+            </strong>{" "}
+            <span className="df-stepper-service">{JOURNEY[current].service}</span>
+            <span className="df-stepper-detail">{JOURNEY[current].detail}</span>
+          </p>
+        </nav>
 
         <div className="df-layout">
           <div className="df-app" aria-label="DocFlow prototype">
@@ -259,48 +288,32 @@ function Prototype() {
             </div>
           </div>
 
-          <aside className="df-side" aria-label="About this prototype">
-            <details className="df-panel" open>
-              <summary>
-                <strong>The journey</strong> <span className="ui-hint">step {Math.max(1, stepIndex + 1)} of {JOURNEY.length}</span>
-              </summary>
-              <ol className="df-journey">
-                {JOURNEY.map((step, i) => (
-                  <li key={step.title} className={i === stepIndex ? "df-journey-now" : i < stepIndex ? "df-journey-done" : undefined} aria-current={i === stepIndex ? "step" : undefined}>
-                    <span className="df-journey-num" aria-hidden="true">
-                      {i < stepIndex ? "✓" : i + 1}
+          <details className="df-panel df-apilog">
+            <summary>
+              <strong>API calls</strong> <span className="ui-hint">{log.length ? `${log.length} so far, newest first` : "none yet"}</span>
+            </summary>
+            <ol className="df-log" aria-live="off">
+              {(showAllCalls ? log : log.slice(0, 8)).map((entry) => (
+                <li key={entry.id}>
+                  <span className={`df-log-status df-log-${entry.status < 300 ? "ok" : entry.status < 500 ? "warn" : "bad"}`}>{entry.status}</span>
+                  <span className="df-log-main">
+                    <code>
+                      {entry.method} {entry.path}
+                    </code>
+                    <span className="ui-hint">
+                      {CALLER_LABEL[entry.caller]} · {entry.at}
+                      {entry.note ? ` · ${entry.note}` : ""}
                     </span>
-                    <span>
-                      <strong>{step.title}</strong>
-                      <span className="df-journey-service">{step.service}</span>
-                      {i === stepIndex ? <span className="df-journey-detail">{step.detail}</span> : null}
-                    </span>
-                  </li>
-                ))}
-              </ol>
-            </details>
-            <details className="df-panel" open>
-              <summary>
-                <strong>API calls</strong> <span className="ui-hint">{log.length ? `${log.length}, newest first` : "none yet"}</span>
-              </summary>
-              <ol className="df-log" aria-live="off">
-                {log.map((entry) => (
-                  <li key={entry.id}>
-                    <span className={`df-log-status df-log-${entry.status < 300 ? "ok" : entry.status < 500 ? "warn" : "bad"}`}>{entry.status}</span>
-                    <span className="df-log-main">
-                      <code>
-                        {entry.method} {entry.path}
-                      </code>
-                      <span className="ui-hint">
-                        {CALLER_LABEL[entry.caller]} · {entry.at}
-                        {entry.note ? ` · ${entry.note}` : ""}
-                      </span>
-                    </span>
-                  </li>
-                ))}
-              </ol>
-            </details>
-          </aside>
+                  </span>
+                </li>
+              ))}
+            </ol>
+            {log.length > 8 ? (
+              <Button size="sm" variant="ghost" onClick={() => setShowAllCalls((v) => !v)}>
+                {showAllCalls ? "Show the latest 8" : `Show all ${log.length}`}
+              </Button>
+            ) : null}
+          </details>
         </div>
       </div>
     </ServiceClients>
@@ -349,13 +362,19 @@ function ExtractScreen({ doc, file, setDoc, go }: ScreenProps & { file: PickedFi
             }}
           />
           {retrying ? <p className="ui-hint">Starting again…</p> : null}
+          {/* The next step comes first, so nobody scrolls past 21 fields to find it. */}
+          <NextStepButton job={job} onReview={() => go("review")} onContinue={() => go("results")} />
           {job?.status === "extracted" ? (
             <>
-              <h3 className="df-h3">What Claude read</h3>
-              <FieldList jobId={job.id} />
+              <h3 className="df-h3">The {job.fields_flagged} fields to check</h3>
+              <FieldList jobId={job.id} flaggedOnly />
+              {job.fields_total > job.fields_flagged ? (
+                <p className="df-locked-note">
+                  <span aria-hidden="true">🔒</span> The other {job.fields_total - job.fields_flagged} fields were read with high confidence. They unlock after payment.
+                </p>
+              ) : null}
             </>
           ) : null}
-          <NextStepButton job={job} onReview={() => go("review")} onContinue={() => go("results")} />
         </div>
       </div>
     </Card>
@@ -389,6 +408,8 @@ function ReviewScreen({ doc, file, setDoc, go }: ScreenProps & { file: PickedFil
               setFailed(null);
             }}
             onFocusEvidence={setQuote}
+            // Before payment, only the flagged fields (MVP1-E5-03 AC4).
+            allowShowAll={doc.status === "paid"}
           />
           {failed ? (
             <Alert
@@ -463,7 +484,7 @@ function ResultsScreen({ doc, setDoc, go }: ScreenProps) {
       >
         {!outputs ? (
           <div className="df-stack" aria-busy="true">
-            <Skeleton height={44} width={240} />
+            <Skeleton height={44} width="60%" />
             <Skeleton height={320} />
           </div>
         ) : (
@@ -478,8 +499,8 @@ function ResultsScreen({ doc, setDoc, go }: ScreenProps) {
               value={tab}
               onChange={setTab}
               items={[
-                { id: "json", label: "JSON", content: <JsonPreview values={outputs.values} /> },
-                { id: "csv", label: "CSV", content: <CsvPreview values={outputs.values} /> },
+                { id: "json", label: "JSON", content: <JsonPreview values={outputs.values} preview={outputs.preview} /> },
+                { id: "csv", label: "CSV", content: <CsvPreview values={outputs.values} preview={outputs.preview} /> },
                 {
                   id: "edit",
                   label: "Edit values",
@@ -487,6 +508,7 @@ function ResultsScreen({ doc, setDoc, go }: ScreenProps) {
                     <ResultsFieldEditor
                       taskId={doc.review_task_id!}
                       checks={outputs.checks}
+                      locked={outputs.locked}
                       onSaved={async () => {
                         await load();
                         toast.show("Saved. The previews now use the corrected value.", "success");

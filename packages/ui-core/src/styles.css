@@ -415,6 +415,12 @@
 
 /* -------------------------------------------------------------------- Tabs */
 
+/* min-width: 0 keeps a wide panel (a table) scrolling inside itself instead of widening the page. */
+.ui-tabs {
+  min-width: 0;
+  max-width: 100%;
+}
+
 .ui-tablist {
   display: flex;
   gap: var(--space-1);
@@ -434,6 +440,11 @@
   font: inherit;
   font-weight: var(--weight-medium);
   cursor: pointer;
+}
+
+/* Inside the list's own box, so the scrolling list never clips the focus ring. */
+.ui-tab:focus-visible {
+  outline-offset: -3px;
 }
 
 .ui-tab[aria-selected="true"] {
@@ -509,6 +520,11 @@
 .ui-stack {
   display: grid;
   gap: var(--space-3);
+  min-width: 0;
+  align-content: start;
+}
+
+.ui-stack > * {
   min-width: 0;
 }
 

@@ -6,7 +6,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Alert, Badge, Button, Skeleton, labelFromName, problemMessage, useToast } from "@01scale/ui-core";
 import { FieldDecision, useReviewClient, type ReviewField } from "@01scale/ui-review";
-import type { CheckResult, DocflowDocument, DocStatus, InvoiceValues } from "../mock-platform";
+import type { CheckResult, DocflowDocument, DocStatus, InvoiceValues, Preview } from "../mock-platform";
 import { buildCsv } from "../mock-platform";
 import { useDocflow } from "../clients";
 
@@ -72,14 +72,35 @@ export function DocumentsList({ onOpen, emptyState }: { onOpen: (doc: DocflowDoc
   );
 }
 
-/** JsonPreview: the JSON with syntax colours and folding; folded at the first level on phones. */
-export function JsonPreview({ values }: { values: InvoiceValues }) {
+/** What the preview leaves out before payment, in words. */
+function heldBack(preview: Preview) {
+  const parts = [
+    preview.fields_hidden ? `${preview.fields_hidden} more field${preview.fields_hidden === 1 ? "" : "s"}` : null,
+    preview.line_items_hidden ? `${preview.line_items_hidden} line item${preview.line_items_hidden === 1 ? "" : "s"}` : null,
+  ].filter(Boolean);
+  return parts.length ? `${parts.join(" and ")} unlock after payment.` : "";
+}
+
+function LockedNote({ preview }: { preview?: Preview }) {
+  if (!preview?.limited) return null;
+  return (
+    <p className="df-locked-note">
+      <span aria-hidden="true">🔒</span> Preview: {heldBack(preview)}
+    </p>
+  );
+}
+
+/** JsonPreview: the JSON with syntax colours and folding; before payment, the preview fields only. */
+export function JsonPreview({ values, preview }: { values: InvoiceValues; preview?: Preview }) {
   const [phone, setPhone] = useState(false);
   useEffect(() => setPhone(window.matchMedia("(max-width: 640px)").matches), []);
   const data = { schema: "invoice-v1", values };
   return (
-    <div className="df-code" role="region" aria-label="JSON preview" tabIndex={0}>
-      <JsonNode value={data} depth={0} foldDeep={phone} />
+    <div className="df-stack">
+      <div className="df-code" role="region" aria-label="JSON preview" tabIndex={0}>
+        <JsonNode value={data} depth={0} foldDeep={phone} />
+      </div>
+      <LockedNote preview={preview} />
     </div>
   );
 }
@@ -112,41 +133,48 @@ function JsonNode({ value, depth, foldDeep, name }: { value: unknown; depth: num
   );
 }
 
-/** CsvPreview: the CSV as a table that scrolls inside its own box. */
-export function CsvPreview({ values }: { values: InvoiceValues }) {
+/** CsvPreview: the CSV as a table; before payment, the preview columns only. Wide tables scroll sideways inside their own box. */
+export function CsvPreview({ values, preview }: { values: InvoiceValues; preview?: Preview }) {
   const rows = useMemo(() => {
-    const text = buildCsv(values).replace(/^﻿/, "").trim();
+    if (preview?.limited) {
+      const keys = Object.keys(values).filter((k) => k !== "line_items");
+      return [keys, keys.map((k) => (values[k] as string | null) ?? "")];
+    }
+    const text = buildCsv(values).replace(/^\uFEFF/, "").trim();
     return text.split("\r\n").map((line) => line.match(/("([^"]|"")*"|[^,]*)(,|$)/g)!.filter((c) => c !== "").map((c) => c.replace(/,$/, "").replace(/^"|"$/g, "").replace(/""/g, '"')));
-  }, [values]);
+  }, [values, preview?.limited]);
   const [head, ...body] = rows;
   return (
-    <div className="df-tablebox" role="region" aria-label="CSV preview" tabIndex={0}>
-      <table className="df-table">
-        <thead>
-          <tr>
-            {head.map((h) => (
-              <th key={h} scope="col">
-                {h}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {body.map((row, i) => (
-            <tr key={i}>
-              {row.map((cell, j) => (
-                <td key={j}>{cell}</td>
+    <div className="df-stack">
+      <div className="df-tablebox" role="region" aria-label="CSV preview" tabIndex={0}>
+        <table className="df-table">
+          <thead>
+            <tr>
+              {head.map((h) => (
+                <th key={h} scope="col">
+                  {h}
+                </th>
               ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {body.map((row, i) => (
+              <tr key={i}>
+                {row.map((cell, j) => (
+                  <td key={j}>{cell}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <LockedNote preview={preview} />
     </div>
   );
 }
 
 /** ResultsFieldEditor: Edit beside each value, placing Review's FieldDecision for that field. */
-export function ResultsFieldEditor({ taskId, checks, onSaved }: { taskId: string; checks: CheckResult[]; onSaved: () => void }) {
+export function ResultsFieldEditor({ taskId, checks, onSaved, locked = false }: { taskId: string; checks: CheckResult[]; onSaved: () => void; locked?: boolean }) {
   const review = useReviewClient();
   const [fields, setFields] = useState<ReviewField[] | null>(null);
   const [editing, setEditing] = useState<string | null>(null);
@@ -160,11 +188,15 @@ export function ResultsFieldEditor({ taskId, checks, onSaved }: { taskId: string
   }, [taskId]);
 
   if (!fields) return <Skeleton height={200} />;
+  // Before payment, only the flagged fields; the ones read with high confidence unlock after payment (MVP1-E5-03 AC4).
+  const shown = locked ? fields.filter((f) => f.flagged) : fields;
+  const hidden = fields.length - shown.length;
   const failedFields = new Set(checks.filter((c) => !c.passed).flatMap((c) => c.fields));
   const key = (f: ReviewField) => (f.line_index === null ? f.name : `line_items[${f.line_index}].${f.name}`);
   return (
+    <div className="df-stack">
     <ul className="df-fieldlist">
-      {fields.map((field) =>
+      {shown.map((field) =>
         editing === field.id ? (
           <li key={field.id}>
             <FieldDecision
@@ -196,6 +228,12 @@ export function ResultsFieldEditor({ taskId, checks, onSaved }: { taskId: string
         ),
       )}
     </ul>
+    {hidden ? (
+      <p className="df-locked-note">
+        <span aria-hidden="true">🔒</span> {hidden} more field{hidden === 1 ? " was" : "s were"} read with high confidence. They unlock after payment.
+      </p>
+    ) : null}
+    </div>
   );
 }
 

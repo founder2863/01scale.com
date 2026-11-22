@@ -53,8 +53,9 @@ DocFlow's own page sections. Everything else on DocFlow's pages comes from the s
 |---|---|---|
 | `documentId` | string | The document. |
 | `taskId` | string | Its Review task. |
+| `locked` | boolean | From the outputs request. While locked, only the flagged fields are listed. |
 
-**States:** Viewing; Editing (Review's component); Saved: previews refreshed; Check failed after saving: the warning; Failed: Retry.
+**States:** Before payment: the flagged fields only, and how many more fields unlock after payment; Viewing; Editing (Review's component); Saved: previews refreshed; Check failed after saving: the warning; Failed: Retry.
 
 **Calls:** `GET /documents/{documentId}/outputs`, Review `PATCH /tasks/{taskId}/fields/{fieldId}`, through Review's component.
 

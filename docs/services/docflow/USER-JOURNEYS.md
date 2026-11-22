@@ -12,7 +12,7 @@ What a person sees across the whole DocFlow journey, and where DocFlow's own ste
 |---|---|---|
 | 1 | Sees My documents, or 'Upload your first invoice' with a sample invoice to try. | DocFlow lists the person's documents with status and next action. |
 | 2 | Uploads, sees a preview of the file, and taps Continue to the extraction page. | DocFlow starts the document, Upload stores and checks the file, DocFlow starts Extraction, and the upload screen shows Upload's `FilePreview`. |
-| 3 | Watches the steps, then sees 'Review 3 flagged fields'. | Extraction tells DocFlow it finished; DocFlow sends the fields to Review. |
+| 3 | Watches the steps, then sees 'Review 3 flagged fields' and the three fields; the fields read with high confidence stay hidden until payment. | Extraction tells DocFlow it finished; DocFlow sends the fields to Review. |
 | 4 | Checks the flagged fields and taps Complete review. | DocFlow re-checks the values with Extraction and completes the review. |
 
 **Result:** The results can be previewed, built from Review's values; downloads are locked until payment.
@@ -23,7 +23,7 @@ What a person sees across the whole DocFlow journey, and where DocFlow's own ste
 
 | Step | The person | The system |
 |---|---|---|
-| 1 | Reads the full JSON (with folding) and the CSV on screen; download buttons say 'Pay to download'. | DocFlow builds the results from Review's latest values for preview; downloads answer 402 until paid. |
+| 1 | Sees a preview of the JSON and the CSV: four fields, and how many more unlock after payment; download buttons say 'Pay to download'. | DocFlow builds a limited preview from Review's latest values; downloads answer 402 until paid. |
 | 2 | Taps Pay $5.00 and pays on Stripe's page. | DocFlow's server asks Payment for an order at $5.00. |
 | 3 | Lands on the success page: 'Confirming payment…', then the buttons work. | The success page polls the order; Payment's event tells DocFlow it is paid; DocFlow asks Delivery to email. |
 | 4 | Taps Download CSV; opens it in Excel with correct characters. | DocFlow checks the order is paid, builds the CSV from Review's latest values and returns it. The CSV is UTF-8 with a BOM. |

@@ -1300,7 +1300,15 @@ export const products = [
         "acs": [
           {
             "label": "AC1",
-            "text": "Before payment, I can see a full preview of both outputs on screen, but download buttons show \"Pay to download\"."
+            "text": "Before payment, I can see a short preview of both outputs on screen: four fields (vendor, invoice number, date and total) and how many more fields and line items unlock after payment. Download buttons show \"Pay to download\". After payment I see everything. (Changed 22 Nov 2026, Nikhil: a full preview gave the results away before payment.)"
+          },
+          {
+            "label": "AC3",
+            "text": "The preview limit is enforced on the server, like the download lock, so the full results cannot be read through the API before payment."
+          },
+          {
+            "label": "AC4",
+            "text": "Before payment, DocFlow's screens list only the flagged fields: after extraction, in the review and in the results page's Edit values. The fields read with high confidence stay hidden, with a line saying how many unlock after payment (Nikhil, 22 Nov 2026)."
           },
           {
             "label": "AC2",
@@ -1343,8 +1351,8 @@ export const products = [
         "method": "GET",
         "path": "/api/docflow/v1/documents/{documentId}/outputs/{format}/preview",
         "access": "Signed in",
-        "summary": "Preview the JSON or CSV on screen before paying.",
-        "detail": "`format = json|csv` → `200` with `application/json` (`{data, metadata}`) or `text/csv`, sent `Content-Disposition: inline`.",
+        "summary": "Preview the JSON or CSV on screen.",
+        "detail": "`format = json|csv` → `200` with `application/json` (`{data, metadata}`) or `text/csv`, sent `Content-Disposition: inline`. Before payment, four fields only, with `preview: {limited, fields_hidden, line_items_hidden}` (`MVP1-E5-03`).",
         "story": "MVP1-E5-01"
       },
       {

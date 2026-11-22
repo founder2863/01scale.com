@@ -538,7 +538,7 @@ UI_RULES = [
 
 COMPONENTS = [
     component("ReviewQueue", "Component", "The task's fields, flagged first, each with its value, reason, evidence and the three decisions, with the 'N of M resolved' counter.",
-        [("taskId", "string", "The task."), ("showAll", "boolean, optional", "Include unflagged fields. Default false; a 'Show all fields' toggle is built in.")],
+        [("taskId", "string", "The task."), ("showAll", "boolean, optional", "Include unflagged fields. Default false; a 'Show all fields' toggle is built in."), ("allowShowAll", "boolean, optional", "Whether the 'Show all fields' toggle is offered. Default true; an app can hide it, for example until something is paid for.")],
         ["Loading: placeholder rows", "Open: fields with their status", "All resolved: a short 'All checked' message", "Completed: marked 'Finished', values still editable", "Failed: 'Couldn't load this review.' and Retry"],
         ["`GET /tasks/{taskId}`"]),
     component("FieldDecision", "Component", "One field's value with Accept, Edit and Not on document; the edit box checks the value as the person types.",

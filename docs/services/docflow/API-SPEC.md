@@ -460,7 +460,7 @@ Authorization: Bearer <access token>
 
 ### GET /documents/{documentId}/outputs/{format}/preview
 
-**Preview the JSON or CSV.** The full results, shown on screen, before or after paying.
+**Preview the JSON or CSV.** The results, shown on screen: a short preview before paying, the full results after.
 
 Access: **Signed in** · Scope: `docflow:read` · Story: `MVP1-E5-01`
 
@@ -474,12 +474,13 @@ Access: **Signed in** · Scope: `docflow:read` · Story: `MVP1-E5-01`
 **Behaviour**
 
 - Builds it on demand: reads the final values from Review `GET /tasks/{taskId}?all=true` and the model, prompt version and page count from Extraction `GET /jobs/{jobId}`, re-runs Extraction `POST /validations` (with `job_id`) on the current values, then builds the format and validates the JSON against `schemas/invoice-v1.json`. Nothing is stored (ARCHITECTURE.md §12.8), so it always reflects the latest corrections.
+- Until the order is paid, the preview holds four fields only (`vendor_name`, `invoice_number`, `invoice_date`, `total`), and says how many fields and line items are held back; the CSV has those four columns. The limit is applied on the server, so the full results cannot be read before payment (Nikhil's decision, 22 Nov 2026, changing `MVP1-E5-03` AC1).
 
 **Responses**
 
 | Status | When | Body or headers |
 |---|---|---|
-| `200` | The review is complete | `application/json` or `text/csv` with `Content-Disposition: inline`. |
+| `200` | The review is complete | `application/json` or `text/csv` with `Content-Disposition: inline`. Before payment the JSON adds `preview: {limited: true, fields_hidden, line_items_hidden}` and the CSV has `X-Preview-Limited: true`. |
 
 **Errors**
 

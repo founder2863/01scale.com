@@ -550,7 +550,7 @@ export const docflow = {
       "access": "Signed in",
       "story": "MVP1-E5-01",
       "title": "Preview the JSON or CSV",
-      "summary": "The full results, shown on screen, before or after paying.",
+      "summary": "The results, shown on screen: a short preview before paying, the full results after.",
       "params": [
         {
           "name": "documentId",
@@ -570,13 +570,14 @@ export const docflow = {
         }
       ],
       "behaviour": [
-        "Builds it on demand: reads the final values from Review `GET /tasks/{taskId}?all=true` and the model, prompt version and page count from Extraction `GET /jobs/{jobId}`, re-runs Extraction `POST /validations` (with `job_id`) on the current values, then builds the format and validates the JSON against `schemas/invoice-v1.json`. Nothing is stored (ARCHITECTURE.md §12.8), so it always reflects the latest corrections."
+        "Builds it on demand: reads the final values from Review `GET /tasks/{taskId}?all=true` and the model, prompt version and page count from Extraction `GET /jobs/{jobId}`, re-runs Extraction `POST /validations` (with `job_id`) on the current values, then builds the format and validates the JSON against `schemas/invoice-v1.json`. Nothing is stored (ARCHITECTURE.md §12.8), so it always reflects the latest corrections.",
+        "Until the order is paid, the preview holds four fields only (`vendor_name`, `invoice_number`, `invoice_date`, `total`), and says how many fields and line items are held back; the CSV has those four columns. The limit is applied on the server, so the full results cannot be read before payment (Nikhil's decision, 22 Nov 2026, changing `MVP1-E5-03` AC1)."
       ],
       "responses": [
         {
           "status": "200",
           "when": "The review is complete",
-          "body": "`application/json` or `text/csv` with `Content-Disposition: inline`."
+          "body": "`application/json` or `text/csv` with `Content-Disposition: inline`. Before payment the JSON adds `preview: {limited: true, fields_hidden, line_items_hidden}` and the CSV has `X-Preview-Limited: true`."
         }
       ],
       "errors": [
@@ -1115,7 +1116,7 @@ export const docflow = {
           "system": "DocFlow starts the document, Upload stores and checks the file, DocFlow starts Extraction, and the upload screen shows Upload's `FilePreview`."
         },
         {
-          "person": "Watches the steps, then sees 'Review 3 flagged fields'.",
+          "person": "Watches the steps, then sees 'Review 3 flagged fields' and the three fields; the fields read with high confidence stay hidden until payment.",
           "system": "Extraction tells DocFlow it finished; DocFlow sends the fields to Review."
         },
         {
@@ -1138,8 +1139,8 @@ export const docflow = {
       ],
       "steps": [
         {
-          "person": "Reads the full JSON (with folding) and the CSV on screen; download buttons say 'Pay to download'.",
-          "system": "DocFlow builds the results from Review's latest values for preview; downloads answer 402 until paid."
+          "person": "Sees a preview of the JSON and the CSV: four fields, and how many more unlock after payment; download buttons say 'Pay to download'.",
+          "system": "DocFlow builds a limited preview from Review's latest values; downloads answer 402 until paid."
         },
         {
           "person": "Taps Pay $5.00 and pays on Stripe's page.",
@@ -1301,9 +1302,15 @@ export const docflow = {
           "name": "taskId",
           "type": "string",
           "meaning": "Its Review task."
+        },
+        {
+          "name": "locked",
+          "type": "boolean",
+          "meaning": "From the outputs request. While locked, only the flagged fields are listed."
         }
       ],
       "states": [
+        "Before payment: the flagged fields only, and how many more fields unlock after payment",
         "Viewing",
         "Editing (Review's component)",
         "Saved: previews refreshed",

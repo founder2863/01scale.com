@@ -522,23 +522,23 @@ export const costs = {
     {
       "key": "MVP1-E0-19",
       "name": "MVP1-E0-19 · Design system (packages/ui-core), service UI packages (E0-07 AC6) and the DocFlow V1 clickable prototype (E0-18 for DocFlow)",
-      "requests": 3,
-      "buildTokens": 31245106,
-      "reworkTokens": 0,
-      "buildCost": 8.72,
+      "requests": 6,
+      "buildTokens": 36887681,
+      "reworkTokens": 24193311,
+      "buildCost": 14.6,
       "reworkCost": 0,
-      "totalCost": 8.72,
-      "yield": 100,
+      "totalCost": 14.6,
+      "yield": 60,
       "pending": true
     }
   ],
   "storyTotals": {
-    "requests": 145,
-    "tokens": 538037332,
-    "buildCost": 150.8,
+    "requests": 148,
+    "tokens": 567873218,
+    "buildCost": 156.68,
     "reworkCost": 126.57,
-    "cost": 277.37,
-    "yield": 54,
+    "cost": 283.25,
+    "yield": 53,
     "pending": true
   },
   "scaffolding": [
@@ -568,9 +568,9 @@ export const costs = {
     },
     {
       "name": "Process",
-      "requests": 37,
-      "tokens": 92156916,
-      "cost": 21.14
+      "requests": 38,
+      "tokens": 92690756,
+      "cost": 24.75
     },
     {
       "name": "Tool overhead (background calls)",
@@ -580,21 +580,21 @@ export const costs = {
     }
   ],
   "scaffoldingTotals": {
-    "requests": 88,
-    "tokens": 127708164,
-    "cost": 62.85
+    "requests": 89,
+    "tokens": 128242004,
+    "cost": 66.47
   },
   "totals": {
-    "requests": 233,
-    "tokens": 665745496,
-    "cost": 340.23,
-    "buildCost": 150.8,
+    "requests": 237,
+    "tokens": 696115222,
+    "cost": 349.72,
+    "buildCost": 156.68,
     "reworkCost": 126.57,
-    "scaffoldingCost": 62.85,
-    "storyYield": 54,
-    "overallYield": 44,
+    "scaffoldingCost": 66.47,
+    "storyYield": 53,
+    "overallYield": 43,
     "pendingRequests": 21,
-    "pendingEstimate": 16.65,
+    "pendingEstimate": 15.5,
     "pendingEstimated": 15
   },
   "byKind": {
@@ -623,8 +623,8 @@ export const costs = {
       "cost": 103.2,
       "share": 30,
       "median": 8.2,
-      "typical": 0.49,
-      "extra": 96.85
+      "typical": 0.51,
+      "extra": 96.57
     },
     "mergedTooSoon": {
       "requests": 1,

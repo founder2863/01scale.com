@@ -1,5 +1,9 @@
 # @01scale/ui-payment changelog
 
+## 0.2.1 — 22 Nov 2026
+
+- Uses `@01scale/ui-core` 0.1.1 (a wide tab panel no longer widens the page).
+
 ## 0.2.0 — 22 Nov 2026 (MVP1-E0-19 AC5)
 
 - New: OrderList. The client adds an optional listOrders.

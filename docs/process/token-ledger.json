@@ -130,7 +130,7 @@
     },
     {
       "id": "4f156423-c77d-5a1f-9ee0-653fd2fda3eb",
-      "tool_total_usd": 8.7231,
+      "tool_total_usd": 18.2121,
       "rates_usd_per_million": {},
       "by_kind_usd": {
         "input": 0.0,
@@ -3343,7 +3343,7 @@
       ],
       "tokens": 11931983,
       "output_tokens": 97110,
-      "cost_usd": 5.9187
+      "cost_usd": 6.596
     },
     {
       "session": "4f156423",
@@ -3357,7 +3357,7 @@
       ],
       "tokens": 7919930,
       "output_tokens": 45689,
-      "cost_usd": 2.8044
+      "cost_usd": 3.1254
     },
     {
       "session": "4f156423",
@@ -3371,8 +3371,7 @@
       ],
       "tokens": 2730952,
       "output_tokens": 2531,
-      "cost_usd": null,
-      "estimated_usd": 0.7176
+      "cost_usd": 0.6527
     },
     {
       "session": "4f156423",
@@ -3386,8 +3385,7 @@
       ],
       "tokens": 8878126,
       "output_tokens": 15982,
-      "cost_usd": null,
-      "estimated_usd": 2.4079
+      "cost_usd": 2.231
     },
     {
       "session": "4f156423",
@@ -3401,8 +3399,7 @@
       ],
       "tokens": 3580049,
       "output_tokens": 3461,
-      "cost_usd": null,
-      "estimated_usd": 0.8555
+      "cost_usd": 0.7293
     },
     {
       "session": "4f156423",
@@ -3414,10 +3411,69 @@
       "models": [
         "claude-opus-5-5"
       ],
-      "tokens": 11393193,
-      "output_tokens": 46135,
+      "tokens": 17035768,
+      "output_tokens": 51395,
+      "cost_usd": 4.8777
+    },
+    {
+      "session": "4f156423",
+      "n": 7,
+      "ts": "2026-11-22T22:35:24.552Z",
+      "area": "MVP1-E0-19",
+      "kind": "rework",
+      "summary": "Rework the DocFlow prototype after review: one page scroll, flagged fields first, four-field preview before payment (MVP1-E5-03 changed); fix a wide CSV widening the page (ui-core 0.1.1)",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 12324483,
+      "output_tokens": 26894,
       "cost_usd": null,
-      "estimated_usd": 3.6752
+      "estimated_usd": 3.4347
+    },
+    {
+      "session": "4f156423",
+      "n": 8,
+      "ts": "2026-11-22T23:00:04.137Z",
+      "area": "MVP1-E0-19",
+      "kind": "rework",
+      "summary": "Rework: before payment, show only the flagged fields in Edit values, extraction and review (MVP1-E5-03 AC4; ui-review 0.1.2)",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 6594220,
+      "output_tokens": 11893,
+      "cost_usd": null,
+      "estimated_usd": 1.7235
+    },
+    {
+      "session": "4f156423",
+      "n": 9,
+      "ts": "2026-11-22T23:12:06.430Z",
+      "area": "MVP1-E0-19",
+      "kind": "rework",
+      "summary": "Rework: fix a lone button stretched to fill a tall column while extraction runs (align-content in stacks)",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 5274608,
+      "output_tokens": 3223,
+      "cost_usd": null,
+      "estimated_usd": 1.2349
+    },
+    {
+      "session": "4f156423",
+      "n": 10,
+      "ts": "2026-11-22T23:19:46.510Z",
+      "area": "Process",
+      "kind": "scaffolding",
+      "summary": "Process: record costs and write the review history into the PR description",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 533840,
+      "output_tokens": 416,
+      "cost_usd": null,
+      "estimated_usd": 0.1152
     }
   ]
 }

@@ -4,7 +4,7 @@ Read this at the start of every session, after CLAUDE.md. Update it in the PR th
 
 ## Where things stand
 
-- **In flight:** the MVP1-E0-19 AC5 PR (branch `claude/amazing-meitner-kpu3n6`): live component galleries on every module's UI Components section, and ten more components for what a DocFlow user meets. Every earlier PR is merged, #161 (design system, service UI packages, DocFlow prototype) included.
+- **In flight:** the DocFlow prototype design fixes (branch `claude/amazing-meitner-kpu3n6`): one page scroll (a step bar above the app, API calls folded under it), only the flagged fields after extraction, and a four-field preview before payment, enforced by DocFlow's API (`MVP1-E5-03` AC1 changed, AC3 added; Nikhil, 22 Nov 2026). Also fixes a wide CSV pushing the results page sideways (ui-core 0.1.1). Every earlier PR is merged, #162 (E0-19 AC5) included.
 - **Service UI packages:** each `packages/ui-<service>` defines the client it needs from its own API (`createClientContext` in ui-core); the app supplies it: the mock in `app/products/docflow/try/mock-platform.ts` today, the gateway once the service is built. DocFlow's own sections and the Cognito and Stripe stand-ins stay in the app (Nikhil, 22 Nov 2026).
 - **Workspaces:** the root `package.json` now has `"workspaces": ["packages/*"]`; the site stays at the root until E0-07 moves it to `apps/web`. Run `npm install` after pulling.
 - **The site** (Next.js at the repo root, not yet `apps/web`) has: Home (E0-36 to E0-42), Products with app pages (side menu, E0-48) and module pages (15 sections, phone Sections button and Previous / Next, E0-49), Platform (Core, Platform and Apps Architecture, E0-22, E0-23, E0-43), How It's Built (Skills, Token Costs, Agents, Total Projected Cost with four tabs (E8-10), Constraints, Expensive Mistakes with four project lessons and the Payments article, E0-45 to E0-47).
@@ -15,7 +15,7 @@ Read this at the start of every session, after CLAUDE.md. Update it in the PR th
 
 | State | Stories |
 |---|---|
-| Built, PR open | E0-19 AC5: live component galleries (`app/products/gallery/`); account and admin components are marked "Designed, not built yet" |
+| Built, PR merged | E0-19 AC5 (PR #162): live component galleries (`app/products/gallery/`); account and admin components are marked "Designed, not built yet" |
 | Built, PR merged | E0-19 AC1 to AC4 and AC6 (PR #161; `packages/ui-core` 0.1.0, site uses its tokens); E0-18 for the DocFlow app only (User Journey section, against an in-browser mock); E0-07 AC6 in part (the six service UI packages exist, against a mock client) |
 | Built, PR merged | E8-09 (#156, PR #159): `npm run human-costs`, skill `estimate-human-cost`, `docs/process/cost-model.json`, `app/how-its-built/human-costs.ts`; E8-10 (#157, PR #160): Total Projected Cost with four tabs (Actual Token Cost So Far, Estimated Human Cost So Far, Projected Token Cost as Coming Soon until E8-06, Projected Human Cost) |
 | Built, issue closed | E0-10, E0-11, E0-12, E0-13 (#61), E0-17, E0-21, E0-22, E0-23, E0-31 (#109), E0-32 to E0-35, E0-36 to E0-43 (#148 to #155, created after the work), E0-45 to E0-49, E8-01 |

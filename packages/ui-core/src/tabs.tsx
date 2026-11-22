@@ -40,7 +40,7 @@ export function Tabs({
 
   const active = items[index];
   return (
-    <div>
+    <div className="ui-tabs">
       <div className="ui-tablist" role="tablist" aria-label={label} onKeyDown={move}>
         {items.map((item, i) => (
           <button
