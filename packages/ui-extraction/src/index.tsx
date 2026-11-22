@@ -37,6 +37,8 @@ export type ExtractedField = {
 };
 
 export type ExtractionClient = {
+  /** POST /jobs: starts a job for a ready file (or returns the one already running). */
+  createJob?: (fileId: string, schema: string) => Promise<{ job: Job }>;
   /** GET /jobs/{jobId} */
   getJob: (jobId: string) => Promise<{ job: Job }>;
   /** GET /jobs/{jobId}/fields */
@@ -47,6 +49,54 @@ const { Provider, useClient } = createClientContext<ExtractionClient>("Extractio
 export const ExtractionClientProvider = Provider;
 /** The client, for an app that builds its own screen on this API. */
 export const useExtractionClient = useClient;
+
+export type ExtractionJobState =
+  | { status: "starting"; job: null }
+  | { status: "queued" | "processing" | "extracted"; job: Job; step: StepName | null }
+  | { status: "failed"; job: Job | null; code: string; message: string; retryable: boolean };
+
+/**
+ * useExtractionJob(): starts a job for a file, or follows one already started, and reports its
+ * status, for an app with its own design.
+ */
+export function useExtractionJob({ fileId, jobId, schema = "invoice-v1", pollMs = 2000 }: { fileId?: string; jobId?: string; schema?: string; pollMs?: number }) {
+  const extraction = useClient();
+  const [state, setState] = useState<ExtractionJobState>({ status: "starting", job: null });
+  const [attempt, setAttempt] = useState(0);
+
+  useEffect(() => {
+    let alive = true;
+    let timer: ReturnType<typeof setTimeout>;
+    async function run() {
+      setState({ status: "starting", job: null });
+      let id = jobId;
+      try {
+        if (!id) {
+          if (!extraction.createJob || !fileId) throw new Error("useExtractionJob needs a jobId, or a fileId and createJob().");
+          id = (await extraction.createJob(fileId, schema)).job.id;
+        }
+        const poll = async () => {
+          const { job } = await extraction.getJob(id!);
+          if (!alive) return;
+          if (job.status === "failed")
+            setState({ status: "failed", job, code: job.error_code ?? "failed", message: job.error_message ?? "", retryable: job.retryable });
+          else setState({ status: job.status, job, step: job.steps.find((s) => s.state === "running")?.name ?? null });
+          if (job.status === "queued" || job.status === "processing") timer = setTimeout(poll, pollMs);
+        };
+        await poll();
+      } catch (e) {
+        if (alive) setState({ status: "failed", job: null, code: (e as { problem?: { code?: string } })?.problem?.code ?? "unknown", message: problemMessage(e), retryable: true });
+      }
+    }
+    void run();
+    return () => {
+      alive = false;
+      clearTimeout(timer);
+    };
+  }, [extraction, fileId, jobId, schema, pollMs, attempt]);
+
+  return { ...state, retry: () => setAttempt((n) => n + 1) };
+}
 
 const STEP_LABEL: Record<StepName, string> = {
   fetching_file: "Fetching the file",

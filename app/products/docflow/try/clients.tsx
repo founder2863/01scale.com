@@ -17,6 +17,7 @@ import type { Platform } from "./mock-platform";
 // DocFlow's own API, for DocFlow's own pages and sections.
 const docflowContext = createClientContext<Platform["docflow"]>("DocFlow");
 export const useDocflow = docflowContext.useClient;
+export const DocflowClientProvider = docflowContext.Provider;
 
 // The outside pages' stand-ins (Cognito, Stripe) reach the mock directly: they are not ours.
 const PlatformContext = createContext<Platform | null>(null);
@@ -30,7 +31,15 @@ export function ServiceClients({ platform, children }: { platform: Platform; chi
   return (
     <PlatformContext.Provider value={platform}>
       <docflowContext.Provider client={platform.docflow}>
-        <IdentityClientProvider client={{ signOut: platform.identity.signOut }}>
+        <IdentityClientProvider
+          client={{
+            getSession: platform.identity.me,
+            signOut: platform.identity.signOut,
+            loginUrl: (returnTo) => `/api/identity/v1/auth/login?return_to=${encodeURIComponent(returnTo)}`,
+            // The prototype's shell shows the Cognito stand-in itself; nothing navigates away.
+            navigate: () => {},
+          }}
+        >
           <UploadClientProvider client={{ putToStorage: platform.upload.putToStorage }}>
             <ExtractionClientProvider
               client={{

@@ -2,6 +2,8 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import type { Product } from "./data";
 import { details } from "./details";
+import { ComponentGallery } from "./gallery/gallery";
+import { hasGallery } from "./gallery/modules";
 import { DEFAULT_TAB, tabGroups, tabHref, type Tab, type TabSlug } from "./tabs";
 
 const REPO = "https://github.com/founder2863/01scale.com/blob/main";
@@ -358,9 +360,15 @@ function UiComponents({ product }: { product: Product }) {
   return (
     <>
       <h2>
-        UI Components <span className="status">Designed</span>
+        UI Components <span className="status">{hasGallery(product.slug) ? "Live gallery" : "Designed"}</span>
       </h2>
       <p className="note">{rich(detail.notes.ui)}</p>
+      {hasGallery(product.slug) ? (
+        <p className="note">
+          Each built component is shown live, from its package, in each of its states. Pick a state to
+          see it; every state has its own stand-in for the service&apos;s API, with made-up data (MVP1-E0-19).
+        </p>
+      ) : null}
       <ul className="plain-list">
         {detail.uiRules.map((rule) => (
           <li key={rule}>{rich(rule)}</li>
@@ -399,6 +407,7 @@ function UiComponents({ product }: { product: Product }) {
                 <li key={call}>{rich(call)}</li>
               ))}
             </ul>
+            <ComponentGallery module={product.slug} name={component.name} />
           </article>
         ))}
       </div>

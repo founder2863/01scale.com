@@ -3384,10 +3384,40 @@
       "models": [
         "claude-opus-5-5"
       ],
-      "tokens": 6139314,
-      "output_tokens": 10652,
+      "tokens": 8878126,
+      "output_tokens": 15982,
       "cost_usd": null,
-      "estimated_usd": 1.6309
+      "estimated_usd": 2.4079
+    },
+    {
+      "session": "4f156423",
+      "n": 5,
+      "ts": "2026-11-22T21:12:32.965Z",
+      "area": "Process",
+      "kind": "scaffolding",
+      "summary": "Process: check why Try it was not seen on the preview (it was there); confirm the build and phone layout",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 3580049,
+      "output_tokens": 3461,
+      "cost_usd": null,
+      "estimated_usd": 0.8555
+    },
+    {
+      "session": "4f156423",
+      "n": 6,
+      "ts": "2026-11-22T21:19:43.903Z",
+      "area": "MVP1-E0-19",
+      "kind": "build",
+      "summary": "Build E0-19 AC5: live component galleries on module pages, plus ten components and hooks a DocFlow user meets; scope question asked first",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 11393193,
+      "output_tokens": 46135,
+      "cost_usd": null,
+      "estimated_usd": 3.6752
     }
   ]
 }
