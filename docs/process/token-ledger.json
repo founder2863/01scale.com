@@ -43,7 +43,7 @@
     "MVP1-E0-48": "MVP1-E0-48 · App pages with the module side menu",
     "MVP1-E0-49": "MVP1-E0-49 · Section menu on phones, and Previous / Next",
     "MVP1-E8-09": "MVP1-E8-09 · Human cost script and skill",
-    "MVP1-E0-19": "MVP1-E0-19 · Design system (packages/ui-core) and the DocFlow V1 clickable prototype (MVP1-E0-18 for DocFlow)"
+    "MVP1-E0-19": "MVP1-E0-19 · Design system (packages/ui-core), service UI packages (E0-07 AC6) and the DocFlow V1 clickable prototype (E0-18 for DocFlow)"
   },
   "sessions": [
     {
@@ -3312,10 +3312,25 @@
       "models": [
         "claude-opus-5-5"
       ],
-      "tokens": 10977534,
-      "output_tokens": 94402,
+      "tokens": 11931983,
+      "output_tokens": 97110,
       "cost_usd": null,
-      "estimated_usd": 5.4738
+      "estimated_usd": 5.6768
+    },
+    {
+      "session": "4f156423",
+      "n": 2,
+      "ts": "2026-11-22T20:23:04.700Z",
+      "area": "MVP1-E0-19",
+      "kind": "build",
+      "summary": "Move the prototype components into six service UI packages (MVP1-E0-07 AC6) and place Try it in the User Journey section with an Overview link; mostly new build, part rework of the placement",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 6744823,
+      "output_tokens": 40959,
+      "cost_usd": null,
+      "estimated_usd": 2.5474
     }
   ]
 }
