@@ -2522,8 +2522,16 @@ section[id] {
 
 .owned-grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
   gap: 12px;
+}
+
+/* Long chips (for example the pricing line) wrap inside the card instead of
+   pushing it past the screen edge on a phone. */
+.owned-card .status {
+  display: inline-block;
+  max-width: 100%;
+  white-space: normal;
 }
 
 .owned-card {
