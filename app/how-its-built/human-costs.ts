@@ -15,9 +15,9 @@ export const humanCosts = {
   },
   "scope": "MVP1 only: Platform Core, the platform services, DocFlow (E0 to E7), the cost work itself (E8; Nikhil on PR #159) and AutoRep V1 (E1 to E6). MVP2 is out.",
   "soFar": {
-    "stories": 29,
-    "personDays": 147,
-    "cost": 147000,
+    "stories": 32,
+    "personDays": 156,
+    "cost": 156000,
     "tokenCost": 115.83,
     "tbd": []
   },
@@ -72,9 +72,9 @@ export const humanCosts = {
         "tbd": []
       },
       "soFar": {
-        "stories": 0,
-        "personDays": 0,
-        "cost": 0,
+        "stories": 1,
+        "personDays": 3,
+        "cost": 3000,
         "tokenCost": 0,
         "tbd": []
       }
@@ -108,9 +108,9 @@ export const humanCosts = {
         "tbd": []
       },
       "soFar": {
-        "stories": 0,
-        "personDays": 0,
-        "cost": 0,
+        "stories": 1,
+        "personDays": 3,
+        "cost": 3000,
         "tokenCost": 0,
         "tbd": []
       }
@@ -126,9 +126,9 @@ export const humanCosts = {
         "tbd": []
       },
       "soFar": {
-        "stories": 0,
-        "personDays": 0,
-        "cost": 0,
+        "stories": 1,
+        "personDays": 3,
+        "cost": 3000,
         "tokenCost": 0,
         "tbd": []
       }
@@ -1178,9 +1178,9 @@ export const humanCosts = {
       "size": "S",
       "personDays": 3,
       "cost": 3000,
-      "done": false,
-      "issue": null,
-      "closed": null,
+      "done": true,
+      "issue": 164,
+      "closed": "2026-11-22",
       "tokenCost": null,
       "tokenCostShared": true,
       "tokenCostPending": true
@@ -1358,9 +1358,9 @@ export const humanCosts = {
       "size": "S",
       "personDays": 3,
       "cost": 3000,
-      "done": false,
-      "issue": null,
-      "closed": null,
+      "done": true,
+      "issue": 165,
+      "closed": "2026-11-22",
       "tokenCost": null,
       "tokenCostShared": true,
       "tokenCostPending": true
@@ -1433,9 +1433,9 @@ export const humanCosts = {
       "size": "S",
       "personDays": 3,
       "cost": 3000,
-      "done": false,
-      "issue": null,
-      "closed": null,
+      "done": true,
+      "issue": 166,
+      "closed": "2026-11-22",
       "tokenCost": null,
       "tokenCostShared": true,
       "tokenCostPending": true
