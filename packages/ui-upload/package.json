@@ -1,6 +1,6 @@
 {
   "name": "@01scale/ui-upload",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "description": "UI components of the 01scale Upload service (MVP1-E0-07 AC6). They call only the Upload API, through a client the app supplies.",
   "type": "module",

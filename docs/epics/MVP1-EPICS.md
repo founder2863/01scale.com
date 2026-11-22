@@ -244,7 +244,7 @@ As the owner, I want every service's screens to share one look and one set of ba
 - **AC6:** The design rules in `docs/process/DESIGN-RULES.md` and the `design-ui-components` skill say to build on `ui-core` and never restyle its base components inside a service.
 - **Service:** Platform (`packages/ui-core`); every service's UI package; Site
 
-**Status: partly built (22 Nov 2026).** AC1 to AC4 and AC6 are built in `packages/ui-core` 0.1.0, and the site imports its tokens. AC5 (a live gallery in every module's UI Components section) waits for the service UI packages.
+**Status: built (22 Nov 2026).** AC1 to AC4 and AC6 are built in `packages/ui-core` 0.1.0, and the site imports its tokens. AC5: every built component is shown live, from its package, in each of its designed states, on its module's UI Components section (`app/products/gallery/`), with a stand-in client fixed to each state and synthetic data. To complete the galleries for what a DocFlow user meets, ten more pieces were built: Identity's SessionProvider and useSession(), SignOutButton, RequireSignIn and SignInError; Upload's useUpload(), FileList, OpenFileButton and DeleteFileButton; Extraction's useExtractionJob(); and Payment's OrderList. The account screens (AccountDetails, PasswordChangeButton, DeleteAccountDialog, ApiKeysManager) and the admin screens (JobsTable, EvalCandidatesTable, AccuracyReport) are marked "Designed, not built yet" and come with their own stories (Nikhil's decision, 22 Nov 2026).
 - **API design:** No endpoints.
 - **Database design:** No tables.
 

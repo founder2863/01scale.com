@@ -3376,3 +3376,46 @@ section[id] {
     color: #ffffff;
   }
 }
+
+/* Live component galleries on module pages (MVP1-E0-19 AC5). */
+.gallery {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.gallery-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 4px;
+}
+
+.gallery-frame {
+  container-type: inline-size;
+  padding: 16px;
+  border: 1px dashed var(--border-strong);
+  border-radius: 12px;
+  background: var(--bg);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.gallery-note {
+  margin: 0 0 12px;
+}
+
+.gallery-readout {
+  margin: 0;
+  padding: 12px;
+  border-radius: 8px;
+  background: var(--surface);
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  white-space: pre-wrap;
+}
+
+.gallery-not-built {
+  margin: 16px 0 0;
+}

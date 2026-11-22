@@ -3,8 +3,8 @@
 // @01scale/ui-payment: Payment's components (docs/services/payment/UI-COMPONENTS.md). Version 1 takes
 // payment on Stripe Checkout in test mode; that page is Stripe's, not a component here.
 
-import { useEffect, useRef, useState } from "react";
-import { Alert, Badge, Button, Card, Spinner, createClientContext, problemMessage } from "@01scale/ui-core";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Alert, Badge, Button, Card, Skeleton, Spinner, createClientContext, problemMessage } from "@01scale/ui-core";
 
 /** An order, as GET /api/payment/v1/orders/{id} returns it. */
 export type Order = {
@@ -21,6 +21,8 @@ export type Order = {
 
 export type PaymentClient = {
   getOrder: (orderId: string) => Promise<{ order: Order }>;
+  /** GET /orders */
+  listOrders?: (opts: { cursor?: string | null; limit: number }) => Promise<{ data: Order[]; next_cursor: string | null }>;
 };
 
 const { Provider, useClient } = createClientContext<PaymentClient>("Payment");
@@ -138,5 +140,81 @@ export function OrderStatus({ orderId, onPaid, pollMs = 1000 }: { orderId: strin
         <Badge tone="danger">Payment {order.status}</Badge>
       )}
     </p>
+  );
+}
+
+const ORDER_STATUS: Record<Order["status"], { tone: "success" | "info" | "danger" | "neutral"; text: string }> = {
+  paid: { tone: "success", text: "Paid" },
+  pending: { tone: "info", text: "Waiting for payment" },
+  failed: { tone: "danger", text: "Failed" },
+  expired: { tone: "neutral", text: "Expired" },
+};
+
+/** OrderList: the person's orders with date, description, amount and status, for an account page. */
+export function OrderList({ pageSize = 20 }: { pageSize?: number }) {
+  const payment = useClient();
+  const [orders, setOrders] = useState<Order[] | null>(null);
+  const [cursor, setCursor] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [more, setMore] = useState(false);
+
+  const load = useCallback(
+    async (from: string | null) => {
+      if (!payment.listOrders) throw new Error("The Payment client given to OrderList has no listOrders().");
+      setError(null);
+      if (from) setMore(true);
+      try {
+        const page = await payment.listOrders({ cursor: from, limit: pageSize });
+        setOrders((all) => (from && all ? [...all, ...page.data] : page.data));
+        setCursor(page.next_cursor);
+      } catch (e) {
+        setError(problemMessage(e));
+      } finally {
+        setMore(false);
+      }
+    },
+    [payment, pageSize],
+  );
+  useEffect(() => {
+    void load(null);
+  }, [load]);
+
+  if (error && !orders)
+    return (
+      <Alert tone="danger" title="Couldn't load your payments." actions={<Button size="sm" variant="secondary" onClick={() => load(null)}>Retry</Button>}>
+        {error}
+      </Alert>
+    );
+  if (!orders)
+    return (
+      <div className="ui-stack" aria-busy="true">
+        <Skeleton height={48} />
+        <Skeleton height={48} />
+      </div>
+    );
+  if (orders.length === 0) return <p style={{ margin: 0 }}>No payments yet.</p>;
+  return (
+    <div className="ui-stack">
+      <ul className="ui-payment-orders">
+        {orders.map((order) => (
+          <li key={order.id} className="ui-payment-order">
+            <span className="ui-payment-order-what">
+              {order.description}
+              <span className="ui-hint">{new Date(order.paid_at ?? Date.now()).toLocaleDateString()}</span>
+            </span>
+            <strong>{formatAmount(order.amount, order.currency)}</strong>
+            <Badge tone={ORDER_STATUS[order.status].tone}>{ORDER_STATUS[order.status].text}</Badge>
+          </li>
+        ))}
+      </ul>
+      {error ? <Alert tone="danger">{error}</Alert> : null}
+      {cursor ? (
+        <div>
+          <Button size="sm" variant="secondary" loading={more} onClick={() => load(cursor)}>
+            Load more
+          </Button>
+        </div>
+      ) : null}
+    </div>
   );
 }
