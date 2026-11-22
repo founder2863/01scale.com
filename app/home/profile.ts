@@ -311,7 +311,7 @@ export const academics = [
   {
     school: "The George Washington University",
     degree: "Engineer / Applied Scientist degree (post-master's), Systems Engineering & AI",
-    note: "Completed doctoral-level coursework in the Doctor of Engineering program",
+    note: "Doctor of Engineering, ABD: everything completed except the praxis",
   },
   { school: "Massachusetts Institute of Technology", degree: "Building AI Products & Services", note: null },
   { school: "RGTU", degree: "B.S., Computer Science & Engineering", note: null },
