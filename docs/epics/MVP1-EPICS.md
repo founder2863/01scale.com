@@ -489,6 +489,16 @@ As a hiring manager landing on 01scale, I want one picture of what Nikhil built 
 - **API design:** No endpoints.
 - **Database design:** No tables.
 
+
+### MVP1-E0-43 · Platform Architecture diagram: apps in one row, and what the services run on — S
+As a visitor on Platform Architecture, I want the diagram to show every business app at a glance and what the platform runs on, so the whole stack is visible in one picture.
+- **AC1:** The business apps (DocFlow, AutoRep, P2PFlow, Order-to-Cash) sit in one row, as smaller cards, from tablet width up; two per row on a phone. The label reads "Business apps / Enterprise SaaS" (Nikhil's request, 22 Nov 2026).
+- **AC2:** Below the platform services, one card, **IaaS & PaaS**, shows what they run on: Vercel (hosting and functions), AWS (S3 storage, Lambda, Cognito) and Neon (Postgres), from the decisions in ARCHITECTURE.md.
+- **AC3:** It works from 320 to 1920 pixels wide, in light and dark mode.
+- **Service:** Site (`apps/web`)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
 ---
 
 ## E1 · Accounts with AWS Cognito (MVP1 "a")
