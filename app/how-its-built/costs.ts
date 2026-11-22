@@ -414,14 +414,14 @@ export const costs = {
     {
       "key": "MVP1-E8",
       "name": "MVP1-E8 · Total projected cost (tab and stories)",
-      "requests": 3,
-      "buildTokens": 13048714,
+      "requests": 4,
+      "buildTokens": 14992701,
       "reworkTokens": 5041623,
       "buildCost": 10.38,
       "reworkCost": 8.96,
       "totalCost": 19.34,
-      "yield": 72,
-      "pending": false
+      "yield": 75,
+      "pending": true
     },
     {
       "key": "MVP1-E0-44",
@@ -497,8 +497,8 @@ export const costs = {
     }
   ],
   "storyTotals": {
-    "requests": 138,
-    "tokens": 496551066,
+    "requests": 139,
+    "tokens": 498495053,
     "buildCost": 142.08,
     "reworkCost": 126.57,
     "cost": 268.65,
@@ -532,8 +532,8 @@ export const costs = {
     },
     {
       "name": "Process",
-      "requests": 29,
-      "tokens": 67009983,
+      "requests": 32,
+      "tokens": 76050988,
       "cost": 21.14
     },
     {
@@ -544,20 +544,20 @@ export const costs = {
     }
   ],
   "scaffoldingTotals": {
-    "requests": 80,
-    "tokens": 102561231,
+    "requests": 83,
+    "tokens": 111602236,
     "cost": 62.85
   },
   "totals": {
-    "requests": 218,
-    "tokens": 599112297,
+    "requests": 222,
+    "tokens": 610097289,
     "cost": 331.5,
     "buildCost": 142.08,
     "reworkCost": 126.57,
     "scaffoldingCost": 62.85,
     "storyYield": 51,
     "overallYield": 42,
-    "pendingRequests": 8
+    "pendingRequests": 12
   },
   "byKind": {
     "input": 0.06,
