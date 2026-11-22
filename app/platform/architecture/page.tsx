@@ -29,6 +29,12 @@ const services = [
   { name: "Delivery", job: "Email, later SMS and push" },
 ];
 
+// What the services run on (MVP1-E0-43), from the hosting and data decisions in ARCHITECTURE.md.
+const infrastructure = {
+  name: "IaaS & PaaS",
+  job: "Vercel (hosting and functions) · AWS (S3 storage, Lambda, Cognito) · Neon (Postgres)",
+};
+
 // Platform services, in the order of the DocFlow journey; apps are on Apps Architecture.
 const serviceNames = ["Identity", "Upload", "LLM Extraction", "Human Review", "Payment", "Delivery"];
 
@@ -150,9 +156,9 @@ export default function Architecture() {
       <div className="container content">
         <section>
           <h2 className="group-title">The platform</h2>
-          <div className="diagram" role="img" aria-label="Apps call a gateway, which routes to six independent platform services">
-            <p className="diagram-label">Apps: business processes</p>
-            <div className="diagram-row">
+          <div className="diagram" role="img" aria-label="Business apps call a gateway, which routes to six independent platform services, which run on cloud infrastructure and platforms">
+            <p className="diagram-label">Business apps / Enterprise SaaS</p>
+            <div className="diagram-row diagram-row-apps">
               {apps.map((app) => (
                 <div className="node node-app" key={app.name}>
                   <strong>{app.name}</strong>
@@ -174,6 +180,11 @@ export default function Architecture() {
                   <span>{service.job}</span>
                 </div>
               ))}
+            </div>
+            <div className="diagram-arrow" aria-hidden="true">↓</div>
+            <div className="node node-infra">
+              <strong>{infrastructure.name}</strong>
+              <span>{infrastructure.job}</span>
             </div>
           </div>
           <p className="note">
