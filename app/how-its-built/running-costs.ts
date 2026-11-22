@@ -50,6 +50,9 @@ export const providers = [
   { name: "Stripe", billsFor: "A fee per payment", coveredBy: "Test mode: no real money moves", ceiling: "$0" },
 ];
 
+// The Total line under the providers table: the cash ceilings added up (Claude $10 + Vercel $20).
+export const providersTotal = "$30, with AWS inside its credit";
+
 // Estimates until Extraction is built and measures them (MVP1-E3-05).
 export const perExtraction = [
   {

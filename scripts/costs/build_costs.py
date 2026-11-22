@@ -86,6 +86,21 @@ def main():
         "overallYield": round(100 * b_t / all_t) if all_t else None,
         "pendingRequests": sum(1 for r in rows if r["cost_usd"] is None),
     }
+    # The Total line under each table (Nikhil's request on PR #136).
+    story_totals = {
+        "requests": sum(s["requests"] for s in stories),
+        "tokens": b_t + r_t,
+        "buildCost": money(b_c),
+        "reworkCost": money(r_c),
+        "cost": money(b_c + r_c),
+        "yield": totals["storyYield"],
+        "pending": any(s["pending"] for s in stories),
+    }
+    scaffolding_totals = {
+        "requests": sum(a["requests"] for a in areas),
+        "tokens": sum(a["tokens"] for a in areas),
+        "cost": money(s_c + overhead),
+    }
 
     by_kind = {}
     for session in ledger["sessions"]:
@@ -97,7 +112,9 @@ def main():
         "updated": max(r["ts"] for r in rows)[:10],
         "sessions": len(ledger["sessions"]),
         "stories": stories,
+        "storyTotals": story_totals,
         "scaffolding": areas,
+        "scaffoldingTotals": scaffolding_totals,
         "totals": totals,
         "byKind": by_kind,
         "mostExpensive": [{"summary": r["summary"], "cost": money(r["cost_usd"]), "tokens": r["tokens"], "outputTokens": r["output_tokens"]} for r in expensive],
@@ -123,9 +140,13 @@ def main():
     ]
     for s in stories:
         lines.append(f"| {s['name']} | {s['requests']} | {(s['buildTokens'] + s['reworkTokens']) / 1e6:.2f}M | {m(s['buildCost'])} | {m(s['reworkCost'])} | {m(s['totalCost'])}{' (part pending)' if s['pending'] else ''} | {s['yield']}% |")
+    st = story_totals
+    lines.append(f"| **Total** | **{st['requests']}** | **{st['tokens'] / 1e6:.2f}M** | **{m(st['buildCost'])}** | **{m(st['reworkCost'])}** | **{m(st['cost'])}**{' (part pending)' if st['pending'] else ''} | **{st['yield']}%** |")
     lines += ["", "## Scaffolding (not tied to a story)", "", "| Area | Requests | Tokens | Cost |", "|---|---|---|---|"]
     for a in areas:
         lines.append(f"| {a['name']} | {a['requests']} | {a['tokens'] / 1e6:.2f}M | {m(a['cost'])} |")
+    sc = scaffolding_totals
+    lines.append(f"| **Total** | **{sc['requests']}** | **{sc['tokens'] / 1e6:.2f}M** | **{m(sc['cost'])}** |")
     lines += [
         "",
         "## Totals",

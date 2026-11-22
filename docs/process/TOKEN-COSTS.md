@@ -44,6 +44,7 @@ Updated 2026-11-22. 192 requests across 1 session(s). Total **$318.30** for 555.
 | AUTOREP-E6-03 · AutoRep overview diagram | 2 | 8.59M | $1.74 | $0.00 | $1.74 | 100% |
 | MVP1-E8 · Total projected cost (tab and stories) | 3 | 18.09M | $10.29 | $8.88 | $19.17 | 72% |
 | MVP1-E0-44 · Product names and versions (story) | 5 | 7.74M | $17.73 | $0.00 | $17.73 | 100% |
+| **Total** | **121** | **470.19M** | **$135.55** | **$124.50** | **$260.05** | **49%** |
 
 ## Scaffolding (not tied to a story)
 
@@ -55,6 +56,7 @@ Updated 2026-11-22. 192 requests across 1 session(s). Total **$318.30** for 555.
 | Product discovery | 17 | 7.28M | $15.81 |
 | Process | 24 | 51.99M | $17.00 |
 | Tool overhead (background calls) | 0 | 0.00M | $1.65 |
+| **Total** | **71** | **85.46M** | **$58.25** |
 
 ## Totals
 

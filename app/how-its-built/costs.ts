@@ -436,6 +436,15 @@ export const costs = {
       "pending": false
     }
   ],
+  "storyTotals": {
+    "requests": 121,
+    "tokens": 470188195,
+    "buildCost": 135.55,
+    "reworkCost": 124.5,
+    "cost": 260.05,
+    "yield": 49,
+    "pending": false
+  },
   "scaffolding": [
     {
       "name": "Access and tooling",
@@ -474,6 +483,11 @@ export const costs = {
       "cost": 1.65
     }
   ],
+  "scaffoldingTotals": {
+    "requests": 71,
+    "tokens": 85461803,
+    "cost": 58.25
+  },
   "totals": {
     "requests": 192,
     "tokens": 555649998,
