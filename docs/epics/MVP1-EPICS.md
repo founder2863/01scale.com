@@ -509,11 +509,12 @@ As the owner, I want every product's documents and stories named by product and 
   docs/services/<service>/v1/ the service's design documents  (versioned per service, as on the site)
   docs/apps/docflow/v1/       PRD.md EPICS.md DECISIONS.md
   docs/apps/autorep/v1/       PRD.md EPICS.md DECISIONS.md
-  docs/apps/01scale/v1/       PRD.md EPICS.md DECISIONS.md   (the site's own stories; not listed under Products)
+  docs/site-01scale/v1/       PRD.md EPICS.md DECISIONS.md   (the website itself)
   ```
+  The website is not an app: it uses no platform service and is not listed under Products, so its documents sit outside `docs/apps/` (Nikhil's decision, 22 Nov 2026).
   Architecture, process, evals and infrastructure documents stay where they are: they belong to no single product.
-- **AC2:** Today's documents are split into that structure: `MVP1-PRD.md` into Platform Core, services and DocFlow V1; `MVP1-EPICS.md` by each story's owner; `AUTOREP-PRD.md` and `AUTOREP-EPICS.md` into `apps/autorep/v1/`; the decision logs beside their product. Epic E0's stories about the site itself (home page, menus, product pages, How It's Built) go to `apps/01scale/v1/`. Content is not changed, only moved.
-- **AC3:** Story IDs take the product and version, keeping the epic and story numbers: `CORE-V1-E0-07`, `SVC-V1-E1-02`, `DOCFLOW-V1-E5-01`, `AUTOREP-V1-E2-03`, `01SCALE-V1-E0-14`. The 85 GitHub issues are retitled, each body gains "Previously `MVP1-E1-02`", and labels move from `mvp1`/`epic:E#` to the product and version. Merged pull requests, commit messages and dated reviews keep the old IDs: history is not rewritten.
+- **AC2:** Today's documents are split into that structure: `MVP1-PRD.md` into Platform Core, services and DocFlow V1; `MVP1-EPICS.md` by each story's owner; `AUTOREP-PRD.md` and `AUTOREP-EPICS.md` into `apps/autorep/v1/`; the decision logs beside their product. Epic E0's stories about the site itself (home page, menus, product pages, How It's Built) go to `site-01scale/v1/`. Content is not changed, only moved.
+- **AC3:** Story IDs take the product and version, keeping the epic and story numbers: `CORE-V1-E0-07`, `SVC-V1-E1-02`, `DOCFLOW-V1-E5-01`, `AUTOREP-V1-E2-03`, `SITE-V1-E0-14`. The 85 GitHub issues are retitled, each body gains "Previously `MVP1-E1-02`", and labels move from `mvp1`/`epic:E#` to the product and version. Merged pull requests, commit messages and dated reviews keep the old IDs: history is not rewritten.
 - **AC4:** Every rename is a move (`git mv`), so history follows the file. Website addresses do not change (`/products/docflow`, `/products/docflow/v2`; decided on PR #118); any repository link that changes is updated in the same PR, and a check finds no broken link.
 - **AC5:** Everything that names a path or an ID is updated in the same PR:
   - `CLAUDE.md`: "Where things live", "Issue IDs", the workflow steps that name paths (4, 6, 8) and "Current status";
