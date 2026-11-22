@@ -1,5 +1,10 @@
 # @01scale/ui-review changelog
 
+## 0.2.0 — 23 Nov 2026 (MVP1-E4-05)
+
+- New: EvalCandidatesTable and AccuracyReport, for an admin (counts and rates only; nothing exported). The client adds optional listEvalCandidates, decideEvalCandidate and getAccuracy.
+- Each is shown live, in each of its states, on its module's UI Components section.
+
 ## 0.1.2 — 22 Nov 2026
 
 - ReviewQueue: `allowShowAll` (default true) lets an app hide the 'Show all fields' toggle, for example until payment.

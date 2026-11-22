@@ -4,7 +4,7 @@
 // for any set of fields: labels come from field names, checks from field types. Evidence is always
 // beside the value it supports. Re-checking values against document rules is the app's step.
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Alert, Badge, Button, Checkbox, Input, ProgressBar, Skeleton, createClientContext, labelFromName, problemMessage } from "@01scale/ui-core";
 
 // ---- Types, as the Review API returns them
@@ -27,7 +27,32 @@ export type ReviewField = {
 export type Task = { id: string; status: "open" | "completed"; resolved: number; total_flagged: number; can_complete: boolean };
 export type Decision = "accept" | "edit" | "not_present";
 
+/** A correction offered as an eval case (GET /admin/eval-candidates). Values only, never the document. */
+export type EvalCandidate = {
+  id: string;
+  reference: string;
+  field_name: string;
+  line_index: number | null;
+  model_value: string | null;
+  human_value: string | null;
+  status: "candidate" | "approved" | "rejected";
+  created_at: string;
+};
+
+/** GET /admin/accuracy: counts and rates only. */
+export type AccuracyReportData = {
+  since: string;
+  totals: { tasks: number; fields_reviewed: number; corrected: number; correction_rate: number; corrections_flagged: number };
+  fields: { name: string; reviewed: number; flagged: number; corrected: number; not_present: number; approved_mistakes: number; correction_rate: number }[];
+};
+
 export type ReviewClient = {
+  /** GET /admin/eval-candidates: 404 `not_found` to anyone who is not an admin. */
+  listEvalCandidates?: (opts: { status: string; cursor?: string | null }) => Promise<{ data: EvalCandidate[]; next_cursor: string | null }>;
+  /** PATCH /admin/eval-candidates/{candidateId} */
+  decideEvalCandidate?: (candidateId: string, status: "approved" | "rejected") => Promise<{ candidate: EvalCandidate }>;
+  /** GET /admin/accuracy: 404 `not_found` to anyone who is not an admin. */
+  getAccuracy?: (since: string) => Promise<AccuracyReportData>;
   /** GET /tasks/{taskId} */
   getTask: (taskId: string) => Promise<{ task: Task; fields: ReviewField[] }>;
   /** PATCH /tasks/{taskId}/fields/{fieldId} */
@@ -320,5 +345,209 @@ export function CompleteReviewButton({
     >
       {!task || left === 0 ? "Complete review" : `${left} field${left === 1 ? "" : "s"} left`}
     </Button>
+  );
+}
+
+// ---- Admin (MVP1-E4-05). Inside the app only; nothing here exports or copies user data.
+
+const isNotFound = (e: unknown) => (e as { problem?: { status?: number } })?.problem?.status === 404;
+const pct = (n: number) => `${(n * 100).toFixed(1)}%`;
+
+/** EvalCandidatesTable: corrections with both values, to approve as real model mistakes or reject. */
+export function EvalCandidatesTable({ status = "candidate" }: { status?: string }) {
+  const review = useClient();
+  const [rows, setRows] = useState<EvalCandidate[] | null>(null);
+  const [cursor, setCursor] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [notFound, setNotFound] = useState(false);
+  const [deciding, setDeciding] = useState<string | null>(null);
+  const [rowError, setRowError] = useState<{ id: string; message: string } | null>(null);
+
+  const load = useCallback(
+    async (from: string | null) => {
+      setError(null);
+      try {
+        if (!review.listEvalCandidates) throw new Error("The Review client given to EvalCandidatesTable has no listEvalCandidates().");
+        const page = await review.listEvalCandidates({ status, cursor: from });
+        setRows((all) => (from && all ? [...all, ...page.data] : page.data));
+        setCursor(page.next_cursor);
+      } catch (e) {
+        if (isNotFound(e)) setNotFound(true);
+        else setError(problemMessage(e));
+      }
+    },
+    [review, status],
+  );
+  useEffect(() => {
+    void load(null);
+  }, [load]);
+
+  async function decide(row: EvalCandidate, decision: "approved" | "rejected") {
+    setDeciding(row.id);
+    setRowError(null);
+    try {
+      if (!review.decideEvalCandidate) throw new Error("No decideEvalCandidate().");
+      const { candidate } = await review.decideEvalCandidate(row.id, decision);
+      setRows((all) => all?.map((r) => (r.id === row.id ? candidate : r)) ?? null);
+    } catch (e) {
+      setRowError({ id: row.id, message: problemMessage(e) });
+    } finally {
+      setDeciding(null);
+    }
+  }
+
+  if (notFound) return <p className="ui-hint" style={{ margin: 0 }}>Not found.</p>;
+  if (error && !rows)
+    return (
+      <Alert tone="danger" title="Couldn't load the corrections." actions={<Button size="sm" variant="secondary" onClick={() => load(null)}>Retry</Button>}>
+        {error}
+      </Alert>
+    );
+  if (!rows)
+    return (
+      <div className="ui-stack" aria-busy="true">
+        <Skeleton height={72} />
+        <Skeleton height={72} />
+      </div>
+    );
+  if (rows.length === 0) return <p style={{ margin: 0 }}>No corrections waiting.</p>;
+  return (
+    <div className="ui-stack">
+      <ul className="ui-review-candidates">
+        {rows.map((row) => (
+          <li key={row.id} className="ui-review-candidate">
+            <div className="ui-review-decision-head">
+              <strong>{labelFromName(row.field_name, row.line_index)}</strong>
+              <span className="ui-hint">{new Date(row.created_at).toLocaleDateString()}</span>
+            </div>
+            <p className="ui-review-candidate-values">
+              <span>
+                <span className="ui-hint">Model read</span> <del>{row.model_value ?? "nothing"}</del>
+              </span>
+              <span aria-hidden="true">→</span>
+              <span>
+                <span className="ui-hint">Person corrected to</span> <strong>{row.human_value ?? "not on document"}</strong>
+              </span>
+            </p>
+            {row.status === "candidate" ? (
+              <div className="ui-inline">
+                <Button size="sm" loading={deciding === row.id} onClick={() => decide(row, "approved")}>
+                  Approve as a model mistake
+                </Button>
+                <Button size="sm" variant="secondary" disabled={deciding === row.id} onClick={() => decide(row, "rejected")}>
+                  Reject
+                </Button>
+              </div>
+            ) : (
+              <Badge tone={row.status === "approved" ? "success" : "neutral"}>{row.status === "approved" ? "Approved" : "Rejected"}</Badge>
+            )}
+            {rowError?.id === row.id ? <Alert tone="danger">{rowError.message}</Alert> : null}
+          </li>
+        ))}
+      </ul>
+      {cursor ? (
+        <div>
+          <Button size="sm" variant="secondary" onClick={() => load(cursor)}>
+            Load more
+          </Button>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+/** AccuracyReport: per field, how often people corrected it and how well flagging caught it; numbers only. */
+export function AccuracyReport({ since }: { since?: string }) {
+  const review = useClient();
+  const from = since ?? new Date(Date.now() - 30 * 86_400_000).toISOString().slice(0, 10);
+  const [report, setReport] = useState<AccuracyReportData | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [notFound, setNotFound] = useState(false);
+
+  const load = useCallback(async () => {
+    setError(null);
+    try {
+      if (!review.getAccuracy) throw new Error("The Review client given to AccuracyReport has no getAccuracy().");
+      setReport(await review.getAccuracy(from));
+    } catch (e) {
+      if (isNotFound(e)) setNotFound(true);
+      else setError(problemMessage(e));
+    }
+  }, [review, from]);
+  useEffect(() => {
+    void load();
+  }, [load]);
+
+  if (notFound) return <p className="ui-hint" style={{ margin: 0 }}>Not found.</p>;
+  if (error)
+    return (
+      <Alert tone="danger" title="Couldn't load the report." actions={<Button size="sm" variant="secondary" onClick={load}>Retry</Button>}>
+        {error}
+      </Alert>
+    );
+  if (!report)
+    return (
+      <div className="ui-stack" aria-busy="true">
+        <Skeleton height={64} />
+        <Skeleton height={180} />
+      </div>
+    );
+  if (report.totals.fields_reviewed === 0) return <p style={{ margin: 0 }}>No reviews since {report.since}.</p>;
+  const t = report.totals;
+  return (
+    <div className="ui-stack">
+      <dl className="ui-review-totals">
+        <div>
+          <dt>Reviews</dt>
+          <dd>{t.tasks}</dd>
+        </div>
+        <div>
+          <dt>Fields checked</dt>
+          <dd>{t.fields_reviewed}</dd>
+        </div>
+        <div>
+          <dt>Corrected</dt>
+          <dd>
+            {t.corrected} <span className="ui-hint">({pct(t.correction_rate)})</span>
+          </dd>
+        </div>
+        <div>
+          <dt>Corrections that were flagged</dt>
+          <dd>{pct(t.corrections_flagged)}</dd>
+        </div>
+      </dl>
+      <div className="ui-review-tablebox" role="region" aria-label={`Accuracy per field since ${report.since}`} tabIndex={0}>
+        <table className="ui-review-table">
+          <caption className="ui-visually-hidden">Per field, since {report.since}</caption>
+          <thead>
+            <tr>
+              <th scope="col">Field</th>
+              <th scope="col">Checked</th>
+              <th scope="col">Flagged</th>
+              <th scope="col">Corrected</th>
+              <th scope="col">Not on document</th>
+              <th scope="col">Approved mistakes</th>
+              <th scope="col">Correction rate</th>
+            </tr>
+          </thead>
+          <tbody>
+            {report.fields.map((f) => (
+              <tr key={f.name}>
+                <th scope="row">{labelFromName(f.name)}</th>
+                <td className="ui-num">{f.reviewed}</td>
+                <td className="ui-num">{f.flagged}</td>
+                <td className="ui-num">{f.corrected}</td>
+                <td className="ui-num">{f.not_present}</td>
+                <td className="ui-num">{f.approved_mistakes}</td>
+                <td className="ui-num">{pct(f.correction_rate)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p className="ui-hint" style={{ margin: 0 }}>
+        Since {report.since}. Counts and rates only: no values from anyone&apos;s documents.
+      </p>
+    </div>
   );
 }

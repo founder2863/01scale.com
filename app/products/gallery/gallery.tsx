@@ -10,6 +10,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Alert, Badge, Tabs, ToastProvider, useToast } from "@01scale/ui-core";
 import { MessageStatus, DeliveryClientProvider } from "@01scale/ui-delivery";
 import {
+  JobsTable,
   ConfidenceBadge,
   ExtractionClientProvider,
   ExtractionProgress,
@@ -20,6 +21,10 @@ import {
   type ExtractionClient,
 } from "@01scale/ui-extraction";
 import {
+  AccountDetails,
+  ApiKeysManager,
+  DeleteAccountDialog,
+  PasswordChangeButton,
   CreateAccountButton,
   IdentityClientProvider,
   RequireSignIn,
@@ -33,6 +38,8 @@ import {
 } from "@01scale/ui-identity";
 import { OrderList, OrderStatus, PaymentClientProvider, PaymentSummary, TestModeBanner, type PaymentClient } from "@01scale/ui-payment";
 import {
+  AccuracyReport,
+  EvalCandidatesTable,
   CompleteReviewButton,
   FieldDecision,
   ResolvedCounter,
@@ -65,7 +72,7 @@ import type { Platform } from "../docflow/try/mock-platform";
 import { limitToPreview, runChecks } from "../docflow/try/mock-platform";
 import { SampleInvoice } from "../docflow/try/sample-invoice";
 import { GALLERY_MODULES } from "./modules";
-import { DOCS, FIELDS, FILES, JOBS, MESSAGE, ORDER, ORDERS, RECEIPT_IMAGE, VALUES, fail, never, ok, problem, reviewFields, task, unavailable } from "./fixtures";
+import { ACCURACY, ADMIN_JOBS, API_KEYS, CANDIDATES, ME, NEW_SECRET, DOCS, FIELDS, FILES, JOBS, MESSAGE, ORDER, ORDERS, RECEIPT_IMAGE, VALUES, fail, never, ok, problem, reviewFields, task, unavailable } from "./fixtures";
 
 type Demo = { state: string; note?: string; render: () => ReactNode };
 
@@ -84,13 +91,28 @@ function AutoClick({ children, label = "" }: { children: ReactNode; label?: stri
 const STATE_SAMPLE: PickedFile = { name: "sample-invoice.pdf", mime: "application/pdf", size: 48_213, objectUrl: null, sample: true };
 
 // Identity's navigate goes nowhere in a gallery; a toast says where it would have gone.
-function Identity({ client, children }: { client: Partial<IdentityClient>; children: ReactNode }) {
+function Identity({ client, children, initialKeys = API_KEYS }: { client: Partial<IdentityClient>; children: ReactNode; initialKeys?: typeof API_KEYS }) {
   const toast = useToast();
+  // Keys live in this demo's memory only, so creating and revoking can be clicked through.
+  const [keys] = useState(() => structuredClone(initialKeys));
   const full: IdentityClient = {
     getSession: ok({ user: { id: "usr-demo", email: "you@example.com" } }),
     signOut: ok({ logout_url: "https://auth.example.com/logout" }),
     loginUrl: (returnTo) => `/api/identity/v1/auth/login?return_to=${encodeURIComponent(returnTo)}`,
     navigate: (url) => toast.show(`Would go to ${url}`, "info"),
+    getMe: ok(ME),
+    startPasswordChange: ok({ redirect_url: "https://auth.example.com/change-password" }),
+    deleteAccount: ok({ logout_url: "https://auth.example.com/logout" }),
+    listApiKeys: () => Promise.resolve(structuredClone({ data: keys })),
+    createApiKey: ({ name, scopes, expires_at }) => {
+      const api_key = { id: `key-${keys.length + 1}`, name, prefix: "sk_01s_Ab3dEx4m", scopes, last_used_at: null, expires_at: expires_at ?? "2027-02-20T00:00:00Z", created_at: new Date().toISOString() };
+      keys.push(api_key);
+      return Promise.resolve({ api_key, secret: NEW_SECRET });
+    },
+    revokeApiKey: (id) => {
+      keys.splice(keys.findIndex((k) => k.id === id), 1);
+      return Promise.resolve({});
+    },
     ...client,
   };
   return <IdentityClientProvider client={full}>{children}</IdentityClientProvider>;
@@ -308,6 +330,12 @@ const GALLERIES: Record<(typeof GALLERY_MODULES)[number], Record<string, Demo[]>
       { state: "With reasons", render: () => <FieldEvidence field={FIELDS.find((f) => f.name === "invoice_date")!} /> },
       { state: "No value", render: () => <FieldEvidence field={FIELDS.find((f) => f.name === "vendor_tax_id")!} /> },
     ],
+    JobsTable: [
+      { state: "Loading", render: () => <ExtractionClientProvider client={extraction({ listAdminJobs: never })}><JobsTable /></ExtractionClientProvider> },
+      { state: "Loaded", note: "The table scrolls sideways inside its box on a phone.", render: () => <ExtractionClientProvider client={extraction({ listAdminJobs: ok(ADMIN_JOBS) })}><JobsTable /></ExtractionClientProvider> },
+      { state: "Not an admin", render: () => <ExtractionClientProvider client={extraction({ listAdminJobs: fail(404, "not_found", "Not found.") })}><JobsTable /></ExtractionClientProvider> },
+      { state: "Failed", render: () => <ExtractionClientProvider client={extraction({ listAdminJobs: unavailable })}><JobsTable /></ExtractionClientProvider> },
+    ],
     NextStepButton: [
       { state: "Flagged", render: () => <NextStepButton job={JOBS.extracted} onReview={() => {}} onContinue={() => {}} /> },
       { state: "Nothing flagged", render: () => <NextStepButton job={JOBS.extractedClean} onReview={() => {}} onContinue={() => {}} /> },
@@ -328,6 +356,21 @@ const GALLERIES: Record<(typeof GALLERY_MODULES)[number], Record<string, Demo[]>
       { state: "Not on document", render: () => <Review client={reviewClient(reviewFields())}><FieldDecision taskId="task-demo" field={reviewFields(true).find((f) => f.name === "vendor_tax_id")!} onDecided={() => {}} /></Review> },
       { state: "Saving", render: () => <Review client={reviewClient(reviewFields(), { decide: never })}><AutoClick label="Accept"><FieldDecision taskId="task-demo" field={flagged("amount")} onDecided={() => {}} /></AutoClick></Review> },
       { state: "Failed", render: () => <Review client={reviewClient(reviewFields(), { decide: unavailable })}><AutoClick label="Accept"><FieldDecision taskId="task-demo" field={flagged("amount")} onDecided={() => {}} /></AutoClick></Review> },
+    ],
+    EvalCandidatesTable: [
+      { state: "Loading", render: () => <Review client={reviewClient(reviewFields(), { listEvalCandidates: never })}><EvalCandidatesTable /></Review> },
+      { state: "Empty", render: () => <Review client={reviewClient(reviewFields(), { listEvalCandidates: ok({ data: [], next_cursor: null }) })}><EvalCandidatesTable /></Review> },
+      { state: "Loaded", note: "Approve or reject: the row shows the decision.", render: () => <Review client={reviewClient(reviewFields(), { listEvalCandidates: ok({ data: CANDIDATES, next_cursor: null }), decideEvalCandidate: (id, status) => Promise.resolve({ candidate: { ...CANDIDATES.find((c) => c.id === id)!, status } }) })}><EvalCandidatesTable /></Review> },
+      { state: "Deciding", render: () => <Review client={reviewClient(reviewFields(), { listEvalCandidates: ok({ data: CANDIDATES, next_cursor: null }), decideEvalCandidate: never })}><AutoClick label="Approve"><EvalCandidatesTable /></AutoClick></Review> },
+      { state: "Not an admin", render: () => <Review client={reviewClient(reviewFields(), { listEvalCandidates: fail(404, "not_found", "Not found.") })}><EvalCandidatesTable /></Review> },
+      { state: "Failed", render: () => <Review client={reviewClient(reviewFields(), { listEvalCandidates: unavailable })}><EvalCandidatesTable /></Review> },
+    ],
+    AccuracyReport: [
+      { state: "Loading", render: () => <Review client={reviewClient(reviewFields(), { getAccuracy: never })}><AccuracyReport /></Review> },
+      { state: "Shown", render: () => <Review client={reviewClient(reviewFields(), { getAccuracy: ok(ACCURACY) })}><AccuracyReport since="2026-11-01" /></Review> },
+      { state: "Empty", render: () => <Review client={reviewClient(reviewFields(), { getAccuracy: ok({ ...ACCURACY, totals: { ...ACCURACY.totals, tasks: 0, fields_reviewed: 0, corrected: 0 }, fields: [] }) })}><AccuracyReport since="2026-11-01" /></Review> },
+      { state: "Not an admin", render: () => <Review client={reviewClient(reviewFields(), { getAccuracy: fail(404, "not_found", "Not found.") })}><AccuracyReport /></Review> },
+      { state: "Failed", render: () => <Review client={reviewClient(reviewFields(), { getAccuracy: unavailable })}><AccuracyReport /></Review> },
     ],
     ResolvedCounter: [
       { state: "Partly resolved", render: () => <ResolvedCounter resolved={1} total={3} /> },
@@ -386,7 +429,31 @@ const GALLERIES: Record<(typeof GALLERY_MODULES)[number], Record<string, Demo[]>
       { state: "Failed", render: () => <PaymentClientProvider client={payment({ listOrders: unavailable })}><OrderList /></PaymentClientProvider> },
     ],
   },
-  "account-management": {},
+  "account-management": {
+    AccountDetails: [
+      { state: "Loading", render: () => <Identity client={{ getMe: never }}><AccountDetails /></Identity> },
+      { state: "Shown", render: () => <Identity client={{}}><AccountDetails /></Identity> },
+      { state: "Failed", render: () => <Identity client={{ getMe: unavailable }}><AccountDetails /></Identity> },
+    ],
+    PasswordChangeButton: [
+      { state: "Default", note: "Sends the person to Cognito's page to change it.", render: () => <Identity client={{}}><PasswordChangeButton /></Identity> },
+      { state: "Working", render: () => <Identity client={{ startPasswordChange: never }}><AutoClick><PasswordChangeButton /></AutoClick></Identity> },
+      { state: "Changed", render: () => <Identity client={{}}><PasswordChangeButton changed /></Identity> },
+      { state: "Failed", render: () => <Identity client={{ startPasswordChange: unavailable }}><AutoClick><PasswordChangeButton /></AutoClick></Identity> },
+    ],
+    DeleteAccountDialog: [
+      { state: "Closed", note: "Select it to open: Delete stays inactive until DELETE is typed. The gallery deletes nothing.", render: () => <Identity client={{}}><DeleteAccountDialog onDeleted={() => {}} /></Identity> },
+      { state: "Failed", note: "Open it, type DELETE and confirm, to see the failure and Try again.", render: () => <Identity client={{ deleteAccount: fail(503, "dependency_unavailable", "Sign-in service could not be reached. Nothing was deleted; try again.") }}><DeleteAccountDialog onDeleted={() => {}} /></Identity> },
+    ],
+    ApiKeysManager: [
+      { state: "Loading", render: () => <Identity client={{ listApiKeys: never }}><ApiKeysManager /></Identity> },
+      { state: "Empty", render: () => <Identity client={{}} initialKeys={[]}><ApiKeysManager /></Identity> },
+      { state: "Listed", note: "Create a key to see its secret once, with Copy; Revoke asks first.", render: () => <Identity client={{}}><ApiKeysManager /></Identity> },
+      { state: "Creating", render: () => <Identity client={{}}><AutoClick label="Create an API key"><ApiKeysManager /></AutoClick></Identity> },
+      { state: "Limit reached", render: () => <Identity client={{}}><ApiKeysManager limit={2} /></Identity> },
+      { state: "Failed", render: () => <Identity client={{ listApiKeys: unavailable }}><ApiKeysManager /></Identity> },
+    ],
+  },
   "download-and-email-delivery": {
     MessageStatus: [
       { state: "Queued", render: () => <DeliveryClientProvider client={{ getMessage: ok({ message: MESSAGE("queued") }) }}><MessageStatus messageId="msg-demo" /></DeliveryClientProvider> },

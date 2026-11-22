@@ -699,7 +699,7 @@ As the owner, I want the account page's screens built as Identity's UI component
 - **API design:** No new endpoints. Uses those of `MVP1-E1-05` and `MVP1-E0-06`.
 - **Database design:** No tables.
 
-**Status: not started (#164).** Added 22 Nov 2026 (Nikhil), when MVP1-E0-19 AC5 marked these components "Designed, not built yet".
+**Status: built (#164), 23 Nov 2026,** in `ui-identity` 0.3.0, against a stand-in client until the service is built; every state is live on the module's UI Components section. Added 22 Nov 2026 (Nikhil), when MVP1-E0-19 AC5 marked these components "Designed, not built yet".
 
 ## E2 · Document upload to S3 (MVP1 "b")
 **Goal:** files go from the browser straight to a private S3 bucket, safely.
@@ -846,7 +846,7 @@ As the owner, I want the admin's jobs table built as Extraction's UI component, 
 - **API design:** No new endpoints. Uses `GET /api/extraction/v1/admin/jobs` (`MVP1-E3-05`).
 - **Database design:** No tables.
 
-**Status: not started (#165).** Added 22 Nov 2026 (Nikhil), when MVP1-E0-19 AC5 marked this component "Designed, not built yet".
+**Status: built (#165), 23 Nov 2026,** in `ui-extraction` 0.3.0, against a stand-in client until the service is built; every state is live on the module's UI Components section. Added 22 Nov 2026 (Nikhil), when MVP1-E0-19 AC5 marked this component "Designed, not built yet".
 
 ## E4 · Human review of low-confidence fields (MVP1 "d")
 **Goal:** a person checks only what the system is unsure about, quickly, with evidence beside each field.
@@ -901,7 +901,7 @@ As the owner, I want the admin's eval-candidate and accuracy screens built as Re
 - **API design:** No new endpoints. Uses `GET` and `PATCH /api/review/v1/admin/eval-candidates` and `GET /api/review/v1/admin/accuracy` (`MVP1-E4-04`).
 - **Database design:** No tables.
 
-**Status: not started (#166).** Added 22 Nov 2026 (Nikhil), when MVP1-E0-19 AC5 marked these components "Designed, not built yet".
+**Status: built (#166), 23 Nov 2026,** in `ui-review` 0.2.0, against a stand-in client until the service is built; every state is live on the module's UI Components section. Added 22 Nov 2026 (Nikhil), when MVP1-E0-19 AC5 marked these components "Designed, not built yet".
 
 ## E5 · JSON review, metadata and CSV (MVP1 "e")
 **Goal:** clean, trustworthy outputs the user can preview before paying.

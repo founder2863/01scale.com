@@ -1,6 +1,6 @@
 {
   "name": "@01scale/ui-extraction",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "private": true,
   "description": "UI components of the 01scale Extraction service (MVP1-E0-07 AC6). They call only the Extraction API, through a client the app supplies.",
   "type": "module",

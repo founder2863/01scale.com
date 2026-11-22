@@ -36,7 +36,25 @@ export type ExtractedField = {
   flag_reasons: string[];
 };
 
+/** A job as the admin list shows it (GET /admin/jobs). */
+export type AdminJob = {
+  id: string;
+  status: Job["status"];
+  model: string;
+  prompt_version: string;
+  pages: number;
+  tokens_in: number;
+  tokens_out: number;
+  cost_usd: string;
+  duration_ms: number | null;
+  error_code: string | null;
+  created_at: string;
+};
+export type AdminJobsSummary = { jobs: number; failure_rate: number; avg_cost_usd: string; p95_duration_ms: number };
+
 export type ExtractionClient = {
+  /** GET /admin/jobs: answers 404 `not_found` to anyone who is not an admin. */
+  listAdminJobs?: (limit: number) => Promise<{ data: AdminJob[]; summary: AdminJobsSummary }>;
   /** POST /jobs: starts a job for a ready file (or returns the one already running). */
   createJob?: (fileId: string, schema: string) => Promise<{ job: Job }>;
   /** GET /jobs/{jobId} */
@@ -300,5 +318,115 @@ export function NextStepButton({ job, onReview, onContinue }: { job: Job | null;
     <Button block onClick={onContinue}>
       Continue to results
     </Button>
+  );
+}
+
+const isNotFound = (e: unknown) => (e as { problem?: { status?: number } })?.problem?.status === 404;
+const seconds = (ms: number | null) => (ms === null ? "–" : `${(ms / 1000).toFixed(1)} s`);
+
+/** JobsTable: for an admin, recent jobs with model, prompt, pages, tokens, cost, time and outcome, with the summary on top. */
+export function JobsTable({ limit = 100 }: { limit?: number }) {
+  const extraction = useClient();
+  const [result, setResult] = useState<{ data: AdminJob[]; summary: AdminJobsSummary } | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [notFound, setNotFound] = useState(false);
+
+  async function load() {
+    setError(null);
+    try {
+      if (!extraction.listAdminJobs) throw new Error("The Extraction client given to JobsTable has no listAdminJobs().");
+      setResult(await extraction.listAdminJobs(limit));
+    } catch (e) {
+      if (isNotFound(e)) setNotFound(true);
+      else setError(problemMessage(e));
+    }
+  }
+  useEffect(() => {
+    void load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [limit]);
+
+  if (notFound) return <p className="ui-hint" style={{ margin: 0 }}>Not found.</p>;
+  if (error)
+    return (
+      <Alert tone="danger" title="Couldn't load the jobs." actions={<Button size="sm" variant="secondary" onClick={load}>Retry</Button>}>
+        {error}
+      </Alert>
+    );
+  if (!result)
+    return (
+      <div className="ui-stack" aria-busy="true">
+        <Skeleton height={64} />
+        <Skeleton height={200} />
+      </div>
+    );
+  const { data, summary } = result;
+  return (
+    <div className="ui-stack">
+      <dl className="ui-extraction-summary">
+        <div>
+          <dt>Jobs</dt>
+          <dd>{summary.jobs}</dd>
+        </div>
+        <div>
+          <dt>Failure rate</dt>
+          <dd>{(summary.failure_rate * 100).toFixed(1)}%</dd>
+        </div>
+        <div>
+          <dt>Average cost</dt>
+          <dd>${Number(summary.avg_cost_usd).toFixed(4)}</dd>
+        </div>
+        <div>
+          <dt>95% finish within</dt>
+          <dd>{seconds(summary.p95_duration_ms)}</dd>
+        </div>
+      </dl>
+      {data.length === 0 ? (
+        <p style={{ margin: 0 }}>No jobs yet.</p>
+      ) : (
+        <div className="ui-extraction-tablebox" role="region" aria-label="Recent jobs" tabIndex={0}>
+          <table className="ui-extraction-table">
+            <thead>
+              <tr>
+                <th scope="col">Started</th>
+                <th scope="col">Outcome</th>
+                <th scope="col">Model</th>
+                <th scope="col">Prompt</th>
+                <th scope="col">Pages</th>
+                <th scope="col">Tokens in / out</th>
+                <th scope="col">Cost</th>
+                <th scope="col">Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.map((job) => (
+                <tr key={job.id}>
+                  <td>{new Date(job.created_at).toLocaleString()}</td>
+                  <td>
+                    {job.status === "extracted" ? (
+                      <Badge tone="success">Extracted</Badge>
+                    ) : job.status === "failed" ? (
+                      <Badge tone="danger" title={job.error_code ?? undefined}>
+                        Failed{job.error_code ? `: ${job.error_code}` : ""}
+                      </Badge>
+                    ) : (
+                      <Badge tone="info">{job.status === "queued" ? "Queued" : "Running"}</Badge>
+                    )}
+                  </td>
+                  <td>{job.model}</td>
+                  <td>{job.prompt_version}</td>
+                  <td className="ui-num">{job.pages}</td>
+                  <td className="ui-num">
+                    {job.tokens_in.toLocaleString()} / {job.tokens_out.toLocaleString()}
+                  </td>
+                  <td className="ui-num">${Number(job.cost_usd).toFixed(4)}</td>
+                  <td className="ui-num">{seconds(job.duration_ms)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
   );
 }
