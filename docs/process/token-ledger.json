@@ -42,7 +42,8 @@
     "MVP1-E0-46": "MVP1-E0-46 · Expensive Mistakes tab and four lessons",
     "MVP1-E0-48": "MVP1-E0-48 · App pages with the module side menu",
     "MVP1-E0-49": "MVP1-E0-49 · Section menu on phones, and Previous / Next",
-    "MVP1-E8-09": "MVP1-E8-09 · Human cost script and skill"
+    "MVP1-E8-09": "MVP1-E8-09 · Human cost script and skill",
+    "MVP1-E0-19": "MVP1-E0-19 · Design system (packages/ui-core) and the DocFlow V1 clickable prototype (MVP1-E0-18 for DocFlow)"
   },
   "sessions": [
     {
@@ -102,6 +103,19 @@
     },
     {
       "id": "43ccd0e7-d7d4-5381-931f-2ee5e9fcd82e",
+      "tool_total_usd": 0,
+      "rates_usd_per_million": {},
+      "by_kind_usd": {
+        "input": 0.0,
+        "output": 0.0,
+        "cache_read": 0.0,
+        "cache_write": 0.0
+      },
+      "overhead_usd": 0,
+      "splits": []
+    },
+    {
+      "id": "4f156423-c77d-5a1f-9ee0-653fd2fda3eb",
       "tool_total_usd": 0,
       "rates_usd_per_million": {},
       "by_kind_usd": {
@@ -3287,6 +3301,21 @@
       "output_tokens": 358,
       "cost_usd": null,
       "estimated_usd": 0.0769
+    },
+    {
+      "session": "4f156423",
+      "n": 1,
+      "ts": "2026-11-22T19:51:57.763Z",
+      "area": "MVP1-E0-19",
+      "kind": "build",
+      "summary": "Build packages/ui-core (tokens and base components) and the DocFlow V1 clickable prototype on a mock of each service API; a mid-request scope change from design system only to a full prototype",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 10977534,
+      "output_tokens": 94402,
+      "cost_usd": null,
+      "estimated_usd": 5.4738
     }
   ]
 }
