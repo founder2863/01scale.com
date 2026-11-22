@@ -166,9 +166,10 @@ export const appVersions: readonly AppVersion[] = [
   {
     app: "docflow",
     version: "V2",
-    status: "Planned",
-    summary:
-      "Batches of documents, a second model that judges the first, web enrichment with sources, fixes by chat, saved cards, notifications, and sign-in rebuilt by hand with passkeys.",
+    status: "Coming later",
+    // V2 is coming later (Nikhil's decision for MVP1-E0-48): one page until it is designed.
+    comingSoon:
+      "Batches of documents, a second model that judges the first, web enrichment with sources, fixes by chat, saved cards, notifications, and sign-in rebuilt by hand with passkeys. DocFlow V2 will appear here when it is designed.",
     // Not decided yet, so every service version is TBD (Nikhil's decision on PR #118).
     builtOn: ALL_TBD,
   },

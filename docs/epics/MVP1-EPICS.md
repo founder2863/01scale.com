@@ -550,6 +550,18 @@ As a hiring manager, I want to read the mistakes Nikhil paid for, what each cost
 - **API design:** No endpoints.
 - **Database design:** No tables.
 
+### MVP1-E0-48 · App pages with the module side menu — M
+As a visitor, I want an app's page to have the same side menu as a module page, so I can find its overview, design, interfaces and data in the same places everywhere (Nikhil's decisions, 22 Nov 2026: Option A).
+- **AC1:** DocFlow V1 and AutoRep V1 show the module page's side menu: the same four groups (Product, Design, Interfaces, Data) and fifteen sections, plus two sections only apps have: **Overview**, first under Product, and **Built On**, second under Design.
+- **AC2:** Overview is the landing page. Today's app content moves into the menu, unchanged: Overview holds what the app is and why (DocFlow: what the product is, why I am building it, the end product, what each step adds over time; AutoRep: its diagram, summary and documents); User Journey holds the flow; Built On holds why platform components (DocFlow), the modules in the flow and the service versions it is built on.
+- **AC3:** PRD Reference and Requirement EPIC link to the app's PRD and stories (DocFlow: the MVP1 PRD and the stories DocFlow owns; AutoRep: its PRD and epics). Every other section shows "Coming Soon..." until it is designed; no content is invented.
+- **AC4:** Addresses: `/products/<app>` is V1's Overview, `/products/<app>/<section>` a V1 section, `/products/<app>/v2` V2. Every current address still works. The version tabs stay above the menu.
+- **AC5:** DocFlow V2, AutoRep V2 and the apps not designed yet (P2PFlow) stay as one "Coming Soon..." page with their Built On table, until they are designed. Service pages are out of scope.
+- **AC6:** The pages work from 320 to 1920 pixels wide, in light and dark mode.
+- **Service:** Site (`apps/web`)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
 ---
 
 ## E1 · Accounts with AWS Cognito (MVP1 "a")
