@@ -74,52 +74,10 @@ export const numbers = [
   { figure: "17+", label: "years in platform, identity, payments and AI", source: "Career" },
 ] as const;
 
-// ---------------------------------------------------------------- companies worked for (E0-38)
+// ---------------------------------------------------------------- companies worked for (E0-38, E0-39)
 
-export const brands = [
-  {
-    key: "govos",
-    name: "GovOS",
-    note: "now Neumo",
-    // Logo files supplied by Nikhil, kept in the repository (public/logos/).
-    logo: "/logos/govos.jpg" as string | null,
-    role: "Group Product Manager (operated as Head), Platform & Payments",
-    dates: "Jan 2024 – Dec 2025",
-    results: [
-      "Launched GovOS Pay, an in-house payfac product embedded in 5 apps: $100M+ GTV in 18 months and $4M+ platform ARR.",
-      "Cut new-product launches from ~6 months to 2–4 weeks with 7 embeddable platform components.",
-      "Automated 80–90% of deed and title fields with a multi-model LLM pipeline and human review.",
-    ],
-  },
-  {
-    key: "tracelink",
-    name: "TraceLink",
-    note: null,
-    logo: "/logos/tracelink.jpg" as string | null,
-    role: "Senior Manager, Platform Product Management (iPaaS)",
-    dates: "Aug 2021 – Jan 2024",
-    results: [
-      "Launched Extensible TraceLink Transfer 0→1 and moved 300K+ partners to self-serve, no-code connectivity; onboarding effort down 60–80%.",
-      "Owned platform services carrying 1B+ regulated transactions a year, in 40+ countries.",
-    ],
-  },
-  {
-    key: "chubb",
-    name: "Chubb",
-    note: null,
-    logo: "/logos/chubb.jpg" as string | null,
-    role: "Lead AI Product Manager",
-    dates: "Jan 2019 – Aug 2021",
-    results: [
-      "Risk-data APIs cut underwriting questions from 60+ to 2–10, lifting quote-to-bind 20–40%.",
-      "A Digital Underwriter Assistant (BERT, BART) cut complex risk review from hours to ~10 minutes.",
-    ],
-  },
-] as const;
-
-// ---------------------------------------------------------------- what I owned (E0-39)
-
-// Nikhil's own breakdown per company (PR #119). GovOS product names are his fictional names:
+// One entry per company (Nikhil's decisions on PR #119): the role and dates, then his own breakdown
+// by category. Logo files are his, kept in public/logos/. GovOS product names are his fictional names:
 // BLT → Tax, CS → Search, CR → Records, eSub → Submit Online, Studio → No Code Builder.
 type Item = string | { label: string; href: string };
 
@@ -133,26 +91,41 @@ export type OwnershipGroup = {
 
 const DELIVERY = ["Roadmap", "Architecture", "Stories", "Demos", "QBRs", "Production releases", "Support escalations"];
 
-export const ownership: readonly {
+export const companies: readonly {
   key: string;
   name: string;
+  note: string | null;
   logo: string;
+  role: string;
+  dates: string;
   groups: readonly OwnershipGroup[];
 }[] = [
   {
     key: "govos",
     name: "GovOS",
+    note: "now Neumo",
     logo: "/logos/govos.jpg",
+    role: "Group Product Manager (operated as Head), Platform & Payments",
+    dates: "Jan 2024 – Dec 2025",
     groups: [
       {
         title: "Products",
         parts: [
-          { title: "SaaS", items: ["Tax", "Search", "Records", "Submit Online", "No Code Builder"] },
+          {
+            title: "SaaS",
+            items: [
+              "Tax",
+              "Search",
+              "Records",
+              "Submit Online",
+              "No Code Builder",
+              { label: "Payments (payfac)", href: "/products/services/payment" },
+              { label: "ID Verification", href: "/products/services/identity" },
+            ],
+          },
           {
             title: "Platform",
             items: [
-              { label: "Pay (payfac)", href: "/products/services/payment" },
-              { label: "ID Verification", href: "/products/services/identity" },
               { label: "Authentication", href: "/products/services/identity" },
               { label: "Gateway", href: "/platform/core/gateway" },
               "Tenant",
@@ -191,7 +164,10 @@ export const ownership: readonly {
   {
     key: "tracelink",
     name: "TraceLink",
+    note: null,
     logo: "/logos/tracelink.jpg",
+    role: "Senior Manager, Platform Product Management (iPaaS)",
+    dates: "Aug 2021 – Jan 2024",
     groups: [
       { title: "Products", items: ["XTT", "Global Compliance", "MINT (P2P & O2C) use cases"] },
       {
@@ -217,7 +193,10 @@ export const ownership: readonly {
   {
     key: "chubb",
     name: "Chubb",
+    note: null,
     logo: "/logos/chubb.jpg",
+    role: "Lead AI Product Manager",
+    dates: "Jan 2019 – Aug 2021",
     groups: [
       { title: "Products", items: ["Instant Quote", "Underwriter AI Assistant", "Embeddable Insurance"] },
       {

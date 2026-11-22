@@ -454,16 +454,16 @@ As a hiring manager landing on 01scale, I want one picture of what Nikhil built 
 - **Database design:** No tables.
 
 ### MVP1-E0-38 · Companies worked for — S
-- **AC1:** Three companies only: GovOS (now Neumo), TraceLink and Chubb (Nikhil's decision on PR #119). Tapping one shows the role, dates and two or three results.
-- **AC2:** The section is titled "Companies worked for" (Nikhil's wording on PR #119). Logos are the files Nikhil supplied, kept in the repository (`public/logos/`), not loaded from another site; each shows with the company name under it.
+- **AC1:** Three companies only: GovOS (now Neumo), TraceLink and Chubb, as logo tiles under the title "Companies worked for" (Nikhil's decisions on PR #119). Logos are the files Nikhil supplied, kept in the repository (`public/logos/`), not loaded from another site.
+- **AC2:** Tapping a company shows the role and dates, then what Nikhil owned there (`MVP1-E0-39`), in the same section. No list of results: the figures are in the numbers section.
 - **Service:** Site (`apps/web`)
 - **API design:** No endpoints.
 - **Database design:** No tables.
 
-### MVP1-E0-39 · What I owned — M
-- **AC1:** One tab per company: GovOS, TraceLink and Chubb, with their logos (Nikhil's rewrite on PR #119). Each tab shows Nikhil's categories as cards: **Products**, **Product areas**, **Commercial**, **Technical & delivery**, **Delivery mode** and **Domain knowledge**; GovOS also has **Customer management**.
-- **AC2:** GovOS's products are split into **SaaS** (Tax, Search, Records, Submit Online, No Code Builder, his fictional names for BLT, CS, CR, eSub and Studio) and **Platform** (Pay, ID Verification, Authentication, Gateway, Tenant, Notification, Audit, LLM, Reporting, Provisioning, Playground).
-- **AC3:** A platform part that 01scale rebuilds links to its page here, marked ↗.
+### MVP1-E0-39 · What I owned, per company — M
+- **AC1:** Shown inside the open company of `MVP1-E0-38` (the two sections were merged on PR #119) as cards: **Products**, **Product areas**, **Commercial**, **Technical & delivery**, **Delivery mode** and **Domain knowledge**; GovOS also has **Customer management**.
+- **AC2:** GovOS's products are split into **SaaS** (Tax, Search, Records, Submit Online, No Code Builder, his fictional names for BLT, CS, CR, eSub and Studio, plus Payments and ID Verification) and **Platform** (Authentication, Gateway, Tenant, Notification, Audit, LLM, Reporting, Provisioning, Playground). Commercial enablement covers the CRO, CFO, COO and CCO functions.
+- **AC3:** A part that 01scale rebuilds links to its page here, marked ↗.
 - **AC4:** It works with touch and keyboard, from 320 to 1920 pixels wide, in light and dark mode.
 - **Service:** Site (`apps/web`)
 - **API design:** No endpoints.

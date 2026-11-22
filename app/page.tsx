@@ -1,11 +1,10 @@
 import Link from "next/link";
-import { Brands } from "./home/brands";
+import { Companies } from "./home/brands";
 import { Cover } from "./home/cover";
-import { Responsibilities } from "./home/responsibilities";
 import { Academics, Contact, LinkedIn, Numbers, Recommendations, Snapshot } from "./home/sections";
 
 // The home page, in Nikhil's order (MVP1-E0-36 to E0-42): cover, hero, snapshot, numbers,
-// brands, responsibilities, academics, recommendations, LinkedIn, contact.
+// companies worked for (with what I owned), academics, recommendations, LinkedIn, contact.
 export default function Home() {
   return (
     <>
@@ -27,8 +26,7 @@ export default function Home() {
 
       <Snapshot />
       <Numbers />
-      <Brands />
-      <Responsibilities />
+      <Companies />
       <Academics />
       <Recommendations />
       <LinkedIn />
