@@ -499,6 +499,36 @@ As a visitor on Platform Architecture, I want the diagram to show every business
 - **API design:** No endpoints.
 - **Database design:** No tables.
 
+
+### MVP1-E0-44 · Product names and versions in folders, documents and story IDs — L
+As the owner, I want every product's documents and stories named by product and version, in the same structure as the website, so anyone can tell which product and version a file or story belongs to (Nikhil's decisions, 22 Nov 2026; to be built later).
+- **AC1:** Documents follow the website's structure: product, then version, then fixed file names (`PRD.md`, `EPICS.md`, `DECISIONS.md`). A light scheme: one PRD for Platform Core, one for all platform services, one per app.
+  ```
+  docs/platform/core/v1/      PRD.md EPICS.md DECISIONS.md   (Platform Core)
+  docs/services/v1/           PRD.md EPICS.md DECISIONS.md   (all services, one release)
+  docs/services/<service>/v1/ the service's design documents  (versioned per service, as on the site)
+  docs/apps/docflow/v1/       PRD.md EPICS.md DECISIONS.md
+  docs/apps/autorep/v1/       PRD.md EPICS.md DECISIONS.md
+  docs/site-01scale/v1/       PRD.md EPICS.md DECISIONS.md   (the website itself)
+  ```
+  The website is not an app: it uses no platform service and is not listed under Products, so its documents sit outside `docs/apps/` (Nikhil's decision, 22 Nov 2026).
+  Architecture, process, evals and infrastructure documents stay where they are: they belong to no single product.
+- **AC2:** Today's documents are split into that structure: `MVP1-PRD.md` into Platform Core, services and DocFlow V1; `MVP1-EPICS.md` by each story's owner; `AUTOREP-PRD.md` and `AUTOREP-EPICS.md` into `apps/autorep/v1/`; the decision logs beside their product. Epic E0's stories about the site itself (home page, menus, product pages, How It's Built) go to `site-01scale/v1/`. Content is not changed, only moved.
+- **AC3:** Story IDs take the product and version, keeping the epic and story numbers: `CORE-V1-E0-07`, `SVC-V1-E1-02`, `DOCFLOW-V1-E5-01`, `AUTOREP-V1-E2-03`, `SITE-V1-E0-14`. The 85 GitHub issues are retitled, each body gains "Previously `MVP1-E1-02`", and labels move from `mvp1`/`epic:E#` to the product and version. Merged pull requests, commit messages and dated reviews keep the old IDs: history is not rewritten.
+- **AC4:** Every rename is a move (`git mv`), so history follows the file. Website addresses do not change (`/products/docflow`, `/products/docflow/v2`; decided on PR #118); any repository link that changes is updated in the same PR, and a check finds no broken link.
+- **AC5:** Everything that names a path or an ID is updated in the same PR:
+  - `CLAUDE.md`: "Where things live", "Issue IDs", the workflow steps that name paths (4, 6, 8) and "Current status";
+  - `docs/process/DESIGN-RULES.md` and the 10 skills in `.claude/skills/`;
+  - the generators and checks: `scripts/site/build_products.py`, `render.py`, the `*_design.py` files, `platform_core.py`, `review_architecture.py` and `check_schema.mjs`;
+  - token costs: the story keys in `docs/process/token-ledger.json`, `scripts/costs/` and `TOKEN-COSTS.md`;
+  - the site's links to GitHub documents (`app/products/sections.tsx`, `apps.ts`, the app pages) and its Requirement EPIC section;
+  - story references in `ARCHITECTURE.md`, `API-DESIGN.md`, `DATABASE-DESIGN.md`, `EVALS.md`, the PRDs, decision logs and `README.md`.
+- **AC6:** `npm run site:data`, `npm run schema:check`, `npm run costs` and the build pass, and the site shows the same content as before.
+- **Estimate (22 Nov 2026, before the work):** about 20M tokens, mostly re-read context (cache reads), about **$12–25** at Claude Opus 5.5 API prices ($4/$20 per million in and out, $0.20 cache reads). Basis: 2,359 ID references in 174 files and 148 document paths, changed by script rather than by hand (about 40–60 tool calls, about $5–10); 85 issues retitled one call each (about $3–5); checks and fixes (about $4–10). Compared with the measured "API and database design for every story" ($11.17) and "design skills" ($20.66). Measured afterwards with `npm run costs`.
+- **Service:** Site (`apps/web`), docs, design tooling and GitHub issues
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
 ---
 
 ## E1 · Accounts with AWS Cognito (MVP1 "a")
