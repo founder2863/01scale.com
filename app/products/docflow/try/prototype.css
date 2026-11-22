@@ -13,6 +13,9 @@
   display: grid;
   gap: var(--space-3);
   min-width: 0;
+  /* Rows keep their natural height when the stack is stretched beside a taller column
+     (otherwise a lone button grows to fill the space). */
+  align-content: start;
 }
 
 .df-row {
