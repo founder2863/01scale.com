@@ -3425,10 +3425,25 @@
       "models": [
         "claude-opus-5-5"
       ],
-      "tokens": 9369832,
-      "output_tokens": 22467,
+      "tokens": 12324483,
+      "output_tokens": 26894,
       "cost_usd": null,
-      "estimated_usd": 2.6758
+      "estimated_usd": 3.4347
+    },
+    {
+      "session": "4f156423",
+      "n": 8,
+      "ts": "2026-11-22T23:00:04.137Z",
+      "area": "MVP1-E0-19",
+      "kind": "rework",
+      "summary": "Rework: before payment, show only the flagged fields in Edit values, extraction and review (MVP1-E5-03 AC4; ui-review 0.1.2)",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 4027903,
+      "output_tokens": 7962,
+      "cost_usd": null,
+      "estimated_usd": 1.054
     }
   ]
 }

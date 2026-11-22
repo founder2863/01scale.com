@@ -2,7 +2,7 @@
 
 What it costs to build 01scale with Claude Code, per story. Generated from `docs/process/token-ledger.json` by `npm run costs`; do not edit by hand.
 
-Updated 2026-11-22. 234 requests across 5 session(s). Total **$349.72** for 680.8 million tokens.
+Updated 2026-11-22. 235 requests across 5 session(s). Total **$349.72** for 687.7 million tokens.
 
 ## Per story
 
@@ -51,8 +51,8 @@ Updated 2026-11-22. 234 requests across 5 session(s). Total **$349.72** for 680.
 | MVP1-E0-49 · Section menu on phones, and Previous / Next | 2 | 4.57M | $1.19 | $0.00 | $1.19 | 100% |
 | MVP1-E8-09 · Human cost script and skill | 2 | 4.91M | $0.00 | $0.00 | $0.00 (part pending) | 73% |
 | MVP1-E8-10 · Total Projected Cost page, four tabs | 1 | 3.39M | $0.00 | $0.00 | $0.00 (part pending) | 100% |
-| MVP1-E0-19 · Design system (packages/ui-core), service UI packages (E0-07 AC6) and the DocFlow V1 clickable prototype (E0-18 for DocFlow) | 4 | 46.26M | $14.60 | $0.00 | $14.60 (part pending) | 80% |
-| **Total** | **146** | **553.05M** | **$156.68** | **$126.57** | **$283.25** (part pending) | **54%** |
+| MVP1-E0-19 · Design system (packages/ui-core), service UI packages (E0-07 AC6) and the DocFlow V1 clickable prototype (E0-18 for DocFlow) | 5 | 53.24M | $14.60 | $0.00 | $14.60 (part pending) | 69% |
+| **Total** | **147** | **560.03M** | **$156.68** | **$126.57** | **$283.25** (part pending) | **53%** |
 
 ## Scaffolding (not tied to a story)
 
@@ -69,9 +69,9 @@ Updated 2026-11-22. 234 requests across 5 session(s). Total **$349.72** for 680.
 ## Totals
 
 - Build $156.68, rework $126.57, scaffolding $66.47.
-- Token yield across stories (build ÷ build + rework): 54%.
-- 12 pending request(s) were never priced by the tool; estimated at about $11.67 from their measured tokens at list prices (an upper bound), not included in the totals above.
-- Share of all tokens that went into kept story work: 44%.
+- Token yield across stories (build ÷ build + rework): 53%.
+- 13 pending request(s) were never priced by the tool; estimated at about $13.48 from their measured tokens at list prices (an upper bound), not included in the totals above.
+- Share of all tokens that went into kept story work: 43%.
 
 ## Definitions
 
