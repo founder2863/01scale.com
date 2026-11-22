@@ -8,6 +8,8 @@ const nextConfig: NextConfig = {
       // The DocFlow vision became the DocFlow page (MVP1-E0-32); the per-version pages from
       // PR #117 became one page per app with a tab per version.
       { source: "/products/vision", destination: "/products/docflow", permanent: true },
+      // The Costs tab became Total Projected Cost (MVP1-E8-01).
+      { source: "/how-its-built/costs", destination: "/how-its-built/total-projected-cost", permanent: true },
       { source: "/products/:app(docflow|autorep|p2pflow)-v1", destination: "/products/:app", permanent: true },
       { source: "/products/:app(docflow|autorep|p2pflow)-v2", destination: "/products/:app/v2", permanent: true },
       { source: "/products/services", destination: "/products#services", permanent: false },

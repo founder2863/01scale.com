@@ -1,7 +1,7 @@
 # MVP1 — Epics and issues
 
 Source: `docs/prd/MVP1-PRD.md`. Evals: `docs/evals/EVALS.md`.
-Each story becomes one GitHub issue: `[ID] Title`. Size: S ≈ half a day, M ≈ 1–2 days, L ≈ 3+ days.
+Each story becomes one GitHub issue: `[ID] Title`. Size, in person-days for a human team including tests, review and QA: S ≈ 3, M ≈ 8, L ≈ 15 (Nikhil's decision on PR #125; it replaced S ≈ half a day, M ≈ 1–2 days, L ≈ 3+ days).
 Acceptance criteria (AC) use Given / When / Then. A story is done when all its AC pass, tests exist for its logic, and its evals (if any) meet thresholds.
 
 **Architecture.** 01scale is a set of independent platform services (Identity, Upload, LLM Extraction, Human Review, Payment, Delivery) behind one gateway, and DocFlow is the first app assembled from them. See `docs/architecture/ARCHITECTURE.md`. Every story names the **Service** that owns it and carries an **API design** (endpoints, request, response, errors) and a **Database design** (tables in that service's own schema). They are the contract for the story: review them before code is written, and change the story first if the design needs to change. Shared rules are in `docs/architecture/API-DESIGN.md` and `docs/architecture/DATABASE-DESIGN.md`. Nothing here is built until its story is picked up.
@@ -896,6 +896,85 @@ As the owner, I want to refund a paid order in full, so a demo user who was char
   - DocFlow calls `POST /messages` when it receives `payment.order.paid` on its webhook (E0-09), so the email is triggered by the server, not the browser.
   - Delivery reads the recipient's verified address at send time with Identity `GET /api/identity/v1/users/{userId}` (service only, scope `identity:users.read`; designed with `MVP1-E1-05`). Decided by Nikhil on PR #68; the address is never passed in a request or an event.
 - **Database design:** `delivery.messages` (id, owner_id, app, reference, channel `email`, template, status `queued|sent|failed`, attempts, provider_message_id, last_error, sent_at, created_at). The recipient address is read from Identity at send time, not stored.
+
+---
+
+## E8 · Total projected cost: a human team versus Claude Code
+**Goal:** show, story by story, what the whole initiative would cost and how long it would take with a human team, what it costs built with Claude Code and one product manager, and the difference. Nikhil's request, 22 Nov 2026; his answers on PR #125 are in `docs/decisions/MVP1-E8.md`.
+
+**Scope:** MVP1 only: Platform Core, the platform services, the DocFlow app (epics E0 to E7, without E8 itself) and AutoRep V1, which is part of MVP1 (`docs/epics/AUTOREP-EPICS.md`, epics E1 to E6; Nikhil's correction on PR #125). MVP2 is out. Any value not calculated yet shows **TBD**.
+
+### MVP1-E8-01 · Rename Costs to Total Projected Cost, and split out Constraints — S
+- **AC1:** How It's Built's menu and tabs show **Total Projected Cost** at `/how-its-built/total-projected-cost`; `/how-its-built/costs` redirects there.
+- **AC2:** **Constraints** is its own tab, last, at `/how-its-built/constraints`, so its list can grow.
+- **AC3:** Until E8-02 to E8-07 are built, Total Projected Cost says "Coming Soon..." for the projection and keeps today's actual and running costs below it.
+- **Service:** Site (`apps/web`)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E8-02 · The cost model's assumptions — S
+- **AC1:** One data file holds every assumption, each with its source and date:
+  - the build team: 5 full-stack engineers, 2 product managers, 1 QA automation engineer, 1 program manager, 1 engineering manager and 1 head of product;
+  - the go-to-market team: one person each in sales, marketing, support, customer success, finance, compliance and security, onboarded once development reaches 50%;
+  - typical North American salaries per role in USD, loaded for benefits, taxes and overhead, plus working hours a week and working weeks a year.
+- **AC2:** The page shows the assumptions in a table, so a reader can see and question every input.
+- **AC3:** A decision log entry records each choice and its alternatives.
+- **Service:** Site (`apps/web`)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E8-03 · Effort for every story — M
+- **AC1:** Every MVP1 story, including AutoRep V1's, gets an effort in person-days from its size, on the human scale (S ≈ 3, M ≈ 8, L ≈ 15, including tests, review and QA), split into engineering, QA and product time.
+- **AC2:** The sizes come from the epics files; a story with no size is listed as a gap, not guessed.
+- **Service:** Site (`apps/web`) and `scripts/`
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E8-04 · A dependency-aware timeline — M
+- **AC1:** The timeline respects the build order: Platform Core first, then the platform services, then the customer-facing apps. Work inside a layer runs in parallel across the 5 engineers; work that depends on another layer waits for it.
+- **AC2:** The page shows the timeline by phase and epic, with the critical path and the total weeks, and states how the parallel work was assigned.
+- **Service:** Site (`apps/web`) and `scripts/`
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E8-05 · The human team's cost, per story and in total — M
+- **AC1:** Each story shows its projected cost (its effort × the rates of the roles doing it); epics and phases show subtotals.
+- **AC2:** The program manager, engineering manager and head of product are costed over the whole timeline; the seven go-to-market roles from the point development reaches 50%. Both are shown separately from the story costs.
+- **AC3:** The total is the sum of both, with the timeline from E8-04.
+- **Service:** Site (`apps/web`)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E8-06 · The cost of building it with Claude Code and one product manager — M
+- **AC1:** Each story shows its projected token cost at Claude API prices, from the token ledger: measured where the story is done, and projected from the measured design cost per story size, times a stated multiplier for writing code and tests, where it is not.
+- **AC2:** The total adds one human product manager, full-time over Claude's projected timeline.
+- **AC3:** Projections are labelled as projections, measured costs as measured.
+- **Service:** Site (`apps/web`) and `scripts/costs/`
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E8-07 · The difference — S
+- **AC1:** The page compares the two, per story and in total: cost, timeline and the difference in both, at the top of Total Projected Cost.
+- **AC2:** It states the caveats: what the human estimate includes that Claude's does not (go-to-market, leadership), and that the Claude figures are API prices, not a subscription.
+- **AC3:** It works from 320 to 1920 pixels wide, in light and dark mode.
+- **Service:** Site (`apps/web`)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+
+### MVP1-E8-08 · Token estimate for every V1 story, and a story for every document — L
+As the owner, I want each V1 story's token cost estimated separately for its product work and its development work, and every document in the repository tied to a story, so the Claude Code projection (`MVP1-E8-06`) is complete and nothing written goes uncounted (Nikhil's request, 22 Nov 2026).
+- **AC1:** **Every document has a story.** An inventory lists every document in the repository (PRDs, epics, architecture and design documents, decision logs, reviews, skills, process documents, evals) and the story that produced it. A document with no story gets one, written and sized like any other, marked "backfilled" with the date the document was first written.
+- **AC2:** **Every V1 story gets two estimates,** in tokens and in dollars at Claude API prices:
+  - **product work:** discovery, PRD and story writing, design documents, reviews and decisions;
+  - **development work:** code, tests, the build, and fixing what review finds.
+- **AC3:** **Measured beats estimated.** Where the token ledger has measured a story, the measured figure is used and labelled "measured". Otherwise the estimate comes from the measured cost of comparable stories of the same size and kind, with the comparison named. A story that cannot be estimated yet shows TBD.
+- **AC4:** **Scope** is every V1 story: Platform Core, the platform services, DocFlow V1, AutoRep V1 and the 01scale site, matching E8's scope.
+- **AC5:** The estimates live in one data file next to the token ledger, and feed `MVP1-E8-06` (Claude Code cost per story) and `MVP1-E8-07` (the difference). The page lists them per story, with product and development shown separately and subtotals per epic and product.
+- **AC6:** `npm run costs` keeps working; the estimates never overwrite a measured cost.
+- **Service:** Site (`apps/web`), `scripts/costs/` and docs
+- **API design:** No endpoints.
+- **Database design:** No tables.
 
 ---
 

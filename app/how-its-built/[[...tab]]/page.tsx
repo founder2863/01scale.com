@@ -342,16 +342,26 @@ export default async function HowItsBuilt({ params }: { params: Promise<Params> 
         </section>
         )}
 
-        {tab === "costs" && (
-        <section id="costs">
+        {tab === "total-projected-cost" && (
+        <section id="total-projected-cost">
           <h2 className="group-title">
-            Costs <span className="status">Designed</span>
+            Total Projected Cost <span className="status">In design</span>
           </h2>
+          <div className="coming-soon">
+            <p className="coming-soon-title">Coming Soon...</p>
+            <p>
+              The projected cost of building the whole platform, story by
+              story, with a human team (engineers, product, QA, program and
+              leadership, plus one person in each go-to-market function),
+              against building it with Claude Code and one product manager,
+              and the difference between the two (epic MVP1-E8).
+            </p>
+          </div>
           <p className="note">
-            What 01scale cost to build, what it costs to run, and the limits
-            that keep it cheap. Visitors pay nothing: every cost lands on me,
-            so every service has a ceiling. The limits below are decided in
-            the stories; the services that enforce them are not built yet.
+            Until then, this page shows what 01scale has cost so far and what
+            it costs to run. Visitors pay nothing: every cost lands on me, so
+            every service has a ceiling, listed under{" "}
+            <Link href="/how-its-built/constraints">Constraints</Link>.
           </p>
 
           <h3 className="section-subtitle">Development cost</h3>
@@ -425,7 +435,19 @@ export default async function HowItsBuilt({ params }: { params: Promise<Params> 
             takes over and the extraction page says so.
           </p>
 
-          <h3 className="section-subtitle">Constraints</h3>
+        </section>
+        )}
+
+        {tab === "constraints" && (
+        <section id="constraints">
+          <h2 className="group-title">
+            Constraints <span className="status">Designed</span>
+          </h2>
+          <p className="note">
+            Every limit that keeps the demo safe and cheap, with its reason and
+            the story that sets it. They are decided in the stories; the
+            services that enforce them are not built yet.
+          </p>
           <table className="cost-table cost-table-text">
             <thead>
               <tr>
