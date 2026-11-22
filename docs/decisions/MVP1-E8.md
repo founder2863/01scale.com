@@ -18,3 +18,15 @@
 - Costing the whole roadmap including MVP2: left for later, so the first numbers rest on designed MVP1 stories only.
 - Go-to-market from day one: too early; most functions have nothing to sell, support or certify before the product is half built.
 - Keeping the old size scale: it understates a human team's work on production code.
+
+## 2026-11-22 · How the human cost script reads the work (MVP1-E8-09)
+
+**Decided by:** the build session, within the story; open to Nikhil's review on the PR.
+
+| Question | Choice | Alternatives |
+|---|---|---|
+| Is E8 in the totals? | Yes (Nikhil on PR #159: E8 work should be counted). It replaces "E0 to E7, without E8 itself" above. The script still supports `exclude_epics` in the cost model, now empty. | Leave E8 out and list it separately (the PR's first version). |
+| What counts as done? | An issue closed as **completed** (`reason:completed`), titled `[ID] Title`. Issues closed as not planned are not done. AutoRep stories have no issues, so they are never counted as done, even when built (Nikhil on PR #159). | Every closed issue; a status line in the epics file. |
+| A ledger entry that covers several stories ("MVP1-E0-36 to E0-42") | Split by the stories' person-days, marked shared, as the issue comments did. | Equal split; leave it unassigned. |
+| A ledger entry for a whole epic's design ("MVP1-E2 · Upload design") or no story | Listed as unassigned, not spread over the epic's stories, so no story shows a cost it was not measured against. | Spread over the epic's stories by size. |
+| Measured token cost | Build + rework, the same figure as the Token Costs table; scaffolding stays out. | Include scaffolding. |

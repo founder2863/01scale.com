@@ -989,7 +989,7 @@ As the owner, I want to refund a paid order in full, so a demo user who was char
 ## E8 · Total projected cost: a human team versus Claude Code
 **Goal:** show, story by story, what the whole initiative would cost and how long it would take with a human team, what it costs built with Claude Code and one product manager, and the difference. Nikhil's request, 22 Nov 2026; his answers on PR #125 are in `docs/decisions/MVP1-E8.md`.
 
-**Scope:** MVP1 only: Platform Core, the platform services, the DocFlow app (epics E0 to E7, without E8 itself) and AutoRep V1, which is part of MVP1 (`docs/epics/AUTOREP-EPICS.md`, epics E1 to E6; Nikhil's correction on PR #125). MVP2 is out. Any value not calculated yet shows **TBD**.
+**Scope:** MVP1 only: Platform Core, the platform services, the DocFlow app (epics E0 to E7), E8 itself (Nikhil on PR #159: the cost work counts) and AutoRep V1, which is part of MVP1 (`docs/epics/AUTOREP-EPICS.md`, epics E1 to E6; Nikhil's correction on PR #125). MVP2 is out. Any value not calculated yet shows **TBD**.
 
 ### MVP1-E8-01 · Rename Costs to Total Projected Cost, and split out Constraints — S
 - **AC1:** How It's Built's menu and tabs show **Total Projected Cost** at `/how-its-built/total-projected-cost`; `/how-its-built/costs` redirects there.
@@ -1064,6 +1064,7 @@ As the owner, I want each V1 story's token cost estimated separately for its pro
 - **Database design:** No tables.
 
 ### MVP1-E8-09 · Human cost script and skill — M
+**Status:** Done (22 Nov 2026).
 As the owner, I want the human team's cost worked out by one script from the stories, so the site, the issues and the projections all use the same numbers and none is typed by hand (Nikhil's request, 22 Nov 2026).
 - **AC1:** `docs/process/cost-model.json` holds the cost model: person-days per size (S 3, M 8, L 15, from `docs/decisions/MVP1-E8.md`) and a loaded rate per role. Until MVP1-E8-02 sets the other roles, it has one: engineer, $1,000 per person-day (Nikhil, 22 Nov 2026).
 - **AC2:** `npm run human-costs` (`scripts/costs/human_costs.py`) reads every story's ID, title and size from the epics files (MVP1 and AutoRep V1), and which stories are done from closed GitHub issues (`gh api search/issues`), saved into the cost model file so the site build needs no network. It writes `app/how-its-built/human-costs.ts` with, per story and in total: size, person-days, estimated human cost, and the measured token cost from the ledger where there is one.
