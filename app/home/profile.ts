@@ -117,191 +117,123 @@ export const brands = [
   },
 ] as const;
 
-// ---------------------------------------------------------------- responsibilities (E0-39)
+// ---------------------------------------------------------------- what I owned (E0-39)
 
-// From Nikhil's functional responsibilities chart. Product names are his fictional names
-// (Nikhil's decision on PR #119): BLT → Tax, CS → Search, CR → Records, eSub → Submit Online,
-// Studio → No Code Builder.
-const LIFECYCLE = ["Why & use case", "What", "Integration & architecture", "Demo & feedback", "Oversee dev & support"];
+// Nikhil's own breakdown per company (PR #119). GovOS product names are his fictional names:
+// BLT → Tax, CS → Search, CR → Records, eSub → Submit Online, Studio → No Code Builder.
+type Item = string | { label: string; href: string };
 
-const COMMERCIAL = [
-  "Feature definition",
-  "Revenue model",
-  "Pricing strategy",
-  "GTM",
-  "Integration with Records",
-  "Sales enablement",
-  "Support enablement",
-  "Solutions consulting enablement",
-  "PS enablement",
-  "Marketing",
-  "Finance enablement",
-  "Product adoption",
-  "Product metrics",
-  "Oversee dev & support",
-];
+export type OwnershipGroup = {
+  title: string;
+  items?: readonly Item[];
+  // Named sub-lists, for example SaaS and Platform under GovOS's products.
+  parts?: readonly { title: string; items: readonly Item[] }[];
+  text?: string;
+};
 
-type Node = {
+const DELIVERY = ["Roadmap", "Architecture", "Stories", "Demos", "QBRs", "Production releases", "Support escalations"];
+
+export const ownership: readonly {
   key: string;
   name: string;
-  groups: readonly { title: string; items: readonly string[] }[];
-  // The 01scale page that rebuilds this capability, if there is one.
-  rebuild?: { label: string; href: string };
-};
-
-export const responsibilities: {
-  company: string;
-  title: string;
-  intro: string;
-  layers: readonly { name: string; nodes: readonly Node[] }[];
-  domains: readonly string[];
-} = {
-  company: "GovOS (now Neumo)",
-  title: "What I owned at GovOS",
-  intro:
-    "The platform I led and the products on it. Tap any part to see what I did there; where 01scale rebuilds the same capability, it links to it.",
-  layers: [
-    {
-      name: "Products",
-      nodes: [
-        {
-          key: "no-code-builder",
-          name: "No Code Builder",
-          groups: [
-            { title: "Features", items: ["Author view", "Submission manager", "Live view", "PDF view", "Configs", "Webhooks", "APIs", "Exports"] },
-            { title: "Commercial and delivery", items: COMMERCIAL },
-          ],
-        },
-        {
-          key: "pay",
-          name: "Pay",
-          groups: [
-            {
-              title: "Features",
-              items: [
-                "Pay by card",
-                "Card config",
-                "Pay by eCheck",
-                "eCheck config",
-                "Saved payment methods",
-                "Default method",
-                "Manage methods",
-                "Schedule payments",
-                "Manage schedules",
-                "Point of sale",
-                "Pre-authorization",
-              ],
-            },
-            { title: "Commercial and delivery", items: [...COMMERCIAL, "Vendor management"] },
-          ],
-          rebuild: { label: "Payment on 01scale", href: "/products/services/payment" },
-        },
-        {
-          key: "pay-portal",
-          name: "Pay Portal",
-          groups: [
-            {
-              title: "Features",
-              items: [
-                "User login",
-                "Account settings",
-                "Fee configs",
-                "Full and partial refunds",
-                "Transaction status",
-                "Payouts",
-                "Disbursement",
-                "Web alerts",
-                "Fee refunds to referrer",
-              ],
-            },
-          ],
-        },
-        {
-          key: "financial-reporting",
-          name: "Financial Reporting",
-          groups: [
-            {
-              title: "Features",
-              items: [
-                "P&L",
-                "Balance details",
-                "Transaction details",
-                "Disbursement transaction detail",
-                "Payouts",
-                "Disputes",
-                "Returns",
-                "Division vs merchant",
-                "Scheduled vs generated",
-              ],
-            },
-          ],
-        },
-        {
-          key: "id-verification",
-          name: "ID Verification",
-          groups: [
-            {
-              title: "Features (with Persona)",
-              items: ["Workflow creation", "Verification conditions", "Geo constraints", "Email customization", "API", "Reporting", "Support"],
-            },
-            { title: "Commercial and delivery", items: [...COMMERCIAL, "Vendor management"] },
-          ],
-          rebuild: { label: "Identity on 01scale", href: "/products/services/identity" },
-        },
-        ...["Tax", "Search", "Records", "Submit Online"].map((app) => ({
-          key: `payments-${app.toLowerCase().replace(/\s+/g, "-")}`,
-          name: `${app} payments`,
-          groups: [{ title: "Owned", items: [`${app} payments`, `${app} pay configs`, "Revenue model"] }],
-        })),
-      ],
-    },
-    {
-      name: "Platform",
-      nodes: [
-        { key: "gateway", name: "Gateway", groups: [{ title: "Lifecycle", items: LIFECYCLE }], rebuild: { label: "Gateway on 01scale", href: "/platform/core/gateway" } },
-        { key: "tenant", name: "Tenant Service", groups: [{ title: "Lifecycle", items: LIFECYCLE }] },
-        {
-          key: "authentication",
-          name: "Authentication Service",
-          groups: [{ title: "Lifecycle", items: LIFECYCLE }],
-          rebuild: { label: "Identity on 01scale", href: "/products/services/identity" },
-        },
-        {
-          key: "payment-service",
-          name: "Payment Service",
-          groups: [{ title: "Lifecycle", items: LIFECYCLE }],
-          rebuild: { label: "Payment on 01scale", href: "/products/services/payment" },
-        },
-        {
-          key: "notification",
-          name: "Notification Service",
-          groups: [{ title: "Lifecycle", items: LIFECYCLE }],
-          rebuild: { label: "Delivery on 01scale", href: "/products/services/delivery" },
-        },
-        { key: "audit", name: "Audit", groups: [{ title: "Lifecycle", items: LIFECYCLE }], rebuild: { label: "Audit log on 01scale", href: "/platform/core/audit-log" } },
-        { key: "llm", name: "LLM", groups: [{ title: "Lifecycle", items: LIFECYCLE }], rebuild: { label: "LLM Extraction on 01scale", href: "/products/services/extraction" } },
-        { key: "reporting", name: "Reporting", groups: [{ title: "Lifecycle", items: [...LIFECYCLE, "Analytics", "AI/ML/DL working knowledge"] }] },
-        { key: "provisioning", name: "Provisioning App", groups: [{ title: "Lifecycle", items: LIFECYCLE }] },
-        { key: "playground", name: "Playground App", groups: [{ title: "Lifecycle", items: LIFECYCLE }] },
-      ],
-    },
-  ],
-  domains: [
-    "Product management",
-    "Computer science, engineering & technical architecture",
-    "Data science",
-    "Business intelligence",
-    "Administration, configuration & deployment",
-    "No-code platforms",
-    "Corporate finance, financial reporting & accounting",
-    "Marketing",
-    "Payments & cards",
-    "Workflow & ID fraud",
-    "Business tax",
-    "Public records",
-    "Search technologies",
-  ],
-};
+  logo: string;
+  groups: readonly OwnershipGroup[];
+}[] = [
+  {
+    key: "govos",
+    name: "GovOS",
+    logo: "/logos/govos.jpg",
+    groups: [
+      {
+        title: "Products",
+        parts: [
+          { title: "SaaS", items: ["Tax", "Search", "Records", "Submit Online", "No Code Builder"] },
+          {
+            title: "Platform",
+            items: [
+              { label: "Pay (payfac)", href: "/products/services/payment" },
+              { label: "ID Verification", href: "/products/services/identity" },
+              { label: "Authentication", href: "/products/services/identity" },
+              { label: "Gateway", href: "/platform/core/gateway" },
+              "Tenant",
+              { label: "Notification", href: "/products/services/delivery" },
+              { label: "Audit", href: "/platform/core/audit-log" },
+              { label: "LLM", href: "/products/services/extraction" },
+              "Reporting",
+              "Provisioning",
+              "Playground",
+            ],
+          },
+        ],
+      },
+      { title: "Product areas", items: ["Strategy", "Roadmap", "MVP definition", "Metrics and OKRs"] },
+      { title: "Commercial", items: ["Pricing", "Revenue model", "GTM", "Enablement of the CRO, CFO, COO and CCO functions"] },
+      { title: "Technical & delivery", items: DELIVERY },
+      { title: "Delivery mode", items: ["Embeddable components", "APIs"] },
+      { title: "Customer management", items: ["Monthly meetings with customers' finance directors"] },
+      {
+        title: "Domain knowledge",
+        items: [
+          "Payments & cards",
+          "Corporate finance, financial reporting & accounting",
+          "Workflow & ID fraud",
+          "Business tax",
+          "Public records",
+          "Search technologies",
+          "No-code platforms",
+          "Data science",
+          "Business intelligence",
+          "Marketing",
+        ],
+      },
+    ],
+  },
+  {
+    key: "tracelink",
+    name: "TraceLink",
+    logo: "/logos/tracelink.jpg",
+    groups: [
+      { title: "Products", items: ["XTT", "Global Compliance", "MINT (P2P & O2C) use cases"] },
+      {
+        title: "Product areas",
+        items: [
+          "Multi-enterprise data models (network partners)",
+          "APIs",
+          "Platform strategy",
+          "Roadmap",
+          "Multi-product use cases",
+          "MVP definition",
+          "Program plan",
+          "Observability metrics",
+          "Technical metrics: adoption, time to first value",
+        ],
+      },
+      { title: "Commercial", items: ["Enabling solutions consulting and sales"] },
+      { title: "Technical & delivery", items: DELIVERY },
+      { title: "Delivery mode", items: ["Enterprise SaaS (XTT)", "Platform APIs"] },
+      { title: "Domain knowledge", items: ["Computer science", "Compliance", "Supply chain", "Financial operations"] },
+    ],
+  },
+  {
+    key: "chubb",
+    name: "Chubb",
+    logo: "/logos/chubb.jpg",
+    groups: [
+      { title: "Products", items: ["Instant Quote", "Underwriter AI Assistant", "Embeddable Insurance"] },
+      {
+        title: "Product areas",
+        items: ["ML/DL models", "Commercial data", "Entity resolution", "Risk data APIs", "MVP definition", "Program plan"],
+      },
+      {
+        title: "Commercial",
+        text: "Adoption of the underwriting-answers API across the Micro, Small Commercial and Commercial insurance business units, and across product lines such as BOP and Liability.",
+      },
+      { title: "Technical & delivery", items: DELIVERY },
+      { title: "Delivery mode", items: ["APIs", "SaaS app"] },
+      { title: "Domain knowledge", items: ["Data science", "Insurance", "Risk", "Underwriting"] },
+    ],
+  },
+];
 
 // ---------------------------------------------------------------- academics (E0-40)
 
