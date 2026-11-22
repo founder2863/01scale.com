@@ -2,7 +2,7 @@
 
 What it costs to build 01scale with Claude Code, per story. Generated from `docs/process/token-ledger.json` by `npm run costs`; do not edit by hand.
 
-Updated 2026-11-22. 226 requests across 3 session(s). Total **$331.50** for 615.9 million tokens.
+Updated 2026-11-22. 227 requests across 4 session(s). Total **$331.50** for 619.3 million tokens.
 
 ## Per story
 
@@ -50,7 +50,8 @@ Updated 2026-11-22. 226 requests across 3 session(s). Total **$331.50** for 615.
 | MVP1-E0-48 · App pages with the module side menu | 2 | 3.80M | $1.29 | $0.00 | $1.29 | 100% |
 | MVP1-E0-49 · Section menu on phones, and Previous / Next | 2 | 4.57M | $1.19 | $0.00 | $1.19 | 100% |
 | MVP1-E8-09 · Human cost script and skill | 2 | 4.91M | $0.00 | $0.00 | $0.00 (part pending) | 73% |
-| **Total** | **141** | **503.41M** | **$142.08** | **$126.57** | **$268.65** (part pending) | **51%** |
+| MVP1-E8-10 · Total Projected Cost page, four tabs | 1 | 3.39M | $0.00 | $0.00 | $0.00 (part pending) | 100% |
+| **Total** | **142** | **506.79M** | **$142.08** | **$126.57** | **$268.65** (part pending) | **52%** |
 
 ## Scaffolding (not tied to a story)
 
@@ -67,8 +68,8 @@ Updated 2026-11-22. 226 requests across 3 session(s). Total **$331.50** for 615.
 ## Totals
 
 - Build $142.08, rework $126.57, scaffolding $62.85.
-- Token yield across stories (build ÷ build + rework): 51%.
-- 10 pending request(s) were never priced by the tool; estimated at about $7.38 from their measured tokens at list prices (an upper bound), not included in the totals above.
+- Token yield across stories (build ÷ build + rework): 52%.
+- 11 pending request(s) were never priced by the tool; estimated at about $8.99 from their measured tokens at list prices (an upper bound), not included in the totals above.
 - Share of all tokens that went into kept story work: 42%.
 
 ## Definitions

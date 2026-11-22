@@ -3312,3 +3312,59 @@ section[id] {
 .lesson-section > div {
   padding-bottom: 8px;
 }
+
+/* Total Projected Cost: four tabs (MVP1-E8-10). On a desktop, one row under the page's own tabs.
+   On a phone or tablet, the Sections pattern of MVP1-E0-49; not sticky here, because the
+   page's own tab bar already stays in view at the top. */
+.sub-tabs {
+  display: none;
+}
+
+.section-picker-inline {
+  position: static;
+  margin: 8px 0 24px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.section-picker-inline summary,
+.section-picker-inline .section-picker-list {
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+.section-picker-inline .side-tabs-group .side-tabs-heading {
+  display: none;
+}
+
+@media (min-width: 960px) {
+  .sub-tabs {
+    display: flex;
+    gap: 8px;
+    margin: 8px 0 28px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .sub-tabs a {
+    flex: 0 0 auto;
+    padding: 6px 14px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: var(--chip-text);
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .sub-tabs a:hover {
+    color: var(--link);
+  }
+
+  .sub-tabs a[aria-current="page"] {
+    border-color: var(--brand);
+    background: var(--brand);
+    color: #ffffff;
+  }
+}
