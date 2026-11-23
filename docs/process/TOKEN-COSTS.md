@@ -2,7 +2,7 @@
 
 What it costs to build 01scale with Claude Code, per story. Generated from `docs/process/token-ledger.json` by `npm run costs`; do not edit by hand.
 
-Updated 2026-11-23. 240 requests across 5 session(s). Total **$362.31** for 734.8 million tokens.
+Updated 2026-11-23. 243 requests across 6 session(s). Total **$362.31** for 738.8 million tokens.
 
 ## Per story
 
@@ -53,7 +53,8 @@ Updated 2026-11-23. 240 requests across 5 session(s). Total **$362.31** for 734.
 | MVP1-E8-10 · Total Projected Cost page, four tabs | 1 | 3.39M | $0.00 | $0.00 | $0.00 (part pending) | 100% |
 | MVP1-E0-19 · Design system (packages/ui-core), service UI packages (E0-07 AC6) and the DocFlow V1 clickable prototype (E0-18 for DocFlow) | 6 | 61.08M | $15.78 | $6.30 | $22.08 | 60% |
 | MVP1-E1-09, E3-07, E4-05 · Account and admin UI components (ui-identity, ui-extraction, ui-review) | 1 | 16.68M | $0.00 | $0.00 | $0.00 (part pending) | 100% |
-| **Total** | **149** | **584.55M** | **$157.85** | **$132.87** | **$290.73** (part pending) | **54%** |
+| MVP1-E0-50 · One Overview for every app (with the E0-51 story written alongside) | 3 | 4.04M | $0.00 | $0.00 | $0.00 (part pending) | 100% |
+| **Total** | **152** | **588.59M** | **$157.85** | **$132.87** | **$290.73** (part pending) | **54%** |
 
 ## Scaffolding (not tied to a story)
 
@@ -71,7 +72,7 @@ Updated 2026-11-23. 240 requests across 5 session(s). Total **$362.31** for 734.
 
 - Build $157.85, rework $132.87, scaffolding $71.58.
 - Token yield across stories (build ÷ build + rework): 54%.
-- 13 pending request(s) were never priced by the tool; estimated at about $13.59 from their measured tokens at list prices (an upper bound), not included in the totals above.
+- 16 pending request(s) were never priced by the tool; estimated at about $15.61 from their measured tokens at list prices (an upper bound), not included in the totals above.
 - Share of all tokens that went into kept story work: 43%.
 
 ## Definitions

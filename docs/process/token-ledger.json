@@ -45,7 +45,8 @@
     "MVP1-E8-09": "MVP1-E8-09 · Human cost script and skill",
     "MVP1-E8-10": "MVP1-E8-10 · Total Projected Cost page, four tabs",
     "MVP1-E0-19": "MVP1-E0-19 · Design system (packages/ui-core), service UI packages (E0-07 AC6) and the DocFlow V1 clickable prototype (E0-18 for DocFlow)",
-    "MVP1-E1-09-E4-05": "MVP1-E1-09, E3-07, E4-05 · Account and admin UI components (ui-identity, ui-extraction, ui-review)"
+    "MVP1-E1-09-E4-05": "MVP1-E1-09, E3-07, E4-05 · Account and admin UI components (ui-identity, ui-extraction, ui-review)",
+    "MVP1-E0-50": "MVP1-E0-50 · One Overview for every app (with the E0-51 story written alongside)"
   },
   "sessions": [
     {
@@ -141,6 +142,21 @@
       },
       "overhead_usd": 0,
       "splits": []
+    },
+    {
+      "id": "ba2ff2e6-41be-5e12-bc15-60b1e4ccdf31",
+      "tool_total_usd": 0,
+      "rates_usd_per_million": {},
+      "by_kind_usd": {
+        "input": 0.0,
+        "output": 0.0,
+        "cache_read": 0.0,
+        "cache_write": 0.0
+      },
+      "overhead_usd": 0,
+      "splits": [
+        "2026-11-23T00:49:35+00:00"
+      ]
     }
   ],
   "requests": [
@@ -3515,6 +3531,51 @@
       "output_tokens": 366,
       "cost_usd": null,
       "estimated_usd": 0.1355
+    },
+    {
+      "session": "ba2ff2e6",
+      "n": 1,
+      "ts": "2026-11-23T00:48:05.213Z",
+      "area": "MVP1-E0-50",
+      "kind": "build",
+      "summary": "Write stories E0-50 and E0-51, create their issues, refresh human costs and STATUS",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 1542090,
+      "output_tokens": 9592,
+      "cost_usd": null,
+      "estimated_usd": 0.9394
+    },
+    {
+      "session": "ba2ff2e6",
+      "n": 2,
+      "ts": "2026-11-23T00:49:35Z",
+      "area": "MVP1-E0-50",
+      "kind": "build",
+      "summary": "Write stories E0-50 and E0-51 (after the split at the story commit)",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 121794,
+      "output_tokens": 1005,
+      "cost_usd": null,
+      "estimated_usd": 0.049
+    },
+    {
+      "session": "ba2ff2e6",
+      "n": 3,
+      "ts": "2026-11-23T00:52:34.810Z",
+      "area": "MVP1-E0-50",
+      "kind": "build",
+      "summary": "Build E0-50: shared app Overview, DocFlow and AutoRep content, design card, checks at 320 and 1440",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 2378150,
+      "output_tokens": 14309,
+      "cost_usd": null,
+      "estimated_usd": 1.0337
     }
   ]
 }
