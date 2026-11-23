@@ -66,7 +66,8 @@ export const review = {
       "MVP1-E4-01",
       "MVP1-E4-02",
       "MVP1-E4-03",
-      "MVP1-E4-04"
+      "MVP1-E4-04",
+      "MVP1-E4-06"
     ],
     "uiStatus": "UI components built in `@01scale/ui-review` 0.2.0, against a stand-in client; the service is designed, not built"
   },
@@ -224,6 +225,14 @@ export const review = {
           "meaning": "Whether a person must decide on this field, and why."
         },
         {
+          "name": "hold",
+          "in": "body",
+          "type": "boolean",
+          "required": "No",
+          "constraints": "Only with a delegated token: the acting app (its `act` claim) becomes the holder. Default false.",
+          "meaning": "Hold the unflagged fields for the app until it releases them (`MVP1-E4-06`). The owner still sees and decides every flagged field."
+        },
+        {
           "name": "Idempotency-Key",
           "in": "header",
           "type": "string",
@@ -233,7 +242,8 @@ export const review = {
         }
       ],
       "behaviour": [
-        "Validates every field, stores the task as `open` with its own copy of the fields (each `pending`), and records `review.task_created`."
+        "Validates every field, stores the task as `open` with its own copy of the fields (each `pending`), and records `review.task_created`.",
+        "With `hold: true`, records the acting app from the delegated token's `act` claim as `held_by` (`MVP1-E4-06`). A person's own token or an API key cannot place a hold."
       ],
       "responses": [
         {
@@ -247,6 +257,11 @@ export const review = {
           "status": "422",
           "code": "`validation_failed`",
           "when": "A field is malformed; `errors[]` lists each one."
+        },
+        {
+          "status": "422",
+          "code": "`hold_requires_app`",
+          "when": "`hold: true` without a delegated token, so there is no app to hold the fields for."
         },
         {
           "status": "422",
@@ -265,7 +280,7 @@ export const review = {
         }
       ],
       "request": "POST /api/review/v1/tasks HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>\nIdempotency-Key: 4d2a-review-1\nContent-Type: application/json\n\n{\n  \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n  \"fields\": [\n    {\n      \"name\": \"vendor_name\",\n      \"type\": \"text\",\n      \"value\": \"Acme Supplies Ltd\",\n      \"confidence\": 0.97,\n      \"source_page\": 1,\n      \"source_quote\": \"Acme Supplies Ltd\",\n      \"flagged\": false,\n      \"flag_reasons\": []\n    },\n    {\n      \"name\": \"total\",\n      \"type\": \"decimal\",\n      \"value\": \"1240.00\",\n      \"confidence\": 0.3,\n      \"source_page\": 2,\n      \"source_quote\": \"TOTAL DUE  $1,240.00\",\n      \"flagged\": true,\n      \"flag_reasons\": [\n        \"Total \\u2260 subtotal + tax (1,150.00 + 80.00 = 1,230.00)\"\n      ]\n    }\n  ]\n}",
-      "response": "{\n  \"task\": {\n    \"id\": \"0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a2b\",\n    \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n    \"status\": \"open\",\n    \"resolved\": 0,\n    \"total\": 2,\n    \"flagged\": 1,\n    \"can_complete\": false,\n    \"checks_overridden\": false,\n    \"created_at\": \"2026-11-17T09:14:43Z\",\n    \"completed_at\": null\n  }\n}",
+      "response": "{\n  \"task\": {\n    \"id\": \"0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a2b\",\n    \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n    \"status\": \"open\",\n    \"resolved\": 0,\n    \"total\": 2,\n    \"flagged\": 1,\n    \"can_complete\": false,\n    \"checks_overridden\": false,\n    \"held_by\": \"service:docflow\",\n    \"released_at\": null,\n    \"created_at\": \"2026-11-17T09:14:43Z\",\n    \"completed_at\": null\n  }\n}",
       "scope": "`review:write`"
     },
     {
@@ -295,7 +310,8 @@ export const review = {
         }
       ],
       "behaviour": [
-        "Read only. `resolved` counts flagged fields no longer `pending`; `can_complete` is true when none is pending."
+        "Read only. `resolved` counts flagged fields no longer `pending`; `can_complete` is true when none is pending.",
+        "While the task is held (`MVP1-E4-06`), the owner's own token or API key gets only the flagged fields, even with `all=true`, plus `held: true` and `fields_hidden`; the holding app, with a delegated token naming it in `act`, gets every field. `held_by` and `released_at` are on the task."
       ],
       "responses": [
         {
@@ -317,7 +333,7 @@ export const review = {
         }
       ],
       "request": "GET /api/review/v1/tasks/0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a2b HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>",
-      "response": "{\n  \"task\": {\n    \"id\": \"0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a2b\",\n    \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n    \"status\": \"open\",\n    \"resolved\": 1,\n    \"total\": 3,\n    \"flagged\": 2,\n    \"can_complete\": false,\n    \"checks_overridden\": false,\n    \"created_at\": \"2026-11-17T09:14:43Z\",\n    \"completed_at\": null\n  },\n  \"fields\": [\n    {\n      \"id\": \"0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a30\",\n      \"name\": \"total\",\n      \"line_index\": null,\n      \"type\": \"decimal\",\n      \"original_value\": \"1240.00\",\n      \"value\": \"1240.00\",\n      \"confidence\": 0.3,\n      \"source_page\": 2,\n      \"source_quote\": \"TOTAL DUE  $1,240.00\",\n      \"flagged\": true,\n      \"flag_reasons\": [\n        \"Total \\u2260 subtotal + tax (1,150.00 + 80.00 = 1,230.00)\"\n      ],\n      \"status\": \"pending\"\n    },\n    {\n      \"id\": \"0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a31\",\n      \"name\": \"vendor_tax_id\",\n      \"line_index\": null,\n      \"type\": \"text\",\n      \"original_value\": null,\n      \"value\": null,\n      \"confidence\": 0.62,\n      \"source_page\": null,\n      \"source_quote\": null,\n      \"flagged\": true,\n      \"flag_reasons\": [\n        \"Low confidence (0.62)\"\n      ],\n      \"status\": \"not_present\"\n    }\n  ]\n}",
+      "response": "{\n  \"task\": {\n    \"id\": \"0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a2b\",\n    \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n    \"status\": \"open\",\n    \"resolved\": 1,\n    \"total\": 3,\n    \"flagged\": 2,\n    \"can_complete\": false,\n    \"checks_overridden\": false,\n    \"held_by\": \"service:docflow\",\n    \"released_at\": null,\n    \"created_at\": \"2026-11-17T09:14:43Z\",\n    \"completed_at\": null\n  },\n  \"fields\": [\n    {\n      \"id\": \"0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a30\",\n      \"name\": \"total\",\n      \"line_index\": null,\n      \"type\": \"decimal\",\n      \"original_value\": \"1240.00\",\n      \"value\": \"1240.00\",\n      \"confidence\": 0.3,\n      \"source_page\": 2,\n      \"source_quote\": \"TOTAL DUE  $1,240.00\",\n      \"flagged\": true,\n      \"flag_reasons\": [\n        \"Total \\u2260 subtotal + tax (1,150.00 + 80.00 = 1,230.00)\"\n      ],\n      \"status\": \"pending\"\n    },\n    {\n      \"id\": \"0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a31\",\n      \"name\": \"vendor_tax_id\",\n      \"line_index\": null,\n      \"type\": \"text\",\n      \"original_value\": null,\n      \"value\": null,\n      \"confidence\": 0.62,\n      \"source_page\": null,\n      \"source_quote\": null,\n      \"flagged\": true,\n      \"flag_reasons\": [\n        \"Low confidence (0.62)\"\n      ],\n      \"status\": \"not_present\"\n    }\n  ]\n}",
       "scope": "`review:read`"
     },
     {
@@ -358,7 +374,8 @@ export const review = {
         "`accept` keeps the value; `edit` replaces it; `not_present` empties it.",
         "Writes the old and new value, the action, who and when to the field's history, and records `review.field_updated`.",
         "When the new value differs from the original, saves an eval candidate (`MVP1-E4-04`).",
-        "Also allowed after the task is completed, including after the app has charged for it (Nikhil's decision on #45): the change is recorded the same way, the task stays `completed`, and the latest values are the final document."
+        "Also allowed after the task is completed, including after the app has charged for it (Nikhil's decision on #45): the change is recorded the same way, the task stays `completed`, and the latest values are the final document.",
+        "While the task is held (`MVP1-E4-06`), the owner may decide only flagged fields; an unflagged field answers `404 field_not_found`, as if it were not there."
       ],
       "responses": [
         {
@@ -401,6 +418,61 @@ export const review = {
       ],
       "request": "PATCH /api/review/v1/tasks/0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a2b/fields/0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a30 HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>\nContent-Type: application/json\n\n{\n  \"action\": \"edit\",\n  \"value\": \"1230.00\"\n}",
       "response": "{\n  \"field\": {\n    \"id\": \"0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a30\",\n    \"name\": \"total\",\n    \"line_index\": null,\n    \"type\": \"decimal\",\n    \"original_value\": \"1240.00\",\n    \"value\": \"1230.00\",\n    \"confidence\": 0.3,\n    \"source_page\": 2,\n    \"source_quote\": \"TOTAL DUE  $1,240.00\",\n    \"flagged\": true,\n    \"flag_reasons\": [\n      \"Total \\u2260 subtotal + tax (1,150.00 + 80.00 = 1,230.00)\"\n    ],\n    \"status\": \"edited\"\n  },\n  \"task\": {\n    \"resolved\": 2,\n    \"can_complete\": true\n  }\n}",
+      "scope": "`review:write`"
+    },
+    {
+      "id": "release-task",
+      "method": "POST",
+      "path": "/api/review/v1/tasks/{taskId}/release",
+      "access": "Service",
+      "story": "MVP1-E4-06",
+      "title": "Release held fields",
+      "summary": "The holding app lets the owner see and correct every field, once its own condition is met (for DocFlow, the order is paid). Review never knows why.",
+      "params": [
+        {
+          "name": "taskId",
+          "in": "path",
+          "type": "uuid",
+          "required": "Yes",
+          "constraints": "A held task.",
+          "meaning": "The task."
+        }
+      ],
+      "behaviour": [
+        "Only the holder can release: a delegated token for the task's owner whose `act` claim equals `held_by`.",
+        "Sets `released_at` and records `review.task_released`. Safe to call again: a released task answers `200` unchanged."
+      ],
+      "responses": [
+        {
+          "status": "200",
+          "when": "The task is released (now or before)",
+          "body": "`task`."
+        }
+      ],
+      "errors": [
+        {
+          "status": "404",
+          "code": "`task_not_found`",
+          "when": "No such task, or it belongs to another user. The same answer in both cases."
+        },
+        {
+          "status": "403",
+          "code": "`not_holder`",
+          "when": "The caller is not the app holding this task."
+        },
+        {
+          "status": "409",
+          "code": "`not_held`",
+          "when": "The task was never held."
+        },
+        {
+          "status": "401",
+          "code": "`not_authenticated`",
+          "when": "No valid access token."
+        }
+      ],
+      "request": "POST /api/review/v1/tasks/0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a2b/release HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <delegated token, act: service:docflow>",
+      "response": "{\n  \"task\": {\n    \"id\": \"0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a2b\",\n    \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n    \"status\": \"open\",\n    \"resolved\": 1,\n    \"total\": 3,\n    \"flagged\": 2,\n    \"can_complete\": false,\n    \"checks_overridden\": false,\n    \"held_by\": \"service:docflow\",\n    \"released_at\": \"2026-11-17T09:20:05Z\",\n    \"created_at\": \"2026-11-17T09:14:43Z\",\n    \"completed_at\": null\n  }\n}",
       "scope": "`review:write`"
     },
     {
@@ -459,7 +531,7 @@ export const review = {
         }
       ],
       "request": "POST /api/review/v1/tasks/0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a2b/complete HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>\nContent-Type: application/json\n\n{\n  \"checks_overridden\": false\n}",
-      "response": "{\n  \"task\": {\n    \"id\": \"0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a2b\",\n    \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n    \"status\": \"completed\",\n    \"resolved\": 2,\n    \"total\": 3,\n    \"flagged\": 2,\n    \"can_complete\": true,\n    \"checks_overridden\": false,\n    \"created_at\": \"2026-11-17T09:14:43Z\",\n    \"completed_at\": \"2026-11-17T09:16:02Z\"\n  },\n  \"final_values\": [\n    {\n      \"name\": \"vendor_name\",\n      \"line_index\": null,\n      \"value\": \"Acme Supplies Ltd\"\n    },\n    {\n      \"name\": \"total\",\n      \"line_index\": null,\n      \"value\": \"1230.00\"\n    },\n    {\n      \"name\": \"vendor_tax_id\",\n      \"line_index\": null,\n      \"value\": null\n    }\n  ]\n}",
+      "response": "{\n  \"task\": {\n    \"id\": \"0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a2b\",\n    \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n    \"status\": \"completed\",\n    \"resolved\": 2,\n    \"total\": 3,\n    \"flagged\": 2,\n    \"can_complete\": true,\n    \"checks_overridden\": false,\n    \"held_by\": \"service:docflow\",\n    \"released_at\": null,\n    \"created_at\": \"2026-11-17T09:14:43Z\",\n    \"completed_at\": \"2026-11-17T09:16:02Z\"\n  },\n  \"final_values\": [\n    {\n      \"name\": \"vendor_name\",\n      \"line_index\": null,\n      \"value\": \"Acme Supplies Ltd\"\n    },\n    {\n      \"name\": \"total\",\n      \"line_index\": null,\n      \"value\": \"1230.00\"\n    },\n    {\n      \"name\": \"vendor_tax_id\",\n      \"line_index\": null,\n      \"value\": null\n    }\n  ]\n}",
       "scope": "`review:write`"
     },
     {
@@ -766,6 +838,22 @@ export const review = {
           "default": "",
           "constraints": "Set exactly when completed",
           "meaning": "Who finished it. The owner in version 1; kept separate for later shared reviews."
+        },
+        {
+          "name": "held_by",
+          "type": "text",
+          "nullable": "Yes",
+          "default": "",
+          "constraints": "Like `service:docflow`; set only at creation, from the delegated token's `act` claim",
+          "meaning": "The app holding the unflagged fields until it releases them (`MVP1-E4-06`). Empty: not held."
+        },
+        {
+          "name": "released_at",
+          "type": "timestamptz",
+          "nullable": "Yes",
+          "default": "",
+          "constraints": "Set only when `held_by` is set",
+          "meaning": "When the holder released the fields. Empty while held."
         }
       ],
       "constraints": [
@@ -773,6 +861,8 @@ export const review = {
         "`tasks_status_check`: `open` or `completed`",
         "`tasks_completed_check`: `completed_at` and `completed_by` are set exactly when completed",
         "`tasks_reference_check`: `reference` 1 to 200 characters",
+        "`tasks_held_by_check`: `held_by` is like `service:<name>`",
+        "`tasks_released_check`: `released_at` only when `held_by` is set",
         "`tasks_owner_id_idx`: index on (`owner_id`, `created_at` desc), for a user's tasks"
       ],
       "sampleCols": [
@@ -1315,7 +1405,8 @@ export const review = {
         "A task can be completed only when no flagged field is `pending`. After completion its values can still be corrected; every change is recorded, and the latest values are the final document.",
         "A correction (a final value different from the original) creates exactly one eval candidate per field, updated if the person changes it again.",
         "Candidates never leave this database. Reports built from them show counts and rates only, seen by the admin alone.",
-        "Deleting a user's account deletes their tasks, fields, history and eval candidates, approved ones included."
+        "Deleting a user's account deletes their tasks, fields, history and eval candidates, approved ones included.",
+        "A held task shows its owner only the flagged fields until the holding app releases it (`MVP1-E4-06`): enough to review, nothing more. Only a delegated token can place a hold and only the holder can release it, so a person cannot read held values early or lift a hold themselves. Review never knows the reason for a hold."
       ]
     }
   ],
@@ -1719,7 +1810,7 @@ export const review = {
       "text": "`candidate` when a correction is made → `approved` or `rejected` by an admin → deleted with its task or the owner's account."
     }
   ],
-  "ddl": "-- Human Review service, version 1. Schema: review.\n-- IDs are UUIDv7 values generated by the service.\n-- Checked with `npm run schema:check`: runs on PGlite, and every sample row passes every constraint.\n\ncreate schema if not exists review;\n\ncreate table review.tasks (\n  id                uuid        primary key,\n  owner_id          uuid        not null,\n  reference         text        not null,\n  status            text        not null default 'open',\n  checks_overridden boolean     not null default false,\n  created_at        timestamptz not null default now(),\n  completed_at      timestamptz,\n  completed_by      uuid,\n\n  constraint tasks_reference_check check (length(reference) between 1 and 200),\n  constraint tasks_status_check check (status in ('open', 'completed')),\n  constraint tasks_completed_check check (\n    (status = 'completed') = (completed_at is not null)\n    and (completed_at is null) = (completed_by is null)\n    and (completed_at is null or completed_at >= created_at)\n  )\n);\n\ncreate index tasks_owner_id_idx on review.tasks (owner_id, created_at desc);\n\ncreate table review.fields (\n  id             uuid         primary key,\n  task_id        uuid         not null,\n  name           text         not null,\n  line_index     smallint,\n  type           text         not null,\n  original_value jsonb,\n  value          jsonb,\n  confidence     numeric(3,2) not null,\n  source_page    smallint,\n  source_quote   text,\n  flagged        boolean      not null,\n  flag_reasons   text[]       not null default '{}',\n  status         text         not null default 'pending',\n  updated_by     uuid,\n  updated_at     timestamptz,\n\n  constraint fields_task_id_fkey foreign key (task_id)\n    references review.tasks (id) on delete cascade,\n  constraint fields_task_name_line_key unique nulls not distinct (task_id, name, line_index),\n  constraint fields_name_check check (length(name) between 1 and 64 and (line_index is null or line_index >= 0)),\n  constraint fields_type_check check (type in ('text', 'date', 'decimal', 'currency')),\n  constraint fields_status_check check (status in ('pending', 'accepted', 'edited', 'not_present')),\n  constraint fields_flagged_check check (flagged = (cardinality(flag_reasons) > 0)),\n  constraint fields_decided_check check (\n    (status <> 'pending') = (updated_by is not null)\n    and (updated_by is null) = (updated_at is null)\n  ),\n  constraint fields_not_present_check check (\n    (status <> 'not_present' or value is null)\n    and (status <> 'accepted' or value is not distinct from original_value)\n  ),\n  constraint fields_confidence_check check (confidence between 0 and 1 and (source_page is null or source_page >= 1)),\n  constraint fields_quote_check check (length(source_quote) between 1 and 500)\n);\n\n-- The queue: flagged first, then lowest confidence.\ncreate index fields_queue_idx on review.fields (task_id, flagged desc, confidence);\n\ncreate table review.field_changes (\n  id         uuid        primary key,\n  field_id   uuid        not null,\n  action     text        not null,\n  old_value  jsonb,\n  new_value  jsonb,\n  source     text        not null default 'review',\n  changed_by uuid        not null,\n  created_at timestamptz not null default now(),\n\n  constraint field_changes_field_id_fkey foreign key (field_id)\n    references review.fields (id) on delete cascade,\n  constraint field_changes_action_check check (action in ('accept', 'edit', 'not_present')),\n  constraint field_changes_source_check check (source in ('review'))\n);\n\ncreate index field_changes_field_id_idx on review.field_changes (field_id, created_at);\n\ncreate table review.eval_candidates (\n  id          uuid        primary key,\n  task_id     uuid        not null,\n  reference   text        not null,\n  field_name  text        not null,\n  line_index  smallint,\n  model_value jsonb,\n  human_value jsonb,\n  status      text        not null default 'candidate',\n  decided_by  uuid,\n  decided_at  timestamptz,\n  created_at  timestamptz not null default now(),\n\n  constraint eval_candidates_reference_check check (length(reference) between 1 and 200 and length(field_name) between 1 and 64),\n  constraint eval_candidates_task_id_fkey foreign key (task_id)\n    references review.tasks (id) on delete cascade,\n  constraint eval_candidates_status_check check (status in ('candidate', 'approved', 'rejected')),\n  constraint eval_candidates_changed_check check (human_value is distinct from model_value),\n  constraint eval_candidates_decided_check check (\n    (status <> 'candidate') = (decided_at is not null)\n    and (decided_at is null) = (decided_by is null)\n  )\n);\n\n-- One candidate per corrected field of a task; the admin list by status.\ncreate unique index eval_candidates_task_field_idx\n  on review.eval_candidates (task_id, field_name, line_index) nulls not distinct;\ncreate index eval_candidates_status_idx on review.eval_candidates (status, created_at);\n\ncreate table review.inbound_events (\n  event_id   uuid        primary key,\n  type       text        not null,\n  created_at timestamptz not null default now(),\n\n  constraint inbound_events_type_check check (length(type) between 1 and 100)\n);\n\n-- The service's database login reaches only this schema. History is never edited.\ngrant usage on schema review to review_service;\ngrant select, insert, update, delete on review.tasks, review.fields to review_service;\ngrant select, insert, delete on review.field_changes to review_service;\ngrant select, insert, update, delete on review.eval_candidates to review_service;\ngrant select, insert on review.inbound_events to review_service;\ngrant select, insert on review.audit_events to review_service;\n",
+  "ddl": "-- Human Review service, version 1. Schema: review.\n-- IDs are UUIDv7 values generated by the service.\n-- Checked with `npm run schema:check`: runs on PGlite, and every sample row passes every constraint.\n\ncreate schema if not exists review;\n\ncreate table review.tasks (\n  id                uuid        primary key,\n  owner_id          uuid        not null,\n  reference         text        not null,\n  status            text        not null default 'open',\n  checks_overridden boolean     not null default false,\n  created_at        timestamptz not null default now(),\n  completed_at      timestamptz,\n  completed_by      uuid,\n  held_by           text,\n  released_at       timestamptz,\n\n  constraint tasks_reference_check check (length(reference) between 1 and 200),\n  constraint tasks_held_by_check check (held_by ~ '^service:[a-z][a-z0-9-]*$'),\n  constraint tasks_released_check check (released_at is null or held_by is not null),\n  constraint tasks_status_check check (status in ('open', 'completed')),\n  constraint tasks_completed_check check (\n    (status = 'completed') = (completed_at is not null)\n    and (completed_at is null) = (completed_by is null)\n    and (completed_at is null or completed_at >= created_at)\n  )\n);\n\ncreate index tasks_owner_id_idx on review.tasks (owner_id, created_at desc);\n\ncreate table review.fields (\n  id             uuid         primary key,\n  task_id        uuid         not null,\n  name           text         not null,\n  line_index     smallint,\n  type           text         not null,\n  original_value jsonb,\n  value          jsonb,\n  confidence     numeric(3,2) not null,\n  source_page    smallint,\n  source_quote   text,\n  flagged        boolean      not null,\n  flag_reasons   text[]       not null default '{}',\n  status         text         not null default 'pending',\n  updated_by     uuid,\n  updated_at     timestamptz,\n\n  constraint fields_task_id_fkey foreign key (task_id)\n    references review.tasks (id) on delete cascade,\n  constraint fields_task_name_line_key unique nulls not distinct (task_id, name, line_index),\n  constraint fields_name_check check (length(name) between 1 and 64 and (line_index is null or line_index >= 0)),\n  constraint fields_type_check check (type in ('text', 'date', 'decimal', 'currency')),\n  constraint fields_status_check check (status in ('pending', 'accepted', 'edited', 'not_present')),\n  constraint fields_flagged_check check (flagged = (cardinality(flag_reasons) > 0)),\n  constraint fields_decided_check check (\n    (status <> 'pending') = (updated_by is not null)\n    and (updated_by is null) = (updated_at is null)\n  ),\n  constraint fields_not_present_check check (\n    (status <> 'not_present' or value is null)\n    and (status <> 'accepted' or value is not distinct from original_value)\n  ),\n  constraint fields_confidence_check check (confidence between 0 and 1 and (source_page is null or source_page >= 1)),\n  constraint fields_quote_check check (length(source_quote) between 1 and 500)\n);\n\n-- The queue: flagged first, then lowest confidence.\ncreate index fields_queue_idx on review.fields (task_id, flagged desc, confidence);\n\ncreate table review.field_changes (\n  id         uuid        primary key,\n  field_id   uuid        not null,\n  action     text        not null,\n  old_value  jsonb,\n  new_value  jsonb,\n  source     text        not null default 'review',\n  changed_by uuid        not null,\n  created_at timestamptz not null default now(),\n\n  constraint field_changes_field_id_fkey foreign key (field_id)\n    references review.fields (id) on delete cascade,\n  constraint field_changes_action_check check (action in ('accept', 'edit', 'not_present')),\n  constraint field_changes_source_check check (source in ('review'))\n);\n\ncreate index field_changes_field_id_idx on review.field_changes (field_id, created_at);\n\ncreate table review.eval_candidates (\n  id          uuid        primary key,\n  task_id     uuid        not null,\n  reference   text        not null,\n  field_name  text        not null,\n  line_index  smallint,\n  model_value jsonb,\n  human_value jsonb,\n  status      text        not null default 'candidate',\n  decided_by  uuid,\n  decided_at  timestamptz,\n  created_at  timestamptz not null default now(),\n\n  constraint eval_candidates_reference_check check (length(reference) between 1 and 200 and length(field_name) between 1 and 64),\n  constraint eval_candidates_task_id_fkey foreign key (task_id)\n    references review.tasks (id) on delete cascade,\n  constraint eval_candidates_status_check check (status in ('candidate', 'approved', 'rejected')),\n  constraint eval_candidates_changed_check check (human_value is distinct from model_value),\n  constraint eval_candidates_decided_check check (\n    (status <> 'candidate') = (decided_at is not null)\n    and (decided_at is null) = (decided_by is null)\n  )\n);\n\n-- One candidate per corrected field of a task; the admin list by status.\ncreate unique index eval_candidates_task_field_idx\n  on review.eval_candidates (task_id, field_name, line_index) nulls not distinct;\ncreate index eval_candidates_status_idx on review.eval_candidates (status, created_at);\n\ncreate table review.inbound_events (\n  event_id   uuid        primary key,\n  type       text        not null,\n  created_at timestamptz not null default now(),\n\n  constraint inbound_events_type_check check (length(type) between 1 and 100)\n);\n\n-- The service's database login reaches only this schema. History is never edited.\ngrant usage on schema review to review_service;\ngrant select, insert, update, delete on review.tasks, review.fields to review_service;\ngrant select, insert, delete on review.field_changes to review_service;\ngrant select, insert, update, delete on review.eval_candidates to review_service;\ngrant select, insert on review.inbound_events to review_service;\ngrant select, insert on review.audit_events to review_service;\n",
   "queries": [
     {
       "title": "The review queue (`GET /tasks/{taskId}`)",

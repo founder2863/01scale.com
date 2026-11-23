@@ -578,15 +578,39 @@ export const costs = {
       "totalCost": 0,
       "yield": 100,
       "pending": true
+    },
+    {
+      "key": "MVP1-E3-08-E5-05",
+      "name": "MVP1-E3-08, E4-06, E5-05 · Results held for the app until it releases them (design)",
+      "requests": 1,
+      "buildTokens": 30132017,
+      "reworkTokens": 0,
+      "buildCost": 7.2,
+      "reworkCost": 0,
+      "totalCost": 7.2,
+      "yield": 100,
+      "pending": false
+    },
+    {
+      "key": "MVP1-E3-09",
+      "name": "MVP1-E3-09 · A free daily quota for jobs a person starts (design)",
+      "requests": 1,
+      "buildTokens": 5025114,
+      "reworkTokens": 0,
+      "buildCost": 1.27,
+      "reworkCost": 0,
+      "totalCost": 1.27,
+      "yield": 100,
+      "pending": false
     }
   ],
   "storyTotals": {
-    "requests": 155,
-    "tokens": 610624318,
-    "buildCost": 166.31,
+    "requests": 157,
+    "tokens": 645781449,
+    "buildCost": 174.78,
     "reworkCost": 132.97,
-    "cost": 299.27,
-    "yield": 56,
+    "cost": 307.74,
+    "yield": 58,
     "pending": true
   },
   "scaffolding": [
@@ -616,40 +640,40 @@ export const costs = {
     },
     {
       "name": "Process",
-      "requests": 48,
-      "tokens": 146956590,
-      "cost": 37.96
+      "requests": 50,
+      "tokens": 164855172,
+      "cost": 42.03
     },
     {
       "name": "Tool overhead (background calls)",
       "requests": 0,
       "tokens": 0,
-      "cost": 2.96
+      "cost": 4.3
     }
   ],
   "scaffoldingTotals": {
-    "requests": 99,
-    "tokens": 182507838,
-    "cost": 80.98
+    "requests": 101,
+    "tokens": 200406420,
+    "cost": 86.4
   },
   "totals": {
-    "requests": 254,
-    "tokens": 793132156,
-    "cost": 380.26,
-    "buildCost": 166.31,
+    "requests": 258,
+    "tokens": 846187869,
+    "cost": 394.14,
+    "buildCost": 174.78,
     "reworkCost": 132.97,
-    "scaffoldingCost": 80.98,
-    "storyYield": 56,
-    "overallYield": 43,
+    "scaffoldingCost": 86.4,
+    "storyYield": 58,
+    "overallYield": 44,
     "pendingRequests": 18,
     "pendingEstimate": 10.62,
     "pendingEstimated": 12
   },
   "byKind": {
-    "input": 0.12,
-    "output": 22.43,
-    "cache_read": 47.22,
-    "cache_write": 60.83
+    "input": 0.13,
+    "output": 23.46,
+    "cache_read": 59.13,
+    "cache_write": 61.75
   },
   "mistakes": {
     "designRedo": {
@@ -669,10 +693,10 @@ export const costs = {
     "reloads": {
       "requests": 13,
       "cost": 103.2,
-      "share": 27,
+      "share": 26,
       "median": 8.2,
       "typical": 0.58,
-      "extra": 95.7
+      "extra": 95.61
     },
     "mergedTooSoon": {
       "requests": 1,

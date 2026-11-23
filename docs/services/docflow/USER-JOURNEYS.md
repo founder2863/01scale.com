@@ -1,6 +1,6 @@
 # DocFlow service — user journeys
 
-> **Version 1 · The app that connects the services.** Status: designed, not built. Stories: `MVP1-E0-09`, `MVP1-E2-05`, `MVP1-E5-01`, `MVP1-E5-02`, `MVP1-E5-03`, `MVP1-E5-04`, `MVP1-E7-01`, `MVP1-E7-02`.
+> **Version 1 · The app that connects the services.** Status: designed, not built. Stories: `MVP1-E0-09`, `MVP1-E2-05`, `MVP1-E5-01`, `MVP1-E5-02`, `MVP1-E5-03`, `MVP1-E5-04`, `MVP1-E5-05`, `MVP1-E7-01`, `MVP1-E7-02`.
 
 What a person sees across the whole DocFlow journey, and where DocFlow's own steps are.
 

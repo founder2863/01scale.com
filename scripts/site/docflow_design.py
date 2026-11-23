@@ -4,7 +4,7 @@ Data only: scripts/site/render.py turns MODULE into docs/services/docflow/*.md a
 app/products/docflow.ts (shown on the "JSON and CSV output" product page, the part
 of the journey DocFlow itself owns). Run `npm run site:data` after any change.
 Stories: MVP1-E0-09 (app shell) and DocFlow's parts of MVP1-E1-05, E2-02, E2-03,
-E2-05, E3-01, E4-03, E5-01 to E5-04, E6-01, E7-01 and E7-02.
+E2-05, E3-01, E4-03, E5-01 to E5-05, E6-01, E7-01 and E7-02.
 """
 import json
 
@@ -46,7 +46,7 @@ ENDPOINTS = [
         json.dumps({"document": {**DOC_PAID, "status": "pending_upload", "next_action": "upload", "job_id": None, "review_task_id": None, "order_id": None}, "upload": {"url": "https://01scale-uploads.s3.us-east-1.amazonaws.com/users/…/original.pdf?X-Amz-Signature=…", "method": "PUT", "headers": {"Content-Type": "application/pdf", "Content-Length": "248913"}, "expires_at": "2026-11-17T09:19:07Z"}}, indent=2)),
     doc_endpoint("upload-complete", "POST", "/documents/{documentId}/upload-complete", "MVP1-E2-03", "Confirm the upload and start extraction",
         "Called by the upload component when the bytes are sent.", ID,
-        ["Calls Upload `POST /files/{fileId}/complete`. If the file is rejected, the document is `rejected` with Upload's reason.", "If ready, calls Extraction `POST /jobs` with `reference: docflow:{documentId}` and sets the document `extracting`.", "Idempotent: a document already past this step is returned unchanged."],
+        ["Calls Upload `POST /files/{fileId}/complete`. If the file is rejected, the document is `rejected` with Upload's reason.", "If ready, calls Extraction `POST /jobs` with `reference: docflow:{documentId}` and sets the document `extracting`. It asks with `hold: true` and a delegated token for the owner (`act: service:docflow`), so DocFlow holds the results until the order is paid (`MVP1-E5-05`).", "Idempotent: a document already past this step is returned unchanged."],
         [response("200", "The upload was checked", "`document` with status `extracting` or `rejected`.")],
         [NOT_FOUND, error("409", "upload_missing", "Passed on from Upload: the file has not arrived."), DEP, NOT_AUTH],
         f"POST {BASE}/documents/{D1}/upload-complete HTTP/1.1\n{H}", json.dumps({"document": {**DOC_PAID, "status": "extracting", "next_action": "extract", "review_task_id": None, "order_id": None}}, indent=2)),
@@ -62,7 +62,7 @@ ENDPOINTS = [
         f"GET {BASE}/documents/{D1} HTTP/1.1\n{H}", json.dumps({"document": DOC_PAID}, indent=2)),
     doc_endpoint("retry-extraction", "POST", "/documents/{documentId}/retry-extraction", "MVP1-E3-01", "Retry a failed extraction",
         "Starts a new extraction job after the last one failed.", ID,
-        ["Calls Extraction `POST /jobs` for the same file; stores the new job's ID; the document is `extracting` again."],
+        ["Calls Extraction `POST /jobs` for the same file, again with `hold: true` and a delegated token (`MVP1-E5-05`); stores the new job's ID; the document is `extracting` again."],
         [response("202", "A new job started", "`document`.")], [NOT_FOUND, error("409", "not_failed", "The last extraction did not fail."), DEP, NOT_AUTH],
         f"POST {BASE}/documents/{D1}/retry-extraction HTTP/1.1\n{H}", json.dumps({"document": {**DOC_PAID, "status": "extracting", "next_action": "extract", "review_task_id": None, "order_id": None}}, indent=2)),
     doc_endpoint("complete-review", "POST", "/documents/{documentId}/complete-review", "MVP1-E4-03", "Finish review",
@@ -111,9 +111,9 @@ ENDPOINTS = [
          param("event_id, type, data", "body", "uuid, string, object", "Yes", "Processed once per `event_id`.", "The event.")],
         ["No person is present, so each step uses a delegated token for the document's owner from Identity (`act: service:docflow`; decision on #24).",
          "Acts only on events about the document's current work: an extraction event whose `job_id` is not the document's `job_id`, or a payment event whose `order_id` is not its `order_id`, is acknowledged and ignored. A late failure from a retried job, or the expiry of an earlier order, changes nothing.",
-         "`extraction.job.completed`: reads the fields with Extraction `GET /jobs/{jobId}/fields`, creates a Review task with Review `POST /tasks` (Idempotency-Key `docflow:{documentId}:{jobId}`) and sets the document `needs_review`; with nothing flagged it still creates the task, so every document is reviewed the same way.",
+         "`extraction.job.completed`: reads the fields with Extraction `GET /jobs/{jobId}/fields`, creates a Review task with Review `POST /tasks` and `hold: true` (Idempotency-Key `docflow:{documentId}:{jobId}`; `MVP1-E5-05`) and sets the document `needs_review`; with nothing flagged it still creates the task, so every document is reviewed the same way.",
          "`extraction.job.failed`: sets `extraction_failed`.",
-         "`payment.order.paid`: sets `paid` and asks Delivery `POST /messages` for the `order_paid` email, keyed by the event's ID.",
+         "`payment.order.paid`: releases the held results, Extraction `POST /jobs/{jobId}/release` and Review `POST /tasks/{taskId}/release` (each safe to repeat; `MVP1-E5-05`), then sets `paid` and asks Delivery `POST /messages` for the `order_paid` email, keyed by the event's ID. If a release fails, the event is retried; downloads already work, because DocFlow builds them as the holder.",
          "`payment.order.expired` or `failed`: clears the order so Pay starts a new one.",
          "`identity.user.deleted`: deletes that user's documents. There are no stored results to delete: Extraction and Review delete their own data.",
          "Other types are acknowledged and ignored."],
@@ -260,7 +260,7 @@ MODULE = {
         ],
         "scope_in": ["The documents list with status and next action", "Starting each service at the right moment, and reacting to their events", "Building `result.json` (with metadata) and `result.csv` on demand from Review's latest values, nothing stored", "Locked preview; downloads only after payment, checked on the server", "Correcting values on the results page, before or after paying", "Checkout at $5.00 and the success page", "Asking Delivery to email when paid"],
         "scope_out": ["Batches of documents: `MVP2-E9`, `MVP2-E12`", "Paying with a saved card: `MVP2-E13`", "Anything a service does: it is designed in that service"],
-        "stories": ["MVP1-E0-09", "MVP1-E2-05", "MVP1-E5-01", "MVP1-E5-02", "MVP1-E5-03", "MVP1-E5-04", "MVP1-E7-01", "MVP1-E7-02"],
+        "stories": ["MVP1-E0-09", "MVP1-E2-05", "MVP1-E5-01", "MVP1-E5-02", "MVP1-E5-03", "MVP1-E5-04", "MVP1-E5-05", "MVP1-E7-01", "MVP1-E7-02"],
     },
     "flow": [
         {"who": "DocFlow", "what": "Creates the document and Upload's file; after the upload, starts Extraction."},
@@ -298,7 +298,7 @@ MODULE = {
         {"topic": "Building the JSON (MVP1-E5-01)", "how": "`data` holds the final values in the invoice v1 shape; `metadata` holds document_id, file_name, pages, model, prompt_version, extracted_at, reviewed_at, reviewed_by, fields_flagged, fields_corrected, and per field `confidence` and `corrected`. Built on each request and validated against `schemas/invoice-v1.json` before it is returned; `metadata.last_changed_at` is the latest correction in Review."},
         {"topic": "Building the CSV (MVP1-E5-02)", "how": f"Columns in this order: {CSV_COLUMNS}. RFC 4180 quoting, UTF-8 with a byte-order mark, CRLF line ends; cells starting with `=`, `+`, `-`, `@`, tab or carriage return are prefixed with `'`."},
         {"topic": "Success page (MVP1-E7-01)", "how": "Polls Payment `GET /orders/{orderId}` every 2 seconds for up to 30 seconds, then says 'We'll email you when it's ready'; shows the email's status from Delivery."},
-        {"topic": "Which token each step uses (decisions on #24 and #21)", "how": "Steps the person starts (upload, retry, complete review, checkout, preview, download) use their own token, except Payment and Delivery, which take only a delegated token. Steps after an event (create the review task, send the email) use a delegated token for the document's owner. Every call goes through `https://01scale.com/api/…`."},
+        {"topic": "Which token each step uses (decisions on #24 and #21)", "how": "Steps the person starts (upload, retry, complete review, checkout, preview, download) use their own token, except Payment and Delivery, which take only a delegated token. Steps after an event (create the review task, send the email) use a delegated token for the document's owner. So do starting an extraction and reading results for the preview, the downloads and the checks, because DocFlow holds the results until payment and only the holder reads them in full (`MVP1-E5-05`). Every call goes through `https://01scale.com/api/…`."},
     {"topic": "Pages", "how": "`/documents`, `/documents/new` (upload, with the file's preview once checked), `/documents/{id}` (extraction, with the preview beside the fields), `/documents/{id}/review`, `/documents/{id}/results`, `/documents/{id}/pay`, `/documents/{id}/success`. Each composes the services' components."},
     ],
     "tables": [DOCS, INBOUND],

@@ -25,12 +25,18 @@ create table extraction.jobs (
   duration_ms    integer,
   error_code     text,
   error_message  text,
+  started_by     text          not null default 'person',
+  held_by        text,
+  released_at    timestamptz,
   created_at     timestamptz   not null default now(),
   started_at     timestamptz,
   finished_at    timestamptz,
 
   constraint jobs_schema_check check (schema in ('invoice-v1')),
   constraint jobs_reference_check check (length(reference) between 1 and 200),
+  constraint jobs_started_by_check check (started_by = 'person' or started_by ~ '^service:[a-z][a-z0-9-]*$'),
+  constraint jobs_held_by_check check (held_by ~ '^service:[a-z][a-z0-9-]*$'),
+  constraint jobs_released_check check (released_at is null or held_by is not null),
   constraint jobs_status_check check (status in ('queued', 'processing', 'extracted', 'failed')),
   constraint jobs_step_check
     check (step in ('fetching_file', 'reading_text', 'reading_document', 'checking_rules', 'saving')),

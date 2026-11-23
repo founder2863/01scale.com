@@ -14,8 +14,12 @@ create table review.tasks (
   created_at        timestamptz not null default now(),
   completed_at      timestamptz,
   completed_by      uuid,
+  held_by           text,
+  released_at       timestamptz,
 
   constraint tasks_reference_check check (length(reference) between 1 and 200),
+  constraint tasks_held_by_check check (held_by ~ '^service:[a-z][a-z0-9-]*$'),
+  constraint tasks_released_check check (released_at is null or held_by is not null),
   constraint tasks_status_check check (status in ('open', 'completed')),
   constraint tasks_completed_check check (
     (status = 'completed') = (completed_at is not null)

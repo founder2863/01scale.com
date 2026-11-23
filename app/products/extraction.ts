@@ -75,7 +75,9 @@ export const extraction = {
       "MVP1-E3-02",
       "MVP1-E3-03",
       "MVP1-E3-04",
-      "MVP1-E3-05"
+      "MVP1-E3-05",
+      "MVP1-E3-08",
+      "MVP1-E3-09"
     ],
     "uiStatus": "UI components built in `@01scale/ui-extraction` 0.3.0, against a stand-in client; the service is designed, not built"
   },
@@ -201,12 +203,22 @@ export const extraction = {
           "required": "No",
           "constraints": "1 to 200 characters. Opaque to Extraction.",
           "meaning": "The caller's own label for the job, returned in its events. DocFlow sends `docflow:{document_id}`."
+        },
+        {
+          "name": "hold",
+          "in": "body",
+          "type": "boolean",
+          "required": "No",
+          "constraints": "Only with a delegated token: the acting app (its `act` claim) becomes the holder. Default false.",
+          "meaning": "Hold the results for the app until it releases them (`MVP1-E3-08`). While held, the owner sees only the flagged fields."
         }
       ],
       "behaviour": [
         "Checks the file through Upload, forwarding the caller's access token, so only the caller's own ready files can be read.",
         "If a job for this file and schema is `queued` or `processing`, returns it with `200`. Nothing new is started or charged.",
         "Otherwise records a job as `queued`, with the model ID and prompt version from configuration, and returns `202`.",
+        "With `hold: true`, records the acting app from the delegated token's `act` claim as `held_by` (`MVP1-E3-08`). A person's own token or an API key cannot place a hold.",
+        "A job started with a person's own token or API key counts toward that person's free daily quota: 3 a day by default (`EXTRACTION_DIRECT_DAILY_QUOTA`), reset at 00:00 UTC (`MVP1-E3-09`). A job an app starts with a delegated token counts toward the app, not the person. Returning a job that is already running, and a job that fails for a temporary reason, do not count. `started_by` records which it was.",
         "The job then runs in the background: with a delegated token for the owner, fetch the file through a 5-minute Upload link, and read its text. A PDF with a text layer gives its text directly; a scanned PDF or a photo is read by OCR (Claude transcribing each page, in a call separate from extraction so the quote check stays independent). Each page's text is saved for the quote check.",
         "If no text is found on any page, the job fails with `no_text_found` and the message 'No text found'. It is not retryable: the same file would give the same result.",
         "Otherwise it sends the document to Claude with the versioned prompt, checks the answer against the schema, applies the rule checks (including every quote against the saved text, for photos and scans too), and saves the fields.",
@@ -243,6 +255,11 @@ export const extraction = {
         },
         {
           "status": "422",
+          "code": "`hold_requires_app`",
+          "when": "`hold: true` without a delegated token, so there is no app to hold the results for."
+        },
+        {
+          "status": "422",
           "code": "`validation_failed`",
           "when": "Another input is missing or malformed."
         },
@@ -250,6 +267,11 @@ export const extraction = {
           "status": "429",
           "code": "`rate_limited`",
           "when": "More than 10 jobs a minute for one user."
+        },
+        {
+          "status": "429",
+          "code": "`quota_exceeded`",
+          "when": "The person has used today's free jobs (`MVP1-E3-09`). `Retry-After` gives the seconds until 00:00 UTC; the message says how many were used and when more open."
         },
         {
           "status": "503",
@@ -263,7 +285,7 @@ export const extraction = {
         }
       ],
       "request": "POST /api/extraction/v1/jobs HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>\nContent-Type: application/json\n\n{\n  \"file_id\": \"0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b\",\n  \"schema\": \"invoice-v1\",\n  \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\"\n}",
-      "response": "HTTP/1.1 202 Accepted\nLocation: /api/extraction/v1/jobs/0193b0d1-4b2c-7d10-9a8b-1c2d3e4f5a6b\nRetry-After: 2\nContent-Type: application/json\n\n{\n  \"job\": {\n    \"id\": \"0193b0d1-4b2c-7d10-9a8b-1c2d3e4f5a6b\",\n    \"file_id\": \"0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b\",\n    \"schema\": \"invoice-v1\",\n    \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n    \"status\": \"queued\",\n    \"steps\": [\n      {\n        \"name\": \"fetching_file\",\n        \"state\": \"waiting\"\n      },\n      {\n        \"name\": \"reading_text\",\n        \"state\": \"waiting\"\n      },\n      {\n        \"name\": \"reading_document\",\n        \"state\": \"waiting\"\n      },\n      {\n        \"name\": \"checking_rules\",\n        \"state\": \"waiting\"\n      },\n      {\n        \"name\": \"saving\",\n        \"state\": \"waiting\"\n      }\n    ],\n    \"fields_total\": null,\n    \"fields_flagged\": null,\n    \"error_code\": null,\n    \"error_message\": null,\n    \"retryable\": false,\n    \"created_at\": \"2026-11-17T09:14:12Z\",\n    \"finished_at\": null\n  }\n}",
+      "response": "HTTP/1.1 202 Accepted\nLocation: /api/extraction/v1/jobs/0193b0d1-4b2c-7d10-9a8b-1c2d3e4f5a6b\nRetry-After: 2\nContent-Type: application/json\n\n{\n  \"job\": {\n    \"id\": \"0193b0d1-4b2c-7d10-9a8b-1c2d3e4f5a6b\",\n    \"file_id\": \"0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b\",\n    \"schema\": \"invoice-v1\",\n    \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n    \"status\": \"queued\",\n    \"steps\": [\n      {\n        \"name\": \"fetching_file\",\n        \"state\": \"waiting\"\n      },\n      {\n        \"name\": \"reading_text\",\n        \"state\": \"waiting\"\n      },\n      {\n        \"name\": \"reading_document\",\n        \"state\": \"waiting\"\n      },\n      {\n        \"name\": \"checking_rules\",\n        \"state\": \"waiting\"\n      },\n      {\n        \"name\": \"saving\",\n        \"state\": \"waiting\"\n      }\n    ],\n    \"fields_total\": null,\n    \"fields_flagged\": null,\n    \"error_code\": null,\n    \"error_message\": null,\n    \"retryable\": false,\n    \"started_by\": \"service:docflow\",\n    \"held_by\": \"service:docflow\",\n    \"released_at\": null,\n    \"created_at\": \"2026-11-17T09:14:12Z\",\n    \"finished_at\": null\n  }\n}",
       "scope": "`extraction:write`"
     },
     {
@@ -288,7 +310,8 @@ export const extraction = {
         "Read only.",
         "`steps[]` lists `fetching_file`, `reading_text`, `reading_document`, `checking_rules`, `saving`, each `waiting`, `running`, `done` or `failed`.",
         "A failed job has `error_code`, a plain-language `error_message`, and `retryable`: true when starting a new job may succeed.",
-        "Sends `Retry-After: 2` while the job is `queued` or `processing`."
+        "Sends `Retry-After: 2` while the job is `queued` or `processing`.",
+        "`held_by` names the app holding the results, or is empty; `released_at` is when it released them (`MVP1-E3-08`)."
       ],
       "responses": [
         {
@@ -310,7 +333,7 @@ export const extraction = {
         }
       ],
       "request": "GET /api/extraction/v1/jobs/0193b0d1-4b2c-7d10-9a8b-1c2d3e4f5a6b HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>",
-      "response": "{\n  \"job\": {\n    \"id\": \"0193b0d1-4b2c-7d10-9a8b-1c2d3e4f5a6b\",\n    \"file_id\": \"0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b\",\n    \"schema\": \"invoice-v1\",\n    \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n    \"status\": \"extracted\",\n    \"steps\": [\n      {\n        \"name\": \"fetching_file\",\n        \"state\": \"done\"\n      },\n      {\n        \"name\": \"reading_text\",\n        \"state\": \"done\"\n      },\n      {\n        \"name\": \"reading_document\",\n        \"state\": \"done\"\n      },\n      {\n        \"name\": \"checking_rules\",\n        \"state\": \"done\"\n      },\n      {\n        \"name\": \"saving\",\n        \"state\": \"done\"\n      }\n    ],\n    \"fields_total\": 19,\n    \"fields_flagged\": 3,\n    \"error_code\": null,\n    \"error_message\": null,\n    \"retryable\": false,\n    \"created_at\": \"2026-11-17T09:14:12Z\",\n    \"finished_at\": \"2026-11-17T09:14:41Z\"\n  }\n}",
+      "response": "{\n  \"job\": {\n    \"id\": \"0193b0d1-4b2c-7d10-9a8b-1c2d3e4f5a6b\",\n    \"file_id\": \"0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b\",\n    \"schema\": \"invoice-v1\",\n    \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n    \"status\": \"extracted\",\n    \"steps\": [\n      {\n        \"name\": \"fetching_file\",\n        \"state\": \"done\"\n      },\n      {\n        \"name\": \"reading_text\",\n        \"state\": \"done\"\n      },\n      {\n        \"name\": \"reading_document\",\n        \"state\": \"done\"\n      },\n      {\n        \"name\": \"checking_rules\",\n        \"state\": \"done\"\n      },\n      {\n        \"name\": \"saving\",\n        \"state\": \"done\"\n      }\n    ],\n    \"fields_total\": 19,\n    \"fields_flagged\": 3,\n    \"error_code\": null,\n    \"error_message\": null,\n    \"retryable\": false,\n    \"started_by\": \"service:docflow\",\n    \"held_by\": \"service:docflow\",\n    \"released_at\": null,\n    \"created_at\": \"2026-11-17T09:14:12Z\",\n    \"finished_at\": \"2026-11-17T09:14:41Z\"\n  }\n}",
       "scope": "`extraction:read`"
     },
     {
@@ -342,13 +365,14 @@ export const extraction = {
       "behaviour": [
         "Read only. Fields never change after a job saves them; corrections happen in the Human Review service, on its own copy.",
         "Ordered by the schema's field order; line-item fields by `line_index`, then field.",
-        "Amounts and quantities are decimal strings (`\"1240.00\"`), never floating-point numbers, so no value is rounded on the way."
+        "Amounts and quantities are decimal strings (`\"1240.00\"`), never floating-point numbers, so no value is rounded on the way.",
+        "While the job is held (`MVP1-E3-08`), the owner's own token or API key gets only the flagged fields, whatever `flagged` says, so a person can check them; the holding app, with a delegated token naming it in `act`, gets every field. After release, everyone the owner allows gets every field."
       ],
       "responses": [
         {
           "status": "200",
           "when": "The job has finished extracting",
-          "body": "`data[]` of fields: `id`, `name`, `line_index` (line items only), `value`, `confidence` (final), `model_confidence`, `source_page`, `source_quote`, `flagged`, `flag_reasons[]`."
+          "body": "`data[]` of fields: `id`, `name`, `line_index` (line items only), `value`, `confidence` (final), `model_confidence`, `source_page`, `source_quote`, `flagged`, `flag_reasons[]`; and `held` (true while the results are held from this caller) with `fields_hidden`, how many fields were left out."
         }
       ],
       "errors": [
@@ -436,6 +460,93 @@ export const extraction = {
       ],
       "request": "POST /api/extraction/v1/validations HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>\nContent-Type: application/json\n\n{\n  \"schema\": \"invoice-v1\",\n  \"values\": {\n    \"vendor_name\": \"Acme Supplies Ltd\",\n    \"invoice_number\": \"INV-0042\",\n    \"invoice_date\": \"2026-11-02\",\n    \"due_date\": \"2026-12-02\",\n    \"currency\": \"USD\",\n    \"subtotal\": \"1150.00\",\n    \"tax_total\": \"80.00\",\n    \"total\": \"1230.00\",\n    \"line_items\": [\n      {\n        \"description\": \"Paper, A4\",\n        \"quantity\": \"10\",\n        \"unit_price\": \"115.00\",\n        \"amount\": \"1150.00\"\n      }\n    ]\n  }\n}",
       "response": "{\n  \"passed\": true,\n  \"checks\": [\n    {\n      \"name\": \"line_amounts_match_subtotal\",\n      \"passed\": true,\n      \"fields\": [\n        \"line_items\",\n        \"subtotal\"\n      ],\n      \"message\": \"Line amounts add up to the subtotal.\"\n    },\n    {\n      \"name\": \"subtotal_plus_tax_is_total\",\n      \"passed\": true,\n      \"fields\": [\n        \"subtotal\",\n        \"tax_total\",\n        \"total\"\n      ],\n      \"message\": \"Subtotal plus tax equals the total.\"\n    },\n    {\n      \"name\": \"dates_valid\",\n      \"passed\": true,\n      \"fields\": [\n        \"invoice_date\",\n        \"due_date\"\n      ],\n      \"message\": \"Dates are valid and the due date is after the invoice date.\"\n    },\n    {\n      \"name\": \"currency_valid\",\n      \"passed\": true,\n      \"fields\": [\n        \"currency\"\n      ],\n      \"message\": \"USD is a valid currency.\"\n    },\n    {\n      \"name\": \"required_present\",\n      \"passed\": true,\n      \"fields\": [\n        \"vendor_name\",\n        \"invoice_number\",\n        \"invoice_date\",\n        \"currency\",\n        \"total\"\n      ],\n      \"message\": \"All required fields are present.\"\n    }\n  ]\n}",
+      "scope": "`extraction:write`"
+    },
+    {
+      "id": "get-usage",
+      "method": "GET",
+      "path": "/api/extraction/v1/usage",
+      "access": "Signed in",
+      "story": "MVP1-E3-09",
+      "title": "Today's free jobs",
+      "summary": "How many jobs the person has started themselves today, out of their free daily quota, and when it resets. An agent checks this before starting a job.",
+      "params": [],
+      "behaviour": [
+        "Read only. Counts jobs started with the person's own token or API key since 00:00 UTC; jobs an app started for them are not counted.",
+        "Until Extraction has a paid plan (`MVP1-E0-28`), the quota is the limit; the response says so in `plan`."
+      ],
+      "responses": [
+        {
+          "status": "200",
+          "when": "Always",
+          "body": "`date`, `direct_jobs_used`, `direct_jobs_limit`, `resets_at` and `plan` (`free`)."
+        }
+      ],
+      "errors": [
+        {
+          "status": "401",
+          "code": "`not_authenticated`",
+          "when": "No valid access token."
+        }
+      ],
+      "request": "GET /api/extraction/v1/usage HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>",
+      "response": "{\n  \"date\": \"2026-11-23\",\n  \"direct_jobs_used\": 2,\n  \"direct_jobs_limit\": 3,\n  \"resets_at\": \"2026-11-24T00:00:00Z\",\n  \"plan\": \"free\"\n}",
+      "scope": "`extraction:read`"
+    },
+    {
+      "id": "release-job",
+      "method": "POST",
+      "path": "/api/extraction/v1/jobs/{jobId}/release",
+      "access": "Service",
+      "story": "MVP1-E3-08",
+      "title": "Release held results",
+      "summary": "The holding app lets the owner see every field, once its own condition is met (for DocFlow, the order is paid). Extraction never knows why.",
+      "params": [
+        {
+          "name": "jobId",
+          "in": "path",
+          "type": "uuid",
+          "required": "Yes",
+          "constraints": "A held job.",
+          "meaning": "The job."
+        }
+      ],
+      "behaviour": [
+        "Only the holder can release: a delegated token for the job's owner whose `act` claim equals `held_by`.",
+        "Sets `released_at` and records `job.released` in the audit log. Safe to call again: a released job answers `200` unchanged.",
+        "Nothing is copied or sent: the next read simply returns every field."
+      ],
+      "responses": [
+        {
+          "status": "200",
+          "when": "The job is released (now or before)",
+          "body": "`job`."
+        }
+      ],
+      "errors": [
+        {
+          "status": "404",
+          "code": "`job_not_found`",
+          "when": "No such job, or it belongs to another user. The same answer in both cases."
+        },
+        {
+          "status": "403",
+          "code": "`not_holder`",
+          "when": "The caller is not the app holding this job."
+        },
+        {
+          "status": "409",
+          "code": "`not_held`",
+          "when": "The job was never held."
+        },
+        {
+          "status": "401",
+          "code": "`not_authenticated`",
+          "when": "No valid access token."
+        }
+      ],
+      "request": "POST /api/extraction/v1/jobs/0193b0d1-4b2c-7d10-9a8b-1c2d3e4f5a6b/release HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <delegated token, act: service:docflow>",
+      "response": "{\n  \"job\": {\n    \"id\": \"0193b0d1-4b2c-7d10-9a8b-1c2d3e4f5a6b\",\n    \"file_id\": \"0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b\",\n    \"schema\": \"invoice-v1\",\n    \"reference\": \"docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c\",\n    \"status\": \"extracted\",\n    \"steps\": [\n      {\n        \"name\": \"fetching_file\",\n        \"state\": \"done\"\n      },\n      {\n        \"name\": \"reading_text\",\n        \"state\": \"done\"\n      },\n      {\n        \"name\": \"reading_document\",\n        \"state\": \"done\"\n      },\n      {\n        \"name\": \"checking_rules\",\n        \"state\": \"done\"\n      },\n      {\n        \"name\": \"saving\",\n        \"state\": \"done\"\n      }\n    ],\n    \"fields_total\": 19,\n    \"fields_flagged\": 3,\n    \"error_code\": null,\n    \"error_message\": null,\n    \"retryable\": false,\n    \"started_by\": \"service:docflow\",\n    \"held_by\": \"service:docflow\",\n    \"released_at\": \"2026-11-17T09:20:05Z\",\n    \"created_at\": \"2026-11-17T09:14:12Z\",\n    \"finished_at\": \"2026-11-17T09:14:41Z\"\n  }\n}",
       "scope": "`extraction:write`"
     },
     {
@@ -569,7 +680,7 @@ export const extraction = {
     },
     {
       "topic": "AI agents",
-      "how": "Each endpoint is also a tool on Extraction's MCP server, `POST /api/extraction/mcp`, with the same inputs and errors."
+      "how": "Each endpoint a person can call is also a tool on Extraction's MCP server, `POST /api/extraction/mcp`, with the same inputs and errors; an agent checks `getUsage` before starting a job. The service-only `POST /jobs/{jobId}/release` has no tool: only the holding app releases."
     },
     {
       "topic": "Health and contract",
@@ -734,6 +845,30 @@ export const extraction = {
           "meaning": "The plain-language message a person sees."
         },
         {
+          "name": "started_by",
+          "type": "text",
+          "nullable": "No",
+          "default": "'person'",
+          "constraints": "`person`, or like `service:docflow`: the delegated token's `act` claim",
+          "meaning": "Who started the job: the person themselves, which counts toward their free daily quota (`MVP1-E3-09`), or an app acting for them."
+        },
+        {
+          "name": "held_by",
+          "type": "text",
+          "nullable": "Yes",
+          "default": "",
+          "constraints": "Like `service:docflow`; set only at creation, from the delegated token's `act` claim",
+          "meaning": "The app holding the results until it releases them (`MVP1-E3-08`). Empty: not held."
+        },
+        {
+          "name": "released_at",
+          "type": "timestamptz",
+          "nullable": "Yes",
+          "default": "",
+          "constraints": "Set only when `held_by` is set",
+          "meaning": "When the holder released the results. Empty while held."
+        },
+        {
           "name": "created_at",
           "type": "timestamptz",
           "nullable": "No",
@@ -762,6 +897,9 @@ export const extraction = {
         "`jobs_pkey`: primary key (`id`)",
         "`jobs_schema_check`: `schema` is `invoice-v1`",
         "`jobs_status_check`, `jobs_step_check`, `jobs_error_code_check`: only the listed values",
+        "`jobs_started_by_check`: `started_by` is `person` or like `service:<name>`",
+        "`jobs_held_by_check`: `held_by` is like `service:<name>`",
+        "`jobs_released_check`: `released_at` only when `held_by` is set",
         "`jobs_attempt_check`: `attempt` between 1 and 3",
         "`jobs_failed_check`: `error_code` and `error_message` are set exactly when `status` is `failed`",
         "`jobs_finished_check`: `finished_at` is set exactly when `status` is `extracted` or `failed`",
@@ -1185,7 +1323,9 @@ export const extraction = {
         "Every value that is present has a page and a quote, so a person can always see where it came from.",
         "Amounts are kept as decimal strings, never floating-point numbers.",
         "Deleting a user's account deletes their fields, which hold document content. Their jobs are kept with IDs, counts, tokens and cost only, for the cost records.",
-        "Each job records the model and prompt version it used, so any result can be traced and re-run."
+        "Each job records the model and prompt version it used, so any result can be traced and re-run.",
+        "A person may start 3 jobs a day themselves, free (`MVP1-E3-09`); jobs an app starts for them count toward the app. The quota is checked when a job is created and counted from `started_by` and `created_at`, so it cannot be dodged by retrying.",
+        "A held job shows its owner only the flagged fields until the holding app releases it (`MVP1-E3-08`). Only a delegated token can place a hold, and only the holder can release it, so a person cannot read held results early and cannot lift a hold themselves. Extraction never knows the reason for a hold."
       ]
     }
   ],
@@ -1639,7 +1779,7 @@ export const extraction = {
       "text": "Saved when the job reads the document → never changed → deleted with its job or its owner's account. It stays inside the owner's account like every other record (privacy rule on #41)."
     }
   ],
-  "ddl": "-- LLM Extraction service, version 1. Schema: extraction.\n-- IDs are UUIDv7 values generated by the service.\n-- Checked with `npm run schema:check`: runs on PGlite, and every sample row passes every constraint.\n\ncreate schema if not exists extraction;\n\ncreate table extraction.jobs (\n  id             uuid          primary key,\n  owner_id       uuid          not null,\n  file_id        uuid          not null,\n  schema         text          not null,\n  reference      text,\n  status         text          not null default 'queued',\n  step           text,\n  attempt        smallint      not null default 1,\n  model          text          not null,\n  prompt_version text          not null,\n  pages          smallint,\n  fields_total   smallint,\n  fields_flagged smallint,\n  tokens_in      integer,\n  tokens_out     integer,\n  cost_usd       numeric(10,6),\n  duration_ms    integer,\n  error_code     text,\n  error_message  text,\n  created_at     timestamptz   not null default now(),\n  started_at     timestamptz,\n  finished_at    timestamptz,\n\n  constraint jobs_schema_check check (schema in ('invoice-v1')),\n  constraint jobs_reference_check check (length(reference) between 1 and 200),\n  constraint jobs_status_check check (status in ('queued', 'processing', 'extracted', 'failed')),\n  constraint jobs_step_check\n    check (step in ('fetching_file', 'reading_text', 'reading_document', 'checking_rules', 'saving')),\n  constraint jobs_attempt_check check (attempt between 1 and 3),\n  constraint jobs_model_check check (length(model) between 1 and 100 and length(prompt_version) between 1 and 100),\n  constraint jobs_error_code_check check (error_code in\n    ('file_unavailable', 'document_unreadable', 'no_text_found', 'model_unavailable', 'output_invalid', 'timed_out')),\n  constraint jobs_failed_check check (\n    (status = 'failed') = (error_code is not null)\n    and (error_code is null) = (error_message is null)\n  ),\n  constraint jobs_finished_check check ((status in ('extracted', 'failed')) = (finished_at is not null)),\n  constraint jobs_extracted_check check (\n    status <> 'extracted'\n    or (fields_total is not null and fields_flagged between 0 and fields_total\n        and tokens_in is not null and tokens_out is not null\n        and cost_usd is not null and duration_ms is not null)\n  ),\n  constraint jobs_numbers_check check (\n    (pages is null or pages between 1 and 10)\n    and coalesce(fields_total, 0) >= 0 and coalesce(tokens_in, 0) >= 0\n    and coalesce(tokens_out, 0) >= 0 and coalesce(cost_usd, 0) >= 0\n    and coalesce(duration_ms, 0) >= 0\n  ),\n  constraint jobs_dates_check check (\n    (started_at is null or started_at >= created_at)\n    and (finished_at is null or finished_at >= coalesce(started_at, created_at))\n  )\n);\n\n-- One running job per file and schema: a second request returns the first.\ncreate unique index jobs_active_file_idx on extraction.jobs (file_id, schema)\n  where status in ('queued', 'processing');\n-- A user's jobs; the admin's recent jobs; the sweep of jobs left queued.\ncreate index jobs_owner_id_idx on extraction.jobs (owner_id, created_at desc);\ncreate index jobs_created_at_idx on extraction.jobs (created_at desc);\ncreate index jobs_queued_idx on extraction.jobs (created_at) where status = 'queued';\n\ncreate table extraction.fields (\n  id               uuid         primary key,\n  job_id           uuid         not null,\n  name             text         not null,\n  line_index       smallint,\n  value            jsonb,\n  model_confidence numeric(3,2) not null,\n  confidence       numeric(3,2) not null,\n  source_page      smallint,\n  source_quote     text,\n  flagged          boolean      not null default false,\n  flag_reasons     text[]       not null default '{}',\n  created_at       timestamptz  not null default now(),\n\n  constraint fields_job_id_fkey foreign key (job_id)\n    references extraction.jobs (id) on delete cascade,\n  constraint fields_job_name_line_key unique nulls not distinct (job_id, name, line_index),\n  constraint fields_name_check check (name in ('vendor_name', 'vendor_address', 'vendor_tax_id', 'invoice_number', 'invoice_date', 'due_date', 'bill_to_name', 'bill_to_address', 'currency', 'subtotal', 'tax_total', 'total', 'payment_terms', 'description', 'quantity', 'unit_price', 'amount')),\n  constraint fields_line_index_check check (\n    (name in ('description', 'quantity', 'unit_price', 'amount')) = (line_index is not null)\n    and (line_index is null or line_index >= 0)\n  ),\n  constraint fields_confidence_check check (\n    model_confidence between 0 and 1\n    and confidence between 0 and 1\n    and confidence <= model_confidence\n  ),\n  constraint fields_evidence_check check (\n    (value is null) = (source_quote is null)\n    and (source_quote is null) = (source_page is null)\n  ),\n  constraint fields_quote_check check (length(source_quote) between 1 and 500),\n  constraint fields_flagged_check check (flagged = (cardinality(flag_reasons) > 0))\n);\n\n-- The fields a person must check, for the review queue.\ncreate index fields_flagged_idx on extraction.fields (job_id) where flagged;\n\n-- The text of each page, for the quote check. Deleted with the job.\ncreate table extraction.page_texts (\n  job_id     uuid        not null,\n  page       smallint    not null,\n  source     text        not null,\n  text       text        not null,\n  created_at timestamptz not null default now(),\n\n  constraint page_texts_pkey primary key (job_id, page),\n  constraint page_texts_job_id_fkey foreign key (job_id)\n    references extraction.jobs (id) on delete cascade,\n  constraint page_texts_page_check check (page between 1 and 10),\n  constraint page_texts_source_check check (source in ('text_layer', 'ocr')),\n  constraint page_texts_text_check check (length(text) <= 100000)\n);\n\ncreate table extraction.inbound_events (\n  event_id   uuid        primary key,\n  type       text        not null,\n  created_at timestamptz not null default now(),\n\n  constraint inbound_events_type_check check (length(type) between 1 and 100)\n);\n\n-- The service's database login reaches only this schema. Fields are deleted only\n-- with their owner's account; audit events can be added and read, never changed.\ngrant usage on schema extraction to extraction_service;\ngrant select, insert, update on extraction.jobs to extraction_service;\ngrant select, insert, delete on extraction.fields, extraction.page_texts to extraction_service;\ngrant select, insert on extraction.inbound_events to extraction_service;\ngrant select, insert on extraction.audit_events to extraction_service;\n",
+  "ddl": "-- LLM Extraction service, version 1. Schema: extraction.\n-- IDs are UUIDv7 values generated by the service.\n-- Checked with `npm run schema:check`: runs on PGlite, and every sample row passes every constraint.\n\ncreate schema if not exists extraction;\n\ncreate table extraction.jobs (\n  id             uuid          primary key,\n  owner_id       uuid          not null,\n  file_id        uuid          not null,\n  schema         text          not null,\n  reference      text,\n  status         text          not null default 'queued',\n  step           text,\n  attempt        smallint      not null default 1,\n  model          text          not null,\n  prompt_version text          not null,\n  pages          smallint,\n  fields_total   smallint,\n  fields_flagged smallint,\n  tokens_in      integer,\n  tokens_out     integer,\n  cost_usd       numeric(10,6),\n  duration_ms    integer,\n  error_code     text,\n  error_message  text,\n  started_by     text          not null default 'person',\n  held_by        text,\n  released_at    timestamptz,\n  created_at     timestamptz   not null default now(),\n  started_at     timestamptz,\n  finished_at    timestamptz,\n\n  constraint jobs_schema_check check (schema in ('invoice-v1')),\n  constraint jobs_reference_check check (length(reference) between 1 and 200),\n  constraint jobs_started_by_check check (started_by = 'person' or started_by ~ '^service:[a-z][a-z0-9-]*$'),\n  constraint jobs_held_by_check check (held_by ~ '^service:[a-z][a-z0-9-]*$'),\n  constraint jobs_released_check check (released_at is null or held_by is not null),\n  constraint jobs_status_check check (status in ('queued', 'processing', 'extracted', 'failed')),\n  constraint jobs_step_check\n    check (step in ('fetching_file', 'reading_text', 'reading_document', 'checking_rules', 'saving')),\n  constraint jobs_attempt_check check (attempt between 1 and 3),\n  constraint jobs_model_check check (length(model) between 1 and 100 and length(prompt_version) between 1 and 100),\n  constraint jobs_error_code_check check (error_code in\n    ('file_unavailable', 'document_unreadable', 'no_text_found', 'model_unavailable', 'output_invalid', 'timed_out')),\n  constraint jobs_failed_check check (\n    (status = 'failed') = (error_code is not null)\n    and (error_code is null) = (error_message is null)\n  ),\n  constraint jobs_finished_check check ((status in ('extracted', 'failed')) = (finished_at is not null)),\n  constraint jobs_extracted_check check (\n    status <> 'extracted'\n    or (fields_total is not null and fields_flagged between 0 and fields_total\n        and tokens_in is not null and tokens_out is not null\n        and cost_usd is not null and duration_ms is not null)\n  ),\n  constraint jobs_numbers_check check (\n    (pages is null or pages between 1 and 10)\n    and coalesce(fields_total, 0) >= 0 and coalesce(tokens_in, 0) >= 0\n    and coalesce(tokens_out, 0) >= 0 and coalesce(cost_usd, 0) >= 0\n    and coalesce(duration_ms, 0) >= 0\n  ),\n  constraint jobs_dates_check check (\n    (started_at is null or started_at >= created_at)\n    and (finished_at is null or finished_at >= coalesce(started_at, created_at))\n  )\n);\n\n-- One running job per file and schema: a second request returns the first.\ncreate unique index jobs_active_file_idx on extraction.jobs (file_id, schema)\n  where status in ('queued', 'processing');\n-- A user's jobs; the admin's recent jobs; the sweep of jobs left queued.\ncreate index jobs_owner_id_idx on extraction.jobs (owner_id, created_at desc);\ncreate index jobs_created_at_idx on extraction.jobs (created_at desc);\ncreate index jobs_queued_idx on extraction.jobs (created_at) where status = 'queued';\n\ncreate table extraction.fields (\n  id               uuid         primary key,\n  job_id           uuid         not null,\n  name             text         not null,\n  line_index       smallint,\n  value            jsonb,\n  model_confidence numeric(3,2) not null,\n  confidence       numeric(3,2) not null,\n  source_page      smallint,\n  source_quote     text,\n  flagged          boolean      not null default false,\n  flag_reasons     text[]       not null default '{}',\n  created_at       timestamptz  not null default now(),\n\n  constraint fields_job_id_fkey foreign key (job_id)\n    references extraction.jobs (id) on delete cascade,\n  constraint fields_job_name_line_key unique nulls not distinct (job_id, name, line_index),\n  constraint fields_name_check check (name in ('vendor_name', 'vendor_address', 'vendor_tax_id', 'invoice_number', 'invoice_date', 'due_date', 'bill_to_name', 'bill_to_address', 'currency', 'subtotal', 'tax_total', 'total', 'payment_terms', 'description', 'quantity', 'unit_price', 'amount')),\n  constraint fields_line_index_check check (\n    (name in ('description', 'quantity', 'unit_price', 'amount')) = (line_index is not null)\n    and (line_index is null or line_index >= 0)\n  ),\n  constraint fields_confidence_check check (\n    model_confidence between 0 and 1\n    and confidence between 0 and 1\n    and confidence <= model_confidence\n  ),\n  constraint fields_evidence_check check (\n    (value is null) = (source_quote is null)\n    and (source_quote is null) = (source_page is null)\n  ),\n  constraint fields_quote_check check (length(source_quote) between 1 and 500),\n  constraint fields_flagged_check check (flagged = (cardinality(flag_reasons) > 0))\n);\n\n-- The fields a person must check, for the review queue.\ncreate index fields_flagged_idx on extraction.fields (job_id) where flagged;\n\n-- The text of each page, for the quote check. Deleted with the job.\ncreate table extraction.page_texts (\n  job_id     uuid        not null,\n  page       smallint    not null,\n  source     text        not null,\n  text       text        not null,\n  created_at timestamptz not null default now(),\n\n  constraint page_texts_pkey primary key (job_id, page),\n  constraint page_texts_job_id_fkey foreign key (job_id)\n    references extraction.jobs (id) on delete cascade,\n  constraint page_texts_page_check check (page between 1 and 10),\n  constraint page_texts_source_check check (source in ('text_layer', 'ocr')),\n  constraint page_texts_text_check check (length(text) <= 100000)\n);\n\ncreate table extraction.inbound_events (\n  event_id   uuid        primary key,\n  type       text        not null,\n  created_at timestamptz not null default now(),\n\n  constraint inbound_events_type_check check (length(type) between 1 and 100)\n);\n\n-- The service's database login reaches only this schema. Fields are deleted only\n-- with their owner's account; audit events can be added and read, never changed.\ngrant usage on schema extraction to extraction_service;\ngrant select, insert, update on extraction.jobs to extraction_service;\ngrant select, insert, delete on extraction.fields, extraction.page_texts to extraction_service;\ngrant select, insert on extraction.inbound_events to extraction_service;\ngrant select, insert on extraction.audit_events to extraction_service;\n",
   "queries": [
     {
       "title": "Start a job, or find the running one (`POST /jobs`)",

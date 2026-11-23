@@ -1,6 +1,6 @@
 # LLM Extraction service — user journeys
 
-> **Version 1 · One Claude call per document.** Status: designed, not built. Stories: `MVP1-E3-01`, `MVP1-E3-02`, `MVP1-E3-03`, `MVP1-E3-04`, `MVP1-E3-05`.
+> **Version 1 · One Claude call per document.** Status: designed, not built. Stories: `MVP1-E3-01`, `MVP1-E3-02`, `MVP1-E3-03`, `MVP1-E3-04`, `MVP1-E3-05`, `MVP1-E3-08`, `MVP1-E3-09`.
 
 What a person sees and what the system does while a document is read, in version 1.
 

@@ -1000,6 +1000,64 @@ export const products = [
         ],
         "evals": "",
         "service": "LLM Extraction (`packages/ui-extraction`); parent story `MVP1-E3-05`"
+      },
+      {
+        "id": "MVP1-E3-08",
+        "title": "Hold a job's fields for the app that started it",
+        "size": "S",
+        "pending": "**Status: designed (#177), 23 Nov 2026 (Nikhil's decision; `docs/decisions/MVP1-E5.md`).**",
+        "story": "As an app (DocFlow), I want to hold an extraction's results until my own condition is met, so a person cannot read them around my paywall, while Extraction stays app-agnostic.",
+        "acs": [
+          {
+            "label": "AC1",
+            "text": "`POST /api/extraction/v1/jobs` accepts `hold: true` only with a delegated token; the acting app in its `act` claim becomes the job's `held_by`. With a person's own token or an API key it answers `422 hold_requires_app`."
+          },
+          {
+            "label": "AC2",
+            "text": "While a job is held, `GET /jobs/{jobId}/fields` with the owner's own token or API key returns only the flagged fields, whatever `flagged` says, with `held: true` and `fields_hidden`; the holding app, with a delegated token naming it in `act`, gets every field. `GET /jobs/{jobId}` shows `held_by` and `released_at`."
+          },
+          {
+            "label": "AC3",
+            "text": "`POST /jobs/{jobId}/release` lets only the holder release the job (`403 not_holder` for anyone else, `409 not_held` for a job never held); it is safe to repeat, and records `job.released` in the audit log. After release, the owner reads every field."
+          },
+          {
+            "label": "AC4",
+            "text": "Extraction never learns why a job is held. Tests cover owner, holder, other app and released reads."
+          }
+        ],
+        "evals": "",
+        "service": "LLM Extraction"
+      },
+      {
+        "id": "MVP1-E3-09",
+        "title": "A free daily quota for jobs a person starts",
+        "size": "S",
+        "pending": "**Status: designed (#181), 23 Nov 2026 (Nikhil's decision; `docs/decisions/MVP1-E5.md`).**",
+        "story": "As the owner, I want a person who calls Extraction directly, not through an app, to get a small free allowance, so the hold on an app's results (`MVP1-E3-08`) cannot be sidestepped for free by running their own job, and our Claude spend stays capped, while Extraction stays usable by people and their agents.",
+        "acs": [
+          {
+            "label": "AC1",
+            "text": "A job started with a person's own token or API key counts toward their free daily quota: 3 a day by default (`EXTRACTION_DIRECT_DAILY_QUOTA`), reset at 00:00 UTC. A job an app starts with a delegated token counts toward the app, not the person. Returning a job that is already running, and a job that fails for a temporary reason, do not count."
+          },
+          {
+            "label": "AC2",
+            "text": "Past the quota, `POST /jobs` answers `429 quota_exceeded`, with `Retry-After` until 00:00 UTC and a message saying how many were used and when more open. The gateway's rate limit (10 changes a minute) still applies on top."
+          },
+          {
+            "label": "AC3",
+            "text": "`GET /api/extraction/v1/usage` shows today's `direct_jobs_used`, `direct_jobs_limit`, `resets_at` and `plan` (`free`), and is an MCP tool (`getUsage`), so an agent can check before it starts a job."
+          },
+          {
+            "label": "AC4",
+            "text": "The quota is counted from `started_by` and `created_at` when a job is created, so retrying or reconnecting cannot dodge it. Tests cover a person's own jobs, an app's jobs for them, a temporary failure, and the reset."
+          },
+          {
+            "label": "AC5",
+            "text": "Until Extraction has a paid plan (`MVP1-E0-28` AC6), the quota is the limit."
+          }
+        ],
+        "evals": "",
+        "service": "LLM Extraction"
       }
     ],
     "endpoints": [
@@ -1058,6 +1116,46 @@ export const products = [
         "summary": "Answer a question from my documents, with citations.",
         "detail": "Body `{question, file_ids?}` → `200 {answer, citations: [{file_id, page, quote}], found: boolean, model, prompt_version}`. Errors: `422 validation_failed`, `429 rate_limited`.",
         "story": "MVP1-E3-06"
+      },
+      {
+        "method": "POST",
+        "path": "/api/extraction/v1/jobs",
+        "access": "Signed in",
+        "summary": "adds body `hold?: boolean` (delegated token only).",
+        "detail": "Errors add `422 hold_requires_app`.",
+        "story": "MVP1-E3-08"
+      },
+      {
+        "method": "GET",
+        "path": "/api/extraction/v1/jobs/{jobId}/fields",
+        "access": "Signed in",
+        "summary": "while held, flagged fields only for the owner, with `held`, `fields_hidden`.",
+        "detail": "",
+        "story": "MVP1-E3-08"
+      },
+      {
+        "method": "POST",
+        "path": "/api/extraction/v1/jobs/{jobId}/release",
+        "access": "Service: delegated token of the holder",
+        "summary": "Release held results.",
+        "detail": "→ `200 {job}`. Errors: `403 not_holder`, `404 job_not_found`, `409 not_held`. No MCP tool: no agent releases for a person.",
+        "story": "MVP1-E3-08"
+      },
+      {
+        "method": "POST",
+        "path": "/api/extraction/v1/jobs",
+        "access": "Signed in",
+        "summary": "counts toward the quota when started by the person.",
+        "detail": "Errors add `429 quota_exceeded`.",
+        "story": "MVP1-E3-09"
+      },
+      {
+        "method": "GET",
+        "path": "/api/extraction/v1/usage",
+        "access": "Signed in",
+        "summary": "Today's free jobs.",
+        "detail": "→ `200 {date, direct_jobs_used, direct_jobs_limit, resets_at, plan}`. MCP tool `getUsage`.",
+        "story": "MVP1-E3-09"
       }
     ],
     "apiNotes": [
@@ -1109,6 +1207,16 @@ export const products = [
         "story": "MVP1-E3-07",
         "title": "Jobs table for the admin as a UI component (`ui-extraction`)",
         "text": "No tables."
+      },
+      {
+        "story": "MVP1-E3-08",
+        "title": "Hold a job's fields for the app that started it",
+        "text": "`extraction.jobs` adds `held_by` text null (like `service:docflow`, set only at creation) and `released_at` timestamptz null (only when `held_by` is set)."
+      },
+      {
+        "story": "MVP1-E3-09",
+        "title": "A free daily quota for jobs a person starts",
+        "text": "`extraction.jobs` adds `started_by` text not null default `'person'` (`person`, or the app from the delegated token's `act` claim, like `service:docflow`). The existing index on (`owner_id`, `created_at`) serves the count."
       }
     ]
   },
@@ -1241,6 +1349,33 @@ export const products = [
         ],
         "evals": "",
         "service": "Human Review (`packages/ui-review`); parent story `MVP1-E4-04`"
+      },
+      {
+        "id": "MVP1-E4-06",
+        "title": "Hold a review task's fields for the app that started it",
+        "size": "S",
+        "pending": "**Status: designed (#178), 23 Nov 2026 (Nikhil's decision; `docs/decisions/MVP1-E5.md`).**",
+        "story": "As an app (DocFlow), I want the person to review only the flagged fields until my own condition is met, so the values read with high confidence cannot be read around my paywall.",
+        "acs": [
+          {
+            "label": "AC1",
+            "text": "`POST /api/review/v1/tasks` accepts `hold: true` only with a delegated token; the acting app in `act` becomes `held_by`. Otherwise `422 hold_requires_app`."
+          },
+          {
+            "label": "AC2",
+            "text": "While a task is held, `GET /tasks/{taskId}` with the owner's own token or API key returns only the flagged fields, even with `all=true`, with `held: true` and `fields_hidden`; the holder gets every field. The owner may decide only flagged fields: an unflagged one answers `404 field_not_found`."
+          },
+          {
+            "label": "AC3",
+            "text": "`POST /tasks/{taskId}/release` lets only the holder release the task (`403 not_holder`, `409 not_held`); safe to repeat; records `review.task_released`. After release, the owner sees and corrects every field (Nikhil's decision on #45 still holds)."
+          },
+          {
+            "label": "AC4",
+            "text": "Review never learns why a task is held. Review's UI components work unchanged: `ReviewQueue` shows what the API returns, and an app may also hide its \"Show all fields\" toggle with `allowShowAll`."
+          }
+        ],
+        "evals": "",
+        "service": "Human Review"
       }
     ],
     "endpoints": [
@@ -1299,12 +1434,32 @@ export const products = [
         "summary": "How often people correct each field, as counts and rates only, seen by the admin alone (every count shown as it is, decided on #81).",
         "detail": "Query `since`, `source` → `200 {since, totals, fields[]}`. Replaces the export of corrections (decision on #41).",
         "story": "MVP1-E4-04"
+      },
+      {
+        "method": "POST",
+        "path": "/api/review/v1/tasks",
+        "access": "Signed in",
+        "summary": "adds body `hold?: boolean` (delegated token only).",
+        "detail": "Errors add `422 hold_requires_app`.",
+        "story": "MVP1-E4-06"
+      },
+      {
+        "method": "POST",
+        "path": "/api/review/v1/tasks/{taskId}/release",
+        "access": "Service: delegated token of the holder",
+        "summary": "Release held fields.",
+        "detail": "→ `200 {task}`. Errors: `403 not_holder`, `404 task_not_found`, `409 not_held`. No MCP tool.",
+        "story": "MVP1-E4-06"
       }
     ],
     "apiNotes": [
       {
         "story": "MVP1-E4-05",
         "text": "No new endpoints. Uses `GET` and `PATCH /api/review/v1/admin/eval-candidates` and `GET /api/review/v1/admin/accuracy` (`MVP1-E4-04`)."
+      },
+      {
+        "story": "MVP1-E4-06",
+        "text": "`GET /api/review/v1/tasks/{taskId}` and `PATCH …/fields/{fieldId}` (signed in) — while held, flagged fields only for the owner."
       }
     ],
     "dbNotes": [
@@ -1332,6 +1487,11 @@ export const products = [
         "story": "MVP1-E4-05",
         "title": "Eval candidates and accuracy for the admin as UI components (`ui-review`)",
         "text": "No tables."
+      },
+      {
+        "story": "MVP1-E4-06",
+        "title": "Hold a review task's fields for the app that started it",
+        "text": "`review.tasks` adds `held_by` text null and `released_at` timestamptz null (only when `held_by` is set)."
       }
     ]
   },
@@ -1417,7 +1577,7 @@ export const products = [
           },
           {
             "label": "AC4",
-            "text": "Before payment, DocFlow's screens list only the flagged fields: after extraction, in the review and in the results page's Edit values. The fields read with high confidence stay hidden, with a line saying how many unlock after payment (Nikhil, 22 Nov 2026)."
+            "text": "Before payment, DocFlow's screens list only the flagged fields: after extraction, in the review and in the results page's Edit values. The fields read with high confidence stay hidden, with a line saying how many unlock after payment (Nikhil, 22 Nov 2026). The services enforce it too, through the hold in `MVP1-E5-05`."
           },
           {
             "label": "AC2",
@@ -1445,6 +1605,33 @@ export const products = [
         ],
         "evals": "",
         "service": "DocFlow app (values from Human Review, metadata from LLM Extraction)"
+      },
+      {
+        "id": "MVP1-E5-05",
+        "title": "DocFlow holds results until payment",
+        "size": "S",
+        "pending": "**Status: designed (#179), 23 Nov 2026 (Nikhil's decision; `docs/decisions/MVP1-E5.md`).**",
+        "story": "As the owner, I want the full results unreadable through any API until the person has paid, so the preview is the only thing given away (API first: preview, then payment, then full data).",
+        "acs": [
+          {
+            "label": "AC1",
+            "text": "DocFlow starts every extraction job and review task with `hold: true` and a delegated token for the owner (`act: service:docflow`), so DocFlow is the holder (`MVP1-E3-08`, `MVP1-E4-06`)."
+          },
+          {
+            "label": "AC2",
+            "text": "DocFlow reads results as the holder, with a delegated token, for the preview, the checks and the downloads; before payment its own API still returns only the four-field preview (`MVP1-E5-03` AC3)."
+          },
+          {
+            "label": "AC3",
+            "text": "On `payment.order.paid`, DocFlow releases the job and the task (each safe to repeat), then sets the document `paid` and asks Delivery for the email. If a release fails, the event is retried; the person is not blocked, because downloads are built by DocFlow as the holder."
+          },
+          {
+            "label": "AC4",
+            "text": "A test shows that, before payment, the owner's own token gets only the flagged fields from Extraction and Review, and four fields from DocFlow; after payment, every field everywhere."
+          }
+        ],
+        "evals": "",
+        "service": "DocFlow app"
       }
     ],
     "endpoints": [
@@ -1481,6 +1668,10 @@ export const products = [
       {
         "story": "MVP1-E5-04",
         "text": "No new endpoints. Uses `GET …/outputs`, `…/preview` and `…/download` (E5-01, E5-03), which read Review `GET /tasks/{taskId}?all=true` and Extraction `GET /jobs/{jobId}`; corrections use Review `PATCH /tasks/{taskId}/fields/{fieldId}` through Review's component."
+      },
+      {
+        "story": "MVP1-E5-05",
+        "text": "No new endpoints. Uses Extraction `POST /jobs` with `hold`, `POST /jobs/{jobId}/release`, Review `POST /tasks` with `hold` and `POST /tasks/{taskId}/release`. Changes which token each step uses (see `docs/services/docflow/README.md`)."
       }
     ],
     "dbNotes": [
@@ -1503,6 +1694,11 @@ export const products = [
         "story": "MVP1-E5-04",
         "title": "Build outputs on demand",
         "text": "No tables: nothing is stored. The final values stay in `review.fields`, kept until the user deletes their account."
+      },
+      {
+        "story": "MVP1-E5-05",
+        "title": "DocFlow holds results until payment",
+        "text": "No tables. The hold lives in Extraction and Review."
       }
     ]
   },

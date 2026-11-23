@@ -1,6 +1,6 @@
 # Human Review service — API specification
 
-> **Version 1 · A person checks flagged fields.** Status: designed, not built. Stories: `MVP1-E4-01`, `MVP1-E4-02`, `MVP1-E4-03`, `MVP1-E4-04`.
+> **Version 1 · A person checks flagged fields.** Status: designed, not built. Stories: `MVP1-E4-01`, `MVP1-E4-02`, `MVP1-E4-03`, `MVP1-E4-04`, `MVP1-E4-06`.
 
 Base address: `https://01scale.com/api/review/v1`. Shared rules for every 01scale API (errors, versioning, tracing) are in [`docs/architecture/API-DESIGN.md`](../../architecture/API-DESIGN.md).
 
@@ -40,11 +40,13 @@ Access: **Signed in** · Scope: `review:write` · Story: `MVP1-E4-01`
 | `fields[].confidence` | body | number | Yes | 0 to 1. | How sure the system was; orders the queue. |
 | `fields[].source_page, fields[].source_quote` | body | integer, string | No | Page 1 or more; quote 1 to 500 characters. | The evidence shown beside the value. |
 | `fields[].flagged, fields[].flag_reasons` | body | boolean, string[] | Yes | Flagged exactly when there is at least one reason. | Whether a person must decide on this field, and why. |
+| `hold` | body | boolean | No | Only with a delegated token: the acting app (its `act` claim) becomes the holder. Default false. | Hold the unflagged fields for the app until it releases them (`MVP1-E4-06`). The owner still sees and decides every flagged field. |
 | `Idempotency-Key` | header | string | No | 1 to 255 characters. | Makes a retried request safe. |
 
 **Behaviour**
 
 - Validates every field, stores the task as `open` with its own copy of the fields (each `pending`), and records `review.task_created`.
+- With `hold: true`, records the acting app from the delegated token's `act` claim as `held_by` (`MVP1-E4-06`). A person's own token or an API key cannot place a hold.
 
 **Responses**
 
@@ -57,6 +59,7 @@ Access: **Signed in** · Scope: `review:write` · Story: `MVP1-E4-01`
 | Status | Code | When |
 |---|---|---|
 | `422` | `validation_failed` | A field is malformed; `errors[]` lists each one. |
+| `422` | `hold_requires_app` | `hold: true` without a delegated token, so there is no app to hold the fields for. |
 | `422` | `duplicate_field` | Two fields share a name and line index. |
 | `422` | `idempotency_key_reused` | Same key, different body. |
 | `401` | `not_authenticated` | No valid access token. |
@@ -112,6 +115,8 @@ Content-Type: application/json
     "flagged": 1,
     "can_complete": false,
     "checks_overridden": false,
+    "held_by": "service:docflow",
+    "released_at": null,
     "created_at": "2026-11-17T09:14:43Z",
     "completed_at": null
   }
@@ -134,6 +139,7 @@ Access: **Signed in** · Scope: `review:read` · Story: `MVP1-E4-01`
 **Behaviour**
 
 - Read only. `resolved` counts flagged fields no longer `pending`; `can_complete` is true when none is pending.
+- While the task is held (`MVP1-E4-06`), the owner's own token or API key gets only the flagged fields, even with `all=true`, plus `held: true` and `fields_hidden`; the holding app, with a delegated token naming it in `act`, gets every field. `held_by` and `released_at` are on the task.
 
 **Responses**
 
@@ -169,6 +175,8 @@ Authorization: Bearer <access token>
     "flagged": 2,
     "can_complete": false,
     "checks_overridden": false,
+    "held_by": "service:docflow",
+    "released_at": null,
     "created_at": "2026-11-17T09:14:43Z",
     "completed_at": null
   },
@@ -229,6 +237,7 @@ Access: **Signed in** · Scope: `review:write` · Story: `MVP1-E4-02`
 - Writes the old and new value, the action, who and when to the field's history, and records `review.field_updated`.
 - When the new value differs from the original, saves an eval candidate (`MVP1-E4-04`).
 - Also allowed after the task is completed, including after the app has charged for it (Nikhil's decision on #45): the change is recorded the same way, the task stays `completed`, and the latest values are the final document.
+- While the task is held (`MVP1-E4-06`), the owner may decide only flagged fields; an unflagged field answers `404 field_not_found`, as if it were not there.
 
 **Responses**
 
@@ -284,6 +293,67 @@ Content-Type: application/json
   "task": {
     "resolved": 2,
     "can_complete": true
+  }
+}
+```
+
+### POST /tasks/{taskId}/release
+
+**Release held fields.** The holding app lets the owner see and correct every field, once its own condition is met (for DocFlow, the order is paid). Review never knows why.
+
+Access: **Service** · Scope: `review:write` · Story: `MVP1-E4-06`
+
+**Inputs**
+
+| Name | In | Type | Required | Constraints | Meaning |
+|---|---|---|---|---|---|
+| `taskId` | path | uuid | Yes | A held task. | The task. |
+
+**Behaviour**
+
+- Only the holder can release: a delegated token for the task's owner whose `act` claim equals `held_by`.
+- Sets `released_at` and records `review.task_released`. Safe to call again: a released task answers `200` unchanged.
+
+**Responses**
+
+| Status | When | Body or headers |
+|---|---|---|
+| `200` | The task is released (now or before) | `task`. |
+
+**Errors**
+
+| Status | Code | When |
+|---|---|---|
+| `404` | `task_not_found` | No such task, or it belongs to another user. The same answer in both cases. |
+| `403` | `not_holder` | The caller is not the app holding this task. |
+| `409` | `not_held` | The task was never held. |
+| `401` | `not_authenticated` | No valid access token. |
+
+**Sample request**
+
+```http
+POST /api/review/v1/tasks/0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a2b/release HTTP/1.1
+Host: 01scale.com
+Authorization: Bearer <delegated token, act: service:docflow>
+```
+
+**Sample response**
+
+```json
+{
+  "task": {
+    "id": "0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a2b",
+    "reference": "docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c",
+    "status": "open",
+    "resolved": 1,
+    "total": 3,
+    "flagged": 2,
+    "can_complete": false,
+    "checks_overridden": false,
+    "held_by": "service:docflow",
+    "released_at": "2026-11-17T09:20:05Z",
+    "created_at": "2026-11-17T09:14:43Z",
+    "completed_at": null
   }
 }
 ```
@@ -347,6 +417,8 @@ Content-Type: application/json
     "flagged": 2,
     "can_complete": true,
     "checks_overridden": false,
+    "held_by": "service:docflow",
+    "released_at": null,
     "created_at": "2026-11-17T09:14:43Z",
     "completed_at": "2026-11-17T09:16:02Z"
   },

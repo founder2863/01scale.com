@@ -1,6 +1,6 @@
 # LLM Extraction service — schema
 
-> **Version 1 · One Claude call per document.** Status: designed, not built. Stories: `MVP1-E3-01`, `MVP1-E3-02`, `MVP1-E3-03`, `MVP1-E3-04`, `MVP1-E3-05`.
+> **Version 1 · One Claude call per document.** Status: designed, not built. Stories: `MVP1-E3-01`, `MVP1-E3-02`, `MVP1-E3-03`, `MVP1-E3-04`, `MVP1-E3-05`, `MVP1-E3-08`, `MVP1-E3-09`.
 
 The SQL for the LLM Extraction service's tables, in the `extraction` schema. No other service can read them. What each field means is in [`DATA-MODEL.md`](DATA-MODEL.md). In the build this is produced by Drizzle migrations; the SQL below is the target.
 
@@ -31,12 +31,18 @@ create table extraction.jobs (
   duration_ms    integer,
   error_code     text,
   error_message  text,
+  started_by     text          not null default 'person',
+  held_by        text,
+  released_at    timestamptz,
   created_at     timestamptz   not null default now(),
   started_at     timestamptz,
   finished_at    timestamptz,
 
   constraint jobs_schema_check check (schema in ('invoice-v1')),
   constraint jobs_reference_check check (length(reference) between 1 and 200),
+  constraint jobs_started_by_check check (started_by = 'person' or started_by ~ '^service:[a-z][a-z0-9-]*$'),
+  constraint jobs_held_by_check check (held_by ~ '^service:[a-z][a-z0-9-]*$'),
+  constraint jobs_released_check check (released_at is null or held_by is not null),
   constraint jobs_status_check check (status in ('queued', 'processing', 'extracted', 'failed')),
   constraint jobs_step_check
     check (step in ('fetching_file', 'reading_text', 'reading_document', 'checking_rules', 'saving')),
@@ -162,6 +168,9 @@ grant select, insert on extraction.audit_events to extraction_service;
 - `jobs_pkey`: primary key (`id`)
 - `jobs_schema_check`: `schema` is `invoice-v1`
 - `jobs_status_check`, `jobs_step_check`, `jobs_error_code_check`: only the listed values
+- `jobs_started_by_check`: `started_by` is `person` or like `service:<name>`
+- `jobs_held_by_check`: `held_by` is like `service:<name>`
+- `jobs_released_check`: `released_at` only when `held_by` is set
 - `jobs_attempt_check`: `attempt` between 1 and 3
 - `jobs_failed_check`: `error_code` and `error_message` are set exactly when `status` is `failed`
 - `jobs_finished_check`: `finished_at` is set exactly when `status` is `extracted` or `failed`

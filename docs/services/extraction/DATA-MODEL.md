@@ -1,6 +1,6 @@
 # LLM Extraction service — data model
 
-> **Version 1 · One Claude call per document.** Status: designed, not built. Stories: `MVP1-E3-01`, `MVP1-E3-02`, `MVP1-E3-03`, `MVP1-E3-04`, `MVP1-E3-05`.
+> **Version 1 · One Claude call per document.** Status: designed, not built. Stories: `MVP1-E3-01`, `MVP1-E3-02`, `MVP1-E3-03`, `MVP1-E3-04`, `MVP1-E3-05`, `MVP1-E3-08`, `MVP1-E3-09`.
 
 What the service keeps, how the pieces relate, and what every field means. The SQL is in [`SCHEMA.md`](SCHEMA.md); shared database rules are in [`docs/architecture/DATABASE-DESIGN.md`](../../architecture/DATABASE-DESIGN.md).
 
@@ -47,6 +47,9 @@ One row per attempt to read one file. A retry is a new job, so the history of at
 | `duration_ms` | `integer` | Yes |  | 0 or more | Time from start of processing to the end, in milliseconds. |
 | `error_code` | `text` | Yes |  | One of `file_unavailable`, `document_unreadable`, `no_text_found`, `model_unavailable`, `output_invalid`, `timed_out`; set exactly when failed | Why the job failed, as a stable code. |
 | `error_message` | `text` | Yes |  | Set exactly when failed | The plain-language message a person sees. |
+| `started_by` | `text` | No | 'person' | `person`, or like `service:docflow`: the delegated token's `act` claim | Who started the job: the person themselves, which counts toward their free daily quota (`MVP1-E3-09`), or an app acting for them. |
+| `held_by` | `text` | Yes |  | Like `service:docflow`; set only at creation, from the delegated token's `act` claim | The app holding the results until it releases them (`MVP1-E3-08`). Empty: not held. |
+| `released_at` | `timestamptz` | Yes |  | Set only when `held_by` is set | When the holder released the results. Empty while held. |
 | `created_at` | `timestamptz` | No | now() |  | When the job was asked for. |
 | `started_at` | `timestamptz` | Yes |  | Not before `created_at` | When processing began. |
 | `finished_at` | `timestamptz` | Yes |  | Set exactly when extracted or failed; not before `started_at` | When the job ended. |
@@ -107,6 +110,8 @@ The service template also gives Extraction `audit_events`, `idempotency_keys` an
 - Amounts are kept as decimal strings, never floating-point numbers.
 - Deleting a user's account deletes their fields, which hold document content. Their jobs are kept with IDs, counts, tokens and cost only, for the cost records.
 - Each job records the model and prompt version it used, so any result can be traced and re-run.
+- A person may start 3 jobs a day themselves, free (`MVP1-E3-09`); jobs an app starts for them count toward the app. The quota is checked when a job is created and counted from `started_by` and `created_at`, so it cannot be dodged by retrying.
+- A held job shows its owner only the flagged fields until the holding app releases it (`MVP1-E3-08`). Only a delegated token can place a hold, and only the holder can release it, so a person cannot read held results early and cannot lift a hold themselves. Extraction never knows the reason for a hold.
 
 ## What is deliberately not stored
 

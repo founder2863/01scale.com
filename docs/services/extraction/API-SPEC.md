@@ -1,6 +1,6 @@
 # LLM Extraction service — API specification
 
-> **Version 1 · One Claude call per document.** Status: designed, not built. Stories: `MVP1-E3-01`, `MVP1-E3-02`, `MVP1-E3-03`, `MVP1-E3-04`, `MVP1-E3-05`.
+> **Version 1 · One Claude call per document.** Status: designed, not built. Stories: `MVP1-E3-01`, `MVP1-E3-02`, `MVP1-E3-03`, `MVP1-E3-04`, `MVP1-E3-05`, `MVP1-E3-08`, `MVP1-E3-09`.
 
 Base address: `https://01scale.com/api/extraction/v1`. Shared rules for every 01scale API (errors, versioning, tracing) are in [`docs/architecture/API-DESIGN.md`](../../architecture/API-DESIGN.md).
 
@@ -34,12 +34,15 @@ Access: **Signed in** · Scope: `extraction:write` · Story: `MVP1-E3-01`
 | `file_id` | body | uuid | Yes | A file of the caller's in the Upload service, with status `ready`. | The document to read. |
 | `schema` | body | string | Yes | In version 1, only `invoice-v1`. | Which fields to extract. Each schema has its own prompt and rule checks. |
 | `reference` | body | string | No | 1 to 200 characters. Opaque to Extraction. | The caller's own label for the job, returned in its events. DocFlow sends `docflow:{document_id}`. |
+| `hold` | body | boolean | No | Only with a delegated token: the acting app (its `act` claim) becomes the holder. Default false. | Hold the results for the app until it releases them (`MVP1-E3-08`). While held, the owner sees only the flagged fields. |
 
 **Behaviour**
 
 - Checks the file through Upload, forwarding the caller's access token, so only the caller's own ready files can be read.
 - If a job for this file and schema is `queued` or `processing`, returns it with `200`. Nothing new is started or charged.
 - Otherwise records a job as `queued`, with the model ID and prompt version from configuration, and returns `202`.
+- With `hold: true`, records the acting app from the delegated token's `act` claim as `held_by` (`MVP1-E3-08`). A person's own token or an API key cannot place a hold.
+- A job started with a person's own token or API key counts toward that person's free daily quota: 3 a day by default (`EXTRACTION_DIRECT_DAILY_QUOTA`), reset at 00:00 UTC (`MVP1-E3-09`). A job an app starts with a delegated token counts toward the app, not the person. Returning a job that is already running, and a job that fails for a temporary reason, do not count. `started_by` records which it was.
 - The job then runs in the background: with a delegated token for the owner, fetch the file through a 5-minute Upload link, and read its text. A PDF with a text layer gives its text directly; a scanned PDF or a photo is read by OCR (Claude transcribing each page, in a call separate from extraction so the quote check stays independent). Each page's text is saved for the quote check.
 - If no text is found on any page, the job fails with `no_text_found` and the message 'No text found'. It is not retryable: the same file would give the same result.
 - Otherwise it sends the document to Claude with the versioned prompt, checks the answer against the schema, applies the rule checks (including every quote against the saved text, for photos and scans too), and saves the fields.
@@ -60,8 +63,10 @@ Access: **Signed in** · Scope: `extraction:write` · Story: `MVP1-E3-01`
 | `404` | `file_not_found` | Upload does not know the file, or it is another user's. |
 | `409` | `file_not_ready` | The file is still uploading or was rejected. |
 | `422` | `unknown_schema` | `schema` is not one Extraction supports. |
+| `422` | `hold_requires_app` | `hold: true` without a delegated token, so there is no app to hold the results for. |
 | `422` | `validation_failed` | Another input is missing or malformed. |
 | `429` | `rate_limited` | More than 10 jobs a minute for one user. |
+| `429` | `quota_exceeded` | The person has used today's free jobs (`MVP1-E3-09`). `Retry-After` gives the seconds until 00:00 UTC; the message says how many were used and when more open. |
 | `503` | `dependency_unavailable` | Upload could not be reached to check the file. Safe to retry. |
 | `401` | `not_authenticated` | No valid access token. |
 
@@ -122,6 +127,9 @@ Content-Type: application/json
     "error_code": null,
     "error_message": null,
     "retryable": false,
+    "started_by": "service:docflow",
+    "held_by": "service:docflow",
+    "released_at": null,
     "created_at": "2026-11-17T09:14:12Z",
     "finished_at": null
   }
@@ -146,6 +154,7 @@ Access: **Signed in** · Scope: `extraction:read` · Story: `MVP1-E3-01`
 - `steps[]` lists `fetching_file`, `reading_text`, `reading_document`, `checking_rules`, `saving`, each `waiting`, `running`, `done` or `failed`.
 - A failed job has `error_code`, a plain-language `error_message`, and `retryable`: true when starting a new job may succeed.
 - Sends `Retry-After: 2` while the job is `queued` or `processing`.
+- `held_by` names the app holding the results, or is empty; `released_at` is when it released them (`MVP1-E3-08`).
 
 **Responses**
 
@@ -205,6 +214,9 @@ Authorization: Bearer <access token>
     "error_code": null,
     "error_message": null,
     "retryable": false,
+    "started_by": "service:docflow",
+    "held_by": "service:docflow",
+    "released_at": null,
     "created_at": "2026-11-17T09:14:12Z",
     "finished_at": "2026-11-17T09:14:41Z"
   }
@@ -229,12 +241,13 @@ Access: **Signed in** · Scope: `extraction:read` · Story: `MVP1-E3-02`
 - Read only. Fields never change after a job saves them; corrections happen in the Human Review service, on its own copy.
 - Ordered by the schema's field order; line-item fields by `line_index`, then field.
 - Amounts and quantities are decimal strings (`"1240.00"`), never floating-point numbers, so no value is rounded on the way.
+- While the job is held (`MVP1-E3-08`), the owner's own token or API key gets only the flagged fields, whatever `flagged` says, so a person can check them; the holding app, with a delegated token naming it in `act`, gets every field. After release, everyone the owner allows gets every field.
 
 **Responses**
 
 | Status | When | Body or headers |
 |---|---|---|
-| `200` | The job has finished extracting | `data[]` of fields: `id`, `name`, `line_index` (line items only), `value`, `confidence` (final), `model_confidence`, `source_page`, `source_quote`, `flagged`, `flag_reasons[]`. |
+| `200` | The job has finished extracting | `data[]` of fields: `id`, `name`, `line_index` (line items only), `value`, `confidence` (final), `model_confidence`, `source_page`, `source_quote`, `flagged`, `flag_reasons[]`; and `held` (true while the results are held from this caller) with `fields_hidden`, how many fields were left out. |
 
 **Errors**
 
@@ -397,6 +410,138 @@ Content-Type: application/json
 }
 ```
 
+### GET /usage
+
+**Today's free jobs.** How many jobs the person has started themselves today, out of their free daily quota, and when it resets. An agent checks this before starting a job.
+
+Access: **Signed in** · Scope: `extraction:read` · Story: `MVP1-E3-09`
+
+**Inputs:** none.
+
+**Behaviour**
+
+- Read only. Counts jobs started with the person's own token or API key since 00:00 UTC; jobs an app started for them are not counted.
+- Until Extraction has a paid plan (`MVP1-E0-28`), the quota is the limit; the response says so in `plan`.
+
+**Responses**
+
+| Status | When | Body or headers |
+|---|---|---|
+| `200` | Always | `date`, `direct_jobs_used`, `direct_jobs_limit`, `resets_at` and `plan` (`free`). |
+
+**Errors**
+
+| Status | Code | When |
+|---|---|---|
+| `401` | `not_authenticated` | No valid access token. |
+
+**Sample request**
+
+```http
+GET /api/extraction/v1/usage HTTP/1.1
+Host: 01scale.com
+Authorization: Bearer <access token>
+```
+
+**Sample response**
+
+```json
+{
+  "date": "2026-11-23",
+  "direct_jobs_used": 2,
+  "direct_jobs_limit": 3,
+  "resets_at": "2026-11-24T00:00:00Z",
+  "plan": "free"
+}
+```
+
+### POST /jobs/{jobId}/release
+
+**Release held results.** The holding app lets the owner see every field, once its own condition is met (for DocFlow, the order is paid). Extraction never knows why.
+
+Access: **Service** · Scope: `extraction:write` · Story: `MVP1-E3-08`
+
+**Inputs**
+
+| Name | In | Type | Required | Constraints | Meaning |
+|---|---|---|---|---|---|
+| `jobId` | path | uuid | Yes | A held job. | The job. |
+
+**Behaviour**
+
+- Only the holder can release: a delegated token for the job's owner whose `act` claim equals `held_by`.
+- Sets `released_at` and records `job.released` in the audit log. Safe to call again: a released job answers `200` unchanged.
+- Nothing is copied or sent: the next read simply returns every field.
+
+**Responses**
+
+| Status | When | Body or headers |
+|---|---|---|
+| `200` | The job is released (now or before) | `job`. |
+
+**Errors**
+
+| Status | Code | When |
+|---|---|---|
+| `404` | `job_not_found` | No such job, or it belongs to another user. The same answer in both cases. |
+| `403` | `not_holder` | The caller is not the app holding this job. |
+| `409` | `not_held` | The job was never held. |
+| `401` | `not_authenticated` | No valid access token. |
+
+**Sample request**
+
+```http
+POST /api/extraction/v1/jobs/0193b0d1-4b2c-7d10-9a8b-1c2d3e4f5a6b/release HTTP/1.1
+Host: 01scale.com
+Authorization: Bearer <delegated token, act: service:docflow>
+```
+
+**Sample response**
+
+```json
+{
+  "job": {
+    "id": "0193b0d1-4b2c-7d10-9a8b-1c2d3e4f5a6b",
+    "file_id": "0193b0c4-2a10-7e55-8d31-6c7d8e9f0a1b",
+    "schema": "invoice-v1",
+    "reference": "docflow:0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c",
+    "status": "extracted",
+    "steps": [
+      {
+        "name": "fetching_file",
+        "state": "done"
+      },
+      {
+        "name": "reading_text",
+        "state": "done"
+      },
+      {
+        "name": "reading_document",
+        "state": "done"
+      },
+      {
+        "name": "checking_rules",
+        "state": "done"
+      },
+      {
+        "name": "saving",
+        "state": "done"
+      }
+    ],
+    "fields_total": 19,
+    "fields_flagged": 3,
+    "error_code": null,
+    "error_message": null,
+    "retryable": false,
+    "started_by": "service:docflow",
+    "held_by": "service:docflow",
+    "released_at": "2026-11-17T09:20:05Z",
+    "created_at": "2026-11-17T09:14:12Z",
+    "finished_at": "2026-11-17T09:14:41Z"
+  }
+}
+```
+
 ### GET /admin/jobs
 
 **Recent jobs with cost and timing.** The last 100 jobs across all users, with tokens, cost and duration, and the failure rate. For the owner, to watch quality and spend.
@@ -525,7 +670,7 @@ HTTP/1.1 200 OK
 | Final confidence (MVP1-E3-03) | Each field's final confidence is the lower of the model's own confidence and its rule result: a failed check sets 0.3. A field under the threshold (0.85 by default, set in configuration) or failing a check is `flagged`, with each reason stored. |
 | Where the job runs | In the Extraction service itself, continuing after the `202` response. A sweep every minute picks up any job left `queued` for over a minute, so a lost background task is not a lost job. |
 | DocFlow's retry endpoint | `POST /api/docflow/v1/documents/{documentId}/retry-extraction` belongs to the DocFlow app. It calls `POST /jobs` again; a failed job is never restarted, a new one is created. |
-| AI agents | Each endpoint is also a tool on Extraction's MCP server, `POST /api/extraction/mcp`, with the same inputs and errors. |
+| AI agents | Each endpoint a person can call is also a tool on Extraction's MCP server, `POST /api/extraction/mcp`, with the same inputs and errors; an agent checks `getUsage` before starting a job. The service-only `POST /jobs/{jobId}/release` has no tool: only the holding app releases. |
 | Health and contract | Like every service, Extraction also serves `GET /health` and `GET /openapi.json` from the service template (`MVP1-E0-05`). |
 
 ## Constraints at the API level

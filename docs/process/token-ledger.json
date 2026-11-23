@@ -48,7 +48,9 @@
     "MVP1-E1-09-E4-05": "MVP1-E1-09, E3-07, E4-05 · Account and admin UI components (ui-identity, ui-extraction, ui-review)",
     "MVP1-E8-11": "MVP1-E8-11 · Name the navigation item \"Total Cost\"",
     "MVP1-E0-50": "MVP1-E0-50 · One Overview for every app (with the E0-51 story written alongside)",
-    "MVP1-E0-51": "MVP1-E0-51 · DocFlow high-level design diagram"
+    "MVP1-E0-51": "MVP1-E0-51 · DocFlow high-level design diagram",
+    "MVP1-E3-08-E5-05": "MVP1-E3-08, E4-06, E5-05 · Results held for the app until it releases them (design)",
+    "MVP1-E3-09": "MVP1-E3-09 · A free daily quota for jobs a person starts (design)"
   },
   "sessions": [
     {
@@ -134,7 +136,7 @@
     },
     {
       "id": "4f156423-c77d-5a1f-9ee0-653fd2fda3eb",
-      "tool_total_usd": 45.7449,
+      "tool_total_usd": 59.6212,
       "rates_usd_per_million": {
         "claude-opus-5-5": {
           "input": 4.0,
@@ -144,12 +146,12 @@
         }
       },
       "by_kind_usd": {
-        "input": 0.06,
-        "output": 6.86,
-        "cache_read": 33.63,
-        "cache_write": 5.2
+        "input": 0.07,
+        "output": 7.89,
+        "cache_read": 45.54,
+        "cache_write": 6.12
       },
-      "overhead_usd": 1.319,
+      "overhead_usd": 2.6516,
       "splits": []
     },
     {
@@ -3732,9 +3734,65 @@
       "models": [
         "claude-opus-5-5"
       ],
-      "tokens": 6482077,
-      "output_tokens": 7841,
-      "cost_usd": 1.5442
+      "tokens": 14561271,
+      "output_tokens": 12519,
+      "cost_usd": 3.369
+    },
+    {
+      "session": "4f156423",
+      "n": 22,
+      "ts": "2026-11-23T01:31:05.080Z",
+      "area": "Process",
+      "kind": "scaffolding",
+      "summary": "Process: merge main (#175) into the branch, as Nikhil agreed; regenerate cost files; re-test",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 8989044,
+      "output_tokens": 5978,
+      "cost_usd": 2.036
+    },
+    {
+      "session": "4f156423",
+      "n": 23,
+      "ts": "2026-11-23T01:41:31.522Z",
+      "area": "MVP1-E3-08-E5-05",
+      "kind": "build",
+      "summary": "Design the results hold: three stories and issues, Extraction, Review and DocFlow API and data designs, architecture docs, decision log",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 30132017,
+      "output_tokens": 31911,
+      "cost_usd": 7.202
+    },
+    {
+      "session": "4f156423",
+      "n": 24,
+      "ts": "2026-11-23T02:59:58.259Z",
+      "area": "Process",
+      "kind": "scaffolding",
+      "summary": "Question: can a person read results by calling Extraction directly? Options explained (quota or apps only)",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 830344,
+      "output_tokens": 1785,
+      "cost_usd": 0.2142
+    },
+    {
+      "session": "4f156423",
+      "n": 25,
+      "ts": "2026-11-23T03:02:42.025Z",
+      "area": "MVP1-E3-09",
+      "kind": "build",
+      "summary": "Design the direct-use quota (story, issue #181, Extraction API and data, E0-28 AC6, decision log)",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 5025114,
+      "output_tokens": 8719,
+      "cost_usd": 1.2667
     }
   ]
 }
