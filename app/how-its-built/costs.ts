@@ -561,6 +561,18 @@ export const costs = {
       "requests": 3,
       "buildTokens": 4972444,
       "reworkTokens": 0,
+      "buildCost": 2.47,
+      "reworkCost": 0,
+      "totalCost": 2.47,
+      "yield": 100,
+      "pending": false
+    },
+    {
+      "key": "MVP1-E0-51",
+      "name": "MVP1-E0-51 · DocFlow high-level design diagram",
+      "requests": 1,
+      "buildTokens": 5368106,
+      "reworkTokens": 0,
       "buildCost": 0,
       "reworkCost": 0,
       "totalCost": 0,
@@ -569,11 +581,11 @@ export const costs = {
     }
   ],
   "storyTotals": {
-    "requests": 154,
-    "tokens": 598320665,
-    "buildCost": 162.2,
+    "requests": 155,
+    "tokens": 603688771,
+    "buildCost": 164.67,
     "reworkCost": 132.97,
-    "cost": 295.17,
+    "cost": 297.63,
     "yield": 55,
     "pending": true
   },
@@ -605,8 +617,8 @@ export const costs = {
     {
       "name": "Process",
       "requests": 44,
-      "tokens": 131840677,
-      "cost": 34.17
+      "tokens": 132693982,
+      "cost": 34.72
     },
     {
       "name": "Tool overhead (background calls)",
@@ -617,21 +629,21 @@ export const costs = {
   ],
   "scaffoldingTotals": {
     "requests": 95,
-    "tokens": 167391925,
-    "cost": 73.78
+    "tokens": 168245230,
+    "cost": 74.33
   },
   "totals": {
-    "requests": 249,
-    "tokens": 765712590,
-    "cost": 368.95,
-    "buildCost": 162.2,
+    "requests": 250,
+    "tokens": 771934001,
+    "cost": 371.96,
+    "buildCost": 164.67,
     "reworkCost": 132.97,
-    "scaffoldingCost": 73.78,
+    "scaffoldingCost": 74.33,
     "storyYield": 55,
     "overallYield": 43,
-    "pendingRequests": 22,
-    "pendingEstimate": 11.56,
-    "pendingEstimated": 16
+    "pendingRequests": 18,
+    "pendingEstimate": 10.62,
+    "pendingEstimated": 12
   },
   "byKind": {
     "input": 0.1,
@@ -660,7 +672,7 @@ export const costs = {
       "share": 28,
       "median": 8.2,
       "typical": 0.58,
-      "extra": 95.61
+      "extra": 95.7
     },
     "mergedTooSoon": {
       "requests": 1,

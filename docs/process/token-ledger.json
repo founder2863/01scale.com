@@ -47,7 +47,8 @@
     "MVP1-E0-19": "MVP1-E0-19 · Design system (packages/ui-core), service UI packages (E0-07 AC6) and the DocFlow V1 clickable prototype (E0-18 for DocFlow)",
     "MVP1-E1-09-E4-05": "MVP1-E1-09, E3-07, E4-05 · Account and admin UI components (ui-identity, ui-extraction, ui-review)",
     "MVP1-E8-11": "MVP1-E8-11 · Name the navigation item \"Total Cost\"",
-    "MVP1-E0-50": "MVP1-E0-50 · One Overview for every app (with the E0-51 story written alongside)"
+    "MVP1-E0-50": "MVP1-E0-50 · One Overview for every app (with the E0-51 story written alongside)",
+    "MVP1-E0-51": "MVP1-E0-51 · DocFlow high-level design diagram"
   },
   "sessions": [
     {
@@ -153,7 +154,7 @@
     },
     {
       "id": "ba2ff2e6-41be-5e12-bc15-60b1e4ccdf31",
-      "tool_total_usd": 0,
+      "tool_total_usd": 3.0175,
       "rates_usd_per_million": {},
       "by_kind_usd": {
         "input": 0.0,
@@ -3606,8 +3607,7 @@
       ],
       "tokens": 1542090,
       "output_tokens": 9592,
-      "cost_usd": null,
-      "estimated_usd": 0.9394
+      "cost_usd": 1.0819
     },
     {
       "session": "ba2ff2e6",
@@ -3621,8 +3621,7 @@
       ],
       "tokens": 121794,
       "output_tokens": 1005,
-      "cost_usd": null,
-      "estimated_usd": 0.049
+      "cost_usd": 0.0505
     },
     {
       "session": "ba2ff2e6",
@@ -3636,8 +3635,7 @@
       ],
       "tokens": 3308560,
       "output_tokens": 18559,
-      "cost_usd": null,
-      "estimated_usd": 1.3026
+      "cost_usd": 1.335
     },
     {
       "session": "ba2ff2e6",
@@ -3651,8 +3649,7 @@
       ],
       "tokens": 482084,
       "output_tokens": 1283,
-      "cost_usd": null,
-      "estimated_usd": 0.1761
+      "cost_usd": 0.1758
     },
     {
       "session": "ba2ff2e6",
@@ -3664,10 +3661,24 @@
       "models": [
         "claude-opus-5-5"
       ],
-      "tokens": 333106,
-      "output_tokens": 1384,
+      "tokens": 1186411,
+      "output_tokens": 5202,
+      "cost_usd": 0.3742
+    },
+    {
+      "session": "ba2ff2e6",
+      "n": 6,
+      "ts": "2026-11-23T01:09:39.147Z",
+      "area": "MVP1-E0-51",
+      "kind": "build",
+      "summary": "Build E0-51: DocFlow diagram from the PRD and architecture, shared diagram parts, phone overflow fix, checks at 320, 1440 and 1920",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 5368106,
+      "output_tokens": 13585,
       "cost_usd": null,
-      "estimated_usd": 0.0974
+      "estimated_usd": 1.6287
     }
   ]
 }
