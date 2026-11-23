@@ -50,7 +50,8 @@
     "MVP1-E0-50": "MVP1-E0-50 · One Overview for every app (with the E0-51 story written alongside)",
     "MVP1-E0-51": "MVP1-E0-51 · DocFlow high-level design diagram",
     "MVP1-E3-08-E5-05": "MVP1-E3-08, E4-06, E5-05 · Results held for the app until it releases them (design)",
-    "MVP1-E3-09": "MVP1-E3-09 · A free daily quota for jobs a person starts (design)"
+    "MVP1-E3-09": "MVP1-E3-09 · A free daily quota for jobs a person starts (design)",
+    "MVP1-E0-52": "MVP1-E0-52 · Design system page shows the components"
   },
   "sessions": [
     {
@@ -151,7 +152,7 @@
         "cache_read": 45.54,
         "cache_write": 6.12
       },
-      "overhead_usd": 2.6516,
+      "overhead_usd": -0.4746,
       "splits": []
     },
     {
@@ -3790,9 +3791,23 @@
       "models": [
         "claude-opus-5-5"
       ],
-      "tokens": 5025114,
-      "output_tokens": 8719,
-      "cost_usd": 1.2667
+      "tokens": 13541286,
+      "output_tokens": 14378,
+      "cost_usd": 3.2049
+    },
+    {
+      "session": "4f156423",
+      "n": 26,
+      "ts": "2026-11-23T03:11:28.341Z",
+      "area": "Process",
+      "kind": "scaffolding",
+      "summary": "Process: session summary; write story MVP1-E0-52 (#182) for the next session; STATUS handoff",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 5170771,
+      "output_tokens": 5709,
+      "cost_usd": 1.188
     }
   ]
 }

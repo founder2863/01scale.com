@@ -22,10 +22,10 @@ export const humanCosts = {
     "tbd": []
   },
   "projected": {
-    "stories": 123,
-    "personDays": 726,
-    "cost": 726000,
-    "tokenCost": 184.65,
+    "stories": 124,
+    "personDays": 729,
+    "cost": 729000,
+    "tokenCost": 186.58,
     "tbd": []
   },
   "excludedSoFar": {
@@ -47,9 +47,9 @@ export const humanCosts = {
       "epic": "MVP1-E0",
       "inScope": true,
       "projected": {
-        "stories": 51,
-        "personDays": 314,
-        "cost": 314000,
+        "stories": 52,
+        "personDays": 317,
+        "cost": 317000,
         "tokenCost": 155.31,
         "tbd": []
       },
@@ -104,7 +104,7 @@ export const humanCosts = {
         "stories": 9,
         "personDays": 66,
         "cost": 66000,
-        "tokenCost": 6.0,
+        "tokenCost": 7.93,
         "tbd": []
       },
       "soFar": {
@@ -1081,6 +1081,21 @@ export const humanCosts = {
       "tokenCostPending": true
     },
     {
+      "id": "MVP1-E0-52",
+      "title": "Design system page shows the components",
+      "product": "MVP1",
+      "epic": "MVP1-E0",
+      "size": "S",
+      "personDays": 3,
+      "cost": 3000,
+      "done": false,
+      "issue": null,
+      "closed": null,
+      "tokenCost": null,
+      "tokenCostShared": false,
+      "tokenCostPending": false
+    },
+    {
       "id": "MVP1-E1-01",
       "title": "Cognito user pool setup",
       "product": "MVP1",
@@ -1421,7 +1436,7 @@ export const humanCosts = {
       "done": false,
       "issue": null,
       "closed": null,
-      "tokenCost": 1.27,
+      "tokenCost": 3.2,
       "tokenCostShared": false,
       "tokenCostPending": false
     },

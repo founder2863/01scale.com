@@ -595,22 +595,22 @@ export const costs = {
       "key": "MVP1-E3-09",
       "name": "MVP1-E3-09 · A free daily quota for jobs a person starts (design)",
       "requests": 1,
-      "buildTokens": 5025114,
+      "buildTokens": 13541286,
       "reworkTokens": 0,
-      "buildCost": 1.27,
+      "buildCost": 3.2,
       "reworkCost": 0,
-      "totalCost": 1.27,
+      "totalCost": 3.2,
       "yield": 100,
       "pending": false
     }
   ],
   "storyTotals": {
     "requests": 157,
-    "tokens": 645781449,
-    "buildCost": 174.78,
+    "tokens": 654297621,
+    "buildCost": 176.72,
     "reworkCost": 132.97,
-    "cost": 307.74,
-    "yield": 58,
+    "cost": 309.68,
+    "yield": 59,
     "pending": true
   },
   "scaffolding": [
@@ -640,31 +640,31 @@ export const costs = {
     },
     {
       "name": "Process",
-      "requests": 50,
-      "tokens": 164855172,
-      "cost": 42.03
+      "requests": 51,
+      "tokens": 170025943,
+      "cost": 43.22
     },
     {
       "name": "Tool overhead (background calls)",
       "requests": 0,
       "tokens": 0,
-      "cost": 4.3
+      "cost": 1.17
     }
   ],
   "scaffoldingTotals": {
-    "requests": 101,
-    "tokens": 200406420,
-    "cost": 86.4
+    "requests": 102,
+    "tokens": 205577191,
+    "cost": 84.46
   },
   "totals": {
-    "requests": 258,
-    "tokens": 846187869,
+    "requests": 259,
+    "tokens": 859874812,
     "cost": 394.14,
-    "buildCost": 174.78,
+    "buildCost": 176.72,
     "reworkCost": 132.97,
-    "scaffoldingCost": 86.4,
-    "storyYield": 58,
-    "overallYield": 44,
+    "scaffoldingCost": 84.46,
+    "storyYield": 59,
+    "overallYield": 45,
     "pendingRequests": 18,
     "pendingEstimate": 10.62,
     "pendingEstimated": 12
@@ -695,8 +695,8 @@ export const costs = {
       "cost": 103.2,
       "share": 26,
       "median": 8.2,
-      "typical": 0.58,
-      "extra": 95.61
+      "typical": 0.59,
+      "extra": 95.51
     },
     "mergedTooSoon": {
       "requests": 1,

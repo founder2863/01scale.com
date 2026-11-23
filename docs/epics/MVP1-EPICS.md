@@ -622,6 +622,18 @@ As a visitor opening DocFlow, I want one picture of how it works, like AutoRep's
 
 ---
 
+### MVP1-E0-52 · Design system page shows the components — S
+As a hiring manager, I want the Design system page under Platform Core to show the components, not only describe them, so I can see the shared design at a glance and reach every service's components from one place.
+- **AC1:** Platform › Platform Core › Design system (`/platform/core/design-system`) shows `@01scale/ui-core`'s base components live, in their states (button variants and loading, input with hint and error, select, checkbox, card, badges in each tone, alert in each tone, progress bar, skeleton, spinner, tabs, a dialog opened by a button, a toast shown by a button), from the package itself, in light and dark mode, with the package's version.
+- **AC2:** A **Service components** list has a card per service package (`ui-identity`, `ui-upload`, `ui-extraction`, `ui-review`, `ui-payment`, `ui-delivery`) and DocFlow's page sections, each with its version, its number of components and a link to its module's UI Components gallery (`/products/<module>/ui-components`). The service galleries are not copied onto this page: each component keeps one gallery.
+- **AC3:** Versions and component counts are read from the packages and the design data, never typed by hand, so the page cannot go stale.
+- **AC4:** Works from 320 to 1920 pixels wide, in light and dark mode; keyboard reachable; nothing opens by itself.
+- **Service:** Site (`apps/web`); Platform Core content in `scripts/site/platform_core.py`
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+**Status: not started (#182). Next session (Nikhil, 23 Nov 2026: base components live plus links to each service's gallery).**
+
 ## E1 · Accounts with AWS Cognito (MVP1 "a")
 **Goal:** users can create and manage an account securely, through OIDC so the provider can be swapped in MVP2.
 
