@@ -22,10 +22,10 @@ export const humanCosts = {
     "tbd": []
   },
   "projected": {
-    "stories": 116,
-    "personDays": 700,
-    "cost": 700000,
-    "tokenCost": 170.03,
+    "stories": 117,
+    "personDays": 703,
+    "cost": 703000,
+    "tokenCost": 172.07,
     "tbd": []
   },
   "excludedSoFar": {
@@ -191,10 +191,10 @@ export const humanCosts = {
       "epic": "MVP1-E8",
       "inScope": true,
       "projected": {
-        "stories": 10,
-        "personDays": 72,
-        "cost": 72000,
-        "tokenCost": 0,
+        "stories": 11,
+        "personDays": 75,
+        "cost": 75000,
+        "tokenCost": 2.04,
         "tbd": []
       },
       "soFar": {
@@ -1754,6 +1754,21 @@ export const humanCosts = {
       "tokenCost": null,
       "tokenCostShared": false,
       "tokenCostPending": true
+    },
+    {
+      "id": "MVP1-E8-11",
+      "title": "Name the navigation item \"Total Cost\"",
+      "product": "MVP1",
+      "epic": "MVP1-E8",
+      "size": "S",
+      "personDays": 3,
+      "cost": 3000,
+      "done": false,
+      "issue": null,
+      "closed": null,
+      "tokenCost": 2.04,
+      "tokenCostShared": false,
+      "tokenCostPending": false
     },
     {
       "id": "AUTOREP-E1-01",

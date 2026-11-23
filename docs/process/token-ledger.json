@@ -45,7 +45,8 @@
     "MVP1-E8-09": "MVP1-E8-09 · Human cost script and skill",
     "MVP1-E8-10": "MVP1-E8-10 · Total Projected Cost page, four tabs",
     "MVP1-E0-19": "MVP1-E0-19 · Design system (packages/ui-core), service UI packages (E0-07 AC6) and the DocFlow V1 clickable prototype (E0-18 for DocFlow)",
-    "MVP1-E1-09-E4-05": "MVP1-E1-09, E3-07, E4-05 · Account and admin UI components (ui-identity, ui-extraction, ui-review)"
+    "MVP1-E1-09-E4-05": "MVP1-E1-09, E3-07, E4-05 · Account and admin UI components (ui-identity, ui-extraction, ui-review)",
+    "MVP1-E8-11": "MVP1-E8-11 · Name the navigation item \"Total Cost\""
   },
   "sessions": [
     {
@@ -146,7 +147,7 @@
         "cache_read": 26.28,
         "cache_write": 4.71
       },
-      "overhead_usd": 1.148,
+      "overhead_usd": -2.0962,
       "splits": []
     }
   ],
@@ -3545,9 +3546,37 @@
       "models": [
         "claude-opus-5-5"
       ],
-      "tokens": 656874,
-      "output_tokens": 331,
-      "cost_usd": 0.138
+      "tokens": 5956911,
+      "output_tokens": 3050,
+      "cost_usd": 1.3396
+    },
+    {
+      "session": "4f156423",
+      "n": 16,
+      "ts": "2026-11-23T00:22:37.594Z",
+      "area": "MVP1-E8-11",
+      "kind": "build",
+      "summary": "Find every reference to the Total Projected Cost item (interrupted to narrow the scope to the navigation)",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 2684653,
+      "output_tokens": 2071,
+      "cost_usd": 0.6288
+    },
+    {
+      "session": "4f156423",
+      "n": 17,
+      "ts": "2026-11-23T00:23:46.617Z",
+      "area": "MVP1-E8-11",
+      "kind": "build",
+      "summary": "Rename the navigation item to Total Cost (menu, tab bar, heading), story and issue #171",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 6112029,
+      "output_tokens": 6054,
+      "cost_usd": 1.4138
     }
   ]
 }
