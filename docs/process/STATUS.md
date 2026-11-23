@@ -20,12 +20,13 @@ Read this at the start of every session, after CLAUDE.md. Update it in the PR th
 | Built, issue closed | E1-09 (#164), E3-07 (#165), E4-05 (#166): account and admin UI components (PR #168); E0-19 (#96, PRs #161 to #163: `packages/ui-core`, live galleries, DocFlow prototype fixes), E0-10, E0-11, E0-12, E0-13 (#61), E0-17, E0-21, E0-22, E0-23, E0-31 (#109), E0-32 to E0-35, E0-36 to E0-43 (#148 to #155, created after the work), E0-45 to E0-49, E8-01 |
 | Built, no issue by design | AUTOREP-E1-04 and AUTOREP-E6-03 (AutoRep stories live in the file only) |
 | Placeholder only ("Coming Soon..." on every module page) | E0-14 Market Outlook (#84), E0-15 PRD Reference (#85), E0-16 MCP (#86), E0-20 Architecture (#97), E0-27 to E0-30 Metrics, Monetization, GTM, Support (#104 to #107) |
-| Story only, decided, not built | E0-44 product names and versions (#133; build when Nikhil says go), E8-02 to E8-08 (#127 to #132, #135) |
+| Story only, decided, not built | E0-50 one Overview template for every app (#172) and E0-51 DocFlow high-level design diagram (#173) (written 23 Nov 2026; agree wording with Nikhil before building), E0-44 product names and versions (#133; build when Nikhil says go), E8-02 to E8-08 (#127 to #132, #135) |
 | Not started | E0-01 to E0-09 (foundation code, except E0-07 AC6 above), E0-18 per module, E0-24 (Built on: Platform Core components, not the app Built On section), E0-25, E0-26, and epics E1 to E7 |
 
 ## Open questions waiting for Nikhil
 
-- DocFlow V1 "What each step adds over time" also describes V2 and sits in Overview: keep, or move to the V2 page? (PR #144)
+- For `MVP1-E0-50`: should the Overview also say what V1 does **not** do (non-goals, from the PRD), for example as a line on the V1 card? Not in the story until Nikhil decides.
+- Answered 23 Nov 2026: DocFlow's "What each step adds over time" stays in Overview; it is section 5 of the app Overview template (`MVP1-E0-50`).
 
 ## Known issues
 
@@ -43,7 +44,7 @@ Read this at the start of every session, after CLAUDE.md. Update it in the PR th
 
 ## Costs on closed issues
 
-Every closed story issue (27 of them) carries its measured token cost and estimated human cost, at $1,000 per engineer-day (Nikhil: a good estimate for engineers). Combined ledger blocks (E0-22/23, E0-32 to E0-35, E0-36 to E0-42) were split by story size, and the comment says so. From now on the figures come from `npm run human-costs` (skill `estimate-human-cost`): on 22 Nov, 27 done stories = 131 person-days = $131,000 so far; every MVP1 story (E8 included) and AutoRep V1 story = 113 stories, 691 person-days, $691,000 projected. Nikhil on PR #159: E8 work counts; AutoRep stories, which have no issues, are not counted as done. The comments typed by hand earlier summed to about $137,000; the script's figure replaces it. After closing E0-19 and adding three stories (22 Nov, later): 29 done stories = 147 person-days = $147,000 so far; 116 stories, 700 person-days, $700,000 projected. After closing E1-09, E3-07 and E4-05 (23 Nov): 32 done stories = 156 person-days = $156,000 so far; projection unchanged.
+Every closed story issue (27 of them) carries its measured token cost and estimated human cost, at $1,000 per engineer-day (Nikhil: a good estimate for engineers). Combined ledger blocks (E0-22/23, E0-32 to E0-35, E0-36 to E0-42) were split by story size, and the comment says so. From now on the figures come from `npm run human-costs` (skill `estimate-human-cost`): on 22 Nov, 27 done stories = 131 person-days = $131,000 so far; every MVP1 story (E8 included) and AutoRep V1 story = 113 stories, 691 person-days, $691,000 projected. Nikhil on PR #159: E8 work counts; AutoRep stories, which have no issues, are not counted as done. The comments typed by hand earlier summed to about $137,000; the script's figure replaces it. After closing E0-19 and adding three stories (22 Nov, later): 29 done stories = 147 person-days = $147,000 so far; 116 stories, 700 person-days, $700,000 projected. After closing E1-09, E3-07 and E4-05 (23 Nov): 32 done stories = 156 person-days = $156,000 so far; projection unchanged.  After adding E0-50 and E0-51 (23 Nov, later): 33 done stories = 164 person-days = $164,000 so far; 118 stories, 711 person-days, $711,000 projected.
 
 ## Next, in order (from CLAUDE.md and the epics)
 
