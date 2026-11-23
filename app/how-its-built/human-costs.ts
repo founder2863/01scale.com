@@ -15,17 +15,17 @@ export const humanCosts = {
   },
   "scope": "MVP1 only: Platform Core, the platform services, DocFlow (E0 to E7), the cost work itself (E8; Nikhil on PR #159) and AutoRep V1 (E1 to E6). MVP2 is out.",
   "soFar": {
-    "stories": 36,
-    "personDays": 178,
-    "cost": 178000,
-    "tokenCost": 131.87,
+    "stories": 37,
+    "personDays": 181,
+    "cost": 181000,
+    "tokenCost": 134.85,
     "tbd": []
   },
   "projected": {
-    "stories": 124,
-    "personDays": 729,
-    "cost": 729000,
-    "tokenCost": 186.58,
+    "stories": 125,
+    "personDays": 732,
+    "cost": 732000,
+    "tokenCost": 189.56,
     "tbd": []
   },
   "excludedSoFar": {
@@ -47,17 +47,17 @@ export const humanCosts = {
       "epic": "MVP1-E0",
       "inScope": true,
       "projected": {
-        "stories": 52,
-        "personDays": 317,
-        "cost": 317000,
-        "tokenCost": 155.31,
+        "stories": 53,
+        "personDays": 320,
+        "cost": 320000,
+        "tokenCost": 158.29,
         "tbd": []
       },
       "soFar": {
-        "stories": 29,
-        "personDays": 147,
-        "cost": 147000,
-        "tokenCost": 123.72,
+        "stories": 30,
+        "personDays": 150,
+        "cost": 150000,
+        "tokenCost": 126.7,
         "tbd": []
       }
     },
@@ -1090,6 +1090,21 @@ export const humanCosts = {
       "cost": 3000,
       "done": true,
       "issue": 182,
+      "closed": "2026-11-23",
+      "tokenCost": 2.98,
+      "tokenCostShared": false,
+      "tokenCostPending": false
+    },
+    {
+      "id": "MVP1-E0-53",
+      "title": "Hide the app flow bands on module pages",
+      "product": "MVP1",
+      "epic": "MVP1-E0",
+      "size": "S",
+      "personDays": 3,
+      "cost": 3000,
+      "done": true,
+      "issue": 186,
       "closed": "2026-11-23",
       "tokenCost": null,
       "tokenCostShared": false,

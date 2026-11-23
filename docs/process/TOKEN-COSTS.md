@@ -2,7 +2,7 @@
 
 What it costs to build 01scale with Claude Code, per story. Generated from `docs/process/token-ledger.json` by `npm run costs`; do not edit by hand.
 
-Updated 2026-11-23. 261 requests across 7 session(s). Total **$397.11** for 870.3 million tokens.
+Updated 2026-11-23. 263 requests across 8 session(s). Total **$397.11** for 872.2 million tokens.
 
 ## Per story
 
@@ -59,7 +59,8 @@ Updated 2026-11-23. 261 requests across 7 session(s). Total **$397.11** for 870.
 | MVP1-E3-08, E4-06, E5-05 · Results held for the app until it releases them (design) | 1 | 30.13M | $7.20 | $0.00 | $7.20 | 100% |
 | MVP1-E3-09 · A free daily quota for jobs a person starts (design) | 1 | 13.54M | $3.20 | $0.00 | $3.20 | 100% |
 | MVP1-E0-52 · Design system page shows the components | 1 | 7.20M | $2.98 | $0.00 | $2.98 | 100% |
-| **Total** | **158** | **661.50M** | **$179.69** | **$132.97** | **$312.66** (part pending) | **59%** |
+| MVP1-E0-53 · Hide the app flow bands on module pages | 1 | 1.73M | $0.00 | $0.00 | $0.00 (part pending) | 100% |
+| **Total** | **159** | **663.23M** | **$179.69** | **$132.97** | **$312.66** (part pending) | **59%** |
 
 ## Scaffolding (not tied to a story)
 
@@ -69,15 +70,15 @@ Updated 2026-11-23. 261 requests across 7 session(s). Total **$397.11** for 870.
 | Planning documents | 2 | 1.35M | $0.72 |
 | Questions and explanations | 25 | 19.06M | $21.58 |
 | Product discovery | 17 | 7.28M | $15.87 |
-| Process | 52 | 173.24M | $43.22 |
+| Process | 53 | 173.46M | $43.22 |
 | Tool overhead (background calls) | 0 | 0.00M | $1.17 |
-| **Total** | **103** | **208.79M** | **$84.46** |
+| **Total** | **104** | **209.01M** | **$84.46** |
 
 ## Totals
 
 - Build $179.69, rework $132.97, scaffolding $84.46.
 - Token yield across stories (build ÷ build + rework): 59%.
-- 13 pending request(s) were never priced by the tool; estimated at about $11.65 from their measured tokens at list prices (an upper bound), not included in the totals above.
+- 15 pending request(s) were never priced by the tool; estimated at about $12.59 from their measured tokens at list prices (an upper bound), not included in the totals above.
 - Share of all tokens that went into kept story work: 45%.
 
 ## Definitions
