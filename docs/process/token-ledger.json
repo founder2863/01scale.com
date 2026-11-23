@@ -51,7 +51,8 @@
     "MVP1-E0-51": "MVP1-E0-51 · DocFlow high-level design diagram",
     "MVP1-E3-08-E5-05": "MVP1-E3-08, E4-06, E5-05 · Results held for the app until it releases them (design)",
     "MVP1-E3-09": "MVP1-E3-09 · A free daily quota for jobs a person starts (design)",
-    "MVP1-E0-52": "MVP1-E0-52 · Design system page shows the components"
+    "MVP1-E0-52": "MVP1-E0-52 · Design system page shows the components",
+    "MVP1-E0-53": "MVP1-E0-53 · Hide the app flow bands on module pages"
   },
   "sessions": [
     {
@@ -172,6 +173,19 @@
     },
     {
       "id": "c0e55f60-e1e7-5594-a748-371cd0ef0fd1",
+      "tool_total_usd": 0,
+      "rates_usd_per_million": {},
+      "by_kind_usd": {
+        "input": 0.0,
+        "output": 0.0,
+        "cache_read": 0.0,
+        "cache_write": 0.0
+      },
+      "overhead_usd": 0,
+      "splits": []
+    },
+    {
+      "id": "ab8f0638-8c67-5012-815c-f0e2b8fc746d",
       "tool_total_usd": 0,
       "rates_usd_per_million": {},
       "by_kind_usd": {
@@ -3850,6 +3864,36 @@
       "output_tokens": 11028,
       "cost_usd": null,
       "estimated_usd": 1.0282
+    },
+    {
+      "session": "ab8f0638",
+      "n": 1,
+      "ts": "2026-11-23T11:34:42.653Z",
+      "area": "MVP1-E0-53",
+      "kind": "build",
+      "summary": "Write story E0-53 and its issue, hide the flow bands on module pages behind one switch, build and check at three widths",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 1726216,
+      "output_tokens": 6555,
+      "cost_usd": null,
+      "estimated_usd": 0.8392
+    },
+    {
+      "session": "ab8f0638",
+      "n": 2,
+      "ts": "2026-11-23T11:37:30.098Z",
+      "area": "Process",
+      "kind": "scaffolding",
+      "summary": "Process: record token costs, open the PR, close the story issue with its costs",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 223737,
+      "output_tokens": 521,
+      "cost_usd": null,
+      "estimated_usd": 0.1047
     }
   ]
 }
