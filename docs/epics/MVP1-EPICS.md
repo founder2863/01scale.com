@@ -638,7 +638,7 @@ As a hiring manager, I want the Design system page under Platform Core to show t
 ### MVP1-E0-53 · Hide the app flow bands on module pages — XS
 As a visitor on a module page, I want to reach the module's content straight away, not scroll past a flow band per app, because where the module sits is already clear from its name and the app pages (Nikhil's request, 23 Nov 2026).
 - **AC1:** No module page (`/products/<module>`, every service, V1 and V2) shows the "Where this component sits in the flow" bands from `MVP1-E0-35`, nor the "Used by: TBD" band, on any screen size (phone, tablet, laptop, desktop).
-- **AC2:** The bands are hidden, not deleted: one switch in the module page turns them back on, and `appsUsing` and `Flow` stay in `app/products/flow.tsx`. App pages keep their flow.
+- **AC2:** The bands are hidden, not deleted: one switch in the module page turns them back on, and `appsUsing` and `Flow` stay in `app/products/flow.tsx`. App pages keep their flow, and each service page (`/products/services/<service>`) keeps its **Used by** list, "TBD" included (Nikhil, 23 Nov 2026).
 - **AC3:** Nothing else on module pages changes: hero, section menu and sections render as before, from 320 to 1920 pixels wide, in light and dark mode.
 - **Service:** Site (`apps/web`)
 - **API design:** No endpoints.
