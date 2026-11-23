@@ -632,7 +632,7 @@ MODULE = {
         "schema": "The SQL for the Human Review service's tables, in the `review` schema. No other service can read them.",
     },
     "overview": {
-        "name": "Human Review", "version": "Version 1 · A person checks flagged fields", "status": "Designed, not built", "base": BASE,
+        "name": "Human Review", "version": "Version 1 · A person checks flagged fields", "status": "Designed, not built", "uiStatus": "UI components built in `@01scale/ui-review` 0.2.0, against a stand-in client; the service is designed, not built", "base": BASE,
         "what": OVERVIEW_WHAT, "why": OVERVIEW_WHY, "scope_in": SCOPE_IN, "scope_out": SCOPE_OUT,
         "stories": ["MVP1-E4-01", "MVP1-E4-02", "MVP1-E4-03", "MVP1-E4-04"],
     },

@@ -67,7 +67,8 @@ export const review = {
       "MVP1-E4-02",
       "MVP1-E4-03",
       "MVP1-E4-04"
-    ]
+    ],
+    "uiStatus": "UI components built in `@01scale/ui-review` 0.2.0, against a stand-in client; the service is designed, not built"
   },
   "flow": [
     {

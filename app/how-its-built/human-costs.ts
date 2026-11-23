@@ -18,14 +18,14 @@ export const humanCosts = {
     "stories": 34,
     "personDays": 167,
     "cost": 167000,
-    "tokenCost": 127.76,
+    "tokenCost": 129.4,
     "tbd": []
   },
   "projected": {
     "stories": 117,
     "personDays": 703,
     "cost": 703000,
-    "tokenCost": 172.07,
+    "tokenCost": 173.71,
     "tbd": []
   },
   "excludedSoFar": {
@@ -194,14 +194,14 @@ export const humanCosts = {
         "stories": 11,
         "personDays": 75,
         "cost": 75000,
-        "tokenCost": 2.04,
+        "tokenCost": 3.68,
         "tbd": []
       },
       "soFar": {
         "stories": 4,
         "personDays": 22,
         "cost": 22000,
-        "tokenCost": 2.04,
+        "tokenCost": 3.68,
         "tbd": []
       }
     },
@@ -1766,7 +1766,7 @@ export const humanCosts = {
       "done": true,
       "issue": 171,
       "closed": "2026-11-23",
-      "tokenCost": 2.04,
+      "tokenCost": 3.68,
       "tokenCostShared": false,
       "tokenCostPending": false
     },

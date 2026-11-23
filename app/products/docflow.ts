@@ -65,7 +65,8 @@ export const docflow = {
       "MVP1-E5-04",
       "MVP1-E7-01",
       "MVP1-E7-02"
-    ]
+    ],
+    "uiStatus": "page sections built in the DocFlow V1 prototype (`app/products/docflow/try`), against an in-browser mock; the app is designed, not built"
   },
   "flow": [
     {

@@ -132,7 +132,7 @@
     },
     {
       "id": "4f156423-c77d-5a1f-9ee0-653fd2fda3eb",
-      "tool_total_usd": 37.4451,
+      "tool_total_usd": 45.7449,
       "rates_usd_per_million": {
         "claude-opus-5-5": {
           "input": 4.0,
@@ -142,12 +142,12 @@
         }
       },
       "by_kind_usd": {
-        "input": 0.04,
-        "output": 6.41,
-        "cache_read": 26.28,
-        "cache_write": 4.71
+        "input": 0.06,
+        "output": 6.86,
+        "cache_read": 33.63,
+        "cache_write": 5.2
       },
-      "overhead_usd": -2.0962,
+      "overhead_usd": 1.319,
       "splits": []
     }
   ],
@@ -3574,9 +3574,65 @@
       "models": [
         "claude-opus-5-5"
       ],
-      "tokens": 6112029,
-      "output_tokens": 6054,
-      "cost_usd": 1.4138
+      "tokens": 13047576,
+      "output_tokens": 11212,
+      "cost_usd": 3.0548
+    },
+    {
+      "session": "4f156423",
+      "n": 18,
+      "ts": "2026-11-23T00:53:05.824Z",
+      "area": "Process",
+      "kind": "scaffolding",
+      "summary": "Process: check what is not on main (after closing MVP1-E8-11 with its costs)",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 1404733,
+      "output_tokens": 362,
+      "cost_usd": 0.2912
+    },
+    {
+      "session": "4f156423",
+      "n": 19,
+      "ts": "2026-11-23T00:53:39.014Z",
+      "area": "Process",
+      "kind": "scaffolding",
+      "summary": "Process: open PR #174 (human costs after #171)",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 4949601,
+      "output_tokens": 1595,
+      "cost_usd": 1.0937
+    },
+    {
+      "session": "4f156423",
+      "n": 20,
+      "ts": "2026-11-23T01:21:46.601Z",
+      "area": "Process",
+      "kind": "scaffolding",
+      "summary": "Process: list what is pending from the session",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 1426197,
+      "output_tokens": 1270,
+      "cost_usd": 0.3145
+    },
+    {
+      "session": "4f156423",
+      "n": 21,
+      "ts": "2026-11-23T01:26:39.318Z",
+      "area": "Process",
+      "kind": "scaffolding",
+      "summary": "Process: mark the UI components built in their documents; record the results-before-payment recommendation in STATUS",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 6482077,
+      "output_tokens": 7841,
+      "cost_usd": 1.5442
     }
   ]
 }

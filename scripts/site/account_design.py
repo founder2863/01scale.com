@@ -251,7 +251,7 @@ MODULE = {
               "hosted": "In this version, setting a new password happens on Cognito's hosted page.", "token": "Claims added to Login's access token when the caller used an API key.",
               "schema": "The SQL for Account management, added to the `identity` schema after Login's tables."},
     "overview": {
-        "name": "Account management", "version": "Version 1 · Identity, second part", "status": "Designed, not built", "base": BASE,
+        "name": "Account management", "version": "Version 1 · Identity, second part", "status": "Designed, not built", "uiStatus": "UI components built in `@01scale/ui-identity` 0.3.0 (MVP1-E1-09), against a stand-in client; the service is designed, not built", "base": BASE,
         "what": [
             "Account management lets a person see their account, change their password, delete their account, and give AI agents their own keys to act for them.",
             "It is the second part of the Identity service, after Login. It adds one table (API keys), the endpoint that announces a deleted account to every other service, and the lookup Delivery uses to find a person's email.",

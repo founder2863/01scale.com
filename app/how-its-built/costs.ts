@@ -547,21 +547,21 @@ export const costs = {
       "key": "MVP1-E8-11",
       "name": "MVP1-E8-11 · Name the navigation item \"Total Cost\"",
       "requests": 2,
-      "buildTokens": 8796682,
+      "buildTokens": 15732229,
       "reworkTokens": 0,
-      "buildCost": 2.04,
+      "buildCost": 3.68,
       "reworkCost": 0,
-      "totalCost": 2.04,
+      "totalCost": 3.68,
       "yield": 100,
       "pending": false
     }
   ],
   "storyTotals": {
     "requests": 151,
-    "tokens": 593348221,
-    "buildCost": 162.2,
+    "tokens": 600283768,
+    "buildCost": 163.84,
     "reworkCost": 132.97,
-    "cost": 295.17,
+    "cost": 296.81,
     "yield": 55,
     "pending": true
   },
@@ -592,40 +592,40 @@ export const costs = {
     },
     {
       "name": "Process",
-      "requests": 42,
-      "tokens": 131025487,
-      "cost": 34.17
+      "requests": 46,
+      "tokens": 145288095,
+      "cost": 37.41
     },
     {
       "name": "Tool overhead (background calls)",
       "requests": 0,
       "tokens": 0,
-      "cost": -0.45
+      "cost": 2.96
     }
   ],
   "scaffoldingTotals": {
-    "requests": 93,
-    "tokens": 166576735,
-    "cost": 73.78
+    "requests": 97,
+    "tokens": 180839343,
+    "cost": 80.43
   },
   "totals": {
-    "requests": 244,
-    "tokens": 759924956,
-    "cost": 368.95,
-    "buildCost": 162.2,
+    "requests": 248,
+    "tokens": 781123111,
+    "cost": 377.24,
+    "buildCost": 163.84,
     "reworkCost": 132.97,
-    "scaffoldingCost": 73.78,
+    "scaffoldingCost": 80.43,
     "storyYield": 55,
-    "overallYield": 43,
+    "overallYield": 42,
     "pendingRequests": 17,
     "pendingEstimate": 8.99,
     "pendingEstimated": 11
   },
   "byKind": {
-    "input": 0.1,
-    "output": 21.98,
-    "cache_read": 39.87,
-    "cache_write": 60.34
+    "input": 0.12,
+    "output": 22.43,
+    "cache_read": 47.22,
+    "cache_write": 60.83
   },
   "mistakes": {
     "designRedo": {
@@ -645,7 +645,7 @@ export const costs = {
     "reloads": {
       "requests": 13,
       "cost": 103.2,
-      "share": 28,
+      "share": 27,
       "median": 8.2,
       "typical": 0.58,
       "extra": 95.61

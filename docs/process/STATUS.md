@@ -1,6 +1,6 @@
 # Status and handoff
 
-Read this at the start of every session, after CLAUDE.md. Update it in the PR that changes what it says (a story shipped, a decision made, a question answered). Last updated: 23 Nov 2026, after closing MVP1-E8-10 (#157) with its costs.
+Read this at the start of every session, after CLAUDE.md. Update it in the PR that changes what it says (a story shipped, a decision made, a question answered). Last updated: 23 Nov 2026, with the PR that marks the UI components built in their documents and records two decisions waiting for Nikhil.
 
 ## Where things stand
 
@@ -25,6 +25,8 @@ Read this at the start of every session, after CLAUDE.md. Update it in the PR th
 
 ## Open questions waiting for Nikhil
 
+- **Results before payment (raised on PR #163; Claude's recommendation, waiting for Nikhil's confirmation).** DocFlow's API already gives a four-field preview before payment and everything after (E5-03 AC3), but the person owns their Extraction job and Review task, so their own token can read every field from Extraction or Review directly. Recommendation: an app-agnostic **hold**. An app that starts a job or task for a person may mark it `held_by: <app>`; while held, the owner sees only the flagged fields and counts (enough to review), and the full fields go only to the holding app, which releases the hold when its own condition is met (DocFlow: payment confirmed). Services learn "held until the app releases", never "payment", and every later app can gate results the same way. Rejected: DocFlow owning the jobs and proxying every read (breaks "components call their own API" and makes DocFlow thick). When confirmed: update the stories in E3 (Extraction), E4 (Review) and E5 (DocFlow) and their API and data designs in one PR, before E3 is built.
+
 - DocFlow V1 "What each step adds over time" also describes V2 and sits in Overview: keep, or move to the V2 page? (PR #144)
 
 ## Known issues
@@ -47,7 +49,7 @@ Every closed story issue (27 of them) carries its measured token cost and estima
 
 ## Next, in order (from CLAUDE.md and the epics)
 
-0. **Next session:** E0-07 (service template), then E0-08 (gateway). E8-10 (#157) and E0-19 (#96) are closed. E0-18 stays open until Try it is on every module page.
+0. **Next session:** E0-07 (service template), then E0-08 (gateway). E8-10 (#157) and E0-19 (#96) are closed. E0-18 (#95) stays open until Try it, the functional prototype, is on every module page (Nikhil, 23 Nov 2026).
 1. The rest of E0 after E0-07 and E0-08.
 2. E1 Identity with Cognito.
 3. Whenever Nikhil says go: E0-44 rename, E8-02 onward.
