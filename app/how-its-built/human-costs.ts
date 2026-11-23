@@ -18,14 +18,14 @@ export const humanCosts = {
     "stories": 33,
     "personDays": 164,
     "cost": 164000,
-    "tokenCost": 123.31,
+    "tokenCost": 125.72,
     "tbd": []
   },
   "projected": {
     "stories": 116,
     "personDays": 700,
     "cost": 700000,
-    "tokenCost": 167.62,
+    "tokenCost": 170.03,
     "tbd": []
   },
   "excludedSoFar": {
@@ -50,14 +50,14 @@ export const humanCosts = {
         "stories": 49,
         "personDays": 303,
         "cost": 303000,
-        "tokenCost": 154.9,
+        "tokenCost": 152.84,
         "tbd": []
       },
       "soFar": {
         "stories": 27,
         "personDays": 136,
         "cost": 136000,
-        "tokenCost": 123.31,
+        "tokenCost": 121.25,
         "tbd": []
       }
     },
@@ -68,14 +68,14 @@ export const humanCosts = {
         "stories": 9,
         "personDays": 47,
         "cost": 47000,
-        "tokenCost": 10.13,
+        "tokenCost": 11.62,
         "tbd": []
       },
       "soFar": {
         "stories": 1,
         "personDays": 3,
         "cost": 3000,
-        "tokenCost": 0,
+        "tokenCost": 1.49,
         "tbd": []
       }
     },
@@ -104,14 +104,14 @@ export const humanCosts = {
         "stories": 7,
         "personDays": 60,
         "cost": 60000,
-        "tokenCost": 0.84,
+        "tokenCost": 2.33,
         "tbd": []
       },
       "soFar": {
         "stories": 1,
         "personDays": 3,
         "cost": 3000,
-        "tokenCost": 0,
+        "tokenCost": 1.49,
         "tbd": []
       }
     },
@@ -122,14 +122,14 @@ export const humanCosts = {
         "stories": 5,
         "personDays": 25,
         "cost": 25000,
-        "tokenCost": 0,
+        "tokenCost": 1.49,
         "tbd": []
       },
       "soFar": {
         "stories": 1,
         "personDays": 3,
         "cost": 3000,
-        "tokenCost": 0,
+        "tokenCost": 1.49,
         "tbd": []
       }
     },
@@ -596,7 +596,7 @@ export const humanCosts = {
       "done": true,
       "issue": 96,
       "closed": "2026-11-22",
-      "tokenCost": 22.44,
+      "tokenCost": 20.38,
       "tokenCostShared": true,
       "tokenCostPending": false
     },
@@ -1181,9 +1181,9 @@ export const humanCosts = {
       "done": true,
       "issue": 164,
       "closed": "2026-11-22",
-      "tokenCost": null,
+      "tokenCost": 1.49,
       "tokenCostShared": true,
-      "tokenCostPending": true
+      "tokenCostPending": false
     },
     {
       "id": "MVP1-E2-01",
@@ -1361,9 +1361,9 @@ export const humanCosts = {
       "done": true,
       "issue": 165,
       "closed": "2026-11-22",
-      "tokenCost": null,
+      "tokenCost": 1.49,
       "tokenCostShared": true,
-      "tokenCostPending": true
+      "tokenCostPending": false
     },
     {
       "id": "MVP1-E4-01",
@@ -1436,9 +1436,9 @@ export const humanCosts = {
       "done": true,
       "issue": 166,
       "closed": "2026-11-22",
-      "tokenCost": null,
+      "tokenCost": 1.49,
       "tokenCostShared": true,
-      "tokenCostPending": true
+      "tokenCostPending": false
     },
     {
       "id": "MVP1-E5-01",

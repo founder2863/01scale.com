@@ -525,9 +525,9 @@ export const costs = {
       "requests": 6,
       "buildTokens": 36887681,
       "reworkTokens": 24193311,
-      "buildCost": 15.78,
-      "reworkCost": 6.3,
-      "totalCost": 22.08,
+      "buildCost": 13.62,
+      "reworkCost": 6.39,
+      "totalCost": 20.02,
       "yield": 60,
       "pending": false
     },
@@ -537,19 +537,19 @@ export const costs = {
       "requests": 1,
       "buildTokens": 16678321,
       "reworkTokens": 0,
-      "buildCost": 0,
+      "buildCost": 4.46,
       "reworkCost": 0,
-      "totalCost": 0,
+      "totalCost": 4.46,
       "yield": 100,
-      "pending": true
+      "pending": false
     }
   ],
   "storyTotals": {
     "requests": 149,
     "tokens": 584551539,
-    "buildCost": 157.85,
-    "reworkCost": 132.87,
-    "cost": 290.73,
+    "buildCost": 160.16,
+    "reworkCost": 132.97,
+    "cost": 293.12,
     "yield": 54,
     "pending": true
   },
@@ -580,40 +580,40 @@ export const costs = {
     },
     {
       "name": "Process",
-      "requests": 40,
-      "tokens": 114681826,
-      "cost": 29.87
+      "requests": 42,
+      "tokens": 125725450,
+      "cost": 32.96
     },
     {
       "name": "Tool overhead (background calls)",
       "requests": 0,
       "tokens": 0,
-      "cost": 1.65
+      "cost": 2.79
     }
   ],
   "scaffoldingTotals": {
-    "requests": 91,
-    "tokens": 150233074,
-    "cost": 71.58
+    "requests": 93,
+    "tokens": 161276698,
+    "cost": 75.82
   },
   "totals": {
-    "requests": 240,
-    "tokens": 734784613,
-    "cost": 362.31,
-    "buildCost": 157.85,
-    "reworkCost": 132.87,
-    "scaffoldingCost": 71.58,
+    "requests": 242,
+    "tokens": 745828237,
+    "cost": 368.94,
+    "buildCost": 160.16,
+    "reworkCost": 132.97,
+    "scaffoldingCost": 75.82,
     "storyYield": 54,
-    "overallYield": 43,
-    "pendingRequests": 19,
-    "pendingEstimate": 13.59,
-    "pendingEstimated": 13
+    "overallYield": 42,
+    "pendingRequests": 17,
+    "pendingEstimate": 8.99,
+    "pendingEstimated": 11
   },
   "byKind": {
-    "input": 0.06,
-    "output": 15.57,
-    "cache_read": 13.59,
-    "cache_write": 55.63
+    "input": 0.1,
+    "output": 21.98,
+    "cache_read": 39.87,
+    "cache_write": 60.34
   },
   "mistakes": {
     "designRedo": {
@@ -636,7 +636,7 @@ export const costs = {
       "share": 28,
       "median": 8.2,
       "typical": 0.56,
-      "extra": 95.88
+      "extra": 95.87
     },
     "mergedTooSoon": {
       "requests": 1,
