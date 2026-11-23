@@ -15,10 +15,10 @@ export const humanCosts = {
   },
   "scope": "MVP1 only: Platform Core, the platform services, DocFlow (E0 to E7), the cost work itself (E8; Nikhil on PR #159) and AutoRep V1 (E1 to E6). MVP2 is out.",
   "soFar": {
-    "stories": 33,
-    "personDays": 164,
-    "cost": 164000,
-    "tokenCost": 125.72,
+    "stories": 34,
+    "personDays": 167,
+    "cost": 167000,
+    "tokenCost": 127.76,
     "tbd": []
   },
   "projected": {
@@ -198,10 +198,10 @@ export const humanCosts = {
         "tbd": []
       },
       "soFar": {
-        "stories": 3,
-        "personDays": 19,
-        "cost": 19000,
-        "tokenCost": 0,
+        "stories": 4,
+        "personDays": 22,
+        "cost": 22000,
+        "tokenCost": 2.04,
         "tbd": []
       }
     },
@@ -1763,9 +1763,9 @@ export const humanCosts = {
       "size": "S",
       "personDays": 3,
       "cost": 3000,
-      "done": false,
-      "issue": null,
-      "closed": null,
+      "done": true,
+      "issue": 171,
+      "closed": "2026-11-23",
       "tokenCost": 2.04,
       "tokenCostShared": false,
       "tokenCostPending": false
