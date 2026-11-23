@@ -2917,6 +2917,8 @@ section[id] {
 
 .ar-main {
   display: grid;
+  /* One column on a phone that never grows past the screen (MVP1-E0-51). */
+  grid-template-columns: minmax(0, 1fr);
   gap: 14px;
 }
 
@@ -3418,4 +3420,73 @@ section[id] {
 
 .gallery-not-built {
   margin: 16px 0 0;
+}
+
+/* App Overview: the High-level design card, closed by default (MVP1-E0-50). */
+.design-card {
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--brand);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+
+.design-card summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 14px;
+  padding: 16px 48px 16px 18px;
+  position: relative;
+  cursor: pointer;
+  list-style: none;
+}
+
+.design-card summary::-webkit-details-marker {
+  display: none;
+}
+
+.design-card summary::after {
+  content: "+";
+  position: absolute;
+  top: 12px;
+  right: 18px;
+  color: var(--brand-bright);
+  font-size: 1.4rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.design-card[open] summary::after {
+  content: "−";
+}
+
+.design-card summary:focus-visible {
+  outline: 2px solid var(--brand-bright);
+  outline-offset: 2px;
+}
+
+.design-card-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.design-card-summary {
+  color: var(--muted);
+}
+
+.design-card-body {
+  padding: 0 14px 14px;
+}
+
+.design-card-body .ar {
+  margin: 0;
+}
+
+.try-callout .coming-soon-title {
+  margin: 0 0 4px;
+}
+
+/* Service links in a diagram can be long ("LLM Extraction V1: ..."): let them wrap on a phone (MVP1-E0-51). */
+.ar .link-list .status {
+  white-space: normal;
 }

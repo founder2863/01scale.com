@@ -217,6 +217,7 @@ As a visitor opening AutoRep, I want one picture of how it works, so I understan
 - **AC2:** Its content follows this PRD, not the reference image where they differ: no vector database in V1; the Researcher uses web search with citations, the business profile, past replies and the review thread; the Critic, the risk router and the Publisher replace an auto-posting approval agent; Slack and analytics are V2; it runs as Python LangGraph on AWS Lambda with checkpoints in Neon Postgres.
 - **AC3:** The orchestration shows the parallel Analyst and Researcher, the Writer and Critic loop (up to 2 revisions), the risk router, and both branches: publish directly (4★ or more, no risk flag) or owner approval through Human Review with the Delivery email, then publish.
 - **AC4:** It is part of the page, not an image: readable from 320 to 1920 pixels wide, in light and dark mode; on a phone the columns stack.
+- **Note (23 Nov 2026):** `MVP1-E0-50` moves this diagram from the top of the page into the Overview's High-level design card, closed by default, so every app's Overview has the same structure.
 - **Service:** Site (`apps/web`)
 - **API design:** No endpoints.
 - **Database design:** No tables.
