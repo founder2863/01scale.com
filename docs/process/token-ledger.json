@@ -45,7 +45,8 @@
     "MVP1-E8-09": "MVP1-E8-09 · Human cost script and skill",
     "MVP1-E8-10": "MVP1-E8-10 · Total Projected Cost page, four tabs",
     "MVP1-E0-19": "MVP1-E0-19 · Design system (packages/ui-core), service UI packages (E0-07 AC6) and the DocFlow V1 clickable prototype (E0-18 for DocFlow)",
-    "MVP1-E1-09-E4-05": "MVP1-E1-09, E3-07, E4-05 · Account and admin UI components (ui-identity, ui-extraction, ui-review)"
+    "MVP1-E1-09-E4-05": "MVP1-E1-09, E3-07, E4-05 · Account and admin UI components (ui-identity, ui-extraction, ui-review)",
+    "MVP1-E8-11": "MVP1-E8-11 · Name the navigation item \"Total Cost\""
   },
   "sessions": [
     {
@@ -131,15 +132,22 @@
     },
     {
       "id": "4f156423-c77d-5a1f-9ee0-653fd2fda3eb",
-      "tool_total_usd": 18.2121,
-      "rates_usd_per_million": {},
-      "by_kind_usd": {
-        "input": 0.0,
-        "output": 0.0,
-        "cache_read": 0.0,
-        "cache_write": 0.0
+      "tool_total_usd": 37.4451,
+      "rates_usd_per_million": {
+        "claude-opus-5-5": {
+          "input": 4.0,
+          "output": 20.0,
+          "cache_read": 0.2,
+          "cache_write": 8.0
+        }
       },
-      "overhead_usd": 0,
+      "by_kind_usd": {
+        "input": 0.04,
+        "output": 6.41,
+        "cache_read": 26.28,
+        "cache_write": 4.71
+      },
+      "overhead_usd": -2.0962,
       "splits": []
     }
   ],
@@ -3344,7 +3352,7 @@
       ],
       "tokens": 11931983,
       "output_tokens": 97110,
-      "cost_usd": 7.1276
+      "cost_usd": 5.6768
     },
     {
       "session": "4f156423",
@@ -3358,7 +3366,7 @@
       ],
       "tokens": 7919930,
       "output_tokens": 45689,
-      "cost_usd": 3.3773
+      "cost_usd": 2.9193
     },
     {
       "session": "4f156423",
@@ -3372,7 +3380,7 @@
       ],
       "tokens": 2730952,
       "output_tokens": 2531,
-      "cost_usd": 0.7053
+      "cost_usd": 0.7176
     },
     {
       "session": "4f156423",
@@ -3386,7 +3394,7 @@
       ],
       "tokens": 8878126,
       "output_tokens": 15982,
-      "cost_usd": 2.4108
+      "cost_usd": 2.4079
     },
     {
       "session": "4f156423",
@@ -3400,7 +3408,7 @@
       ],
       "tokens": 3580049,
       "output_tokens": 3461,
-      "cost_usd": 0.7881
+      "cost_usd": 0.8555
     },
     {
       "session": "4f156423",
@@ -3414,7 +3422,7 @@
       ],
       "tokens": 17035768,
       "output_tokens": 51395,
-      "cost_usd": 5.2709
+      "cost_usd": 5.0265
     },
     {
       "session": "4f156423",
@@ -3428,7 +3436,7 @@
       ],
       "tokens": 12324483,
       "output_tokens": 26894,
-      "cost_usd": 3.4929
+      "cost_usd": 3.4347
     },
     {
       "session": "4f156423",
@@ -3442,7 +3450,7 @@
       ],
       "tokens": 6594220,
       "output_tokens": 11893,
-      "cost_usd": 1.6866
+      "cost_usd": 1.7235
     },
     {
       "session": "4f156423",
@@ -3456,7 +3464,7 @@
       ],
       "tokens": 5274608,
       "output_tokens": 3223,
-      "cost_usd": 1.1206
+      "cost_usd": 1.2349
     },
     {
       "session": "4f156423",
@@ -3470,7 +3478,7 @@
       ],
       "tokens": 4868068,
       "output_tokens": 5386,
-      "cost_usd": 1.0995
+      "cost_usd": 1.1809
     },
     {
       "session": "4f156423",
@@ -3484,7 +3492,7 @@
       ],
       "tokens": 17017749,
       "output_tokens": 17299,
-      "cost_usd": 3.7263
+      "cost_usd": 4.0544
     },
     {
       "session": "4f156423",
@@ -3498,8 +3506,7 @@
       ],
       "tokens": 16678321,
       "output_tokens": 36273,
-      "cost_usd": null,
-      "estimated_usd": 4.4578
+      "cost_usd": 4.4578
     },
     {
       "session": "4f156423",
@@ -3511,10 +3518,65 @@
       "models": [
         "claude-opus-5-5"
       ],
-      "tokens": 639093,
-      "output_tokens": 366,
-      "cost_usd": null,
-      "estimated_usd": 0.1355
+      "tokens": 7751884,
+      "output_tokens": 3357,
+      "cost_usd": 1.7215
+    },
+    {
+      "session": "4f156423",
+      "n": 14,
+      "ts": "2026-11-23T00:15:32.757Z",
+      "area": "Process",
+      "kind": "scaffolding",
+      "summary": "Process: close MVP1-E8-10 (#157) with its costs; refresh human costs and STATUS",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 3273959,
+      "output_tokens": 3199,
+      "cost_usd": 0.7478
+    },
+    {
+      "session": "4f156423",
+      "n": 15,
+      "ts": "2026-11-23T00:17:42.053Z",
+      "area": "Process",
+      "kind": "scaffolding",
+      "summary": "Process: record costs and open the PR",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 5956911,
+      "output_tokens": 3050,
+      "cost_usd": 1.3396
+    },
+    {
+      "session": "4f156423",
+      "n": 16,
+      "ts": "2026-11-23T00:22:37.594Z",
+      "area": "MVP1-E8-11",
+      "kind": "build",
+      "summary": "Find every reference to the Total Projected Cost item (interrupted to narrow the scope to the navigation)",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 2684653,
+      "output_tokens": 2071,
+      "cost_usd": 0.6288
+    },
+    {
+      "session": "4f156423",
+      "n": 17,
+      "ts": "2026-11-23T00:23:46.617Z",
+      "area": "MVP1-E8-11",
+      "kind": "build",
+      "summary": "Rename the navigation item to Total Cost (menu, tab bar, heading), story and issue #171",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 6112029,
+      "output_tokens": 6054,
+      "cost_usd": 1.4138
     }
   ]
 }

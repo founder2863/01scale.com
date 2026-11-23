@@ -400,7 +400,7 @@ export const products = [
         "id": "MVP1-E1-09",
         "title": "Account screens as UI components (`ui-identity`)",
         "size": "S",
-        "pending": "**Status: not started.** Added 22 Nov 2026 (Nikhil), when MVP1-E0-19 AC5 marked these components \"Designed, not built yet\".",
+        "pending": "**Status: built (#164), 23 Nov 2026,** in `ui-identity` 0.3.0, against a stand-in client until the service is built; every state is live on the module's UI Components section. Added 22 Nov 2026 (Nikhil), when MVP1-E0-19 AC5 marked these components \"Designed, not built yet\".",
         "story": "As the owner, I want the account page's screens built as Identity's UI components, so any app can offer account management without building it again.",
         "acs": [
           {
@@ -978,7 +978,7 @@ export const products = [
         "id": "MVP1-E3-07",
         "title": "Jobs table for the admin as a UI component (`ui-extraction`)",
         "size": "S",
-        "pending": "**Status: not started.** Added 22 Nov 2026 (Nikhil), when MVP1-E0-19 AC5 marked this component \"Designed, not built yet\".",
+        "pending": "**Status: built (#165), 23 Nov 2026,** in `ui-extraction` 0.3.0, against a stand-in client until the service is built; every state is live on the module's UI Components section. Added 22 Nov 2026 (Nikhil), when MVP1-E0-19 AC5 marked this component \"Designed, not built yet\".",
         "story": "As the owner, I want the admin's jobs table built as Extraction's UI component, so I can watch cost, speed and failures in any app.",
         "acs": [
           {
@@ -1219,7 +1219,7 @@ export const products = [
         "id": "MVP1-E4-05",
         "title": "Eval candidates and accuracy for the admin as UI components (`ui-review`)",
         "size": "S",
-        "pending": "**Status: not started.** Added 22 Nov 2026 (Nikhil), when MVP1-E0-19 AC5 marked these components \"Designed, not built yet\".",
+        "pending": "**Status: built (#166), 23 Nov 2026,** in `ui-review` 0.2.0, against a stand-in client until the service is built; every state is live on the module's UI Components section. Added 22 Nov 2026 (Nikhil), when MVP1-E0-19 AC5 marked these components \"Designed, not built yet\".",
         "story": "As the owner, I want the admin's eval-candidate and accuracy screens built as Review's UI components, so I can approve real model mistakes as eval cases and see how accurate the fields are, inside the app.",
         "acs": [
           {

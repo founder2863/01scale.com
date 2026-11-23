@@ -89,7 +89,7 @@ export const skills = [
     kind: "When an issue closes",
     job: "Works out what a human team would cost per story, so far and projected, from the story sizes in the epics files and the closed issues, at a rate shown as an assumption. Nothing is typed by hand.",
     reads: "The epics files, the cost model, closed GitHub issues and the token ledger",
-    makes: "The human cost data for Total Projected Cost",
+    makes: "The human cost data for Total Cost",
   },
   {
     name: "Review the architecture",
