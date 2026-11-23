@@ -3344,7 +3344,7 @@
       ],
       "tokens": 11931983,
       "output_tokens": 97110,
-      "cost_usd": 6.596
+      "cost_usd": 7.1276
     },
     {
       "session": "4f156423",
@@ -3358,7 +3358,7 @@
       ],
       "tokens": 7919930,
       "output_tokens": 45689,
-      "cost_usd": 3.1254
+      "cost_usd": 3.3773
     },
     {
       "session": "4f156423",
@@ -3372,7 +3372,7 @@
       ],
       "tokens": 2730952,
       "output_tokens": 2531,
-      "cost_usd": 0.6527
+      "cost_usd": 0.7053
     },
     {
       "session": "4f156423",
@@ -3386,7 +3386,7 @@
       ],
       "tokens": 8878126,
       "output_tokens": 15982,
-      "cost_usd": 2.231
+      "cost_usd": 2.4108
     },
     {
       "session": "4f156423",
@@ -3400,7 +3400,7 @@
       ],
       "tokens": 3580049,
       "output_tokens": 3461,
-      "cost_usd": 0.7293
+      "cost_usd": 0.7881
     },
     {
       "session": "4f156423",
@@ -3414,7 +3414,7 @@
       ],
       "tokens": 17035768,
       "output_tokens": 51395,
-      "cost_usd": 4.8777
+      "cost_usd": 5.2709
     },
     {
       "session": "4f156423",
@@ -3428,8 +3428,7 @@
       ],
       "tokens": 12324483,
       "output_tokens": 26894,
-      "cost_usd": null,
-      "estimated_usd": 3.4347
+      "cost_usd": 3.4929
     },
     {
       "session": "4f156423",
@@ -3443,8 +3442,7 @@
       ],
       "tokens": 6594220,
       "output_tokens": 11893,
-      "cost_usd": null,
-      "estimated_usd": 1.7235
+      "cost_usd": 1.6866
     },
     {
       "session": "4f156423",
@@ -3458,8 +3456,7 @@
       ],
       "tokens": 5274608,
       "output_tokens": 3223,
-      "cost_usd": null,
-      "estimated_usd": 1.2349
+      "cost_usd": 1.1206
     },
     {
       "session": "4f156423",
@@ -3473,8 +3470,7 @@
       ],
       "tokens": 4868068,
       "output_tokens": 5386,
-      "cost_usd": null,
-      "estimated_usd": 1.1809
+      "cost_usd": 1.0995
     },
     {
       "session": "4f156423",
@@ -3488,8 +3484,7 @@
       ],
       "tokens": 17017749,
       "output_tokens": 17299,
-      "cost_usd": null,
-      "estimated_usd": 4.0544
+      "cost_usd": 3.7263
     },
     {
       "session": "4f156423",
@@ -3501,10 +3496,25 @@
       "models": [
         "claude-opus-5-5"
       ],
-      "tokens": 7850330,
-      "output_tokens": 27124,
+      "tokens": 16678321,
+      "output_tokens": 36273,
       "cost_usd": null,
-      "estimated_usd": 2.3615
+      "estimated_usd": 4.4578
+    },
+    {
+      "session": "4f156423",
+      "n": 13,
+      "ts": "2026-11-23T00:02:32.280Z",
+      "area": "Process",
+      "kind": "scaffolding",
+      "summary": "Process: refresh human costs and STATUS after closing E1-09, E3-07 and E4-05; open the PR",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 639093,
+      "output_tokens": 366,
+      "cost_usd": null,
+      "estimated_usd": 0.1355
     }
   ]
 }
