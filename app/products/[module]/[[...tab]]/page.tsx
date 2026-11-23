@@ -11,6 +11,10 @@ import { DEFAULT_TAB, tabGroups, tabHref, tabs, type TabSlug } from "../../tabs"
 
 type Params = { module: string; tab?: string[] };
 
+// The app flow bands (MVP1-E0-35) are hidden on every module page for now (MVP1-E0-53,
+// Nikhil, 23 Nov 2026): they took the whole first screen. Set to true to bring them back.
+const SHOW_FLOW_BANDS = false;
+
 export const dynamicParams = false;
 
 export function generateStaticParams(): Params[] {
@@ -82,7 +86,7 @@ export default async function ProductPage({ params }: { params: Promise<Params> 
       </section>
 
       {/* No app is built on this module's service version yet: say TBD (Nikhil's decision on PR #118). */}
-      {appsUsing(product.slug).length === 0 && (
+      {SHOW_FLOW_BANDS && appsUsing(product.slug).length === 0 && (
         <section className="flow-band" aria-label="Apps that use this component">
           <div className="container">
             <p className="flow-band-title flow-band-tbd">
@@ -94,7 +98,8 @@ export default async function ProductPage({ params }: { params: Promise<Params> 
       )}
 
       {/* One band per app that uses this module, its step highlighted in each (MVP1-E0-35). */}
-      {appsUsing(product.slug).map(({ app, version }) => (
+      {SHOW_FLOW_BANDS &&
+        appsUsing(product.slug).map(({ app, version }) => (
         <section
           className="flow-band"
           key={`${app}-${version}`}

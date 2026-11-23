@@ -439,6 +439,7 @@ As a visitor on a module page, I want to see every app that uses this module and
 - **API design:** No endpoints.
 - **Database design:** No tables.
 
+**Note (23 Nov 2026):** the bands are hidden on module pages for now (`MVP1-E0-53`); the flows stay in `app/products/flow.tsx`.
 
 ### MVP1-E0-36 · Home page cover, order and snapshot — S
 As a hiring manager landing on 01scale, I want one picture of what Nikhil built across his career, then who he is and what the site is, so I understand his strengths before opening any product.
@@ -633,6 +634,17 @@ As a hiring manager, I want the Design system page under Platform Core to show t
 - **Database design:** No tables.
 
 **Status: built (#182). The page shows `@01scale/ui-core`'s base components live with a Light / Dark / My system switch (ui-core 0.1.2 lets `data-theme` theme one part of a page), then a card per service package and DocFlow's page sections with version, component count and gallery links, read from `package.json` and the design data.**
+
+### MVP1-E0-53 · Hide the app flow bands on module pages — XS
+As a visitor on a module page, I want to reach the module's content straight away, not scroll past a flow band per app, because where the module sits is already clear from its name and the app pages (Nikhil's request, 23 Nov 2026).
+- **AC1:** No module page (`/products/<module>`, every service, V1 and V2) shows the "Where this component sits in the flow" bands from `MVP1-E0-35`, nor the "Used by: TBD" band, on any screen size (phone, tablet, laptop, desktop).
+- **AC2:** The bands are hidden, not deleted: one switch in the module page turns them back on, and `appsUsing` and `Flow` stay in `app/products/flow.tsx`. App pages keep their flow.
+- **AC3:** Nothing else on module pages changes: hero, section menu and sections render as before, from 320 to 1920 pixels wide, in light and dark mode.
+- **Service:** Site (`apps/web`)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+**Status: built (#186). `SHOW_FLOW_BANDS = false` in the module page hides both bands; app pages keep their flow.**
 
 ## E1 · Accounts with AWS Cognito (MVP1 "a")
 **Goal:** users can create and manage an account securely, through OIDC so the provider can be swapped in MVP2.
