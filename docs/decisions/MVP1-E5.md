@@ -25,3 +25,20 @@
 - Extraction and Review each gain `hold` on create, `held_by` and `released_at` columns, and a `POST …/release` endpoint (Access: Service). No MCP tool: a release is never done for a person by an agent.
 - DocFlow's token rule changes: starting an extraction and reading results use a delegated token, because DocFlow is the holder.
 - If a release fails after payment, the event is retried; the person is not blocked, because downloads are built by DocFlow as the holder.
+
+## 2026-11-23 · A person's own extraction jobs have a free daily quota
+
+**Decided by:** Nikhil, on Claude's recommendation (option 1). Story: `MVP1-E3-09`.
+
+**Problem.** The hold stops a person reading DocFlow's held results, but the document is theirs and Extraction is a product in its own right: they can start their own job, without a hold, and read every field. No design can stop someone extracting their own document while the Extraction API is open to them, so the real question is what direct use costs. Until now only the gateway's rate limit applied, so direct use was free and every job a Claude call.
+
+**Options.**
+
+| | 1: a free daily quota for jobs a person starts (chosen) | 2: only apps may start jobs |
+|---|---|---|
+| Closes the free route around DocFlow's paywall | Down to a small free allowance | Completely |
+| Agents first (an agent can use Extraction for a person) | Yes | No |
+| Extraction sellable on its own | Yes: the quota is its free tier; a paid plan follows (`MVP1-E0-28` AC6) | No |
+| Caps Claude spend | Yes | Yes |
+
+**Decision.** 1. A person may start 3 jobs a day themselves (configurable), reset at 00:00 UTC; jobs an app starts count toward the app. Past the quota: `429 quota_exceeded`. `GET /usage` (and its MCP tool) shows what is left. The paid plan beyond the quota is a Monetization decision (`MVP1-E0-28`).

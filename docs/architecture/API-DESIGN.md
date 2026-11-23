@@ -1,6 +1,6 @@
 # API design — 01scale
 
-01scale is built **API first** and **agents first**, as a set of independent services behind one gateway (see `ARCHITECTURE.md`). This file holds the rules every service's API follows and an index of all 114 designed endpoints, grouped by the service that owns them. The full contract for each endpoint (request, response, errors) lives in its story in `docs/epics/`, next to the database design for that story.
+01scale is built **API first** and **agents first**, as a set of independent services behind one gateway (see `ARCHITECTURE.md`). This file holds the rules every service's API follows and an index of all 115 designed endpoints, grouped by the service that owns them. The full contract for each endpoint (request, response, errors) lives in its story in `docs/epics/`, next to the database design for that story.
 
 **Status: design only.** No endpoint here is built until its story is picked up.
 
@@ -162,10 +162,11 @@ Turns a file into structured fields with confidence and evidence.
 
 | Method | Path | Access | What it does | Story |
 |---|---|---|---|---|
-| `POST` | `/api/extraction/v1/jobs` | Signed in | Start an extraction job for a file. Safe to call twice. | `MVP1-E3-01` |
+| `POST` | `/api/extraction/v1/jobs` | Signed in | Start an extraction job for a file. Safe to call twice. A person's own jobs count toward a free daily quota (`MVP1-E3-09`). | `MVP1-E3-01` |
 | `GET` | `/api/extraction/v1/jobs/{jobId}` | Signed in | Extraction job status, for polling. | `MVP1-E3-01` |
 | `GET` | `/api/extraction/v1/jobs/{jobId}/fields` | Signed in | The extracted fields with value, confidence and evidence; only the flagged fields while a job is held for an app (`MVP1-E3-08`). | `MVP1-E3-02` |
 | `POST` | `/api/extraction/v1/jobs/{jobId}/release` | Service | The app holding a job's results releases them to the owner (`hold: true` on `POST /jobs`). | `MVP1-E3-08` |
+| `GET` | `/api/extraction/v1/usage` | Signed in | Today's free jobs a person started themselves, out of their daily quota. | `MVP1-E3-09` |
 | `POST` | `/api/extraction/v1/validations` | Signed in | Run the rule checks for a schema on a set of values. | `MVP1-E3-03` |
 | `GET` | `/api/extraction/v1/admin/jobs` | Admin | Last 100 jobs with tokens, cost, duration and failure rate. | `MVP1-E3-05` |
 | `POST` | `/api/extraction/v1/job-groups` | Signed in | Run several extraction jobs as one group with a concurrency limit. | `MVP2-E9-02` |

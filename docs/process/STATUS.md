@@ -4,7 +4,7 @@ Read this at the start of every session, after CLAUDE.md. Update it in the PR th
 
 ## Where things stand
 
-- **In flight:** the PR designing the results hold: stories `MVP1-E3-08`, `MVP1-E4-06` and `MVP1-E5-05`, with Extraction's, Review's and DocFlow's API and data designs, the architecture docs and the decision log. Every earlier PR is merged, #176 included.
+- **In flight:** PR #180, designing the results hold: stories `MVP1-E3-08`, `MVP1-E4-06`, `MVP1-E5-05` and the direct-use quota `MVP1-E3-09`, with Extraction's, Review's and DocFlow's API and data designs, the architecture docs and the decision log. Every earlier PR is merged, #176 included.
 - **Service UI packages:** each `packages/ui-<service>` defines the client it needs from its own API (`createClientContext` in ui-core); the app supplies it: the mock in `app/products/docflow/try/mock-platform.ts` today, the gateway once the service is built. DocFlow's own sections and the Cognito and Stripe stand-ins stay in the app (Nikhil, 22 Nov 2026).
 - **Workspaces:** the root `package.json` now has `"workspaces": ["packages/*"]`; the site stays at the root until E0-07 moves it to `apps/web`. Run `npm install` after pulling.
 - **The site** (Next.js at the repo root, not yet `apps/web`) has: Home (E0-36 to E0-42), Products with app pages (side menu, E0-48) and module pages (15 sections, phone Sections button and Previous / Next, E0-49), Platform (Core, Platform and Apps Architecture, E0-22, E0-23, E0-43), How It's Built (Skills, Token Costs, Agents, Total Cost with four tabs (E8-10; named "Total Cost" in E8-11), Constraints, Expensive Mistakes with four project lessons and the Payments article, E0-45 to E0-47).
@@ -20,12 +20,12 @@ Read this at the start of every session, after CLAUDE.md. Update it in the PR th
 | Built, issue closed | E8-10 (#157, PR #160): Total Projected Cost with four tabs; E1-09 (#164), E3-07 (#165), E4-05 (#166): account and admin UI components (PR #168); E0-19 (#96, PRs #161 to #163: `packages/ui-core`, live galleries, DocFlow prototype fixes), E0-10, E0-11, E0-12, E0-13 (#61), E0-17, E0-21, E0-22, E0-23, E0-31 (#109), E0-32 to E0-35, E0-36 to E0-43 (#148 to #155, created after the work), E0-45 to E0-49, E8-01 |
 | Built, no issue by design | AUTOREP-E1-04 and AUTOREP-E6-03 (AutoRep stories live in the file only) |
 | Placeholder only ("Coming Soon..." on every module page) | E0-14 Market Outlook (#84), E0-15 PRD Reference (#85), E0-16 MCP (#86), E0-20 Architecture (#97), E0-27 to E0-30 Metrics, Monetization, GTM, Support (#104 to #107) |
-| Story only, decided, not built | E3-08, E4-06, E5-05: the results hold (designed 23 Nov 2026); E0-44 product names and versions (#133; build when Nikhil says go), E8-02 to E8-08 (#127 to #132, #135) |
+| Story only, decided, not built | E3-08 (#177), E4-06 (#178), E5-05 (#179): the results hold; E3-09 (#181): the direct-use quota (designed 23 Nov 2026); E0-44 product names and versions (#133; build when Nikhil says go), E8-02 to E8-08 (#127 to #132, #135) |
 | Not started | E0-01 to E0-09 (foundation code, except E0-07 AC6 above), E0-18 per module, E0-24 (Built on: Platform Core components, not the app Built On section), E0-25, E0-26, and epics E1 to E7 |
 
 ## Open questions waiting for Nikhil
 
-- Answered 23 Nov 2026: results before payment use an app-agnostic **hold** (Nikhil confirmed Claude's recommendation). Designed in new stories `MVP1-E3-08` (Extraction), `MVP1-E4-06` (Review) and `MVP1-E5-05` (DocFlow); decision log `docs/decisions/MVP1-E5.md`. Build them with their epics; E3-08 before DocFlow's extraction step goes live.
+- Answered 23 Nov 2026: results before payment use an app-agnostic **hold** (Nikhil confirmed Claude's recommendation). Designed in new stories `MVP1-E3-08` (Extraction), `MVP1-E4-06` (Review) and `MVP1-E5-05` (DocFlow); decision log `docs/decisions/MVP1-E5.md`. Because a person can always run Extraction on their own document, a person's own jobs get a free daily quota (3 a day) in `MVP1-E3-09`; the paid plan beyond it is a Monetization decision (`MVP1-E0-28` AC6). Build them with their epics; E3-08 before DocFlow's extraction step goes live.
 - AutoRep's "What each step adds over time" maps the PRD's V2 list to steps (several locations, vector database, other languages, Slack approval, posting without approval and analytics); steps with nothing planned say "Not decided yet". Check the mapping (PR #175).
 - Answered 23 Nov 2026: DocFlow's "What each step adds over time" stays in Overview, as section 5 of the app Overview template (`MVP1-E0-50`).
 - Answered 23 Nov 2026: the V1 card ends with a "Not in V1" line (the PRD's non-goals), and Try it shows on every app, "Coming Soon..." where there is no prototype (`MVP1-E0-50`).

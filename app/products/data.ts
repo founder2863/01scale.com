@@ -1027,6 +1027,37 @@ export const products = [
         ],
         "evals": "",
         "service": "LLM Extraction"
+      },
+      {
+        "id": "MVP1-E3-09",
+        "title": "A free daily quota for jobs a person starts",
+        "size": "S",
+        "pending": "**Status: designed (#181), 23 Nov 2026 (Nikhil's decision; `docs/decisions/MVP1-E5.md`).**",
+        "story": "As the owner, I want a person who calls Extraction directly, not through an app, to get a small free allowance, so the hold on an app's results (`MVP1-E3-08`) cannot be sidestepped for free by running their own job, and our Claude spend stays capped, while Extraction stays usable by people and their agents.",
+        "acs": [
+          {
+            "label": "AC1",
+            "text": "A job started with a person's own token or API key counts toward their free daily quota: 3 a day by default (`EXTRACTION_DIRECT_DAILY_QUOTA`), reset at 00:00 UTC. A job an app starts with a delegated token counts toward the app, not the person. Returning a job that is already running, and a job that fails for a temporary reason, do not count."
+          },
+          {
+            "label": "AC2",
+            "text": "Past the quota, `POST /jobs` answers `429 quota_exceeded`, with `Retry-After` until 00:00 UTC and a message saying how many were used and when more open. The gateway's rate limit (10 changes a minute) still applies on top."
+          },
+          {
+            "label": "AC3",
+            "text": "`GET /api/extraction/v1/usage` shows today's `direct_jobs_used`, `direct_jobs_limit`, `resets_at` and `plan` (`free`), and is an MCP tool (`getUsage`), so an agent can check before it starts a job."
+          },
+          {
+            "label": "AC4",
+            "text": "The quota is counted from `started_by` and `created_at` when a job is created, so retrying or reconnecting cannot dodge it. Tests cover a person's own jobs, an app's jobs for them, a temporary failure, and the reset."
+          },
+          {
+            "label": "AC5",
+            "text": "Until Extraction has a paid plan (`MVP1-E0-28` AC6), the quota is the limit."
+          }
+        ],
+        "evals": "",
+        "service": "LLM Extraction"
       }
     ],
     "endpoints": [
@@ -1109,6 +1140,22 @@ export const products = [
         "summary": "Release held results.",
         "detail": "→ `200 {job}`. Errors: `403 not_holder`, `404 job_not_found`, `409 not_held`. No MCP tool: no agent releases for a person.",
         "story": "MVP1-E3-08"
+      },
+      {
+        "method": "POST",
+        "path": "/api/extraction/v1/jobs",
+        "access": "Signed in",
+        "summary": "counts toward the quota when started by the person.",
+        "detail": "Errors add `429 quota_exceeded`.",
+        "story": "MVP1-E3-09"
+      },
+      {
+        "method": "GET",
+        "path": "/api/extraction/v1/usage",
+        "access": "Signed in",
+        "summary": "Today's free jobs.",
+        "detail": "→ `200 {date, direct_jobs_used, direct_jobs_limit, resets_at, plan}`. MCP tool `getUsage`.",
+        "story": "MVP1-E3-09"
       }
     ],
     "apiNotes": [
@@ -1165,6 +1212,11 @@ export const products = [
         "story": "MVP1-E3-08",
         "title": "Hold a job's fields for the app that started it",
         "text": "`extraction.jobs` adds `held_by` text null (like `service:docflow`, set only at creation) and `released_at` timestamptz null (only when `held_by` is set)."
+      },
+      {
+        "story": "MVP1-E3-09",
+        "title": "A free daily quota for jobs a person starts",
+        "text": "`extraction.jobs` adds `started_by` text not null default `'person'` (`person`, or the app from the delegated token's `act` claim, like `service:docflow`). The existing index on (`owner_id`, `created_at`) serves the count."
       }
     ]
   },

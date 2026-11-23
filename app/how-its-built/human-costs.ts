@@ -22,10 +22,10 @@ export const humanCosts = {
     "tbd": []
   },
   "projected": {
-    "stories": 122,
-    "personDays": 723,
-    "cost": 723000,
-    "tokenCost": 181.49,
+    "stories": 123,
+    "personDays": 726,
+    "cost": 726000,
+    "tokenCost": 184.65,
     "tbd": []
   },
   "excludedSoFar": {
@@ -101,10 +101,10 @@ export const humanCosts = {
       "epic": "MVP1-E3",
       "inScope": true,
       "projected": {
-        "stories": 8,
-        "personDays": 63,
-        "cost": 63000,
-        "tokenCost": 4.1,
+        "stories": 9,
+        "personDays": 66,
+        "cost": 66000,
+        "tokenCost": 6.0,
         "tbd": []
       },
       "soFar": {
@@ -122,7 +122,7 @@ export const humanCosts = {
         "stories": 6,
         "personDays": 28,
         "cost": 28000,
-        "tokenCost": 3.26,
+        "tokenCost": 3.89,
         "tbd": []
       },
       "soFar": {
@@ -140,7 +140,7 @@ export const humanCosts = {
         "stories": 5,
         "personDays": 20,
         "cost": 20000,
-        "tokenCost": 1.77,
+        "tokenCost": 2.4,
         "tbd": []
       },
       "soFar": {
@@ -1406,8 +1406,23 @@ export const humanCosts = {
       "done": false,
       "issue": null,
       "closed": null,
-      "tokenCost": 1.77,
+      "tokenCost": 2.4,
       "tokenCostShared": true,
+      "tokenCostPending": false
+    },
+    {
+      "id": "MVP1-E3-09",
+      "title": "A free daily quota for jobs a person starts",
+      "product": "MVP1",
+      "epic": "MVP1-E3",
+      "size": "S",
+      "personDays": 3,
+      "cost": 3000,
+      "done": false,
+      "issue": null,
+      "closed": null,
+      "tokenCost": 1.27,
+      "tokenCostShared": false,
       "tokenCostPending": false
     },
     {
@@ -1496,7 +1511,7 @@ export const humanCosts = {
       "done": false,
       "issue": null,
       "closed": null,
-      "tokenCost": 1.77,
+      "tokenCost": 2.4,
       "tokenCostShared": true,
       "tokenCostPending": false
     },
@@ -1571,7 +1586,7 @@ export const humanCosts = {
       "done": false,
       "issue": null,
       "closed": null,
-      "tokenCost": 1.77,
+      "tokenCost": 2.4,
       "tokenCostShared": true,
       "tokenCostPending": false
     },

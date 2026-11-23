@@ -1,6 +1,6 @@
 # LLM Extraction service — developer guide
 
-> **Version 1 · One Claude call per document.** Status: designed, not built. Stories: `MVP1-E3-01`, `MVP1-E3-02`, `MVP1-E3-03`, `MVP1-E3-04`, `MVP1-E3-05`, `MVP1-E3-08`.
+> **Version 1 · One Claude call per document.** Status: designed, not built. Stories: `MVP1-E3-01`, `MVP1-E3-02`, `MVP1-E3-03`, `MVP1-E3-04`, `MVP1-E3-05`, `MVP1-E3-08`, `MVP1-E3-09`.
 
 The other documents for this service: [user journeys](USER-JOURNEYS.md), [UI components](UI-COMPONENTS.md), [API specification](API-SPEC.md), [data model](DATA-MODEL.md), [schema](SCHEMA.md). The same content is on the site at `/products/extraction-with-claude/readme`.
 
@@ -125,6 +125,7 @@ Base address: `https://01scale.com/api/extraction/v1`
 | `GET` | `/jobs/{jobId}` | Signed in | `extraction:read` | Check a job |
 | `GET` | `/jobs/{jobId}/fields` | Signed in | `extraction:read` | Get the extracted fields |
 | `POST` | `/validations` | Signed in | `extraction:write` | Check values against a schema's rules |
+| `GET` | `/usage` | Signed in | `extraction:read` | Today's free jobs |
 | `POST` | `/jobs/{jobId}/release` | Service | `extraction:write` | Release held results |
 | `GET` | `/admin/jobs` | Admin | `is_admin` | Recent jobs with cost and timing |
 | `POST` | `/events` | Service | None: HMAC signature | Receive platform events |

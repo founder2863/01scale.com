@@ -354,6 +354,7 @@ As a hiring manager, I want to see how each module would make money and what it 
 - **AC3:** It compares the price with the public pricing of the market players named in Market Outlook, each with a source link and the date it was checked.
 - **AC4:** It says plainly that the demo runs in Stripe test mode, so no real money moves.
 - **AC5:** Prices are Nikhil's decision. Claude may draft a proposal; it is marked as such until he approves. A price already decided in a story (Payment) is shown, not changed.
+- **AC6:** A platform service used directly, not through an app, charges on its own. For LLM Extraction, the free tier is the daily quota of jobs a person starts themselves (`MVP1-E3-09`: 3 a day); the section shows it, and the paid plan beyond it once Nikhil sets its price. Jobs an app starts are paid for through the app (DocFlow: $5.00 a document). (Added 23 Nov 2026, Nikhil.)
 - **Service:** Site (`apps/web`) and design tooling
 - **API design:** No endpoints.
 - **Database design:** No tables.
@@ -891,6 +892,21 @@ As an app (DocFlow), I want to hold an extraction's results until my own conditi
 - **Database design:** `extraction.jobs` adds `held_by` text null (like `service:docflow`, set only at creation) and `released_at` timestamptz null (only when `held_by` is set).
 
 **Status: designed (#177), 23 Nov 2026 (Nikhil's decision; `docs/decisions/MVP1-E5.md`).**
+
+### MVP1-E3-09 · A free daily quota for jobs a person starts — S
+As the owner, I want a person who calls Extraction directly, not through an app, to get a small free allowance, so the hold on an app's results (`MVP1-E3-08`) cannot be sidestepped for free by running their own job, and our Claude spend stays capped, while Extraction stays usable by people and their agents.
+- **AC1:** A job started with a person's own token or API key counts toward their free daily quota: 3 a day by default (`EXTRACTION_DIRECT_DAILY_QUOTA`), reset at 00:00 UTC. A job an app starts with a delegated token counts toward the app, not the person. Returning a job that is already running, and a job that fails for a temporary reason, do not count.
+- **AC2:** Past the quota, `POST /jobs` answers `429 quota_exceeded`, with `Retry-After` until 00:00 UTC and a message saying how many were used and when more open. The gateway's rate limit (10 changes a minute) still applies on top.
+- **AC3:** `GET /api/extraction/v1/usage` shows today's `direct_jobs_used`, `direct_jobs_limit`, `resets_at` and `plan` (`free`), and is an MCP tool (`getUsage`), so an agent can check before it starts a job.
+- **AC4:** The quota is counted from `started_by` and `created_at` when a job is created, so retrying or reconnecting cannot dodge it. Tests cover a person's own jobs, an app's jobs for them, a temporary failure, and the reset.
+- **AC5:** Until Extraction has a paid plan (`MVP1-E0-28` AC6), the quota is the limit.
+- **Service:** LLM Extraction
+- **API design:**
+  - `POST /api/extraction/v1/jobs` (signed in) — counts toward the quota when started by the person. Errors add `429 quota_exceeded`.
+  - `GET /api/extraction/v1/usage` (signed in) — Today's free jobs. → `200 {date, direct_jobs_used, direct_jobs_limit, resets_at, plan}`. MCP tool `getUsage`.
+- **Database design:** `extraction.jobs` adds `started_by` text not null default `'person'` (`person`, or the app from the delegated token's `act` claim, like `service:docflow`). The existing index on (`owner_id`, `created_at`) serves the count.
+
+**Status: designed (#181), 23 Nov 2026 (Nikhil's decision; `docs/decisions/MVP1-E5.md`).**
 
 ## E4 · Human review of low-confidence fields (MVP1 "d")
 **Goal:** a person checks only what the system is unsure about, quickly, with evidence beside each field.

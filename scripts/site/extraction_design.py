@@ -2,7 +2,7 @@
 
 Data only: scripts/site/render.py turns MODULE into docs/services/extraction/*.md
 and app/products/extraction.ts. Run `npm run site:data` after any change.
-Stories: MVP1-E3-01 to MVP1-E3-05, and MVP1-E3-08 (results held for an app). The DocFlow endpoint in MVP1-E3-01
+Stories: MVP1-E3-01 to MVP1-E3-05, MVP1-E3-08 (results held for an app) and MVP1-E3-09 (a free daily quota for jobs a person starts). The DocFlow endpoint in MVP1-E3-01
 (retry-extraction) is designed with the DocFlow app shell, MVP1-E0-09.
 """
 import json
@@ -26,7 +26,7 @@ JOB_EXTRACTED = {
         {"name": "reading_document", "state": "done"}, {"name": "checking_rules", "state": "done"}, {"name": "saving", "state": "done"},
     ],
     "fields_total": 19, "fields_flagged": 3, "error_code": None, "error_message": None, "retryable": False,
-    "held_by": "service:docflow", "released_at": None,
+    "started_by": "service:docflow", "held_by": "service:docflow", "released_at": None,
     "created_at": "2026-11-17T09:14:12Z", "finished_at": "2026-11-17T09:14:41Z",
 }
 JOB_RUNNING = {**JOB_EXTRACTED, "status": "processing", "fields_total": None, "fields_flagged": None, "finished_at": None,
@@ -63,6 +63,7 @@ ENDPOINTS = [
             "If a job for this file and schema is `queued` or `processing`, returns it with `200`. Nothing new is started or charged.",
             "Otherwise records a job as `queued`, with the model ID and prompt version from configuration, and returns `202`.",
             "With `hold: true`, records the acting app from the delegated token's `act` claim as `held_by` (`MVP1-E3-08`). A person's own token or an API key cannot place a hold.",
+            "A job started with a person's own token or API key counts toward that person's free daily quota: 3 a day by default (`EXTRACTION_DIRECT_DAILY_QUOTA`), reset at 00:00 UTC (`MVP1-E3-09`). A job an app starts with a delegated token counts toward the app, not the person. Returning a job that is already running, and a job that fails for a temporary reason, do not count. `started_by` records which it was.",
             "The job then runs in the background: with a delegated token for the owner, fetch the file through a 5-minute Upload link, and read its text. A PDF with a text layer gives its text directly; a scanned PDF or a photo is read by OCR (Claude transcribing each page, in a call separate from extraction so the quote check stays independent). Each page's text is saved for the quote check.",
             "If no text is found on any page, the job fails with `no_text_found` and the message 'No text found'. It is not retryable: the same file would give the same result.",
             "Otherwise it sends the document to Claude with the versioned prompt, checks the answer against the schema, applies the rule checks (including every quote against the saved text, for photos and scans too), and saves the fields.",
@@ -80,6 +81,7 @@ ENDPOINTS = [
             error("422", "hold_requires_app", "`hold: true` without a delegated token, so there is no app to hold the results for."),
             error("422", "validation_failed", "Another input is missing or malformed."),
             error("429", "rate_limited", "More than 10 jobs a minute for one user."),
+            error("429", "quota_exceeded", "The person has used today's free jobs (`MVP1-E3-09`). `Retry-After` gives the seconds until 00:00 UTC; the message says how many were used and when more open."),
             error("503", "dependency_unavailable", "Upload could not be reached to check the file. Safe to retry."),
             NOT_AUTH,
         ],
@@ -148,6 +150,20 @@ ENDPOINTS = [
             {"name": "currency_valid", "passed": True, "fields": ["currency"], "message": "USD is a valid currency."},
             {"name": "required_present", "passed": True, "fields": ["vendor_name", "invoice_number", "invoice_date", "currency", "total"], "message": "All required fields are present."},
         ]}, indent=2),
+    ),
+    endpoint(
+        "get-usage", "GET", f"{BASE}/usage", "Signed in", "MVP1-E3-09",
+        "Today's free jobs",
+        "How many jobs the person has started themselves today, out of their free daily quota, and when it resets. An agent checks this before starting a job.",
+        [],
+        [
+            "Read only. Counts jobs started with the person's own token or API key since 00:00 UTC; jobs an app started for them are not counted.",
+            "Until Extraction has a paid plan (`MVP1-E0-28`), the quota is the limit; the response says so in `plan`.",
+        ],
+        [response("200", "Always", "`date`, `direct_jobs_used`, `direct_jobs_limit`, `resets_at` and `plan` (`free`).")],
+        [NOT_AUTH],
+        f"GET /api/extraction/v1/usage HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>",
+        json.dumps({"date": "2026-11-23", "direct_jobs_used": 2, "direct_jobs_limit": 3, "resets_at": "2026-11-24T00:00:00Z", "plan": "free"}, indent=2),
     ),
     endpoint(
         "release-job", "POST", f"{BASE}/jobs/{{jobId}}/release", "Service", "MVP1-E3-08",
@@ -226,6 +242,7 @@ JOBS = {
         column("duration_ms", "integer", "Yes", "", "0 or more", "Time from start of processing to the end, in milliseconds."),
         column("error_code", "text", "Yes", "", f"One of {ERROR_CODES}; set exactly when failed", "Why the job failed, as a stable code."),
         column("error_message", "text", "Yes", "", "Set exactly when failed", "The plain-language message a person sees."),
+        column("started_by", "text", "No", "'person'", "`person`, or like `service:docflow`: the delegated token's `act` claim", "Who started the job: the person themselves, which counts toward their free daily quota (`MVP1-E3-09`), or an app acting for them."),
         column("held_by", "text", "Yes", "", "Like `service:docflow`; set only at creation, from the delegated token's `act` claim", "The app holding the results until it releases them (`MVP1-E3-08`). Empty: not held."),
         column("released_at", "timestamptz", "Yes", "", "Set only when `held_by` is set", "When the holder released the results. Empty while held."),
         column("created_at", "timestamptz", "No", "now()", "", "When the job was asked for."),
@@ -291,6 +308,7 @@ DATA_MODEL_RULES = [
     "Amounts are kept as decimal strings, never floating-point numbers.",
     "Deleting a user's account deletes their fields, which hold document content. Their jobs are kept with IDs, counts, tokens and cost only, for the cost records.",
     "Each job records the model and prompt version it used, so any result can be traced and re-run.",
+    "A person may start 3 jobs a day themselves, free (`MVP1-E3-09`); jobs an app starts for them count toward the app. The quota is checked when a job is created and counted from `started_by` and `created_at`, so it cannot be dodged by retrying.",
     "A held job shows its owner only the flagged fields until the holding app releases it (`MVP1-E3-08`). Only a delegated token can place a hold, and only the holder can release it, so a person cannot read held results early and cannot lift a hold themselves. Extraction never knows the reason for a hold.",
 ]
 
@@ -321,6 +339,7 @@ JOBS["constraints"] = [
     "`jobs_pkey`: primary key (`id`)",
     "`jobs_schema_check`: `schema` is `invoice-v1`",
     "`jobs_status_check`, `jobs_step_check`, `jobs_error_code_check`: only the listed values",
+    "`jobs_started_by_check`: `started_by` is `person` or like `service:<name>`",
     "`jobs_held_by_check`: `held_by` is like `service:<name>`",
     "`jobs_released_check`: `released_at` only when `held_by` is set",
     "`jobs_attempt_check`: `attempt` between 1 and 3",
@@ -391,6 +410,7 @@ create table extraction.jobs (
   duration_ms    integer,
   error_code     text,
   error_message  text,
+  started_by     text          not null default 'person',
   held_by        text,
   released_at    timestamptz,
   created_at     timestamptz   not null default now(),
@@ -399,6 +419,7 @@ create table extraction.jobs (
 
   constraint jobs_schema_check check (schema in ('invoice-v1')),
   constraint jobs_reference_check check (length(reference) between 1 and 200),
+  constraint jobs_started_by_check check (started_by = 'person' or started_by ~ '^service:[a-z][a-z0-9-]*$'),
   constraint jobs_held_by_check check (held_by ~ '^service:[a-z][a-z0-9-]*$'),
   constraint jobs_released_check check (released_at is null or held_by is not null),
   constraint jobs_status_check check (status in ('queued', 'processing', 'extracted', 'failed')),
@@ -744,7 +765,7 @@ MODULE = {
     "overview": {
         "name": "LLM Extraction", "version": "Version 1 · One Claude call per document", "status": "Designed, not built", "uiStatus": "UI components built in `@01scale/ui-extraction` 0.3.0, against a stand-in client; the service is designed, not built", "base": BASE,
         "what": OVERVIEW_WHAT, "why": OVERVIEW_WHY, "scope_in": SCOPE_IN, "scope_out": SCOPE_OUT,
-        "stories": ["MVP1-E3-01", "MVP1-E3-02", "MVP1-E3-03", "MVP1-E3-04", "MVP1-E3-05", "MVP1-E3-08"],
+        "stories": ["MVP1-E3-01", "MVP1-E3-02", "MVP1-E3-03", "MVP1-E3-04", "MVP1-E3-05", "MVP1-E3-08", "MVP1-E3-09"],
     },
     "flow": FLOW,
     "concepts": CONCEPTS,
@@ -768,7 +789,7 @@ MODULE = {
         {"topic": "Final confidence (MVP1-E3-03)", "how": "Each field's final confidence is the lower of the model's own confidence and its rule result: a failed check sets 0.3. A field under the threshold (0.85 by default, set in configuration) or failing a check is `flagged`, with each reason stored."},
         {"topic": "Where the job runs", "how": "In the Extraction service itself, continuing after the `202` response. A sweep every minute picks up any job left `queued` for over a minute, so a lost background task is not a lost job."},
         {"topic": "DocFlow's retry endpoint", "how": "`POST /api/docflow/v1/documents/{documentId}/retry-extraction` belongs to the DocFlow app. It calls `POST /jobs` again; a failed job is never restarted, a new one is created."},
-        {"topic": "AI agents", "how": "Each endpoint is also a tool on Extraction's MCP server, `POST /api/extraction/mcp`, with the same inputs and errors."},
+        {"topic": "AI agents", "how": "Each endpoint a person can call is also a tool on Extraction's MCP server, `POST /api/extraction/mcp`, with the same inputs and errors; an agent checks `getUsage` before starting a job. The service-only `POST /jobs/{jobId}/release` has no tool: only the holding app releases."},
         {"topic": "Health and contract", "how": "Like every service, Extraction also serves `GET /health` and `GET /openapi.json` from the service template (`MVP1-E0-05`)."},
     ],
     "rules": [
