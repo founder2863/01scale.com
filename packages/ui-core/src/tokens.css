@@ -5,7 +5,8 @@
  * chosen for WCAG AA contrast (4.5:1 for text) in both themes (AC2).
  *
  * Theme: follows the operating system by default; an app can force one with
- * data-theme="light" or data-theme="dark" on <html>.
+ * data-theme="light" or data-theme="dark" on <html>, or on any element to theme only that part of
+ * the page (the design system page shows its components in both themes this way, MVP1-E0-52).
  */
 
 :root {
@@ -16,34 +17,6 @@
   --brand-bright: #3d5afe;
   --brand-glow: #00c8ff;
   --on-brand: #ffffff;
-
-  /* Surfaces and text (light) */
-  --bg: #ffffff;
-  --surface: #f5f5ff;
-  --surface-raised: #ffffff;
-  --text: #12123a;
-  --muted: #54567a;
-  --border: #dcdcf5;
-  --border-strong: #9a9cc4;
-  --link: #0b00bf;
-  --chip-bg: #e9e8ff;
-  --chip-text: #0b00bf;
-  --focus: #3d5afe;
-  --overlay: rgba(10, 10, 31, 0.55);
-
-  /* Status: text on its own soft background, and a solid colour for bars and borders */
-  --success-text: #0f6b34;
-  --success-bg: #e3f6ea;
-  --success-solid: #16a34a;
-  --warning-text: #7a4b00;
-  --warning-bg: #fff1d6;
-  --warning-solid: #d97706;
-  --danger-text: #a3121b;
-  --danger-bg: #fde6e7;
-  --danger-solid: #dc2626;
-  --info-text: #0b00bf;
-  --info-bg: #e9e8ff;
-  --info-solid: #3d5afe;
 
   /* Type */
   --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -72,14 +45,49 @@
   --radius-lg: 16px;
   --radius-pill: 999px;
 
+  /* Sizes and motion */
+  --tap-target: 44px;
+  --motion: 160ms ease;
+}
+
+/* Light theme: surfaces, text and status colours. Also on any element with data-theme="light". */
+:root,
+[data-theme="light"] {
+  --bg: #ffffff;
+  --surface: #f5f5ff;
+  --surface-raised: #ffffff;
+  --text: #12123a;
+  --muted: #54567a;
+  --border: #dcdcf5;
+  --border-strong: #9a9cc4;
+  --link: #0b00bf;
+  --chip-bg: #e9e8ff;
+  --chip-text: #0b00bf;
+  --focus: #3d5afe;
+  --overlay: rgba(10, 10, 31, 0.55);
+
+  /* Status: text on its own soft background, and a solid colour for bars and borders */
+  --success-text: #0f6b34;
+  --success-bg: #e3f6ea;
+  --success-solid: #16a34a;
+  --warning-text: #7a4b00;
+  --warning-bg: #fff1d6;
+  --warning-solid: #d97706;
+  --danger-text: #a3121b;
+  --danger-bg: #fde6e7;
+  --danger-solid: #dc2626;
+  --info-text: #0b00bf;
+  --info-bg: #e9e8ff;
+  --info-solid: #3d5afe;
+
   /* Shadows */
   --shadow: 0 10px 30px rgba(11, 0, 191, 0.1);
   --shadow-sm: 0 2px 8px rgba(11, 0, 191, 0.08);
   --shadow-lg: 0 20px 50px rgba(11, 0, 191, 0.18);
+}
 
-  /* Sizes and motion */
-  --tap-target: 44px;
-  --motion: 160ms ease;
+[data-theme="light"] {
+  color-scheme: light;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -117,7 +125,8 @@
   }
 }
 
-:root[data-theme="dark"] {
+[data-theme="dark"] {
+  color-scheme: dark;
   --bg: #0a0a1f;
   --surface: #14143a;
   --surface-raised: #1b1b48;

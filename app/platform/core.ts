@@ -55,7 +55,8 @@ export const coreComponents = [
       "Base components: button, input, select, checkbox, card, badge, dialog, tabs, toast, form errors, plus alert, progress bar, skeleton and spinner",
       "Keyboard access, visible focus and WCAG AA contrast built in",
       "No business logic and no service calls; each service pins the version it uses",
-      "Used by the site and by the DocFlow V1 clickable prototype at /products/docflow/try"
+      "Used by the site and by the DocFlow V1 clickable prototype at /products/docflow/try",
+      "Shown live on this page in both themes, with a card for each service's component package (MVP1-E0-52)"
     ],
     "usage": {
       "label": "Use it in any React app",
@@ -65,7 +66,8 @@ export const coreComponents = [
     "status": "Live",
     "version": "v1",
     "stories": [
-      "MVP1-E0-19"
+      "MVP1-E0-19",
+      "MVP1-E0-52"
     ],
     "docs": "https://github.com/founder2863/01scale.com/tree/main/packages/ui-core"
   },

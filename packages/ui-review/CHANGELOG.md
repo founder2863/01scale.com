@@ -1,5 +1,9 @@
 # @01scale/ui-review changelog
 
+## 0.2.1 — 23 Nov 2026
+
+- Uses `@01scale/ui-core` 0.1.2 (themes can be set on any element).
+
 ## 0.2.0 — 23 Nov 2026 (MVP1-E4-05)
 
 - New: EvalCandidatesTable and AccuracyReport, for an admin (counts and rates only; nothing exported). The client adds optional listEvalCandidates, decideEvalCandidate and getAccuracy.

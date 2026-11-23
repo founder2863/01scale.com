@@ -1,5 +1,9 @@
 # @01scale/ui-identity changelog
 
+## 0.3.1 — 23 Nov 2026
+
+- Uses `@01scale/ui-core` 0.1.2 (themes can be set on any element).
+
 ## 0.3.0 — 23 Nov 2026 (MVP1-E1-09)
 
 - New: AccountDetails, PasswordChangeButton, DeleteAccountDialog and ApiKeysManager. The client adds optional getMe, startPasswordChange, deleteAccount, listApiKeys, createApiKey and revokeApiKey.

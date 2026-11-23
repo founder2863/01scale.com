@@ -632,7 +632,7 @@ As a hiring manager, I want the Design system page under Platform Core to show t
 - **API design:** No endpoints.
 - **Database design:** No tables.
 
-**Status: not started (#182). Next session (Nikhil, 23 Nov 2026: base components live plus links to each service's gallery).**
+**Status: built (#182). The page shows `@01scale/ui-core`'s base components live with a Light / Dark / My system switch (ui-core 0.1.2 lets `data-theme` theme one part of a page), then a card per service package and DocFlow's page sections with version, component count and gallery links, read from `package.json` and the design data.**
 
 ## E1 · Accounts with AWS Cognito (MVP1 "a")
 **Goal:** users can create and manage an account securely, through OIDC so the provider can be swapped in MVP2.

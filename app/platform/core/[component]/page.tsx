@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { coreComponents, EPICS_URL } from "../../core";
+import { DesignSystemSections } from "../../design-system/section";
+import { UI_CORE } from "../../design-system/packages";
 
 type Params = { component: string };
 
@@ -24,7 +26,8 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
 }
 
 // One Platform Core component (MVP1-E0-22 AC3): purpose, what a service gets, how to use it,
-// version, status and the stories that build it.
+// version, status and the stories that build it. The Design system also shows its components
+// live (MVP1-E0-52).
 export default async function CoreComponentPage({ params }: { params: Promise<Params> }) {
   const component = find((await params).component);
   if (!component) notFound();
@@ -39,7 +42,8 @@ export default async function CoreComponentPage({ params }: { params: Promise<Pa
           <p className="lead">{component.purpose}</p>
           <p className="hero-meta">
             <span>{component.status}</span>
-            <span>{component.version}</span>
+            {/* The design system shows its package's version, read from package.json (MVP1-E0-52 AC3). */}
+            <span>{component.slug === "design-system" ? `${UI_CORE.name} ${UI_CORE.version}` : component.version}</span>
           </p>
         </div>
       </section>
@@ -53,6 +57,8 @@ export default async function CoreComponentPage({ params }: { params: Promise<Pa
             ))}
           </ul>
         </section>
+
+        {component.slug === "design-system" && <DesignSystemSections />}
 
         <section>
           <h2 className="group-title">How to use it</h2>

@@ -55,10 +55,11 @@ COMPONENTS = [
             "Keyboard access, visible focus and WCAG AA contrast built in",
             "No business logic and no service calls; each service pins the version it uses",
             "Used by the site and by the DocFlow V1 clickable prototype at /products/docflow/try",
+            "Shown live on this page in both themes, with a card for each service's component package (MVP1-E0-52)",
         ],
         "usage": {"label": "Use it in any React app", "lang": "tsx",
                   "code": "import \"@01scale/ui-core/tokens.css\";\nimport \"@01scale/ui-core/styles.css\";\nimport { Button, Input, Badge } from \"@01scale/ui-core\";\n\n<Input label=\"Invoice date\" hint=\"YYYY-MM-DD\" error={error} />\n<Badge tone=\"warning\" icon=\"⚑\">Check 0.66</Badge>\n<Button loading={saving}>Save</Button>"},
-        "status": "Live", "version": "v1", "stories": ["MVP1-E0-19"],
+        "status": "Live", "version": "v1", "stories": ["MVP1-E0-19", "MVP1-E0-52"],
         "docs": f"{TREE}/packages/ui-core",
     },
     {
