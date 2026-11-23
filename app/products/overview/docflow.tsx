@@ -1,7 +1,8 @@
 import type { AppOverviewData } from "../app-overview";
+import { DocflowDiagram } from "../docflow-diagram";
 
 // DocFlow V1's Overview content (MVP1-E0-50), from docs/prd/MVP1-PRD.md and MVP2-PRD.md.
-// Its design diagram is MVP1-E0-51; until it is drawn the card says "Coming Soon...".
+// Its design diagram is MVP1-E0-51.
 export const docflowOverview: AppOverviewData = {
   tryIt: {
     text: "Click through the whole DocFlow V1 journey: sign in, upload an invoice, watch it being read, check the flagged fields, pay in test mode and download the results.",
@@ -31,6 +32,7 @@ export const docflowOverview: AppOverviewData = {
   design: {
     title: "DocFlow at a glance",
     summary: "The seven steps, what goes in and comes out, the services behind each step and what it runs on.",
+    diagram: <DocflowDiagram />,
   },
   versions: {
     V1: {

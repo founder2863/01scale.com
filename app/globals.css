@@ -2917,6 +2917,8 @@ section[id] {
 
 .ar-main {
   display: grid;
+  /* One column on a phone that never grows past the screen (MVP1-E0-51). */
+  grid-template-columns: minmax(0, 1fr);
   gap: 14px;
 }
 
@@ -3482,4 +3484,9 @@ section[id] {
 
 .try-callout .coming-soon-title {
   margin: 0 0 4px;
+}
+
+/* Service links in a diagram can be long ("LLM Extraction V1: ..."): let them wrap on a phone (MVP1-E0-51). */
+.ar .link-list .status {
+  white-space: normal;
 }
