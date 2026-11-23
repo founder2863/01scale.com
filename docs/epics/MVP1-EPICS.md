@@ -635,7 +635,7 @@ As a hiring manager, I want the Design system page under Platform Core to show t
 
 **Status: built (#182). The page shows `@01scale/ui-core`'s base components live with a Light / Dark / My system switch (ui-core 0.1.2 lets `data-theme` theme one part of a page), then a card per service package and DocFlow's page sections with version, component count and gallery links, read from `package.json` and the design data.**
 
-### MVP1-E0-53 · Hide the app flow bands on module pages — XS
+### MVP1-E0-53 · Hide the app flow bands on module pages — S
 As a visitor on a module page, I want to reach the module's content straight away, not scroll past a flow band per app, because where the module sits is already clear from its name and the app pages (Nikhil's request, 23 Nov 2026).
 - **AC1:** No module page (`/products/<module>`, every service, V1 and V2) shows the "Where this component sits in the flow" bands from `MVP1-E0-35`, nor the "Used by: TBD" band, on any screen size (phone, tablet, laptop, desktop).
 - **AC2:** The bands are hidden, not deleted: one switch in the module page turns them back on, and `appsUsing` and `Flow` stay in `app/products/flow.tsx`. App pages keep their flow, and each service page (`/products/services/<service>`) keeps its **Used by** list, "TBD" included (Nikhil, 23 Nov 2026).
