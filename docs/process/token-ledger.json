@@ -48,7 +48,8 @@
     "MVP1-E1-09-E4-05": "MVP1-E1-09, E3-07, E4-05 · Account and admin UI components (ui-identity, ui-extraction, ui-review)",
     "MVP1-E8-11": "MVP1-E8-11 · Name the navigation item \"Total Cost\"",
     "MVP1-E0-50": "MVP1-E0-50 · One Overview for every app (with the E0-51 story written alongside)",
-    "MVP1-E0-51": "MVP1-E0-51 · DocFlow high-level design diagram"
+    "MVP1-E0-51": "MVP1-E0-51 · DocFlow high-level design diagram",
+    "MVP1-E3-08-E5-05": "MVP1-E3-08, E4-06, E5-05 · Results held for the app until it releases them (design)"
   },
   "sessions": [
     {
@@ -149,7 +150,7 @@
         "cache_read": 33.63,
         "cache_write": 5.2
       },
-      "overhead_usd": 1.319,
+      "overhead_usd": -7.843,
       "splits": []
     },
     {
@@ -3732,9 +3733,37 @@
       "models": [
         "claude-opus-5-5"
       ],
-      "tokens": 6482077,
-      "output_tokens": 7841,
-      "cost_usd": 1.5442
+      "tokens": 14561271,
+      "output_tokens": 12519,
+      "cost_usd": 3.369
+    },
+    {
+      "session": "4f156423",
+      "n": 22,
+      "ts": "2026-11-23T01:31:05.080Z",
+      "area": "Process",
+      "kind": "scaffolding",
+      "summary": "Process: merge main (#175) into the branch, as Nikhil agreed; regenerate cost files; re-test",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 8989044,
+      "output_tokens": 5978,
+      "cost_usd": 2.036
+    },
+    {
+      "session": "4f156423",
+      "n": 23,
+      "ts": "2026-11-23T01:41:31.522Z",
+      "area": "MVP1-E3-08-E5-05",
+      "kind": "build",
+      "summary": "Design the results hold: three stories and issues, Extraction, Review and DocFlow API and data designs, architecture docs, decision log",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 21959882,
+      "output_tokens": 26394,
+      "cost_usd": 5.3013
     }
   ]
 }

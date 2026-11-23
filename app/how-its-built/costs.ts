@@ -578,15 +578,27 @@ export const costs = {
       "totalCost": 0,
       "yield": 100,
       "pending": true
+    },
+    {
+      "key": "MVP1-E3-08-E5-05",
+      "name": "MVP1-E3-08, E4-06, E5-05 · Results held for the app until it releases them (design)",
+      "requests": 1,
+      "buildTokens": 21959882,
+      "reworkTokens": 0,
+      "buildCost": 5.3,
+      "reworkCost": 0,
+      "totalCost": 5.3,
+      "yield": 100,
+      "pending": false
     }
   ],
   "storyTotals": {
-    "requests": 155,
-    "tokens": 610624318,
-    "buildCost": 166.31,
+    "requests": 156,
+    "tokens": 632584200,
+    "buildCost": 171.61,
     "reworkCost": 132.97,
-    "cost": 299.27,
-    "yield": 56,
+    "cost": 304.58,
+    "yield": 57,
     "pending": true
   },
   "scaffolding": [
@@ -616,31 +628,31 @@ export const costs = {
     },
     {
       "name": "Process",
-      "requests": 48,
-      "tokens": 146956590,
-      "cost": 37.96
+      "requests": 49,
+      "tokens": 164024828,
+      "cost": 41.82
     },
     {
       "name": "Tool overhead (background calls)",
       "requests": 0,
       "tokens": 0,
-      "cost": 2.96
+      "cost": -6.2
     }
   ],
   "scaffoldingTotals": {
-    "requests": 99,
-    "tokens": 182507838,
-    "cost": 80.98
+    "requests": 100,
+    "tokens": 199576076,
+    "cost": 75.68
   },
   "totals": {
-    "requests": 254,
-    "tokens": 793132156,
+    "requests": 256,
+    "tokens": 832160276,
     "cost": 380.26,
-    "buildCost": 166.31,
+    "buildCost": 171.61,
     "reworkCost": 132.97,
-    "scaffoldingCost": 80.98,
-    "storyYield": 56,
-    "overallYield": 43,
+    "scaffoldingCost": 75.68,
+    "storyYield": 57,
+    "overallYield": 44,
     "pendingRequests": 18,
     "pendingEstimate": 10.62,
     "pendingEstimated": 12
@@ -672,7 +684,7 @@ export const costs = {
       "share": 27,
       "median": 8.2,
       "typical": 0.58,
-      "extra": 95.7
+      "extra": 95.61
     },
     "mergedTooSoon": {
       "requests": 1,

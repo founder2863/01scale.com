@@ -2,7 +2,7 @@
 
 Data only: scripts/site/render.py turns MODULE into docs/services/review/*.md and
 app/products/review.ts. Run `npm run site:data` after any change.
-Stories: MVP1-E4-01 to MVP1-E4-04. DocFlow's complete-review endpoint in
+Stories: MVP1-E4-01 to MVP1-E4-04, and MVP1-E4-06 (fields held for an app). DocFlow's complete-review endpoint in
 MVP1-E4-03 is designed with the DocFlow app shell, MVP1-E0-09.
 """
 import json
@@ -21,7 +21,7 @@ RF3 = "0193b0f2-3c4d-7e5f-8a6b-7c8d9e0f1a32"  # review field: vendor_name
 D1 = "0193b0c4-91aa-7b33-8c44-5d6e7f8a9b0c"   # DocFlow's document, as a reference
 FIELD_TYPES = "`text`, `date`, `decimal`, `currency`"
 
-TASK_OPEN = {"id": T1, "reference": f"docflow:{D1}", "status": "open", "resolved": 1, "total": 3, "flagged": 2, "can_complete": False, "checks_overridden": False, "created_at": "2026-11-17T09:14:43Z", "completed_at": None}
+TASK_OPEN = {"id": T1, "reference": f"docflow:{D1}", "status": "open", "resolved": 1, "total": 3, "flagged": 2, "can_complete": False, "checks_overridden": False, "held_by": "service:docflow", "released_at": None, "created_at": "2026-11-17T09:14:43Z", "completed_at": None}
 F_TOTAL = {"id": RF1, "name": "total", "line_index": None, "type": "decimal", "original_value": "1240.00", "value": "1240.00", "confidence": 0.3, "source_page": 2, "source_quote": "TOTAL DUE  $1,240.00", "flagged": True, "flag_reasons": ["Total ≠ subtotal + tax (1,150.00 + 80.00 = 1,230.00)"], "status": "pending"}
 F_TAX = {"id": RF2, "name": "vendor_tax_id", "line_index": None, "type": "text", "original_value": None, "value": None, "confidence": 0.62, "source_page": None, "source_quote": None, "flagged": True, "flag_reasons": ["Low confidence (0.62)"], "status": "not_present"}
 
@@ -43,11 +43,12 @@ ENDPOINTS = [
             param("fields[].confidence", "body", "number", "Yes", "0 to 1.", "How sure the system was; orders the queue."),
             param("fields[].source_page, fields[].source_quote", "body", "integer, string", "No", "Page 1 or more; quote 1 to 500 characters.", "The evidence shown beside the value."),
             param("fields[].flagged, fields[].flag_reasons", "body", "boolean, string[]", "Yes", "Flagged exactly when there is at least one reason.", "Whether a person must decide on this field, and why."),
+            param("hold", "body", "boolean", "No", "Only with a delegated token: the acting app (its `act` claim) becomes the holder. Default false.", "Hold the unflagged fields for the app until it releases them (`MVP1-E4-06`). The owner still sees and decides every flagged field."),
             param("Idempotency-Key", "header", "string", "No", "1 to 255 characters.", "Makes a retried request safe."),
         ],
-        ["Validates every field, stores the task as `open` with its own copy of the fields (each `pending`), and records `review.task_created`."],
+        ["Validates every field, stores the task as `open` with its own copy of the fields (each `pending`), and records `review.task_created`.", "With `hold: true`, records the acting app from the delegated token's `act` claim as `held_by` (`MVP1-E4-06`). A person's own token or an API key cannot place a hold."],
         [response("201", "The task was created", "`task`.")],
-        [error("422", "validation_failed", "A field is malformed; `errors[]` lists each one."), error("422", "duplicate_field", "Two fields share a name and line index."), error("422", "idempotency_key_reused", "Same key, different body."), NOT_AUTH],
+        [error("422", "validation_failed", "A field is malformed; `errors[]` lists each one."), error("422", "hold_requires_app", "`hold: true` without a delegated token, so there is no app to hold the fields for."), error("422", "duplicate_field", "Two fields share a name and line index."), error("422", "idempotency_key_reused", "Same key, different body."), NOT_AUTH],
         "POST /api/review/v1/tasks HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>\nIdempotency-Key: 4d2a-review-1\nContent-Type: application/json\n\n"
         + json.dumps({"reference": f"docflow:{D1}", "fields": [
             {"name": "vendor_name", "type": "text", "value": "Acme Supplies Ltd", "confidence": 0.97, "source_page": 1, "source_quote": "Acme Supplies Ltd", "flagged": False, "flag_reasons": []},
@@ -63,7 +64,7 @@ ENDPOINTS = [
             param("taskId", "path", "uuid", "Yes", "A UUID.", "The task."),
             param("all", "query", "boolean", "No", "`true` adds the unflagged fields after the flagged ones.", "For 'Show all fields'."),
         ],
-        ["Read only. `resolved` counts flagged fields no longer `pending`; `can_complete` is true when none is pending."],
+        ["Read only. `resolved` counts flagged fields no longer `pending`; `can_complete` is true when none is pending.", "While the task is held (`MVP1-E4-06`), the owner's own token or API key gets only the flagged fields, even with `all=true`, plus `held: true` and `fields_hidden`; the holding app, with a delegated token naming it in `act`, gets every field. `held_by` and `released_at` are on the task."],
         [response("200", "The task is the caller's", "`task` and `fields[]`: `id`, `name`, `line_index`, `type`, `original_value`, `value`, `confidence`, `source_page`, `source_quote`, `flagged`, `flag_reasons[]`, `status` (`pending`, `accepted`, `edited`, `not_present`).")],
         [NOT_FOUND, NOT_AUTH],
         f"GET /api/review/v1/tasks/{T1} HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>",
@@ -83,6 +84,7 @@ ENDPOINTS = [
             "Writes the old and new value, the action, who and when to the field's history, and records `review.field_updated`.",
             "When the new value differs from the original, saves an eval candidate (`MVP1-E4-04`).",
             "Also allowed after the task is completed, including after the app has charged for it (Nikhil's decision on #45): the change is recorded the same way, the task stays `completed`, and the latest values are the final document.",
+            "While the task is held (`MVP1-E4-06`), the owner may decide only flagged fields; an unflagged field answers `404 field_not_found`, as if it were not there.",
         ],
         [response("200", "The decision was recorded", "`field`, and the task's new `resolved` and `can_complete`.")],
         [
@@ -96,6 +98,20 @@ ENDPOINTS = [
         f"PATCH /api/review/v1/tasks/{T1}/fields/{RF1} HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <access token>\nContent-Type: application/json\n\n"
         + json.dumps({"action": "edit", "value": "1230.00"}, indent=2),
         json.dumps({"field": {**F_TOTAL, "value": "1230.00", "status": "edited"}, "task": {"resolved": 2, "can_complete": True}}, indent=2),
+    ),
+    endpoint(
+        "release-task", "POST", f"{BASE}/tasks/{{taskId}}/release", "Service", "MVP1-E4-06",
+        "Release held fields",
+        "The holding app lets the owner see and correct every field, once its own condition is met (for DocFlow, the order is paid). Review never knows why.",
+        [param("taskId", "path", "uuid", "Yes", "A held task.", "The task.")],
+        [
+            "Only the holder can release: a delegated token for the task's owner whose `act` claim equals `held_by`.",
+            "Sets `released_at` and records `review.task_released`. Safe to call again: a released task answers `200` unchanged.",
+        ],
+        [response("200", "The task is released (now or before)", "`task`.")],
+        [NOT_FOUND, error("403", "not_holder", "The caller is not the app holding this task."), error("409", "not_held", "The task was never held."), NOT_AUTH],
+        f"POST /api/review/v1/tasks/{T1}/release HTTP/1.1\nHost: 01scale.com\nAuthorization: Bearer <delegated token, act: service:docflow>",
+        json.dumps({"task": {**TASK_OPEN, "held_by": "service:docflow", "released_at": "2026-11-17T09:20:05Z"}}, indent=2),
     ),
     endpoint(
         "complete-task", "POST", f"{BASE}/tasks/{{taskId}}/complete", "Signed in", "MVP1-E4-03",
@@ -185,6 +201,8 @@ TASKS = {"name": "review.tasks", "purpose": "One row per set of values a person 
     column("created_at", "timestamptz", "No", "now()", "", "When the task was created."),
     column("completed_at", "timestamptz", "Yes", "", "Set exactly when completed", "When the person finished."),
     column("completed_by", "uuid", "Yes", "", "Set exactly when completed", "Who finished it. The owner in version 1; kept separate for later shared reviews."),
+    column("held_by", "text", "Yes", "", "Like `service:docflow`; set only at creation, from the delegated token's `act` claim", "The app holding the unflagged fields until it releases them (`MVP1-E4-06`). Empty: not held."),
+    column("released_at", "timestamptz", "Yes", "", "Set only when `held_by` is set", "When the holder released the fields. Empty while held."),
 ], "constraints": [], "sampleCols": [], "sampleRows": []}
 
 RFIELDS = {"name": "review.fields", "purpose": "Review's own copy of each value under review, with the evidence and the person's decision. The service that extracted it keeps its own original, untouched.", "columns": [
@@ -244,6 +262,7 @@ DATA_MODEL_RULES = [
     "A correction (a final value different from the original) creates exactly one eval candidate per field, updated if the person changes it again.",
     "Candidates never leave this database. Reports built from them show counts and rates only, seen by the admin alone.",
     "Deleting a user's account deletes their tasks, fields, history and eval candidates, approved ones included.",
+    "A held task shows its owner only the flagged fields until the holding app releases it (`MVP1-E4-06`): enough to review, nothing more. Only a delegated token can place a hold and only the holder can release it, so a person cannot read held values early or lift a hold themselves. Review never knows the reason for a hold.",
 ]
 
 DATA_MODEL = {
@@ -274,6 +293,8 @@ TASKS["constraints"] = [
     "`tasks_status_check`: `open` or `completed`",
     "`tasks_completed_check`: `completed_at` and `completed_by` are set exactly when completed",
     "`tasks_reference_check`: `reference` 1 to 200 characters",
+    "`tasks_held_by_check`: `held_by` is like `service:<name>`",
+    "`tasks_released_check`: `released_at` only when `held_by` is set",
     "`tasks_owner_id_idx`: index on (`owner_id`, `created_at` desc), for a user's tasks",
 ]
 TASKS["sampleCols"] = ["id", "owner_id", "reference", "status", "checks_overridden", "created_at", "completed_at", "completed_by"]
@@ -333,8 +354,12 @@ create table review.tasks (
   created_at        timestamptz not null default now(),
   completed_at      timestamptz,
   completed_by      uuid,
+  held_by           text,
+  released_at       timestamptz,
 
   constraint tasks_reference_check check (length(reference) between 1 and 200),
+  constraint tasks_held_by_check check (held_by ~ '^service:[a-z][a-z0-9-]*$'),
+  constraint tasks_released_check check (released_at is null or held_by is not null),
   constraint tasks_status_check check (status in ('open', 'completed')),
   constraint tasks_completed_check check (
     (status = 'completed') = (completed_at is not null)
@@ -634,7 +659,7 @@ MODULE = {
     "overview": {
         "name": "Human Review", "version": "Version 1 · A person checks flagged fields", "status": "Designed, not built", "uiStatus": "UI components built in `@01scale/ui-review` 0.2.0, against a stand-in client; the service is designed, not built", "base": BASE,
         "what": OVERVIEW_WHAT, "why": OVERVIEW_WHY, "scope_in": SCOPE_IN, "scope_out": SCOPE_OUT,
-        "stories": ["MVP1-E4-01", "MVP1-E4-02", "MVP1-E4-03", "MVP1-E4-04"],
+        "stories": ["MVP1-E4-01", "MVP1-E4-02", "MVP1-E4-03", "MVP1-E4-04", "MVP1-E4-06"],
     },
     "flow": FLOW,
     "concepts": CONCEPTS,

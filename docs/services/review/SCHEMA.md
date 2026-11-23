@@ -1,6 +1,6 @@
 # Human Review service — schema
 
-> **Version 1 · A person checks flagged fields.** Status: designed, not built. Stories: `MVP1-E4-01`, `MVP1-E4-02`, `MVP1-E4-03`, `MVP1-E4-04`.
+> **Version 1 · A person checks flagged fields.** Status: designed, not built. Stories: `MVP1-E4-01`, `MVP1-E4-02`, `MVP1-E4-03`, `MVP1-E4-04`, `MVP1-E4-06`.
 
 The SQL for the Human Review service's tables, in the `review` schema. No other service can read them. What each field means is in [`DATA-MODEL.md`](DATA-MODEL.md). In the build this is produced by Drizzle migrations; the SQL below is the target.
 
@@ -20,8 +20,12 @@ create table review.tasks (
   created_at        timestamptz not null default now(),
   completed_at      timestamptz,
   completed_by      uuid,
+  held_by           text,
+  released_at       timestamptz,
 
   constraint tasks_reference_check check (length(reference) between 1 and 200),
+  constraint tasks_held_by_check check (held_by ~ '^service:[a-z][a-z0-9-]*$'),
+  constraint tasks_released_check check (released_at is null or held_by is not null),
   constraint tasks_status_check check (status in ('open', 'completed')),
   constraint tasks_completed_check check (
     (status = 'completed') = (completed_at is not null)
@@ -152,6 +156,8 @@ grant select, insert on review.audit_events to review_service;
 - `tasks_status_check`: `open` or `completed`
 - `tasks_completed_check`: `completed_at` and `completed_by` are set exactly when completed
 - `tasks_reference_check`: `reference` 1 to 200 characters
+- `tasks_held_by_check`: `held_by` is like `service:<name>`
+- `tasks_released_check`: `released_at` only when `held_by` is set
 - `tasks_owner_id_idx`: index on (`owner_id`, `created_at` desc), for a user's tasks
 
 **Sample data**

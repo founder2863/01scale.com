@@ -1,6 +1,6 @@
 # Human Review service — data model
 
-> **Version 1 · A person checks flagged fields.** Status: designed, not built. Stories: `MVP1-E4-01`, `MVP1-E4-02`, `MVP1-E4-03`, `MVP1-E4-04`.
+> **Version 1 · A person checks flagged fields.** Status: designed, not built. Stories: `MVP1-E4-01`, `MVP1-E4-02`, `MVP1-E4-03`, `MVP1-E4-04`, `MVP1-E4-06`.
 
 What the service keeps, how the pieces relate, and what every field means. The SQL is in [`SCHEMA.md`](SCHEMA.md); shared database rules are in [`docs/architecture/DATABASE-DESIGN.md`](../../architecture/DATABASE-DESIGN.md).
 
@@ -36,6 +36,8 @@ One row per set of values a person checks together, usually one document's field
 | `created_at` | `timestamptz` | No | now() |  | When the task was created. |
 | `completed_at` | `timestamptz` | Yes |  | Set exactly when completed | When the person finished. |
 | `completed_by` | `uuid` | Yes |  | Set exactly when completed | Who finished it. The owner in version 1; kept separate for later shared reviews. |
+| `held_by` | `text` | Yes |  | Like `service:docflow`; set only at creation, from the delegated token's `act` claim | The app holding the unflagged fields until it releases them (`MVP1-E4-06`). Empty: not held. |
+| `released_at` | `timestamptz` | Yes |  | Set only when `held_by` is set | When the holder released the fields. Empty while held. |
 
 ## `review.fields`
 
@@ -115,6 +117,7 @@ The service template also gives Review `audit_events`, `idempotency_keys` and `o
 - A correction (a final value different from the original) creates exactly one eval candidate per field, updated if the person changes it again.
 - Candidates never leave this database. Reports built from them show counts and rates only, seen by the admin alone.
 - Deleting a user's account deletes their tasks, fields, history and eval candidates, approved ones included.
+- A held task shows its owner only the flagged fields until the holding app releases it (`MVP1-E4-06`): enough to review, nothing more. Only a delegated token can place a hold and only the holder can release it, so a person cannot read held values early or lift a hold themselves. Review never knows the reason for a hold.
 
 ## What is deliberately not stored
 

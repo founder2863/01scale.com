@@ -373,18 +373,20 @@ sequenceDiagram
   participant L as Delivery
   Note over D,L: Every arrow goes through the gateway at 01scale.com/api
   D->>U: create file, confirm upload [person]
-  D->>X: start job [person]
+  D->>X: start job, held for DocFlow [delegated]
   X->>I: token for the owner
   X->>U: fetch the file [delegated]
   X-->>D: event: job completed
   D->>I: token for the owner
   D->>X: read fields [delegated]
-  D->>R: create review task [delegated]
+  D->>R: create review task, held for DocFlow [delegated]
   D->>X: re-check corrected values [person]
   D->>R: complete task [person]
   D->>U: store result.json and result.csv [person]
   D->>P: create order at $5.00 [delegated]
   P-->>D: event: order paid
+  D->>X: release the job's results [delegated]
+  D->>R: release the task's fields [delegated]
   D->>L: send email [delegated]
   L->>I: look up email [service]
   D->>P: is it paid? (on every download) [person]
@@ -395,6 +397,7 @@ Solid arrows are synchronous API calls, each through the gateway. Dashed arrows 
 
 - **[person]**: the signed-in person's own token, for steps they start.
 - **[delegated]**: a 5-minute token for that person, issued by Identity to the acting service, which is named in its `act` claim. It is used when no person is present (after an event), and always for Payment and Delivery, so only an app's server can set a price or send an email.
+- **Held results** (`MVP1-E3-08`, `E4-06`, `E5-05`): an app that starts work for a person may hold its results, with `hold: true` and a delegated token; the acting app in `act` becomes the holder. While held, the owner sees only the flagged fields, enough to review, and only the holder reads everything. The holder releases them when its own condition is met; DocFlow does so when the order is paid. I chose this over DocFlow owning the jobs and proxying every read, because the services stay app-agnostic (they know "held until the app releases", never "payment"), each service's components still call their own API, and every later app can gate results the same way. Decision log: `docs/decisions/MVP1-E5.md`.
 - **[service]**: the service acting as itself, never for a user's data.
 
 DocFlow ignores an event that is not about the document's current job or order, so a late or repeated event changes nothing.

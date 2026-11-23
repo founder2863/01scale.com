@@ -63,6 +63,7 @@ export const docflow = {
       "MVP1-E5-02",
       "MVP1-E5-03",
       "MVP1-E5-04",
+      "MVP1-E5-05",
       "MVP1-E7-01",
       "MVP1-E7-02"
     ],
@@ -238,7 +239,7 @@ export const docflow = {
       ],
       "behaviour": [
         "Calls Upload `POST /files/{fileId}/complete`. If the file is rejected, the document is `rejected` with Upload's reason.",
-        "If ready, calls Extraction `POST /jobs` with `reference: docflow:{documentId}` and sets the document `extracting`.",
+        "If ready, calls Extraction `POST /jobs` with `reference: docflow:{documentId}` and sets the document `extracting`. It asks with `hold: true` and a delegated token for the owner (`act: service:docflow`), so DocFlow holds the results until the order is paid (`MVP1-E5-05`).",
         "Idempotent: a document already past this step is returned unchanged."
       ],
       "responses": [
@@ -384,7 +385,7 @@ export const docflow = {
         }
       ],
       "behaviour": [
-        "Calls Extraction `POST /jobs` for the same file; stores the new job's ID; the document is `extracting` again."
+        "Calls Extraction `POST /jobs` for the same file, again with `hold: true` and a delegated token (`MVP1-E5-05`); stores the new job's ID; the document is `extracting` again."
       ],
       "responses": [
         {
@@ -803,9 +804,9 @@ export const docflow = {
       "behaviour": [
         "No person is present, so each step uses a delegated token for the document's owner from Identity (`act: service:docflow`; decision on #24).",
         "Acts only on events about the document's current work: an extraction event whose `job_id` is not the document's `job_id`, or a payment event whose `order_id` is not its `order_id`, is acknowledged and ignored. A late failure from a retried job, or the expiry of an earlier order, changes nothing.",
-        "`extraction.job.completed`: reads the fields with Extraction `GET /jobs/{jobId}/fields`, creates a Review task with Review `POST /tasks` (Idempotency-Key `docflow:{documentId}:{jobId}`) and sets the document `needs_review`; with nothing flagged it still creates the task, so every document is reviewed the same way.",
+        "`extraction.job.completed`: reads the fields with Extraction `GET /jobs/{jobId}/fields`, creates a Review task with Review `POST /tasks` and `hold: true` (Idempotency-Key `docflow:{documentId}:{jobId}`; `MVP1-E5-05`) and sets the document `needs_review`; with nothing flagged it still creates the task, so every document is reviewed the same way.",
         "`extraction.job.failed`: sets `extraction_failed`.",
-        "`payment.order.paid`: sets `paid` and asks Delivery `POST /messages` for the `order_paid` email, keyed by the event's ID.",
+        "`payment.order.paid`: releases the held results, Extraction `POST /jobs/{jobId}/release` and Review `POST /tasks/{taskId}/release` (each safe to repeat; `MVP1-E5-05`), then sets `paid` and asks Delivery `POST /messages` for the `order_paid` email, keyed by the event's ID. If a release fails, the event is retried; downloads already work, because DocFlow builds them as the holder.",
         "`payment.order.expired` or `failed`: clears the order so Pay starts a new one.",
         "`identity.user.deleted`: deletes that user's documents. There are no stored results to delete: Extraction and Review delete their own data.",
         "Other types are acknowledged and ignored."
@@ -844,7 +845,7 @@ export const docflow = {
     },
     {
       "topic": "Which token each step uses (decisions on #24 and #21)",
-      "how": "Steps the person starts (upload, retry, complete review, checkout, preview, download) use their own token, except Payment and Delivery, which take only a delegated token. Steps after an event (create the review task, send the email) use a delegated token for the document's owner. Every call goes through `https://01scale.com/api/…`."
+      "how": "Steps the person starts (upload, retry, complete review, checkout, preview, download) use their own token, except Payment and Delivery, which take only a delegated token. Steps after an event (create the review task, send the email) use a delegated token for the document's owner. So do starting an extraction and reading results for the preview, the downloads and the checks, because DocFlow holds the results until payment and only the holder reads them in full (`MVP1-E5-05`). Every call goes through `https://01scale.com/api/…`."
     },
     {
       "topic": "Pages",

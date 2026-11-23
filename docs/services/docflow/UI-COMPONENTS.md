@@ -1,6 +1,6 @@
 # DocFlow service — UI components
 
-> **Version 1 · The app that connects the services.** Status: page sections built in the DocFlow V1 prototype (`app/products/docflow/try`), against an in-browser mock; the app is designed, not built. Stories: `MVP1-E0-09`, `MVP1-E2-05`, `MVP1-E5-01`, `MVP1-E5-02`, `MVP1-E5-03`, `MVP1-E5-04`, `MVP1-E7-01`, `MVP1-E7-02`.
+> **Version 1 · The app that connects the services.** Status: page sections built in the DocFlow V1 prototype (`app/products/docflow/try`), against an in-browser mock; the app is designed, not built. Stories: `MVP1-E0-09`, `MVP1-E2-05`, `MVP1-E5-01`, `MVP1-E5-02`, `MVP1-E5-03`, `MVP1-E5-04`, `MVP1-E5-05`, `MVP1-E7-01`, `MVP1-E7-02`.
 
 DocFlow's own page sections. Everything else on DocFlow's pages comes from the services' component packages. Built: every component is shown live, in each of its states, on the module's UI Components page.
 

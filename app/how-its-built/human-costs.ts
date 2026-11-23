@@ -22,10 +22,10 @@ export const humanCosts = {
     "tbd": []
   },
   "projected": {
-    "stories": 119,
-    "personDays": 714,
-    "cost": 714000,
-    "tokenCost": 176.18,
+    "stories": 122,
+    "personDays": 723,
+    "cost": 723000,
+    "tokenCost": 181.49,
     "tbd": []
   },
   "excludedSoFar": {
@@ -101,10 +101,10 @@ export const humanCosts = {
       "epic": "MVP1-E3",
       "inScope": true,
       "projected": {
-        "stories": 7,
-        "personDays": 60,
-        "cost": 60000,
-        "tokenCost": 2.33,
+        "stories": 8,
+        "personDays": 63,
+        "cost": 63000,
+        "tokenCost": 4.1,
         "tbd": []
       },
       "soFar": {
@@ -119,10 +119,10 @@ export const humanCosts = {
       "epic": "MVP1-E4",
       "inScope": true,
       "projected": {
-        "stories": 5,
-        "personDays": 25,
-        "cost": 25000,
-        "tokenCost": 1.49,
+        "stories": 6,
+        "personDays": 28,
+        "cost": 28000,
+        "tokenCost": 3.26,
         "tbd": []
       },
       "soFar": {
@@ -137,10 +137,10 @@ export const humanCosts = {
       "epic": "MVP1-E5",
       "inScope": true,
       "projected": {
-        "stories": 4,
-        "personDays": 17,
-        "cost": 17000,
-        "tokenCost": 0,
+        "stories": 5,
+        "personDays": 20,
+        "cost": 20000,
+        "tokenCost": 1.77,
         "tbd": []
       },
       "soFar": {
@@ -1396,6 +1396,21 @@ export const humanCosts = {
       "tokenCostPending": false
     },
     {
+      "id": "MVP1-E3-08",
+      "title": "Hold a job's fields for the app that started it",
+      "product": "MVP1",
+      "epic": "MVP1-E3",
+      "size": "S",
+      "personDays": 3,
+      "cost": 3000,
+      "done": false,
+      "issue": null,
+      "closed": null,
+      "tokenCost": 1.77,
+      "tokenCostShared": true,
+      "tokenCostPending": false
+    },
+    {
       "id": "MVP1-E4-01",
       "title": "Review queue",
       "product": "MVP1",
@@ -1471,6 +1486,21 @@ export const humanCosts = {
       "tokenCostPending": false
     },
     {
+      "id": "MVP1-E4-06",
+      "title": "Hold a review task's fields for the app that started it",
+      "product": "MVP1",
+      "epic": "MVP1-E4",
+      "size": "S",
+      "personDays": 3,
+      "cost": 3000,
+      "done": false,
+      "issue": null,
+      "closed": null,
+      "tokenCost": 1.77,
+      "tokenCostShared": true,
+      "tokenCostPending": false
+    },
+    {
       "id": "MVP1-E5-01",
       "title": "Final JSON with metadata",
       "product": "MVP1",
@@ -1528,6 +1558,21 @@ export const humanCosts = {
       "closed": null,
       "tokenCost": null,
       "tokenCostShared": false,
+      "tokenCostPending": false
+    },
+    {
+      "id": "MVP1-E5-05",
+      "title": "DocFlow holds results until payment",
+      "product": "MVP1",
+      "epic": "MVP1-E5",
+      "size": "S",
+      "personDays": 3,
+      "cost": 3000,
+      "done": false,
+      "issue": null,
+      "closed": null,
+      "tokenCost": 1.77,
+      "tokenCostShared": true,
       "tokenCostPending": false
     },
     {

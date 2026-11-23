@@ -877,6 +877,21 @@ As the owner, I want the admin's jobs table built as Extraction's UI component, 
 
 **Status: built (#165), 23 Nov 2026,** in `ui-extraction` 0.3.0, against a stand-in client until the service is built; every state is live on the module's UI Components section. Added 22 Nov 2026 (Nikhil), when MVP1-E0-19 AC5 marked this component "Designed, not built yet".
 
+### MVP1-E3-08 · Hold a job's fields for the app that started it — S
+As an app (DocFlow), I want to hold an extraction's results until my own condition is met, so a person cannot read them around my paywall, while Extraction stays app-agnostic.
+- **AC1:** `POST /api/extraction/v1/jobs` accepts `hold: true` only with a delegated token; the acting app in its `act` claim becomes the job's `held_by`. With a person's own token or an API key it answers `422 hold_requires_app`.
+- **AC2:** While a job is held, `GET /jobs/{jobId}/fields` with the owner's own token or API key returns only the flagged fields, whatever `flagged` says, with `held: true` and `fields_hidden`; the holding app, with a delegated token naming it in `act`, gets every field. `GET /jobs/{jobId}` shows `held_by` and `released_at`.
+- **AC3:** `POST /jobs/{jobId}/release` lets only the holder release the job (`403 not_holder` for anyone else, `409 not_held` for a job never held); it is safe to repeat, and records `job.released` in the audit log. After release, the owner reads every field.
+- **AC4:** Extraction never learns why a job is held. Tests cover owner, holder, other app and released reads.
+- **Service:** LLM Extraction
+- **API design:**
+  - `POST /api/extraction/v1/jobs` (signed in) — adds body `hold?: boolean` (delegated token only). Errors add `422 hold_requires_app`.
+  - `GET /api/extraction/v1/jobs/{jobId}/fields` (signed in) — while held, flagged fields only for the owner, with `held`, `fields_hidden`.
+  - `POST /api/extraction/v1/jobs/{jobId}/release` (service: delegated token of the holder) — Release held results. → `200 {job}`. Errors: `403 not_holder`, `404 job_not_found`, `409 not_held`. No MCP tool: no agent releases for a person.
+- **Database design:** `extraction.jobs` adds `held_by` text null (like `service:docflow`, set only at creation) and `released_at` timestamptz null (only when `held_by` is set).
+
+**Status: designed (#177), 23 Nov 2026 (Nikhil's decision; `docs/decisions/MVP1-E5.md`).**
+
 ## E4 · Human review of low-confidence fields (MVP1 "d")
 **Goal:** a person checks only what the system is unsure about, quickly, with evidence beside each field.
 
@@ -932,6 +947,21 @@ As the owner, I want the admin's eval-candidate and accuracy screens built as Re
 
 **Status: built (#166), 23 Nov 2026,** in `ui-review` 0.2.0, against a stand-in client until the service is built; every state is live on the module's UI Components section. Added 22 Nov 2026 (Nikhil), when MVP1-E0-19 AC5 marked these components "Designed, not built yet".
 
+### MVP1-E4-06 · Hold a review task's fields for the app that started it — S
+As an app (DocFlow), I want the person to review only the flagged fields until my own condition is met, so the values read with high confidence cannot be read around my paywall.
+- **AC1:** `POST /api/review/v1/tasks` accepts `hold: true` only with a delegated token; the acting app in `act` becomes `held_by`. Otherwise `422 hold_requires_app`.
+- **AC2:** While a task is held, `GET /tasks/{taskId}` with the owner's own token or API key returns only the flagged fields, even with `all=true`, with `held: true` and `fields_hidden`; the holder gets every field. The owner may decide only flagged fields: an unflagged one answers `404 field_not_found`.
+- **AC3:** `POST /tasks/{taskId}/release` lets only the holder release the task (`403 not_holder`, `409 not_held`); safe to repeat; records `review.task_released`. After release, the owner sees and corrects every field (Nikhil's decision on #45 still holds).
+- **AC4:** Review never learns why a task is held. Review's UI components work unchanged: `ReviewQueue` shows what the API returns, and an app may also hide its "Show all fields" toggle with `allowShowAll`.
+- **Service:** Human Review
+- **API design:**
+  - `POST /api/review/v1/tasks` (signed in) — adds body `hold?: boolean` (delegated token only). Errors add `422 hold_requires_app`.
+  - `GET /api/review/v1/tasks/{taskId}` and `PATCH …/fields/{fieldId}` (signed in) — while held, flagged fields only for the owner.
+  - `POST /api/review/v1/tasks/{taskId}/release` (service: delegated token of the holder) — Release held fields. → `200 {task}`. Errors: `403 not_holder`, `404 task_not_found`, `409 not_held`. No MCP tool.
+- **Database design:** `review.tasks` adds `held_by` text null and `released_at` timestamptz null (only when `held_by` is set).
+
+**Status: designed (#178), 23 Nov 2026 (Nikhil's decision; `docs/decisions/MVP1-E5.md`).**
+
 ## E5 · JSON review, metadata and CSV (MVP1 "e")
 **Goal:** clean, trustworthy outputs the user can preview before paying.
 
@@ -957,7 +987,7 @@ As the owner, I want the admin's eval-candidate and accuracy screens built as Re
 ### MVP1-E5-03 · Locked preview — S
 - **AC1:** Before payment, I can see a short preview of both outputs on screen: four fields (vendor, invoice number, date and total) and how many more fields and line items unlock after payment. Download buttons show "Pay to download". After payment I see everything. (Changed 22 Nov 2026, Nikhil: a full preview gave the results away before payment.)
 - **AC3:** The preview limit is enforced on the server, like the download lock, so the full results cannot be read through the API before payment.
-- **AC4:** Before payment, DocFlow's screens list only the flagged fields: after extraction, in the review and in the results page's Edit values. The fields read with high confidence stay hidden, with a line saying how many unlock after payment (Nikhil, 22 Nov 2026).
+- **AC4:** Before payment, DocFlow's screens list only the flagged fields: after extraction, in the review and in the results page's Edit values. The fields read with high confidence stay hidden, with a line saying how many unlock after payment (Nikhil, 22 Nov 2026). The services enforce it too, through the hold in `MVP1-E5-05`.
 - **AC2:** The download endpoints return 402 until the order is paid, enforced on the server.
 - **Service:** DocFlow app
 - **API design:**
@@ -972,6 +1002,18 @@ As the owner, I want the admin's eval-candidate and accuracy screens built as Re
 - **Database design:** No tables: nothing is stored. The final values stay in `review.fields`, kept until the user deletes their account.
 
 ---
+
+### MVP1-E5-05 · DocFlow holds results until payment — S
+As the owner, I want the full results unreadable through any API until the person has paid, so the preview is the only thing given away (API first: preview, then payment, then full data).
+- **AC1:** DocFlow starts every extraction job and review task with `hold: true` and a delegated token for the owner (`act: service:docflow`), so DocFlow is the holder (`MVP1-E3-08`, `MVP1-E4-06`).
+- **AC2:** DocFlow reads results as the holder, with a delegated token, for the preview, the checks and the downloads; before payment its own API still returns only the four-field preview (`MVP1-E5-03` AC3).
+- **AC3:** On `payment.order.paid`, DocFlow releases the job and the task (each safe to repeat), then sets the document `paid` and asks Delivery for the email. If a release fails, the event is retried; the person is not blocked, because downloads are built by DocFlow as the holder.
+- **AC4:** A test shows that, before payment, the owner's own token gets only the flagged fields from Extraction and Review, and four fields from DocFlow; after payment, every field everywhere.
+- **Service:** DocFlow app
+- **API design:** No new endpoints. Uses Extraction `POST /jobs` with `hold`, `POST /jobs/{jobId}/release`, Review `POST /tasks` with `hold` and `POST /tasks/{taskId}/release`. Changes which token each step uses (see `docs/services/docflow/README.md`).
+- **Database design:** No tables. The hold lives in Extraction and Review.
+
+**Status: designed (#179), 23 Nov 2026 (Nikhil's decision; `docs/decisions/MVP1-E5.md`).**
 
 ## E6 · Payment (MVP1 "f")
 **Goal:** a reliable, secure one-time payment per document.

@@ -1,6 +1,6 @@
 # Human Review service — developer guide
 
-> **Version 1 · A person checks flagged fields.** Status: designed, not built. Stories: `MVP1-E4-01`, `MVP1-E4-02`, `MVP1-E4-03`, `MVP1-E4-04`.
+> **Version 1 · A person checks flagged fields.** Status: designed, not built. Stories: `MVP1-E4-01`, `MVP1-E4-02`, `MVP1-E4-03`, `MVP1-E4-04`, `MVP1-E4-06`.
 
 The other documents for this service: [user journeys](USER-JOURNEYS.md), [UI components](UI-COMPONENTS.md), [API specification](API-SPEC.md), [data model](DATA-MODEL.md), [schema](SCHEMA.md). The same content is on the site at `/products/human-review/readme`.
 
@@ -110,6 +110,7 @@ Base address: `https://01scale.com/api/review/v1`
 | `POST` | `/tasks` | Signed in | `review:write` | Create a review task |
 | `GET` | `/tasks/{taskId}` | Signed in | `review:read` | Get the review queue |
 | `PATCH` | `/tasks/{taskId}/fields/{fieldId}` | Signed in | `review:write` | Accept, edit or mark a field as not on the document |
+| `POST` | `/tasks/{taskId}/release` | Service | `review:write` | Release held fields |
 | `POST` | `/tasks/{taskId}/complete` | Signed in | `review:write` | Complete the review |
 | `GET` | `/admin/eval-candidates` | Admin | `is_admin` | Corrections that could become eval cases |
 | `PATCH` | `/admin/eval-candidates/{candidateId}` | Admin | `is_admin` | Approve or reject a candidate |
