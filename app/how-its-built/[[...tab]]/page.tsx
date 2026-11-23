@@ -38,7 +38,7 @@ const RATES = [
 export const dynamicParams = false;
 
 // Each expensive mistake also has its own article page: /how-its-built/expensive-mistakes/<slug>.
-// Total Projected Cost has four tabs; the first is the tab's own address (MVP1-E8-10).
+// Total Cost has four tabs; the first is the tab's own address (MVP1-E8-10; label from MVP1-E8-11).
 export function generateStaticParams(): Params[] {
   return [
     { tab: [] },
@@ -518,7 +518,7 @@ export default async function HowItsBuilt({ params }: { params: Promise<Params> 
         {tab === "total-projected-cost" && (
         <section id="total-projected-cost">
           <h2 className="group-title">
-            Total Projected Cost <span className="status">In progress</span>
+            Total Cost <span className="status">In progress</span>
           </h2>
           <p className="note">
             What 01scale has cost with Claude Code, against what a human team

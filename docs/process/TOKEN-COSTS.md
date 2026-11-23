@@ -2,7 +2,7 @@
 
 What it costs to build 01scale with Claude Code, per story. Generated from `docs/process/token-ledger.json` by `npm run costs`; do not edit by hand.
 
-Updated 2026-11-23. 243 requests across 6 session(s). Total **$362.31** for 738.8 million tokens.
+Updated 2026-11-23. 249 requests across 6 session(s). Total **$368.95** for 765.7 million tokens.
 
 ## Per story
 
@@ -51,10 +51,11 @@ Updated 2026-11-23. 243 requests across 6 session(s). Total **$362.31** for 738.
 | MVP1-E0-49 · Section menu on phones, and Previous / Next | 2 | 4.57M | $1.19 | $0.00 | $1.19 | 100% |
 | MVP1-E8-09 · Human cost script and skill | 2 | 4.91M | $0.00 | $0.00 | $0.00 (part pending) | 73% |
 | MVP1-E8-10 · Total Projected Cost page, four tabs | 1 | 3.39M | $0.00 | $0.00 | $0.00 (part pending) | 100% |
-| MVP1-E0-19 · Design system (packages/ui-core), service UI packages (E0-07 AC6) and the DocFlow V1 clickable prototype (E0-18 for DocFlow) | 6 | 61.08M | $15.78 | $6.30 | $22.08 | 60% |
-| MVP1-E1-09, E3-07, E4-05 · Account and admin UI components (ui-identity, ui-extraction, ui-review) | 1 | 16.68M | $0.00 | $0.00 | $0.00 (part pending) | 100% |
-| MVP1-E0-50 · One Overview for every app (with the E0-51 story written alongside) | 3 | 4.04M | $0.00 | $0.00 | $0.00 (part pending) | 100% |
-| **Total** | **152** | **588.59M** | **$157.85** | **$132.87** | **$290.73** (part pending) | **54%** |
+| MVP1-E0-19 · Design system (packages/ui-core), service UI packages (E0-07 AC6) and the DocFlow V1 clickable prototype (E0-18 for DocFlow) | 6 | 61.08M | $13.62 | $6.39 | $20.02 | 60% |
+| MVP1-E1-09, E3-07, E4-05 · Account and admin UI components (ui-identity, ui-extraction, ui-review) | 1 | 16.68M | $4.46 | $0.00 | $4.46 | 100% |
+| MVP1-E8-11 · Name the navigation item "Total Cost" | 2 | 8.80M | $2.04 | $0.00 | $2.04 | 100% |
+| MVP1-E0-50 · One Overview for every app (with the E0-51 story written alongside) | 3 | 4.97M | $0.00 | $0.00 | $0.00 (part pending) | 100% |
+| **Total** | **154** | **598.32M** | **$162.20** | **$132.97** | **$295.17** (part pending) | **55%** |
 
 ## Scaffolding (not tied to a story)
 
@@ -64,15 +65,15 @@ Updated 2026-11-23. 243 requests across 6 session(s). Total **$362.31** for 738.
 | Planning documents | 2 | 1.35M | $0.72 |
 | Questions and explanations | 25 | 19.06M | $21.58 |
 | Product discovery | 17 | 7.28M | $15.87 |
-| Process | 40 | 114.68M | $29.87 |
-| Tool overhead (background calls) | 0 | 0.00M | $1.65 |
-| **Total** | **91** | **150.23M** | **$71.58** |
+| Process | 44 | 131.84M | $34.17 |
+| Tool overhead (background calls) | 0 | 0.00M | $-0.45 |
+| **Total** | **95** | **167.39M** | **$73.78** |
 
 ## Totals
 
-- Build $157.85, rework $132.87, scaffolding $71.58.
-- Token yield across stories (build ÷ build + rework): 54%.
-- 16 pending request(s) were never priced by the tool; estimated at about $15.61 from their measured tokens at list prices (an upper bound), not included in the totals above.
+- Build $162.20, rework $132.97, scaffolding $73.78.
+- Token yield across stories (build ÷ build + rework): 55%.
+- 16 pending request(s) were never priced by the tool; estimated at about $11.56 from their measured tokens at list prices (an upper bound), not included in the totals above.
 - Share of all tokens that went into kept story work: 43%.
 
 ## Definitions

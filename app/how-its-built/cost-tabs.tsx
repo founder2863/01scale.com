@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { costTabs, type CostTab } from "./tabs";
 
-// The four tabs of Total Projected Cost (MVP1-E8-10). On a desktop, one row. On a phone or tablet,
+// The four tabs of Total Cost (MVP1-E8-10). On a desktop, one row. On a phone or tablet,
 // the site's pattern for many tabs (MVP1-E0-49): one button showing where you are, which opens the
 // list. Built on <details>, so it works without JavaScript.
 export function CostTabs({ current }: { current: CostTab }) {
@@ -17,16 +17,16 @@ export function CostTabs({ current }: { current: CostTab }) {
       <details className="section-picker section-picker-inline" key={current}>
         <summary>
           <span className="section-picker-where">
-            <span className="side-tabs-heading">Total Projected Cost</span>
+            <span className="side-tabs-heading">Total Cost</span>
             <span className="section-picker-current">{tab?.label}</span>
           </span>
           <span className="section-picker-label">Tabs</span>
         </summary>
-        <nav className="section-picker-list" aria-label="Total Projected Cost tabs">
+        <nav className="section-picker-list" aria-label="Total Cost tabs">
           <div className="side-tabs-group">{links}</div>
         </nav>
       </details>
-      <nav className="sub-tabs" aria-label="Total Projected Cost tabs">
+      <nav className="sub-tabs" aria-label="Total Cost tabs">
         {links}
       </nav>
     </>

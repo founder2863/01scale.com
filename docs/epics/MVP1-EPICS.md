@@ -1160,6 +1160,17 @@ As a hiring manager, I want to compare what 01scale cost with Claude Code agains
 
 ---
 
+
+### MVP1-E8-11 · Name the navigation item "Total Cost" — S
+As a visitor, I want the How It's Built item to be called "Total Cost", because it shows the cost so far as well as the projection.
+- **AC1:** The header's How It's Built menu, the How It's Built tab bar and the section's heading say **Total Cost** instead of "Total Projected Cost", on every screen size and in both themes. The page title follows the label.
+- **AC2:** The address stays `/how-its-built/total-projected-cost`, with its four sub-tab addresses, so no link breaks. The four sub-tabs keep their names.
+- **AC3:** Text that names the navigation item is updated to match (CLAUDE.md, STATUS.md, the Skills tab). The titles of done stories (E8-01, E8-10) keep their names as a record of what was built.
+- **Service:** Site (`apps/web`)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+**Status: built (#171), 23 Nov 2026, at Nikhil's request.**
 ## Definition of done for MVP1
 - All stories pass their AC; E3 and E4 evals meet `EVALS.md` MVP1 thresholds on the holdout set.
 - The demo script in PRD §15 runs end to end on a phone in under 3 minutes.

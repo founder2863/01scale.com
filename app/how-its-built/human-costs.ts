@@ -15,17 +15,17 @@ export const humanCosts = {
   },
   "scope": "MVP1 only: Platform Core, the platform services, DocFlow (E0 to E7), the cost work itself (E8; Nikhil on PR #159) and AutoRep V1 (E1 to E6). MVP2 is out.",
   "soFar": {
-    "stories": 33,
-    "personDays": 164,
-    "cost": 164000,
-    "tokenCost": 123.31,
+    "stories": 34,
+    "personDays": 167,
+    "cost": 167000,
+    "tokenCost": 127.76,
     "tbd": []
   },
   "projected": {
-    "stories": 118,
-    "personDays": 711,
-    "cost": 711000,
-    "tokenCost": 167.62,
+    "stories": 119,
+    "personDays": 714,
+    "cost": 714000,
+    "tokenCost": 172.07,
     "tbd": []
   },
   "excludedSoFar": {
@@ -50,14 +50,14 @@ export const humanCosts = {
         "stories": 51,
         "personDays": 314,
         "cost": 314000,
-        "tokenCost": 154.9,
+        "tokenCost": 152.84,
         "tbd": []
       },
       "soFar": {
         "stories": 27,
         "personDays": 136,
         "cost": 136000,
-        "tokenCost": 123.31,
+        "tokenCost": 121.25,
         "tbd": []
       }
     },
@@ -68,14 +68,14 @@ export const humanCosts = {
         "stories": 9,
         "personDays": 47,
         "cost": 47000,
-        "tokenCost": 10.13,
+        "tokenCost": 11.62,
         "tbd": []
       },
       "soFar": {
         "stories": 1,
         "personDays": 3,
         "cost": 3000,
-        "tokenCost": 0,
+        "tokenCost": 1.49,
         "tbd": []
       }
     },
@@ -104,14 +104,14 @@ export const humanCosts = {
         "stories": 7,
         "personDays": 60,
         "cost": 60000,
-        "tokenCost": 0.84,
+        "tokenCost": 2.33,
         "tbd": []
       },
       "soFar": {
         "stories": 1,
         "personDays": 3,
         "cost": 3000,
-        "tokenCost": 0,
+        "tokenCost": 1.49,
         "tbd": []
       }
     },
@@ -122,14 +122,14 @@ export const humanCosts = {
         "stories": 5,
         "personDays": 25,
         "cost": 25000,
-        "tokenCost": 0,
+        "tokenCost": 1.49,
         "tbd": []
       },
       "soFar": {
         "stories": 1,
         "personDays": 3,
         "cost": 3000,
-        "tokenCost": 0,
+        "tokenCost": 1.49,
         "tbd": []
       }
     },
@@ -191,17 +191,17 @@ export const humanCosts = {
       "epic": "MVP1-E8",
       "inScope": true,
       "projected": {
-        "stories": 10,
-        "personDays": 72,
-        "cost": 72000,
-        "tokenCost": 0,
+        "stories": 11,
+        "personDays": 75,
+        "cost": 75000,
+        "tokenCost": 2.04,
         "tbd": []
       },
       "soFar": {
-        "stories": 3,
-        "personDays": 19,
-        "cost": 19000,
-        "tokenCost": 0,
+        "stories": 4,
+        "personDays": 22,
+        "cost": 22000,
+        "tokenCost": 2.04,
         "tbd": []
       }
     },
@@ -596,7 +596,7 @@ export const humanCosts = {
       "done": true,
       "issue": 96,
       "closed": "2026-11-22",
-      "tokenCost": 22.44,
+      "tokenCost": 20.38,
       "tokenCostShared": true,
       "tokenCostPending": false
     },
@@ -1063,7 +1063,7 @@ export const humanCosts = {
       "closed": null,
       "tokenCost": null,
       "tokenCostShared": false,
-      "tokenCostPending": false
+      "tokenCostPending": true
     },
     {
       "id": "MVP1-E0-51",
@@ -1211,9 +1211,9 @@ export const humanCosts = {
       "done": true,
       "issue": 164,
       "closed": "2026-11-22",
-      "tokenCost": null,
+      "tokenCost": 1.49,
       "tokenCostShared": true,
-      "tokenCostPending": true
+      "tokenCostPending": false
     },
     {
       "id": "MVP1-E2-01",
@@ -1391,9 +1391,9 @@ export const humanCosts = {
       "done": true,
       "issue": 165,
       "closed": "2026-11-22",
-      "tokenCost": null,
+      "tokenCost": 1.49,
       "tokenCostShared": true,
-      "tokenCostPending": true
+      "tokenCostPending": false
     },
     {
       "id": "MVP1-E4-01",
@@ -1466,9 +1466,9 @@ export const humanCosts = {
       "done": true,
       "issue": 166,
       "closed": "2026-11-22",
-      "tokenCost": null,
+      "tokenCost": 1.49,
       "tokenCostShared": true,
-      "tokenCostPending": true
+      "tokenCostPending": false
     },
     {
       "id": "MVP1-E5-01",
@@ -1784,6 +1784,21 @@ export const humanCosts = {
       "tokenCost": null,
       "tokenCostShared": false,
       "tokenCostPending": true
+    },
+    {
+      "id": "MVP1-E8-11",
+      "title": "Name the navigation item \"Total Cost\"",
+      "product": "MVP1",
+      "epic": "MVP1-E8",
+      "size": "S",
+      "personDays": 3,
+      "cost": 3000,
+      "done": true,
+      "issue": 171,
+      "closed": "2026-11-23",
+      "tokenCost": 2.04,
+      "tokenCostShared": false,
+      "tokenCostPending": false
     },
     {
       "id": "AUTOREP-E1-01",

@@ -525,9 +525,9 @@ export const costs = {
       "requests": 6,
       "buildTokens": 36887681,
       "reworkTokens": 24193311,
-      "buildCost": 15.78,
-      "reworkCost": 6.3,
-      "totalCost": 22.08,
+      "buildCost": 13.62,
+      "reworkCost": 6.39,
+      "totalCost": 20.02,
       "yield": 60,
       "pending": false
     },
@@ -537,17 +537,29 @@ export const costs = {
       "requests": 1,
       "buildTokens": 16678321,
       "reworkTokens": 0,
-      "buildCost": 0,
+      "buildCost": 4.46,
       "reworkCost": 0,
-      "totalCost": 0,
+      "totalCost": 4.46,
       "yield": 100,
-      "pending": true
+      "pending": false
+    },
+    {
+      "key": "MVP1-E8-11",
+      "name": "MVP1-E8-11 · Name the navigation item \"Total Cost\"",
+      "requests": 2,
+      "buildTokens": 8796682,
+      "reworkTokens": 0,
+      "buildCost": 2.04,
+      "reworkCost": 0,
+      "totalCost": 2.04,
+      "yield": 100,
+      "pending": false
     },
     {
       "key": "MVP1-E0-50",
       "name": "MVP1-E0-50 · One Overview for every app (with the E0-51 story written alongside)",
       "requests": 3,
-      "buildTokens": 4042034,
+      "buildTokens": 4972444,
       "reworkTokens": 0,
       "buildCost": 0,
       "reworkCost": 0,
@@ -557,12 +569,12 @@ export const costs = {
     }
   ],
   "storyTotals": {
-    "requests": 152,
-    "tokens": 588593573,
-    "buildCost": 157.85,
-    "reworkCost": 132.87,
-    "cost": 290.73,
-    "yield": 54,
+    "requests": 154,
+    "tokens": 598320665,
+    "buildCost": 162.2,
+    "reworkCost": 132.97,
+    "cost": 295.17,
+    "yield": 55,
     "pending": true
   },
   "scaffolding": [
@@ -592,40 +604,40 @@ export const costs = {
     },
     {
       "name": "Process",
-      "requests": 40,
-      "tokens": 114681826,
-      "cost": 29.87
+      "requests": 44,
+      "tokens": 131840677,
+      "cost": 34.17
     },
     {
       "name": "Tool overhead (background calls)",
       "requests": 0,
       "tokens": 0,
-      "cost": 1.65
+      "cost": -0.45
     }
   ],
   "scaffoldingTotals": {
-    "requests": 91,
-    "tokens": 150233074,
-    "cost": 71.58
+    "requests": 95,
+    "tokens": 167391925,
+    "cost": 73.78
   },
   "totals": {
-    "requests": 243,
-    "tokens": 738826647,
-    "cost": 362.31,
-    "buildCost": 157.85,
-    "reworkCost": 132.87,
-    "scaffoldingCost": 71.58,
-    "storyYield": 54,
+    "requests": 249,
+    "tokens": 765712590,
+    "cost": 368.95,
+    "buildCost": 162.2,
+    "reworkCost": 132.97,
+    "scaffoldingCost": 73.78,
+    "storyYield": 55,
     "overallYield": 43,
     "pendingRequests": 22,
-    "pendingEstimate": 15.61,
+    "pendingEstimate": 11.56,
     "pendingEstimated": 16
   },
   "byKind": {
-    "input": 0.06,
-    "output": 15.57,
-    "cache_read": 13.59,
-    "cache_write": 55.63
+    "input": 0.1,
+    "output": 21.98,
+    "cache_read": 39.87,
+    "cache_write": 60.34
   },
   "mistakes": {
     "designRedo": {
@@ -647,8 +659,8 @@ export const costs = {
       "cost": 103.2,
       "share": 28,
       "median": 8.2,
-      "typical": 0.56,
-      "extra": 95.88
+      "typical": 0.58,
+      "extra": 95.61
     },
     "mergedTooSoon": {
       "requests": 1,
