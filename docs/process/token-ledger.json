@@ -3832,10 +3832,24 @@
       "models": [
         "claude-opus-5-5"
       ],
-      "tokens": 6161632,
-      "output_tokens": 27105,
+      "tokens": 7202246,
+      "output_tokens": 31282,
+      "cost_usd": 2.9752
+    },
+    {
+      "session": "c0e55f60",
+      "n": 2,
+      "ts": "2026-11-23T03:39:47.938Z",
+      "area": "Process",
+      "kind": "scaffolding",
+      "summary": "Process: bring the README up to date (where things stand, apps, roadmap, module contents), sync root package pins, close #182 with its costs",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 3211348,
+      "output_tokens": 11028,
       "cost_usd": null,
-      "estimated_usd": 2.6479
+      "estimated_usd": 1.0282
     }
   ]
 }
