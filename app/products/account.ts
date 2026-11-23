@@ -61,7 +61,8 @@ export const account = {
     "stories": [
       "MVP1-E1-05",
       "MVP1-E0-06"
-    ]
+    ],
+    "uiStatus": "UI components built in `@01scale/ui-identity` 0.3.0 (MVP1-E1-09), against a stand-in client; the service is designed, not built"
   },
   "flow": [
     {

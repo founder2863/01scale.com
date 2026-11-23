@@ -1,10 +1,10 @@
 # Status and handoff
 
-Read this at the start of every session, after CLAUDE.md. Update it in the PR that changes what it says (a story shipped, a decision made, a question answered). Last updated: 23 Nov 2026, after closing MVP1-E8-10 (#157) with its costs.
+Read this at the start of every session, after CLAUDE.md. Update it in the PR that changes what it says (a story shipped, a decision made, a question answered). Last updated: 23 Nov 2026, with the PR that marks the UI components built in their documents and records two decisions waiting for Nikhil.
 
 ## Where things stand
 
-- **In flight:** PR #175 builds `MVP1-E0-50` (#172), one Overview template for DocFlow and AutoRep, and `MVP1-E0-51` (#173), DocFlow's high-level design diagram (both diagrams share `app/products/app-diagram.tsx`). Close both issues with their costs once it merges. Before that: Every PR is merged, #168 (account and admin UI components) included. Every MVP1 UI component is built and live in its module's gallery.
+- **In flight:** PR #176: the UI Components documents now say built (each with its package version), E0-18 (#95) stays open until Try it is on every module page, and the results-before-payment recommendation waits for Nikhil (below). Every earlier PR is merged, #175 (E0-50, E0-51) included.
 - **Service UI packages:** each `packages/ui-<service>` defines the client it needs from its own API (`createClientContext` in ui-core); the app supplies it: the mock in `app/products/docflow/try/mock-platform.ts` today, the gateway once the service is built. DocFlow's own sections and the Cognito and Stripe stand-ins stay in the app (Nikhil, 22 Nov 2026).
 - **Workspaces:** the root `package.json` now has `"workspaces": ["packages/*"]`; the site stays at the root until E0-07 moves it to `apps/web`. Run `npm install` after pulling.
 - **The site** (Next.js at the repo root, not yet `apps/web`) has: Home (E0-36 to E0-42), Products with app pages (side menu, E0-48) and module pages (15 sections, phone Sections button and Previous / Next, E0-49), Platform (Core, Platform and Apps Architecture, E0-22, E0-23, E0-43), How It's Built (Skills, Token Costs, Agents, Total Cost with four tabs (E8-10; named "Total Cost" in E8-11), Constraints, Expensive Mistakes with four project lessons and the Payments article, E0-45 to E0-47).
@@ -25,6 +25,7 @@ Read this at the start of every session, after CLAUDE.md. Update it in the PR th
 
 ## Open questions waiting for Nikhil
 
+- **Results before payment (raised on PR #163; Claude's recommendation, waiting for Nikhil's confirmation).** DocFlow's API already gives a four-field preview before payment and everything after (E5-03 AC3), but the person owns their Extraction job and Review task, so their own token can read every field from Extraction or Review directly. Recommendation: an app-agnostic **hold**. An app that starts a job or task for a person may mark it `held_by: <app>`; while held, the owner sees only the flagged fields and counts (enough to review), and the full fields go only to the holding app, which releases the hold when its own condition is met (DocFlow: payment confirmed). Services learn "held until the app releases", never "payment", and every later app can gate results the same way. Rejected: DocFlow owning the jobs and proxying every read (breaks "components call their own API" and makes DocFlow thick). When confirmed: update the stories in E3 (Extraction), E4 (Review) and E5 (DocFlow) and their API and data designs in one PR, before E3 is built.
 - AutoRep's "What each step adds over time" maps the PRD's V2 list to steps (several locations, vector database, other languages, Slack approval, posting without approval and analytics); steps with nothing planned say "Not decided yet". Check the mapping (PR #175).
 - Answered 23 Nov 2026: DocFlow's "What each step adds over time" stays in Overview, as section 5 of the app Overview template (`MVP1-E0-50`).
 - Answered 23 Nov 2026: the V1 card ends with a "Not in V1" line (the PRD's non-goals), and Try it shows on every app, "Coming Soon..." where there is no prototype (`MVP1-E0-50`).
@@ -49,7 +50,7 @@ Every closed story issue (27 of them) carries its measured token cost and estima
 
 ## Next, in order (from CLAUDE.md and the epics)
 
-0. **Next session:** E0-07 (service template), then E0-08 (gateway). E8-10 (#157) and E0-19 (#96) are closed. E0-18 stays open until Try it is on every module page.
+0. **Next session:** E0-07 (service template), then E0-08 (gateway). E8-10 (#157) and E0-19 (#96) are closed. E0-18 (#95) stays open until Try it, the functional prototype, is on every module page (Nikhil, 23 Nov 2026).
 1. The rest of E0 after E0-07 and E0-08.
 2. E1 Identity with Cognito.
 3. Whenever Nikhil says go: E0-44 rename, E8-02 onward.

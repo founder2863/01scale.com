@@ -643,7 +643,7 @@ MODULE = {
         "schema": "The SQL for the Upload service's tables, in the `upload` schema. No other service can read them.",
     },
     "overview": {
-        "name": "Upload", "version": "Version 1 · Files to AWS S3", "status": "Designed, not built", "base": BASE,
+        "name": "Upload", "version": "Version 1 · Files to AWS S3", "status": "Designed, not built", "uiStatus": "UI components built in `@01scale/ui-upload` 0.2.1, against a stand-in client; the service is designed, not built", "base": BASE,
         "what": OVERVIEW_WHAT, "why": OVERVIEW_WHY, "scope_in": SCOPE_IN, "scope_out": SCOPE_OUT,
         "stories": ["MVP1-E2-01", "MVP1-E2-02", "MVP1-E2-03", "MVP1-E2-04", "MVP1-E2-05"],
     },

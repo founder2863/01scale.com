@@ -1,8 +1,8 @@
 # Identity service — UI components
 
-> **Version 1 · Login with AWS Cognito.** Status: designed, not built.
+> **Version 1 · Login with AWS Cognito.** Status: UI components built in `@01scale/ui-identity` 0.3.0 (MVP1-E0-19 AC5), against a stand-in client; the service is designed, not built.
 
-The components the Identity service ships for apps to use, as the package `packages/ui-identity`. Designed, not built.
+The components the Identity service ships for apps to use, as the package `packages/ui-identity`. Built: every component is shown live, in each of its states, on the module's UI Components page.
 
 ## Rules
 

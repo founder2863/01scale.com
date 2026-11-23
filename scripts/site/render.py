@@ -102,10 +102,10 @@ def table(headers, rows):
     return "\n".join(lines)
 
 
-def header(m, title):
+def header(m, title, status=None):
     o = m["overview"]
     stories = ", ".join(f"`{s}`" for s in o["stories"])
-    return f"# {o['name']} service — {title}\n\n> **{o['version']}.** Status: {o['status'].lower()}. Stories: {stories}.\n"
+    return f"# {o['name']} service — {title}\n\n> **{o['version']}.** Status: {status or o['status'].lower()}. Stories: {stories}.\n"
 
 
 def is_json(text):
@@ -215,7 +215,10 @@ def render_journeys(m):
 
 
 def render_components(m):
-    parts = [header(m, "UI components"), f"{m['notes']['ui']} Designed, not built.\n"]
+    # The UI components can be built before their service (MVP1-E0-19): then they carry their own status.
+    ui_status = m["overview"].get("uiStatus")
+    note = "Built: every component is shown live, in each of its states, on the module's UI Components page." if ui_status else "Designed, not built."
+    parts = [header(m, "UI components", ui_status), f"{m['notes']['ui']} {note}\n"]
     if m["uiRules"]:
         parts.append("## Rules\n\n" + "\n".join(f"- {r}" for r in m["uiRules"]) + "\n")
     for c in m["components"]:

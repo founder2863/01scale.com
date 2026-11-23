@@ -268,7 +268,8 @@ for j in JOURNEYS:
 jm.append("## When something goes wrong\n\n" + table(["Situation", "What the person sees", "Error code"], EDGE_CASES) + "\n")
 open("docs/services/identity/USER-JOURNEYS.md", "w").write("\n".join(jm))
 
-um = [f"# Identity service — UI components\n\n{HEAD}\nThe components the Identity service ships for apps to use, as the package `packages/ui-identity`. Designed, not built.\n", "## Rules\n\n" + "\n".join(f"- {r}" for r in UI_RULES) + "\n"]
+UI_HEAD = HEAD.replace("Status: designed, not built.", "Status: UI components built in `@01scale/ui-identity` 0.3.0 (MVP1-E0-19 AC5), against a stand-in client; the service is designed, not built.")
+um = [f"# Identity service — UI components\n\n{UI_HEAD}\nThe components the Identity service ships for apps to use, as the package `packages/ui-identity`. Built: every component is shown live, in each of its states, on the module's UI Components page.\n", "## Rules\n\n" + "\n".join(f"- {r}" for r in UI_RULES) + "\n"]
 for c in COMPONENTS:
     um.append(f"## {c['name']}\n\n*{c['kind']}.* {c['purpose']}\n\n" + table(["Input", "Type", "Meaning"], [(f"`{a}`", b, d) for a, b, d in c["props"]]) + "\n\n**States:** " + "; ".join(c["states"]) + ".\n\n**Calls:** " + ", ".join(c["calls"]) + ".\n")
 um.append("## Pages provided by AWS Cognito in version 1\n\nThese are not 01scale components. They are replaced by 01scale's own pages in version 2.\n\n" + table(["Page", "What it does"], HOSTED_PAGES) + "\n")

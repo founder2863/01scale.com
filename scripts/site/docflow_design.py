@@ -247,7 +247,7 @@ MODULE = {
     "notes": {"journey": "What a person sees across the whole DocFlow journey, and where DocFlow's own steps are.", "ui": "DocFlow's own page sections. Everything else on DocFlow's pages comes from the services' component packages.", "hosted": "", "token": "",
               "schema": "The SQL for the DocFlow app's tables, in the `docflow` schema. No service can read them."},
     "overview": {
-        "name": "DocFlow", "version": "Version 1 · The app that connects the services", "status": "Designed, not built", "base": BASE,
+        "name": "DocFlow", "version": "Version 1 · The app that connects the services", "status": "Designed, not built", "uiStatus": "page sections built in the DocFlow V1 prototype (`app/products/docflow/try`), against an in-browser mock; the app is designed, not built", "base": BASE,
         "what": [
             "DocFlow is the first app built from the 01scale platform services. It turns an uploaded invoice into reviewed JSON and CSV, by calling Upload, LLM Extraction, Human Review, Payment and Delivery in order.",
             "It is deliberately thin. It keeps one record per invoice (which file, job, review and order belong together, and where the process is) and builds the invoice-specific results. Everything else is a service it calls.",

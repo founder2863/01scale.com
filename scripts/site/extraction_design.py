@@ -712,7 +712,7 @@ MODULE = {
         "schema": "The SQL for the LLM Extraction service's tables, in the `extraction` schema. No other service can read them.",
     },
     "overview": {
-        "name": "LLM Extraction", "version": "Version 1 · One Claude call per document", "status": "Designed, not built", "base": BASE,
+        "name": "LLM Extraction", "version": "Version 1 · One Claude call per document", "status": "Designed, not built", "uiStatus": "UI components built in `@01scale/ui-extraction` 0.3.0, against a stand-in client; the service is designed, not built", "base": BASE,
         "what": OVERVIEW_WHAT, "why": OVERVIEW_WHY, "scope_in": SCOPE_IN, "scope_out": SCOPE_OUT,
         "stories": ["MVP1-E3-01", "MVP1-E3-02", "MVP1-E3-03", "MVP1-E3-04", "MVP1-E3-05"],
     },

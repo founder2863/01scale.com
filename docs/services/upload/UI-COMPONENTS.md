@@ -1,8 +1,8 @@
 # Upload service — UI components
 
-> **Version 1 · Files to AWS S3.** Status: designed, not built. Stories: `MVP1-E2-01`, `MVP1-E2-02`, `MVP1-E2-03`, `MVP1-E2-04`, `MVP1-E2-05`.
+> **Version 1 · Files to AWS S3.** Status: UI components built in `@01scale/ui-upload` 0.2.1, against a stand-in client; the service is designed, not built. Stories: `MVP1-E2-01`, `MVP1-E2-02`, `MVP1-E2-03`, `MVP1-E2-04`, `MVP1-E2-05`.
 
-What the Upload service ships for apps to use, as the package `packages/ui-upload`. Designed, not built.
+What the Upload service ships for apps to use, as the package `packages/ui-upload`. Built: every component is shown live, in each of its states, on the module's UI Components page.
 
 ## Rules
 

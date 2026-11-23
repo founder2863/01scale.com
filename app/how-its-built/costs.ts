@@ -547,11 +547,11 @@ export const costs = {
       "key": "MVP1-E8-11",
       "name": "MVP1-E8-11 · Name the navigation item \"Total Cost\"",
       "requests": 2,
-      "buildTokens": 8796682,
+      "buildTokens": 15732229,
       "reworkTokens": 0,
-      "buildCost": 2.04,
+      "buildCost": 3.68,
       "reworkCost": 0,
-      "totalCost": 2.04,
+      "totalCost": 3.68,
       "yield": 100,
       "pending": false
     },
@@ -582,11 +582,11 @@ export const costs = {
   ],
   "storyTotals": {
     "requests": 155,
-    "tokens": 603688771,
-    "buildCost": 164.67,
+    "tokens": 610624318,
+    "buildCost": 166.31,
     "reworkCost": 132.97,
-    "cost": 297.63,
-    "yield": 55,
+    "cost": 299.27,
+    "yield": 56,
     "pending": true
   },
   "scaffolding": [
@@ -616,40 +616,40 @@ export const costs = {
     },
     {
       "name": "Process",
-      "requests": 44,
-      "tokens": 132693982,
-      "cost": 34.72
+      "requests": 48,
+      "tokens": 146956590,
+      "cost": 37.96
     },
     {
       "name": "Tool overhead (background calls)",
       "requests": 0,
       "tokens": 0,
-      "cost": -0.45
+      "cost": 2.96
     }
   ],
   "scaffoldingTotals": {
-    "requests": 95,
-    "tokens": 168245230,
-    "cost": 74.33
+    "requests": 99,
+    "tokens": 182507838,
+    "cost": 80.98
   },
   "totals": {
-    "requests": 250,
-    "tokens": 771934001,
-    "cost": 371.96,
-    "buildCost": 164.67,
+    "requests": 254,
+    "tokens": 793132156,
+    "cost": 380.26,
+    "buildCost": 166.31,
     "reworkCost": 132.97,
-    "scaffoldingCost": 74.33,
-    "storyYield": 55,
+    "scaffoldingCost": 80.98,
+    "storyYield": 56,
     "overallYield": 43,
     "pendingRequests": 18,
     "pendingEstimate": 10.62,
     "pendingEstimated": 12
   },
   "byKind": {
-    "input": 0.1,
-    "output": 21.98,
-    "cache_read": 39.87,
-    "cache_write": 60.34
+    "input": 0.12,
+    "output": 22.43,
+    "cache_read": 47.22,
+    "cache_write": 60.83
   },
   "mistakes": {
     "designRedo": {
@@ -669,7 +669,7 @@ export const costs = {
     "reloads": {
       "requests": 13,
       "cost": 103.2,
-      "share": 28,
+      "share": 27,
       "median": 8.2,
       "typical": 0.58,
       "extra": 95.7

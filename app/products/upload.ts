@@ -74,7 +74,8 @@ export const upload = {
       "MVP1-E2-03",
       "MVP1-E2-04",
       "MVP1-E2-05"
-    ]
+    ],
+    "uiStatus": "UI components built in `@01scale/ui-upload` 0.2.1, against a stand-in client; the service is designed, not built"
   },
   "flow": [
     {

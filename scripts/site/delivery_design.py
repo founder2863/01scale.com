@@ -227,7 +227,7 @@ MODULE = {
         "schema": "The SQL for the Delivery service's tables, in the `delivery` schema. No other service can read them.",
     },
     "overview": {
-        "name": "Delivery", "version": "Version 1 · Email through Resend", "status": "Designed, not built", "base": BASE,
+        "name": "Delivery", "version": "Version 1 · Email through Resend", "status": "Designed, not built", "uiStatus": "UI components built in `@01scale/ui-delivery` 0.1.1, against a stand-in client; the service is designed, not built", "base": BASE,
         "what": [
             "Delivery is the platform service that sends messages to users on an app's behalf. In DocFlow it sends the email that confirms a payment and links back to the results.",
             "An app's server names the user, a template and the template's values; Delivery looks up the user's verified address, fills the template, sends it through Resend and retries if sending fails. Apps never handle email addresses.",

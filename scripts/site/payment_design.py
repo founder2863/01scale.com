@@ -314,7 +314,7 @@ MODULE = {
         "schema": "The SQL for the Payment service's tables, in the `payment` schema. No other service can read them.",
     },
     "overview": {
-        "name": "Payment", "version": "Version 1 · Stripe Checkout, test mode", "status": "Designed, not built", "base": BASE,
+        "name": "Payment", "version": "Version 1 · Stripe Checkout, test mode", "status": "Designed, not built", "uiStatus": "UI components built in `@01scale/ui-payment` 0.2.1, against a stand-in client; the service is designed, not built", "base": BASE,
         "what": [
             "Payment is the platform service that takes a one-time payment for something an app sells. In DocFlow it is the step where a person pays before downloading the results.",
             "An app's server asks for an order with a price; Payment returns the address of Stripe's own checkout page, where the person pays. Card details never touch 01scale.",

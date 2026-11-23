@@ -65,7 +65,8 @@ export const payment = {
       "MVP1-E6-01",
       "MVP1-E6-02",
       "MVP1-E6-03"
-    ]
+    ],
+    "uiStatus": "UI components built in `@01scale/ui-payment` 0.2.1, against a stand-in client; the service is designed, not built"
   },
   "flow": [
     {

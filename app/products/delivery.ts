@@ -63,7 +63,8 @@ export const delivery = {
       "MVP1-E7-01",
       "MVP1-E7-02",
       "MVP1-E7-03"
-    ]
+    ],
+    "uiStatus": "UI components built in `@01scale/ui-delivery` 0.1.1, against a stand-in client; the service is designed, not built"
   },
   "flow": [
     {

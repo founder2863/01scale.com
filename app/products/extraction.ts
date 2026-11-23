@@ -76,7 +76,8 @@ export const extraction = {
       "MVP1-E3-03",
       "MVP1-E3-04",
       "MVP1-E3-05"
-    ]
+    ],
+    "uiStatus": "UI components built in `@01scale/ui-extraction` 0.3.0, against a stand-in client; the service is designed, not built"
   },
   "flow": [
     {
