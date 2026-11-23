@@ -590,6 +590,35 @@ As a visitor on a phone, I want to reach any section of a module or app page wit
 - **API design:** No endpoints.
 - **Database design:** No tables.
 
+### MVP1-E0-50 · One Overview for every app — M
+As a visitor, I want every app's Overview to answer the same questions in the same order and look the same, so I can compare DocFlow, AutoRep and the apps that follow without learning a new page each time (Nikhil's request, 23 Nov 2026).
+- **AC1:** Every designed app version's Overview (`/products/<app>`) is built from one shared component and shows these sections, in this order and with these headings:
+  1. **The problem**: what goes wrong today and for whom, in two or three sentences.
+  2. **Who it is for**: the primary persona and, if there is one, the secondary persona, each on its own card (name, role, what they need, what they distrust).
+  3. **What the product is**: what the app does, in plain words, end to end.
+  4. **High-level design**: the app's design diagram inside a card that can be opened and closed, **closed by default** (an HTML `details` element, so it works without JavaScript and by keyboard). Closed, it shows its title and one line on what it contains.
+  5. **What each step adds over time**: every step of the app's flow, with what it does in V1 and what it adds in V2.
+  6. **What the end product will be**: one card for V1 and one for V2, about this app only. Nothing about the platform, other apps or later versions (the DocFlow "Later" card goes; platform reuse stays in Built On and on the Platform pages). The V1 card ends with one **Not in V1** line: the PRD's non-goals for this app (Nikhil's decision, 23 Nov 2026).
+- **AC2:** "Why I am building this" is removed from DocFlow's Overview and is not part of the template.
+- **AC3:** A **Try it** callout sits above section 1 on every app. With a clickable prototype it links to it (DocFlow today); without one it says "Coming Soon..." and what will be there (AutoRep until demo mode exists, `AUTOREP-E6-01`) (Nikhil's decision, 23 Nov 2026).
+- **AC4:** Each app supplies only data (problem, personas, what it is, diagram, steps, V1 and V2 cards), in one file per app; the component decides layout and order. A section whose content is not written yet shows "Coming Soon..."; nothing is invented. Content comes from the app's PRD (Problem, Users, Scope, Release plan; for DocFlow `docs/prd/MVP1-PRD.md` and `MVP2-PRD.md`, for AutoRep `docs/prd/AUTOREP-PRD.md`), and Nikhil approves the wording before the page is built.
+- **AC5:** DocFlow V1 and AutoRep V1 both move to the template. AutoRep's existing diagram (`AUTOREP-E6-03`) moves into section 4, closed by default. AutoRep's links to its PRD, stories and decisions move out of the Overview to PRD Reference and Requirement EPIC.
+- **AC6:** Every future app uses the template; CLAUDE.md says so. A new app cannot get a side-menu Overview any other way.
+- **AC7:** It works from 320 to 1920 pixels wide, in light and dark mode; on a phone the persona and version cards stack.
+- **Service:** Site (`apps/web`)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E0-51 · DocFlow high-level design diagram — S
+As a visitor opening DocFlow, I want one picture of how it works, like AutoRep's, so I understand the steps, the services behind them and what it runs on before reading the details.
+- **AC1:** DocFlow V1's Overview shows the diagram in the High-level design card (`MVP1-E0-50`, section 4), closed by default, laid out like AutoRep's (`AUTOREP-E6-03`): a title and the steps (the seven steps of its flow in `app/products/flow.tsx`: Sign in → Upload → Extract → Review → Results → Pay → Deliver); **Inputs**, **DocFlow's orchestration** and **Outputs** side by side; then **Data & infrastructure**, **Platform services used** and the **End-to-end flow**.
+- **AC2:** Its content follows `docs/prd/MVP1-PRD.md` and `docs/architecture/ARCHITECTURE.md`: inputs are the user's invoice (PDF or image) and the test account; DocFlow holds only the order of the steps and its process record; low-confidence fields go to Human Review; payment is Stripe Checkout in test mode; outputs are JSON and CSV by download and email; it runs on Vercel with Neon Postgres (a schema per service), private S3 and the Claude API inside Extraction. Each platform service names its version and links to its page.
+- **AC3:** The orchestration shows both branches after extraction: every field confident, straight to the locked preview; some fields low-confidence, to Human Review first.
+- **AC4:** It is part of the page, not an image, and shares its building blocks with AutoRep's diagram, so the two look the same. It is readable from 320 to 1920 pixels wide, in light and dark mode; on a phone the columns stack.
+- **Service:** Site (`apps/web`)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
 ---
 
 ## E1 · Accounts with AWS Cognito (MVP1 "a")

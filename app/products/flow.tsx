@@ -82,6 +82,7 @@ const docflowSteps: readonly FlowStep[] = [
 ];
 
 // AutoRep's flow, from docs/prd/AUTOREP-PRD.md (MVP1-E0-35). Steps the app does itself have no module page.
+// `later` maps the PRD's V2 list (its non-goals for V1) to the step it changes (MVP1-E0-50).
 const autorepSteps: readonly FlowStep[] = [
   {
     key: "sign-in",
@@ -95,6 +96,7 @@ const autorepSteps: readonly FlowStep[] = [
     label: "Ingest",
     service: `${APPS.autorep.name} app`,
     does: "New reviews come from Google Business Profile, or from recorded reviews in demo mode.",
+    later: "Reviews from several locations.",
     modules: [],
   },
   {
@@ -102,6 +104,7 @@ const autorepSteps: readonly FlowStep[] = [
     label: "Analyse ‖ Research",
     service: `${APPS.autorep.name} agents`,
     does: "The Analyst reads the review while the Researcher gathers sourced facts with its tools.",
+    later: "Past replies found through a vector database.",
     modules: [],
   },
   {
@@ -109,6 +112,7 @@ const autorepSteps: readonly FlowStep[] = [
     label: "Draft and critique",
     service: `${APPS.autorep.name} agents`,
     does: "The Writer drafts a reply; the Critic checks it against fixed rules, up to two revisions.",
+    later: "Replies in languages other than English.",
     modules: [],
   },
   {
@@ -116,6 +120,7 @@ const autorepSteps: readonly FlowStep[] = [
     label: "Approve",
     service: "Human Review",
     does: "Below 4★ or flagged risky, the owner approves or edits the reply.",
+    later: "Approval from Slack.",
     modules: ["human-review"],
   },
   {
@@ -130,6 +135,7 @@ const autorepSteps: readonly FlowStep[] = [
     label: "Publish",
     service: `${APPS.autorep.name} app`,
     does: "The reply is posted once, whatever retries happen.",
+    later: "Posting without approval where the owner allows it, and analytics on replies.",
     modules: [],
   },
 ];

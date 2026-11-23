@@ -146,7 +146,6 @@ type AppVersion = {
   summary?: string;
   // Set when nothing is designed yet: what will appear (MVP1-E0-33 AC2).
   comingSoon?: string;
-  docs?: readonly { label: string; href: string }[];
   // Which version of each service this app version is built on (MVP1-E0-33 AC3).
   // "TBD" until it is decided: never assumed (Nikhil's decision on PR #118).
   builtOn: Partial<Record<ServiceKey, ServiceVersion>>;
@@ -177,13 +176,6 @@ export const appVersions: readonly AppVersion[] = [
     app: "autorep",
     version: "V1",
     status: "In design",
-    summary:
-      "A team of AI agents answers each Google review. The Analyst and the Researcher work in parallel, the Writer drafts a reply from sourced facts only, and the Critic checks it against fixed rules, sending it back up to twice. Replies to reviews of 4★ or more with no risk flag are published; anything else waits for the owner's approval. It reuses Identity, Human Review and Delivery unchanged.",
-    docs: [
-      { label: "AutoRep PRD", href: `${REPO}/docs/prd/AUTOREP-PRD.md` },
-      { label: "AutoRep stories", href: `${REPO}/docs/epics/AUTOREP-EPICS.md` },
-      { label: "AutoRep decisions", href: `${REPO}/docs/decisions/AUTOREP-E1.md` },
-    ],
     builtOn: { identity: "V1", review: "V1", delivery: "V1" },
   },
   {

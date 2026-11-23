@@ -4,7 +4,7 @@ Read this at the start of every session, after CLAUDE.md. Update it in the PR th
 
 ## Where things stand
 
-- **In flight:** nothing. Every PR is merged, #168 (account and admin UI components) included. Every MVP1 UI component is built and live in its module's gallery.
+- **In flight:** PR #175 builds `MVP1-E0-50` (#172), one Overview template for DocFlow and AutoRep, and `MVP1-E0-51` (#173), DocFlow's high-level design diagram (both diagrams share `app/products/app-diagram.tsx`). Close both issues with their costs once it merges. Before that: Every PR is merged, #168 (account and admin UI components) included. Every MVP1 UI component is built and live in its module's gallery.
 - **Service UI packages:** each `packages/ui-<service>` defines the client it needs from its own API (`createClientContext` in ui-core); the app supplies it: the mock in `app/products/docflow/try/mock-platform.ts` today, the gateway once the service is built. DocFlow's own sections and the Cognito and Stripe stand-ins stay in the app (Nikhil, 22 Nov 2026).
 - **Workspaces:** the root `package.json` now has `"workspaces": ["packages/*"]`; the site stays at the root until E0-07 moves it to `apps/web`. Run `npm install` after pulling.
 - **The site** (Next.js at the repo root, not yet `apps/web`) has: Home (E0-36 to E0-42), Products with app pages (side menu, E0-48) and module pages (15 sections, phone Sections button and Previous / Next, E0-49), Platform (Core, Platform and Apps Architecture, E0-22, E0-23, E0-43), How It's Built (Skills, Token Costs, Agents, Total Cost with four tabs (E8-10; named "Total Cost" in E8-11), Constraints, Expensive Mistakes with four project lessons and the Payments article, E0-45 to E0-47).
@@ -25,7 +25,9 @@ Read this at the start of every session, after CLAUDE.md. Update it in the PR th
 
 ## Open questions waiting for Nikhil
 
-- DocFlow V1 "What each step adds over time" also describes V2 and sits in Overview: keep, or move to the V2 page? (PR #144)
+- AutoRep's "What each step adds over time" maps the PRD's V2 list to steps (several locations, vector database, other languages, Slack approval, posting without approval and analytics); steps with nothing planned say "Not decided yet". Check the mapping (PR #175).
+- Answered 23 Nov 2026: DocFlow's "What each step adds over time" stays in Overview, as section 5 of the app Overview template (`MVP1-E0-50`).
+- Answered 23 Nov 2026: the V1 card ends with a "Not in V1" line (the PRD's non-goals), and Try it shows on every app, "Coming Soon..." where there is no prototype (`MVP1-E0-50`).
 
 ## Known issues
 
@@ -43,7 +45,7 @@ Read this at the start of every session, after CLAUDE.md. Update it in the PR th
 
 ## Costs on closed issues
 
-Every closed story issue (27 of them) carries its measured token cost and estimated human cost, at $1,000 per engineer-day (Nikhil: a good estimate for engineers). Combined ledger blocks (E0-22/23, E0-32 to E0-35, E0-36 to E0-42) were split by story size, and the comment says so. From now on the figures come from `npm run human-costs` (skill `estimate-human-cost`): on 22 Nov, 27 done stories = 131 person-days = $131,000 so far; every MVP1 story (E8 included) and AutoRep V1 story = 113 stories, 691 person-days, $691,000 projected. Nikhil on PR #159: E8 work counts; AutoRep stories, which have no issues, are not counted as done. The comments typed by hand earlier summed to about $137,000; the script's figure replaces it. After closing E0-19 and adding three stories (22 Nov, later): 29 done stories = 147 person-days = $147,000 so far; 116 stories, 700 person-days, $700,000 projected. After closing E1-09, E3-07 and E4-05 (23 Nov): 32 done stories = 156 person-days = $156,000 so far; projection unchanged. After closing E8-10: 33 done stories = 164 person-days = $164,000.
+Every closed story issue (27 of them) carries its measured token cost and estimated human cost, at $1,000 per engineer-day (Nikhil: a good estimate for engineers). Combined ledger blocks (E0-22/23, E0-32 to E0-35, E0-36 to E0-42) were split by story size, and the comment says so. From now on the figures come from `npm run human-costs` (skill `estimate-human-cost`): on 22 Nov, 27 done stories = 131 person-days = $131,000 so far; every MVP1 story (E8 included) and AutoRep V1 story = 113 stories, 691 person-days, $691,000 projected. Nikhil on PR #159: E8 work counts; AutoRep stories, which have no issues, are not counted as done. The comments typed by hand earlier summed to about $137,000; the script's figure replaces it. After closing E0-19 and adding three stories (22 Nov, later): 29 done stories = 147 person-days = $147,000 so far; 116 stories, 700 person-days, $700,000 projected. After closing E1-09, E3-07 and E4-05 (23 Nov): 32 done stories = 156 person-days = $156,000 so far; projection unchanged. After closing E8-10: 33 done stories = 164 person-days = $164,000. After closing E8-11 and adding E0-50 and E0-51 (PR #175): 34 done stories = 167 person-days = $167,000 so far; 119 stories, 714 person-days, $714,000 projected.
 
 ## Next, in order (from CLAUDE.md and the epics)
 

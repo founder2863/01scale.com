@@ -21,8 +21,9 @@ import {
   type Version,
 } from "./apps";
 import { products } from "./data";
-import { AutorepDiagram } from "./autorep-diagram";
-import { DocflowJourney, DocflowOverview, DocflowWhyComponents } from "./docflow-vision";
+import { AppOverview } from "./app-overview";
+import { DocflowJourney, DocflowWhyComponents } from "./docflow-vision";
+import { OVERVIEWS } from "./overview";
 import { SectionMenu, SectionPager } from "./section-menu";
 import { APP_DEFAULT_TAB, appTabGroups, appTabs, type AppTab } from "./app-tabs";
 
@@ -197,7 +198,7 @@ const SIDE_MENU: readonly `${AppKey}-${Version}`[] = ["docflow-V1", "autorep-V1"
 const hasSideMenu = (app: AppKey, version: Version) => SIDE_MENU.includes(`${app}-${version}`);
 
 // Where each app's requirements live, until each app has its own folder (MVP1-E0-44).
-const REQUIREMENTS: Partial<Record<AppKey, { prd: string; stories: readonly { id: string; title: string }[]; storiesHref: string }>> = {
+const REQUIREMENTS: Partial<Record<AppKey, { prd: string; stories: readonly { id: string; title: string }[]; storiesHref: string; decisions?: string }>> = {
   docflow: {
     prd: `${GITHUB}/docs/prd/MVP1-PRD.md`,
     storiesHref: `${GITHUB}/docs/epics/MVP1-EPICS.md`,
@@ -212,6 +213,7 @@ const REQUIREMENTS: Partial<Record<AppKey, { prd: string; stories: readonly { id
   autorep: {
     prd: `${GITHUB}/docs/prd/AUTOREP-PRD.md`,
     storiesHref: `${GITHUB}/docs/epics/AUTOREP-EPICS.md`,
+    decisions: `${GITHUB}/docs/decisions/AUTOREP-E1.md`,
     stories: [],
   },
 };
@@ -224,28 +226,12 @@ function AppSection({ app, version, tab }: { app: AppKey; version: Version; tab:
   const entry = findAppVersion(app, version);
   const req = REQUIREMENTS[app];
   switch (tab.slug) {
-    case "overview":
-      if (app === "docflow") return <DocflowOverview />;
-      return (
-        <>
-          {app === "autorep" && <AutorepDiagram />}
-          {entry.summary && (
-            <section id="what">
-              <h2 className="group-title">What {appLabel(app, version)} is</h2>
-              <p className="note">{entry.summary}</p>
-              {entry.docs && (
-                <ul className="link-list">
-                  {entry.docs.map((doc) => (
-                    <li key={doc.href}>
-                      <a href={doc.href}>{doc.label} →</a>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </section>
-          )}
-        </>
-      );
+    case "overview": {
+      // Every app's Overview comes from one template (MVP1-E0-50).
+      const overview = OVERVIEWS[app];
+      if (!overview) break;
+      return <AppOverview app={app} version={version} data={overview} />;
+    }
     case "user-journey":
       return app === "docflow" ? <DocflowJourney /> : <FlowSection app={app} version={version} />;
     case "built-on":
@@ -295,6 +281,11 @@ function AppSection({ app, version, tab }: { app: AppKey; version: Version; tab:
             <li>
               <a href={req.storiesHref}>All stories and acceptance criteria →</a>
             </li>
+            {req.decisions && (
+              <li>
+                <a href={req.decisions}>{APPS[app].name} decisions →</a>
+              </li>
+            )}
           </ul>
         </section>
       );

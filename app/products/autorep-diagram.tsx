@@ -1,12 +1,10 @@
 import Link from "next/link";
-import type { ReactNode } from "react";
 import { serviceHref } from "./apps";
+import { DiagramNode as Agent, Down, type Accent } from "./app-diagram";
 
 // AutoRep V1 at a glance (AUTOREP-E6-03): laid out like Nikhil's reference image, with content from
 // docs/prd/AUTOREP-PRD.md. Where the two differed, the PRD wins: no vector database in V1, the
 // Researcher uses web search, the Critic + risk router + Publisher replace an auto-posting agent.
-
-type Accent = "purple" | "green" | "blue" | "teal" | "amber" | "red";
 
 const steps = ["Analyse", "Research", "Draft", "Critique", "Route", "Publish"];
 
@@ -88,24 +86,6 @@ const flow = [
   { title: "Route", note: "Publish, or owner approval" },
   { title: "Post once + trace", note: "Publisher" },
 ];
-
-function Agent({ n, name, accent, children }: { n: number; name: string; accent: Accent; children?: ReactNode }) {
-  return (
-    <div className={`ar-node ar-${accent}`}>
-      <p className="ar-node-title">
-        <span className="ar-badge">{n}</span>
-        {name}
-      </p>
-      {children}
-    </div>
-  );
-}
-
-const Down = () => (
-  <div className="ar-arrow" aria-hidden="true">
-    ↓
-  </div>
-);
 
 export function AutorepDiagram() {
   return (

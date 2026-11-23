@@ -22,9 +22,9 @@ export const humanCosts = {
     "tbd": []
   },
   "projected": {
-    "stories": 117,
-    "personDays": 703,
-    "cost": 703000,
+    "stories": 119,
+    "personDays": 714,
+    "cost": 714000,
     "tokenCost": 172.07,
     "tbd": []
   },
@@ -47,9 +47,9 @@ export const humanCosts = {
       "epic": "MVP1-E0",
       "inScope": true,
       "projected": {
-        "stories": 49,
-        "personDays": 303,
-        "cost": 303000,
+        "stories": 51,
+        "personDays": 314,
+        "cost": 314000,
         "tokenCost": 152.84,
         "tbd": []
       },
@@ -1047,6 +1047,36 @@ export const humanCosts = {
       "issue": 145,
       "closed": "2026-11-22",
       "tokenCost": 1.19,
+      "tokenCostShared": false,
+      "tokenCostPending": false
+    },
+    {
+      "id": "MVP1-E0-50",
+      "title": "One Overview for every app",
+      "product": "MVP1",
+      "epic": "MVP1-E0",
+      "size": "M",
+      "personDays": 8,
+      "cost": 8000,
+      "done": false,
+      "issue": null,
+      "closed": null,
+      "tokenCost": null,
+      "tokenCostShared": false,
+      "tokenCostPending": true
+    },
+    {
+      "id": "MVP1-E0-51",
+      "title": "DocFlow high-level design diagram",
+      "product": "MVP1",
+      "epic": "MVP1-E0",
+      "size": "S",
+      "personDays": 3,
+      "cost": 3000,
+      "done": false,
+      "issue": null,
+      "closed": null,
+      "tokenCost": null,
       "tokenCostShared": false,
       "tokenCostPending": false
     },
