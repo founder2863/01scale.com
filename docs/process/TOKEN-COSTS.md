@@ -2,7 +2,7 @@
 
 What it costs to build 01scale with Claude Code, per story. Generated from `docs/process/token-ledger.json` by `npm run costs`; do not edit by hand.
 
-Updated 2026-11-23. 258 requests across 6 session(s). Total **$394.14** for 846.2 million tokens.
+Updated 2026-11-23. 259 requests across 6 session(s). Total **$394.14** for 859.9 million tokens.
 
 ## Per story
 
@@ -57,8 +57,8 @@ Updated 2026-11-23. 258 requests across 6 session(s). Total **$394.14** for 846.
 | MVP1-E0-50 · One Overview for every app (with the E0-51 story written alongside) | 3 | 4.97M | $2.47 | $0.00 | $2.47 | 100% |
 | MVP1-E0-51 · DocFlow high-level design diagram | 1 | 5.37M | $0.00 | $0.00 | $0.00 (part pending) | 100% |
 | MVP1-E3-08, E4-06, E5-05 · Results held for the app until it releases them (design) | 1 | 30.13M | $7.20 | $0.00 | $7.20 | 100% |
-| MVP1-E3-09 · A free daily quota for jobs a person starts (design) | 1 | 5.03M | $1.27 | $0.00 | $1.27 | 100% |
-| **Total** | **157** | **645.78M** | **$174.78** | **$132.97** | **$307.74** (part pending) | **58%** |
+| MVP1-E3-09 · A free daily quota for jobs a person starts (design) | 1 | 13.54M | $3.20 | $0.00 | $3.20 | 100% |
+| **Total** | **157** | **654.30M** | **$176.72** | **$132.97** | **$309.68** (part pending) | **59%** |
 
 ## Scaffolding (not tied to a story)
 
@@ -68,16 +68,16 @@ Updated 2026-11-23. 258 requests across 6 session(s). Total **$394.14** for 846.
 | Planning documents | 2 | 1.35M | $0.72 |
 | Questions and explanations | 25 | 19.06M | $21.58 |
 | Product discovery | 17 | 7.28M | $15.87 |
-| Process | 50 | 164.86M | $42.03 |
-| Tool overhead (background calls) | 0 | 0.00M | $4.30 |
-| **Total** | **101** | **200.41M** | **$86.40** |
+| Process | 51 | 170.03M | $43.22 |
+| Tool overhead (background calls) | 0 | 0.00M | $1.17 |
+| **Total** | **102** | **205.58M** | **$84.46** |
 
 ## Totals
 
-- Build $174.78, rework $132.97, scaffolding $86.40.
-- Token yield across stories (build ÷ build + rework): 58%.
+- Build $176.72, rework $132.97, scaffolding $84.46.
+- Token yield across stories (build ÷ build + rework): 59%.
 - 12 pending request(s) were never priced by the tool; estimated at about $10.62 from their measured tokens at list prices (an upper bound), not included in the totals above.
-- Share of all tokens that went into kept story work: 44%.
+- Share of all tokens that went into kept story work: 45%.
 
 ## Definitions
 
