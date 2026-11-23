@@ -16,7 +16,7 @@ Inside this repository it is an npm workspace; Next.js compiles its TypeScript s
 
 | Kind | Items |
 |---|---|
-| Tokens | `--brand` `#0b00bf`, surfaces, text, borders, focus, status colours (success, warning, danger, info), type scale, 4-pixel spacing, radius, shadows, motion. Dark theme follows the system, or `data-theme="dark"` on `<html>`. |
+| Tokens | `--brand` `#0b00bf`, surfaces, text, borders, focus, status colours (success, warning, danger, info), type scale, 4-pixel spacing, radius, shadows, motion. Dark theme follows the system; `data-theme="light"` or `"dark"` on `<html>` forces one, and on any other element themes just that part of the page (0.1.2). |
 | Actions | `Button` (primary, secondary, ghost, danger; `loading`; at least 44 pixels tall) |
 | Forms | `Input`, `Select`, `Checkbox`, `FieldError`: every control labelled, hints and errors linked by `aria-describedby` |
 | Display | `Card`, `Badge` (never colour alone), `Alert`, `ProgressBar`, `Skeleton`, `Spinner` |

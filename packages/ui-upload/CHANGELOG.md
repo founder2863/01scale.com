@@ -1,5 +1,9 @@
 # @01scale/ui-upload changelog
 
+## 0.2.2 — 23 Nov 2026
+
+- Uses `@01scale/ui-core` 0.1.2 (themes can be set on any element).
+
 ## 0.2.1 — 22 Nov 2026
 
 - Uses `@01scale/ui-core` 0.1.1 (a wide tab panel no longer widens the page).
