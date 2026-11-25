@@ -206,7 +206,7 @@
         "cache_write": 0.0
       },
       "overhead_usd": 0,
-      "tool_total_usd": 0.7914,
+      "tool_total_usd": 3.2556,
       "rates_usd_per_million": {},
       "id": "c5c5ca89-4115-59c8-af00-32ff5dda3a8b",
       "splits": []
@@ -3921,7 +3921,7 @@
       ],
       "tokens": 806028,
       "output_tokens": 6741,
-      "cost_usd": 0.7913
+      "cost_usd": 0.8964
     },
     {
       "session": "c5c5ca89",
@@ -3935,8 +3935,7 @@
       ],
       "tokens": 1087619,
       "output_tokens": 7403,
-      "cost_usd": null,
-      "estimated_usd": 0.4625
+      "cost_usd": 0.4726
     },
     {
       "session": "c5c5ca89",
@@ -3948,10 +3947,24 @@
       "models": [
         "claude-opus-5-5"
       ],
-      "tokens": 3961869,
-      "output_tokens": 21727,
+      "tokens": 5083802,
+      "output_tokens": 26361,
+      "cost_usd": 1.8866
+    },
+    {
+      "session": "c5c5ca89",
+      "ts": "2026-11-25T19:31:55.061Z",
+      "area": "MVP1-E0-54",
+      "kind": "rework",
+      "summary": "Rework from review on PR #189: documentation moved to a wave 0 before development; roadmap shown as a vertical timeline (includes a cache reload after a long break)",
+      "n": 4,
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 1907134,
+      "output_tokens": 14454,
       "cost_usd": null,
-      "estimated_usd": 1.612
+      "estimated_usd": 1.8861
     }
   ]
 }

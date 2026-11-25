@@ -3593,44 +3593,16 @@ section[id] {
 }
 
 /* ------------------------------------------------------------ Roadmap (MVP1-E0-54) */
+/* A vertical timeline (Nikhil, PR #189): on a laptop the day range sits in a column left of the
+   rail; on a phone it moves inside the entry and the rail hugs the left edge. */
 
-.rm-path {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin: 0 0 8px;
-  padding: 0;
-  list-style: none;
-  counter-reset: rm-path;
-}
-
-.rm-path li {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 12px;
-  border-radius: 999px;
-  background: var(--chip-bg);
-  color: var(--chip-text);
-  font-size: 0.9rem;
-  font-weight: 600;
-  counter-increment: rm-path;
-}
-
-.rm-path li::before {
-  content: counter(rm-path);
-  display: inline-grid;
-  place-items: center;
-  width: 22px;
-  height: 22px;
-  border-radius: 999px;
-  background: var(--brand);
-  color: #ffffff;
-  font-size: 0.75rem;
-}
-
-.rm-group {
-  margin-top: 28px;
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
 }
 
 .rm-group-total {
@@ -3640,28 +3612,156 @@ section[id] {
   font-weight: 500;
 }
 
-.rm-waves {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 360px), 1fr));
-  gap: 16px;
+/* The main path at a glance: one bar, each wave as wide as its person-days. */
+.rm-bar {
+  display: flex;
+  gap: 3px;
+  margin: 0 0 8px;
+  padding: 0;
+  list-style: none;
 }
 
-.rm-wave {
+.rm-bar li {
   display: flex;
+  flex-basis: 0;
   flex-direction: column;
   min-width: 0;
+  padding: 8px 8px 6px;
+  border-radius: 8px;
+  background: var(--brand);
+  color: #ffffff;
 }
 
-.rm-wave-head {
+.rm-bar li:first-child {
+  background: var(--brand-bright);
+}
+
+.rm-bar-number {
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.rm-bar-name {
+  overflow: hidden;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rm-timeline {
+  position: relative;
+  margin: 0 0 8px;
+  padding: 0;
+  list-style: none;
+}
+
+.rm-entry {
+  position: relative;
+  display: grid;
+  grid-template-columns: 120px 36px 1fr;
+  gap: 0 16px;
+  padding-bottom: 18px;
+}
+
+/* The rail: a line through the markers, stopping at the last one. */
+.rm-entry::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(120px + 16px + 17px);
+  width: 2px;
+  background: var(--border-strong, var(--border));
+}
+
+.rm-entry:first-child::before {
+  top: 18px;
+}
+
+.rm-entry:last-child::before {
+  bottom: auto;
+  height: 18px;
+}
+
+.rm-entry:only-child::before {
+  display: none;
+}
+
+.rm-when {
+  padding-top: 7px;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  text-align: right;
+}
+
+.rm-when-inline {
+  display: none;
+}
+
+.rm-marker {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 2px solid var(--bg);
+  border-radius: 999px;
+  background: var(--brand);
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
+.rm-entry-side .rm-marker,
+.rm-entry-later .rm-marker {
+  background: var(--chip-bg);
+  color: var(--chip-text);
+}
+
+.rm-milestone .rm-marker {
+  background: var(--success-solid, var(--brand-bright));
+  font-size: 0.8rem;
+}
+
+.rm-milestone-label {
+  margin: 0;
+  padding-top: 6px;
+  font-weight: 700;
+}
+
+.rm-body {
+  min-width: 0;
+  padding: 14px 16px;
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--brand-bright);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.rm-entry-side .rm-body,
+.rm-entry-later .rm-body {
+  border-left-color: var(--border-strong, var(--border));
+}
+
+.rm-head {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
   justify-content: space-between;
-  gap: 6px 12px;
+  gap: 4px 12px;
 }
 
-.rm-wave-days {
-  margin: 0 0 8px;
+.rm-title {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.rm-meta {
+  margin: 2px 0 8px;
   color: var(--muted);
   font-size: 0.85rem;
 }
@@ -3697,11 +3797,22 @@ section[id] {
   font-weight: 600;
 }
 
+.rm-details summary {
+  cursor: pointer;
+  color: var(--link);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.rm-details[open] summary {
+  margin-bottom: 8px;
+}
+
 .rm-stories {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
   gap: 6px;
-  margin: 4px 0 0;
+  margin: 0;
   padding: 0;
   list-style: none;
 }
@@ -3771,7 +3882,45 @@ section[id] {
   margin-top: 6px;
 }
 
-/* On a narrow phone the story ID sits above its title. */
+/* Phones and small tablets: no day column; the rail runs down the left edge. */
+@media (max-width: 767px) {
+  .rm-entry {
+    grid-template-columns: 28px 1fr;
+    gap: 0 12px;
+  }
+
+  .rm-entry::before {
+    left: 13px;
+  }
+
+  .rm-when {
+    display: none;
+  }
+
+  .rm-when-inline {
+    display: inline;
+  }
+
+  .rm-marker {
+    width: 28px;
+    height: 28px;
+    font-size: 0.8rem;
+  }
+
+  .rm-entry:first-child::before {
+    top: 14px;
+  }
+
+  .rm-entry:last-child::before {
+    height: 14px;
+  }
+
+  /* Wave names do not fit in the bar on a phone: numbers only. */
+  .rm-bar-name {
+    display: none;
+  }
+}
+
 @media (max-width: 420px) {
   .rm-story {
     grid-template-columns: 1fr auto;

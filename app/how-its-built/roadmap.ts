@@ -12,11 +12,15 @@ export const roadmap = {
   "method": [
     {
       "label": "Size",
-      "text": "from `docs/epics/MVP1-EPICS.md`, on the human scale (S ≈ 3, M ≈ 8, L ≈ 15 person-days, including tests, review and QA). The 69 stories come to **449 person-days**. The page totals are worked out by `npm run roadmap`, which also checks the day counts typed here."
+      "text": "from `docs/epics/MVP1-EPICS.md`, on the human scale (S ≈ 3, M ≈ 8, L ≈ 15 person-days, including tests, review and QA). The totals on the site are added up from the sizes by `npm run roadmap`, which also checks every day count typed in this file."
     },
     {
       "label": "Dependency",
       "text": "the epics file has no \"depends on\" field. Dependencies come from the stories that a story names in its text, plus the build order in CLAUDE.md: service template, gateway, then the services in the order DocFlow calls them (upload → extraction → review → payment → delivery), provider before consumer."
+    },
+    {
+      "label": "Documentation first (Nikhil, PR #189)",
+      "text": "every module's product documentation, from requirements to architecture, is finished before development of the business process flow starts. It is wave 0, and every later wave waits for it."
     },
     {
       "label": "Value",
@@ -24,11 +28,13 @@ export const roadmap = {
     }
   ],
   "risks": [
-    "**Biggest single risk:** E0-07 (L). Everything in the main path waits on it.",
+    "**Wave 0 is the gate:** 60 person-days of documentation before any code. Its sections need real sources (market figures with links, prices, metrics targets); a section without them stays \"Coming Soon...\" and holds the gate.",
+    "**Biggest build risk:** E0-07 (L). Every development wave waits on it.",
     "**Second:** E3-02 (L), the first real Claude call; its quality is measured by E0-04's evals and its spend capped by E0-26.",
     "Issue #45 is titled \"Store outputs\"; the epics file now calls E5-04 \"Build outputs on demand\"."
   ],
   "criticalPath": [
+    "0 Product documentation",
     "1 Foundation",
     "2 Identity and app shell",
     "3 Upload",
@@ -43,6 +49,107 @@ export const roadmap = {
       "title": "Main path: a working DocFlow",
       "reasonLabel": "Why here",
       "rows": [
+        {
+          "name": "0 Product documentation",
+          "value": "High",
+          "reason": "Nikhil's rule (PR #189): the documentation, from requirements to architecture, is done before development starts. Ordered as the product page reads: requirements, then the business sections, then architecture and interfaces. Metrics shows live service health once Monitoring (E0-25) exists; the section and its targets come first.",
+          "days": 60,
+          "remainingDays": 60,
+          "stories": [
+            {
+              "id": "MVP1-E0-15",
+              "title": "PRD Reference section on every module page",
+              "size": "S",
+              "days": 3,
+              "done": false,
+              "issue": 85,
+              "href": "https://github.com/founder2863/01scale.com/issues/85"
+            },
+            {
+              "id": "MVP1-E0-14",
+              "title": "Market Outlook section on every module page",
+              "size": "M",
+              "days": 8,
+              "done": false,
+              "issue": 84,
+              "href": "https://github.com/founder2863/01scale.com/issues/84"
+            },
+            {
+              "id": "MVP1-E0-27",
+              "title": "Metrics section on every module page",
+              "size": "M",
+              "days": 8,
+              "done": false,
+              "issue": 104,
+              "href": "https://github.com/founder2863/01scale.com/issues/104"
+            },
+            {
+              "id": "MVP1-E0-28",
+              "title": "Monetization section on every module page",
+              "size": "M",
+              "days": 8,
+              "done": false,
+              "issue": 105,
+              "href": "https://github.com/founder2863/01scale.com/issues/105"
+            },
+            {
+              "id": "MVP1-E0-29",
+              "title": "GTM section on every module page",
+              "size": "M",
+              "days": 8,
+              "done": false,
+              "issue": 106,
+              "href": "https://github.com/founder2863/01scale.com/issues/106"
+            },
+            {
+              "id": "MVP1-E0-30",
+              "title": "Support section on every module page",
+              "size": "S",
+              "days": 3,
+              "done": false,
+              "issue": 107,
+              "href": "https://github.com/founder2863/01scale.com/issues/107"
+            },
+            {
+              "id": "MVP1-E0-20",
+              "title": "Architecture & System Design section for every service and app",
+              "size": "M",
+              "days": 8,
+              "done": false,
+              "issue": 97,
+              "href": "https://github.com/founder2863/01scale.com/issues/97"
+            },
+            {
+              "id": "MVP1-E0-51",
+              "title": "DocFlow high-level design diagram",
+              "size": "S",
+              "days": 3,
+              "done": false,
+              "issue": 173,
+              "href": "https://github.com/founder2863/01scale.com/issues/173"
+            },
+            {
+              "id": "MVP1-E0-24",
+              "title": "\"Built on\" panel on every service and app page",
+              "size": "S",
+              "days": 3,
+              "done": false,
+              "issue": 101,
+              "href": "https://github.com/founder2863/01scale.com/issues/101"
+            },
+            {
+              "id": "MVP1-E0-16",
+              "title": "MCP section on every module page",
+              "size": "M",
+              "days": 8,
+              "done": false,
+              "issue": 86,
+              "href": "https://github.com/founder2863/01scale.com/issues/86"
+            }
+          ],
+          "start": 1,
+          "end": 60
+        },
         {
           "name": "1 Foundation",
           "value": "High",
@@ -104,7 +211,9 @@ export const roadmap = {
               "issue": 21,
               "href": "https://github.com/founder2863/01scale.com/issues/21"
             }
-          ]
+          ],
+          "start": 61,
+          "end": 100
         },
         {
           "name": "2 Identity and app shell",
@@ -185,7 +294,9 @@ export const roadmap = {
               "issue": 19,
               "href": "https://github.com/founder2863/01scale.com/issues/19"
             }
-          ]
+          ],
+          "start": 101,
+          "end": 149
         },
         {
           "name": "3 Upload",
@@ -239,7 +350,9 @@ export const roadmap = {
               "issue": 32,
               "href": "https://github.com/founder2863/01scale.com/issues/32"
             }
-          ]
+          ],
+          "start": 150,
+          "end": 174
         },
         {
           "name": "4 Extraction",
@@ -320,7 +433,9 @@ export const roadmap = {
               "issue": 37,
               "href": "https://github.com/founder2863/01scale.com/issues/37"
             }
-          ]
+          ],
+          "start": 175,
+          "end": 235
         },
         {
           "name": "5 Review",
@@ -374,7 +489,9 @@ export const roadmap = {
               "issue": 41,
               "href": "https://github.com/founder2863/01scale.com/issues/41"
             }
-          ]
+          ],
+          "start": 236,
+          "end": 260
         },
         {
           "name": "6 Outputs and payment",
@@ -455,7 +572,9 @@ export const roadmap = {
               "issue": 48,
               "href": "https://github.com/founder2863/01scale.com/issues/48"
             }
-          ]
+          ],
+          "start": 261,
+          "end": 299
         },
         {
           "name": "7 Delivery",
@@ -491,12 +610,14 @@ export const roadmap = {
               "issue": 51,
               "href": "https://github.com/founder2863/01scale.com/issues/51"
             }
-          ]
+          ],
+          "start": 300,
+          "end": 318
         }
       ],
-      "days": 258,
-      "remainingDays": 258,
-      "storyCount": 43
+      "days": 318,
+      "remainingDays": 318,
+      "storyCount": 53
     },
     {
       "kind": "side",
@@ -504,65 +625,11 @@ export const roadmap = {
       "reasonLabel": "When",
       "rows": [
         {
-          "name": "Site sections",
-          "value": "Medium",
-          "reason": "Any time; no code dependency. E0-16 reads better after E0-05 and E0-06. E0-51 and E0-15 are the quickest visible wins.",
-          "days": 25,
-          "remainingDays": 25,
-          "stories": [
-            {
-              "id": "MVP1-E0-51",
-              "title": "DocFlow high-level design diagram",
-              "size": "S",
-              "days": 3,
-              "done": false,
-              "issue": 173,
-              "href": "https://github.com/founder2863/01scale.com/issues/173"
-            },
-            {
-              "id": "MVP1-E0-20",
-              "title": "Architecture & System Design section for every service and app",
-              "size": "M",
-              "days": 8,
-              "done": false,
-              "issue": 97,
-              "href": "https://github.com/founder2863/01scale.com/issues/97"
-            },
-            {
-              "id": "MVP1-E0-15",
-              "title": "PRD Reference section on every module page",
-              "size": "S",
-              "days": 3,
-              "done": false,
-              "issue": 85,
-              "href": "https://github.com/founder2863/01scale.com/issues/85"
-            },
-            {
-              "id": "MVP1-E0-24",
-              "title": "\"Built on\" panel on every service and app page",
-              "size": "S",
-              "days": 3,
-              "done": false,
-              "issue": 101,
-              "href": "https://github.com/founder2863/01scale.com/issues/101"
-            },
-            {
-              "id": "MVP1-E0-16",
-              "title": "MCP section on every module page",
-              "size": "M",
-              "days": 8,
-              "done": false,
-              "issue": 86,
-              "href": "https://github.com/founder2863/01scale.com/issues/86"
-            }
-          ]
-        },
-        {
           "name": "Harden and show",
           "value": "Medium",
-          "reason": "After wave 7. Metrics need monitoring; E0-18 stays open until every module has Try it.",
-          "days": 31,
-          "remainingDays": 31,
+          "reason": "After wave 7. Monitoring feeds live health into the Metrics section; E0-18 stays open until every module has Try it.",
+          "days": 23,
+          "remainingDays": 23,
           "stories": [
             {
               "id": "MVP1-E0-25",
@@ -572,15 +639,6 @@ export const roadmap = {
               "done": false,
               "issue": 102,
               "href": "https://github.com/founder2863/01scale.com/issues/102"
-            },
-            {
-              "id": "MVP1-E0-27",
-              "title": "Metrics section on every module page",
-              "size": "M",
-              "days": 8,
-              "done": false,
-              "issue": 104,
-              "href": "https://github.com/founder2863/01scale.com/issues/104"
             },
             {
               "id": "MVP1-E0-18",
@@ -612,9 +670,9 @@ export const roadmap = {
           ]
         }
       ],
-      "days": 64,
-      "remainingDays": 64,
-      "storyCount": 9
+      "days": 31,
+      "remainingDays": 31,
+      "storyCount": 3
     },
     {
       "kind": "later",
@@ -624,9 +682,9 @@ export const roadmap = {
         {
           "name": "Product extras",
           "value": "Medium",
-          "reason": "Not on the path to the journey. E3-09 and E0-28 are designed together. RAG is impressive but needs extraction finished first.",
-          "days": 40,
-          "remainingDays": 40,
+          "reason": "Not on the path to the journey. E3-09 builds the free tier that Monetization (E0-28, wave 0) designs. RAG is impressive but needs extraction finished first.",
+          "days": 32,
+          "remainingDays": 32,
           "stories": [
             {
               "id": "MVP1-E3-09",
@@ -636,15 +694,6 @@ export const roadmap = {
               "done": false,
               "issue": 181,
               "href": "https://github.com/founder2863/01scale.com/issues/181"
-            },
-            {
-              "id": "MVP1-E0-28",
-              "title": "Monetization section on every module page",
-              "size": "M",
-              "days": 8,
-              "done": false,
-              "issue": 105,
-              "href": "https://github.com/founder2863/01scale.com/issues/105"
             },
             {
               "id": "MVP1-E6-04",
@@ -681,42 +730,6 @@ export const roadmap = {
               "done": false,
               "issue": 88,
               "href": "https://github.com/founder2863/01scale.com/issues/88"
-            }
-          ]
-        },
-        {
-          "name": "Placeholder sections",
-          "value": "Low",
-          "reason": "Show \"Coming Soon...\" until designed.",
-          "days": 19,
-          "remainingDays": 19,
-          "stories": [
-            {
-              "id": "MVP1-E0-14",
-              "title": "Market Outlook section on every module page",
-              "size": "M",
-              "days": 8,
-              "done": false,
-              "issue": 84,
-              "href": "https://github.com/founder2863/01scale.com/issues/84"
-            },
-            {
-              "id": "MVP1-E0-29",
-              "title": "GTM section on every module page",
-              "size": "M",
-              "days": 8,
-              "done": false,
-              "issue": 106,
-              "href": "https://github.com/founder2863/01scale.com/issues/106"
-            },
-            {
-              "id": "MVP1-E0-30",
-              "title": "Support section on every module page",
-              "size": "S",
-              "days": 3,
-              "done": false,
-              "issue": 107,
-              "href": "https://github.com/founder2863/01scale.com/issues/107"
             }
           ]
         },
@@ -802,9 +815,9 @@ export const roadmap = {
           ]
         }
       ],
-      "days": 127,
-      "remainingDays": 127,
-      "storyCount": 17
+      "days": 100,
+      "remainingDays": 100,
+      "storyCount": 13
     }
   ],
   "totals": {

@@ -208,6 +208,13 @@ def main(argv):
                 "remainingDays": sum(s["days"] or 0 for s in stories if not s["done"]),
                 "stories": stories,
             })
+        # The main path runs one wave after another: give each wave its place on the timeline,
+        # counted in person-days from the start (one builder, no parallel work).
+        if kind == "main":
+            elapsed = 0
+            for r in group["rows"]:
+                r["start"], r["end"] = elapsed + 1, elapsed + r["days"]
+                elapsed += r["days"]
         group["days"] = sum(r["days"] for r in group["rows"])
         group["remainingDays"] = sum(r["remainingDays"] for r in group["rows"])
         group["storyCount"] = sum(len(r["stories"]) for r in group["rows"])
