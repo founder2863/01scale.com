@@ -180,7 +180,10 @@ def main(argv):
             if len(cells) != len(header):
                 errors.append(f"row '{cells[0]}' has {len(cells)} cells, expected {len(header)}")
                 continue
-            name, story_cell, days_cell, value, reason = cells[0], cells[1], cells[2], cells[3], cells[-1]
+            col = {h.lower(): c for h, c in zip(header, cells)}
+            name, story_cell, reason = cells[0], cells[1], cells[-1]
+            days_cell, value = col.get("days", ""), col.get("value", "")
+            after_cell = col.get("starts after")
             stories, seen = [], set()
             for sid in story_ids(story_cell, order):
                 if sid in seen:
@@ -200,21 +203,49 @@ def main(argv):
             stated = re.match(r"\s*(\d+)", days_cell)
             if stated and int(stated.group(1)) != total:
                 errors.append(f"'{name}' says {stated.group(1)} days; its stories' sizes add up to {total}")
-            group["rows"].append({
+            row = {
                 "name": name,
                 "value": value,
                 "reason": reason,
                 "days": total,
                 "remainingDays": sum(s["days"] or 0 for s in stories if not s["done"]),
                 "stories": stories,
-            })
+            }
+            if after_cell is not None:
+                # "Start", or the waves it waits for by number: "1", "0 and 2".
+                row["after"] = [] if after_cell.strip().lower() == "start" else re.findall(r"\d+", after_cell)
+            group["rows"].append(row)
         # The main path runs one wave after another: give each wave its place on the timeline,
         # counted in person-days from the start (one builder, no parallel work).
+        # With a "Starts after" column, a wave starts the day after the last wave it waits for
+        # ends, so waves can run in parallel; without it, one after another.
         if kind == "main":
-            elapsed = 0
+            by_number, elapsed = {}, 0
             for r in group["rows"]:
-                r["start"], r["end"] = elapsed + 1, elapsed + r["days"]
-                elapsed += r["days"]
+                number = (re.match(r"(\d+)", r["name"]) or [None, r["name"]])[1]
+                if "after" in r:
+                    missing = [n for n in r["after"] if n not in by_number]
+                    if missing:
+                        errors.append(f"'{r['name']}' starts after wave {', '.join(missing)}, which is not listed above it")
+                    begin = max([by_number[n]["end"] for n in r["after"] if n in by_number] or [0])
+                else:
+                    begin = elapsed
+                r["start"], r["end"] = begin + 1, begin + r["days"]
+                by_number[number] = r
+                elapsed = max(elapsed, r["end"])
+            # Lanes: a wave that starts at the beginning opens a lane; a wave after one other wave
+            # stays in its lane; a wave after two or more joins them back into lane 0.
+            for r in group["rows"]:
+                after = r.get("after")
+                if after is None:
+                    r["lane"] = 0
+                elif not after:
+                    r["lane"] = len({x["lane"] for x in group["rows"] if "lane" in x and x.get("after") == []})
+                elif len(after) == 1 and after[0] in by_number:
+                    r["lane"] = by_number[after[0]]["lane"]
+                else:
+                    r["lane"], r["join"] = 0, True
+            group["elapsedDays"] = elapsed
         group["days"] = sum(r["days"] for r in group["rows"])
         group["remainingDays"] = sum(r["remainingDays"] for r in group["rows"])
         group["storyCount"] = sum(len(r["stories"]) for r in group["rows"])

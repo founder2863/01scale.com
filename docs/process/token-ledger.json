@@ -3961,10 +3961,25 @@
       "models": [
         "claude-opus-5-5"
       ],
-      "tokens": 1907134,
-      "output_tokens": 14454,
+      "tokens": 2816237,
+      "output_tokens": 18753,
       "cost_usd": null,
-      "estimated_usd": 1.8861
+      "estimated_usd": 2.196
+    },
+    {
+      "session": "c5c5ca89",
+      "ts": "2026-11-25T19:36:50.307Z",
+      "area": "MVP1-E0-54",
+      "kind": "rework",
+      "summary": "Rework from Nikhil's answer on PR #189: only the business steps wait for the documentation; Starts after column, parallel lanes and a Jira-style lane chart",
+      "n": 5,
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 1666512,
+      "output_tokens": 10243,
+      "cost_usd": null,
+      "estimated_usd": 0.6403
     }
   ]
 }

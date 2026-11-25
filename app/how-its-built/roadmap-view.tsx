@@ -101,6 +101,48 @@ function Entry({ row, group }: { row: Row; group: Group }) {
   );
 }
 
+function lane(row: Row) {
+  return "lane" in row ? row.lane : 0;
+}
+
+// The Jira-style view: one row per lane, each wave placed by its start and end day.
+function Gantt({ rows, total }: { rows: readonly Row[]; total: number }) {
+  const laneIds = [...new Set(rows.map(lane))].sort();
+  const ticks = [...new Set([1, ...rows.filter((r) => "join" in r && r.join && "start" in r).map((r) => ("start" in r ? r.start : 1)), total])];
+  return (
+    <div className="rm-gantt" role="img" aria-label={`Main path over ${total} days: ${rows.map((r) => `${r.name}, ${range(r)}`).join("; ")}`}>
+      {laneIds.map((id) => (
+        <div key={id} className="rm-gantt-lane">
+          {rows
+            .filter((row) => lane(row) === id && "start" in row)
+            .map((row) => {
+              const { number, name } = split(row.name);
+              const start = "start" in row ? row.start : 1;
+              return (
+                <span
+                  key={row.name}
+                  className={number === "0" ? "rm-gantt-bar is-docs" : "rm-gantt-bar"}
+                  style={{ left: `${((start - 1) / total) * 100}%`, width: `${(row.days / total) * 100}%` }}
+                  title={`${row.name}: ${range(row)}`}
+                >
+                  <span className="rm-bar-number">{number}</span>
+                  <span className="rm-bar-name">{name}</span>
+                </span>
+              );
+            })}
+        </div>
+      ))}
+      <div className="rm-gantt-axis" aria-hidden="true">
+        {ticks.map((day) => (
+          <span key={day} style={{ left: `${((day - 1) / total) * 100}%` }}>
+            Day {day}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function Milestone({ label, day }: { label: string; day?: number }) {
   return (
     <li className="rm-entry rm-milestone">
@@ -121,8 +163,14 @@ export default function RoadmapView() {
   const main = groups.find((g) => g.kind === "main");
   const others = groups.filter((g) => g.kind !== "main");
   const mainRows = main?.rows ?? [];
-  const first = mainRows[0];
   const last = mainRows[mainRows.length - 1];
+  const elapsed: number = main && "elapsedDays" in main ? (main as { elapsedDays: number }).elapsedDays : 0;
+  // Waves before the first one that waits for two others run in parallel, one lane each.
+  const joinIndex = mainRows.findIndex((row) => "join" in row && row.join);
+  const parallel = joinIndex > 0 ? mainRows.slice(0, joinIndex) : [];
+  const sequential = joinIndex > 0 ? mainRows.slice(joinIndex) : mainRows;
+  const join = joinIndex > 0 ? mainRows[joinIndex] : undefined;
+  const lanes = [...new Set(parallel.map(lane))].map((n) => parallel.filter((row) => lane(row) === n));
 
   return (
     <section id="roadmap">
@@ -131,9 +179,9 @@ export default function RoadmapView() {
       </h2>
       <p className="note">
         What is left to build and in what order: by dependency first, then by value, with each
-        story&apos;s size. Product documentation comes first, from requirements to architecture; then the
-        main path builds the shortest way to a DocFlow a visitor can use from sign-in to delivery. Days
-        are person-days counted from the start, one wave after another.
+        story&apos;s size. Product documentation, from requirements to architecture, is done before the
+        business steps are built, while the platform foundation is built alongside it; then the main path builds the shortest way to a DocFlow a visitor can use from sign-in to delivery. Days are
+        counted from the start: waves in the same lane follow each other, lanes run side by side.
       </p>
 
       <div className="stat-row">
@@ -146,8 +194,8 @@ export default function RoadmapView() {
           <span className="stat-label">Person-days in all</span>
         </div>
         <div className="stat">
-          <span className="stat-value">{main?.days ?? 0}</span>
-          <span className="stat-label">Person-days to a working DocFlow</span>
+          <span className="stat-value">{elapsed}</span>
+          <span className="stat-label">Days to a working DocFlow, with work in parallel</span>
         </div>
         <div className="stat">
           <span className="stat-value">{totals.doneStories}</span>
@@ -158,17 +206,7 @@ export default function RoadmapView() {
       {main && (
         <>
           <h3 className="section-subtitle">The main path at a glance</h3>
-          <ol className="rm-bar" aria-label="Main path waves, sized by person-days">
-            {mainRows.map((row) => {
-              const { number, name } = split(row.name);
-              return (
-                <li key={row.name} style={{ flexGrow: row.days }} title={`${row.name}: ${days(row.days)}`}>
-                  <span className="rm-bar-number">{number}</span>
-                  <span className="rm-bar-name">{name}</span>
-                </li>
-              );
-            })}
-          </ol>
+          <Gantt rows={mainRows} total={elapsed} />
 
           <h3 className="section-subtitle" id="rm-main">
             {main.title}{" "}
@@ -177,17 +215,31 @@ export default function RoadmapView() {
             </span>
           </h3>
           <ol className="rm-timeline" aria-labelledby="rm-main">
-            {mainRows.map((row, i) => (
-              <Fragment key={row.name}>
-                <Entry row={row} group={main} />
-                {i === 0 && first && "end" in first ? (
-                  <Milestone label="Documentation complete: development starts" day={first.end} />
-                ) : null}
-              </Fragment>
-            ))}
-            {last && "end" in last ? (
-              <Milestone label="DocFlow works end to end (MVP1)" day={last.end} />
+            {parallel.length > 0 && (
+              <li className="rm-entry rm-parallel">
+                <div className="rm-when">Day 1</div>
+                <div className="rm-marker" aria-hidden="true">
+                  ∥
+                </div>
+                <div className="rm-lanes">
+                  <p className="rm-parallel-label">In parallel</p>
+                  {lanes.map((lane) => (
+                    <ol key={lane[0].name} className="rm-lane">
+                      {lane.map((row) => (
+                        <Entry key={row.name} row={row} group={main} />
+                      ))}
+                    </ol>
+                  ))}
+                </div>
+              </li>
+            )}
+            {join && "start" in join ? (
+              <Milestone label="Documentation and platform ready: the business steps start" day={join.start} />
             ) : null}
+            {sequential.map((row) => (
+              <Entry key={row.name} row={row} group={main} />
+            ))}
+            {last && "end" in last ? <Milestone label="DocFlow works end to end (MVP1)" day={last.end} /> : null}
           </ol>
         </>
       )}

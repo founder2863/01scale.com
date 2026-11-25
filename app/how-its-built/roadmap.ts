@@ -19,8 +19,8 @@ export const roadmap = {
       "text": "the epics file has no \"depends on\" field. Dependencies come from the stories that a story names in its text, plus the build order in CLAUDE.md: service template, gateway, then the services in the order DocFlow calls them (upload → extraction → review → payment → delivery), provider before consumer."
     },
     {
-      "label": "Documentation first (Nikhil, PR #189)",
-      "text": "every module's product documentation, from requirements to architecture, is finished before development of the business process flow starts. It is wave 0, and every later wave waits for it."
+      "label": "Documentation before the business steps (Nikhil, PR #189)",
+      "text": "every module's product documentation, from requirements to architecture, is finished before the business process steps (Upload to Delivery, waves 3 to 7) are built. Foundation and Identity (waves 1 and 2) do not wait for it and run alongside. The **Starts after** column says which waves each wave waits for; the site works out the days from it."
     },
     {
       "label": "Value",
@@ -28,8 +28,8 @@ export const roadmap = {
     }
   ],
   "risks": [
-    "**Wave 0 is the gate:** 60 person-days of documentation before any code. Its sections need real sources (market figures with links, prices, metrics targets); a section without them stays \"Coming Soon...\" and holds the gate.",
-    "**Biggest build risk:** E0-07 (L). Every development wave waits on it.",
+    "**Biggest risk:** E0-07 (L). The critical path runs through it: Foundation and Identity (89 days) are longer than the documentation (60 days), so the business steps wait on the foundation, not on the documents.",
+    "**Wave 0 gates the business steps:** its sections need real sources (market figures with links, prices, metrics targets); a section without them stays \"Coming Soon...\". It has 29 days of slack before it holds up Upload.",
     "**Second:** E3-02 (L), the first real Claude call; its quality is measured by E0-04's evals and its spend capped by E0-26.",
     "Issue #45 is titled \"Store outputs\"; the epics file now calls E5-04 \"Build outputs on demand\"."
   ],
@@ -52,7 +52,7 @@ export const roadmap = {
         {
           "name": "0 Product documentation",
           "value": "High",
-          "reason": "Nikhil's rule (PR #189): the documentation, from requirements to architecture, is done before development starts. Ordered as the product page reads: requirements, then the business sections, then architecture and interfaces. Metrics shows live service health once Monitoring (E0-25) exists; the section and its targets come first.",
+          "reason": "Nikhil's rule (PR #189): the documentation, from requirements to architecture, is done before the business steps are built. It runs alongside the foundation, and with 60 days against the foundation's 89 it is off the critical path. Ordered as the product page reads: requirements, then the business sections, then architecture and interfaces. Metrics shows live service health once Monitoring (E0-25) exists; the section and its targets come first.",
           "days": 60,
           "remainingDays": 60,
           "stories": [
@@ -147,8 +147,10 @@ export const roadmap = {
               "href": "https://github.com/founder2863/01scale.com/issues/86"
             }
           ],
+          "after": [],
           "start": 1,
-          "end": 60
+          "end": 60,
+          "lane": 0
         },
         {
           "name": "1 Foundation",
@@ -212,8 +214,10 @@ export const roadmap = {
               "href": "https://github.com/founder2863/01scale.com/issues/21"
             }
           ],
-          "start": 61,
-          "end": 100
+          "after": [],
+          "start": 1,
+          "end": 40,
+          "lane": 1
         },
         {
           "name": "2 Identity and app shell",
@@ -295,13 +299,17 @@ export const roadmap = {
               "href": "https://github.com/founder2863/01scale.com/issues/19"
             }
           ],
-          "start": 101,
-          "end": 149
+          "after": [
+            "1"
+          ],
+          "start": 41,
+          "end": 89,
+          "lane": 1
         },
         {
           "name": "3 Upload",
           "value": "High",
-          "reason": "The first step of the journey; small and low risk.",
+          "reason": "The first business step: it waits for the documentation (wave 0) and for sign-in (wave 2). Small and low risk.",
           "days": 25,
           "remainingDays": 25,
           "stories": [
@@ -351,8 +359,14 @@ export const roadmap = {
               "href": "https://github.com/founder2863/01scale.com/issues/32"
             }
           ],
-          "start": 150,
-          "end": 174
+          "after": [
+            "0",
+            "2"
+          ],
+          "start": 90,
+          "end": 114,
+          "lane": 0,
+          "join": true
         },
         {
           "name": "4 Extraction",
@@ -434,8 +448,12 @@ export const roadmap = {
               "href": "https://github.com/founder2863/01scale.com/issues/37"
             }
           ],
-          "start": 175,
-          "end": 235
+          "after": [
+            "3"
+          ],
+          "start": 115,
+          "end": 175,
+          "lane": 0
         },
         {
           "name": "5 Review",
@@ -490,8 +508,12 @@ export const roadmap = {
               "href": "https://github.com/founder2863/01scale.com/issues/41"
             }
           ],
-          "start": 236,
-          "end": 260
+          "after": [
+            "4"
+          ],
+          "start": 176,
+          "end": 200,
+          "lane": 0
         },
         {
           "name": "6 Outputs and payment",
@@ -573,8 +595,12 @@ export const roadmap = {
               "href": "https://github.com/founder2863/01scale.com/issues/48"
             }
           ],
-          "start": 261,
-          "end": 299
+          "after": [
+            "5"
+          ],
+          "start": 201,
+          "end": 239,
+          "lane": 0
         },
         {
           "name": "7 Delivery",
@@ -611,10 +637,15 @@ export const roadmap = {
               "href": "https://github.com/founder2863/01scale.com/issues/51"
             }
           ],
-          "start": 300,
-          "end": 318
+          "after": [
+            "6"
+          ],
+          "start": 240,
+          "end": 258,
+          "lane": 0
         }
       ],
+      "elapsedDays": 258,
       "days": 318,
       "remainingDays": 318,
       "storyCount": 53

@@ -3612,27 +3612,36 @@ section[id] {
   font-weight: 500;
 }
 
-/* The main path at a glance: one bar, each wave as wide as its person-days. */
-.rm-bar {
-  display: flex;
-  gap: 3px;
+/* The main path at a glance, Jira style: a row per lane, each wave placed by its days. */
+.rm-gantt {
   margin: 0 0 8px;
-  padding: 0;
-  list-style: none;
 }
 
-.rm-bar li {
+.rm-gantt-lane {
+  position: relative;
+  height: 48px;
+  margin-bottom: 4px;
+  border-radius: 8px;
+  background: var(--chip-bg);
+}
+
+.rm-gantt-bar {
+  position: absolute;
+  top: 0;
+  bottom: 0;
   display: flex;
-  flex-basis: 0;
   flex-direction: column;
+  justify-content: center;
   min-width: 0;
-  padding: 8px 8px 6px;
+  padding: 0 8px;
+  overflow: hidden;
+  border: 1px solid var(--bg);
   border-radius: 8px;
   background: var(--brand);
   color: #ffffff;
 }
 
-.rm-bar li:first-child {
+.rm-gantt-bar.is-docs {
   background: var(--brand-bright);
 }
 
@@ -3647,6 +3656,71 @@ section[id] {
   font-weight: 600;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.rm-gantt-axis {
+  position: relative;
+  height: 20px;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.rm-gantt-axis span {
+  position: absolute;
+  white-space: nowrap;
+}
+
+.rm-gantt-axis span:last-child {
+  transform: translateX(-100%);
+}
+
+/* Two lanes side by side on a laptop, stacked on a phone. */
+.rm-lanes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 16px;
+  min-width: 0;
+}
+
+.rm-parallel-label {
+  grid-column: 1 / -1;
+  margin: 0 0 8px;
+  padding-top: 6px;
+  font-weight: 700;
+}
+
+.rm-lane {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Inside a lane the entry has no day column or rail of its own. */
+.rm-lane .rm-entry {
+  grid-template-columns: 1fr;
+  padding-bottom: 12px;
+}
+
+.rm-lane .rm-entry::before,
+.rm-lane .rm-when,
+.rm-lane .rm-marker {
+  display: none;
+}
+
+.rm-lane .rm-when-inline {
+  display: inline;
+}
+
+.rm-lane .rm-stories {
+  grid-template-columns: 1fr;
+}
+
+@media (max-width: 1100px) {
+  .rm-lanes {
+    grid-template-columns: 1fr;
+  }
 }
 
 .rm-timeline {
@@ -3913,6 +3987,14 @@ section[id] {
 
   .rm-entry:last-child::before {
     height: 14px;
+  }
+
+  .rm-lane .rm-entry {
+    grid-template-columns: 1fr;
+  }
+
+  .rm-gantt-axis span:not(:first-child):not(:last-child) {
+    display: none;
   }
 
   /* Wave names do not fit in the bar on a phone: numbers only. */
