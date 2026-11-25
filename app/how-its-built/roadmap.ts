@@ -16,11 +16,15 @@ export const roadmap = {
     },
     {
       "label": "Dependency",
-      "text": "the epics file has no \"depends on\" field. Dependencies come from the stories that a story names in its text, plus the build order in CLAUDE.md: service template, gateway, then the services in the order DocFlow calls them (upload → extraction → review → payment → delivery), provider before consumer."
+      "text": "each story's **Needs** are listed under Story dependencies below, taken from the stories a story names in its text and the build order in CLAUDE.md: service template, gateway, then the services in the order DocFlow calls them (upload → extraction → review → payment → delivery), provider before consumer."
     },
     {
       "label": "Documentation before the business steps (Nikhil, PR #189)",
-      "text": "every module's product documentation, from requirements to architecture, is finished before the business process steps (Upload to Delivery, waves 3 to 7) are built, within a month: two lanes of 30 days. Foundation and Identity (waves 1 and 2) do not wait for it and run alongside. The **Starts after** column says which waves each wave waits for; the site works out the days from it."
+      "text": "the first story of each business step needs all of wave 0. Foundation and Identity do not, so they start on day 1."
+    },
+    {
+      "label": "Team plan",
+      "text": "each person takes the most urgent story that is ready and that their role does: the one with the longest chain of work still waiting on it. A story is done by one person from start to end. A month is 20 working days. Stories not listed under Story dependencies are not planned."
     },
     {
       "label": "Value",
@@ -28,22 +32,873 @@ export const roadmap = {
     }
   ],
   "risks": [
-    "**Biggest risk:** E0-07 (L). The critical path runs through it: Foundation and Identity (89 days) are longer than the documentation (30 days), so the business steps wait on the foundation, not on the documents.",
-    "**Wave 0 gates the business steps:** its sections need real sources (market figures with links, prices, metrics targets); a section without them stays \"Coming Soon...\". Done in a month (Nikhil, PR #189), it has 59 days of slack before it holds up Upload; shortening it does not bring DocFlow forward.",
+    "**Biggest risk:** E0-07 (L). Every engineering wave waits on it.",
+    "**The documentation gates the business steps:** its sections need real sources (market figures with links, prices, metrics targets); a section without them stays \"Coming Soon...\".",
     "**Second:** E3-02 (L), the first real Claude call; its quality is measured by E0-04's evals and its spend capped by E0-26.",
     "Issue #45 is titled \"Store outputs\"; the epics file now calls E5-04 \"Build outputs on demand\"."
   ],
-  "criticalPath": [
-    "0a Requirements and go-to-market",
-    "0b Metrics, architecture and interfaces",
-    "1 Foundation",
-    "2 Identity and app shell",
-    "3 Upload",
-    "4 Extraction",
-    "5 Review",
-    "6 Outputs and payment",
-    "7 Delivery"
-  ],
+  "plan": {
+    "daysPerMonth": 20,
+    "people": [
+      {
+        "name": "Product manager",
+        "pm": true,
+        "busyDays": 38
+      },
+      {
+        "name": "Engineer 1",
+        "pm": false,
+        "busyDays": 132
+      },
+      {
+        "name": "Engineer 2",
+        "pm": false,
+        "busyDays": 98
+      },
+      {
+        "name": "Engineer 3",
+        "pm": false,
+        "busyDays": 105
+      }
+    ],
+    "endDay": 132,
+    "months": 7,
+    "stories": [
+      {
+        "id": "MVP1-E0-15",
+        "title": "PRD Reference section on every module page",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/85",
+        "issue": 85,
+        "wave": "0 Product documentation",
+        "person": "Product manager",
+        "start": 1,
+        "end": 3,
+        "startMonth": 1,
+        "endMonth": 1
+      },
+      {
+        "id": "MVP1-E0-20",
+        "title": "Architecture & System Design section for every service and app",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/97",
+        "issue": 97,
+        "wave": "0 Product documentation",
+        "person": "Engineer 3",
+        "start": 1,
+        "end": 8,
+        "startMonth": 1,
+        "endMonth": 1
+      },
+      {
+        "id": "MVP1-E0-01",
+        "title": "Database and migrations",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/14",
+        "issue": 14,
+        "wave": "1 Foundation",
+        "person": "Engineer 1",
+        "start": 1,
+        "end": 3,
+        "startMonth": 1,
+        "endMonth": 1
+      },
+      {
+        "id": "MVP1-E0-03",
+        "title": "CI",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/17",
+        "issue": 17,
+        "wave": "1 Foundation",
+        "person": "Engineer 2",
+        "start": 1,
+        "end": 3,
+        "startMonth": 1,
+        "endMonth": 1
+      },
+      {
+        "id": "MVP1-E0-14",
+        "title": "Market Outlook section on every module page",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/84",
+        "issue": 84,
+        "wave": "0 Product documentation",
+        "person": "Product manager",
+        "start": 4,
+        "end": 11,
+        "startMonth": 1,
+        "endMonth": 1
+      },
+      {
+        "id": "MVP1-E0-07",
+        "title": "Service template",
+        "size": "L",
+        "href": "https://github.com/founder2863/01scale.com/issues/13",
+        "issue": 13,
+        "wave": "1 Foundation",
+        "person": "Engineer 1",
+        "start": 4,
+        "end": 18,
+        "startMonth": 1,
+        "endMonth": 1
+      },
+      {
+        "id": "MVP1-E0-04",
+        "title": "Eval harness skeleton",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/20",
+        "issue": 20,
+        "wave": "4 Extraction",
+        "person": "Engineer 2",
+        "start": 4,
+        "end": 11,
+        "startMonth": 1,
+        "endMonth": 1
+      },
+      {
+        "id": "MVP1-E0-16",
+        "title": "MCP section on every module page",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/86",
+        "issue": 86,
+        "wave": "0 Product documentation",
+        "person": "Engineer 3",
+        "start": 9,
+        "end": 16,
+        "startMonth": 1,
+        "endMonth": 1
+      },
+      {
+        "id": "MVP1-E0-27",
+        "title": "Metrics section on every module page",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/104",
+        "issue": 104,
+        "wave": "0 Product documentation",
+        "person": "Product manager",
+        "start": 12,
+        "end": 19,
+        "startMonth": 1,
+        "endMonth": 1
+      },
+      {
+        "id": "MVP1-E0-51",
+        "title": "DocFlow high-level design diagram",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/173",
+        "issue": 173,
+        "wave": "0 Product documentation",
+        "person": "Engineer 2",
+        "start": 12,
+        "end": 14,
+        "startMonth": 1,
+        "endMonth": 1
+      },
+      {
+        "id": "MVP1-E0-24",
+        "title": "\"Built on\" panel on every service and app page",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/101",
+        "issue": 101,
+        "wave": "0 Product documentation",
+        "person": "Engineer 2",
+        "start": 15,
+        "end": 17,
+        "startMonth": 1,
+        "endMonth": 1
+      },
+      {
+        "id": "MVP1-E1-01",
+        "title": "Cognito user pool setup",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/22",
+        "issue": 22,
+        "wave": "2 Identity and app shell",
+        "person": "Engineer 3",
+        "start": 17,
+        "end": 19,
+        "startMonth": 1,
+        "endMonth": 1
+      },
+      {
+        "id": "MVP1-E0-05",
+        "title": "API contract in every service",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/15",
+        "issue": 15,
+        "wave": "1 Foundation",
+        "person": "Engineer 1",
+        "start": 19,
+        "end": 26,
+        "startMonth": 1,
+        "endMonth": 2
+      },
+      {
+        "id": "MVP1-E0-02",
+        "title": "Audit log",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/16",
+        "issue": 16,
+        "wave": "1 Foundation",
+        "person": "Engineer 2",
+        "start": 19,
+        "end": 21,
+        "startMonth": 1,
+        "endMonth": 2
+      },
+      {
+        "id": "MVP1-E0-28",
+        "title": "Monetization section on every module page",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/105",
+        "issue": 105,
+        "wave": "0 Product documentation",
+        "person": "Product manager",
+        "start": 20,
+        "end": 27,
+        "startMonth": 1,
+        "endMonth": 2
+      },
+      {
+        "id": "MVP1-E1-02",
+        "title": "Sign up with email verification",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/23",
+        "issue": 23,
+        "wave": "2 Identity and app shell",
+        "person": "Engineer 3",
+        "start": 20,
+        "end": 27,
+        "startMonth": 1,
+        "endMonth": 2
+      },
+      {
+        "id": "MVP1-E0-08",
+        "title": "Gateway",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/21",
+        "issue": 21,
+        "wave": "1 Foundation",
+        "person": "Engineer 1",
+        "start": 27,
+        "end": 34,
+        "startMonth": 2,
+        "endMonth": 2
+      },
+      {
+        "id": "MVP1-E0-29",
+        "title": "GTM section on every module page",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/106",
+        "issue": 106,
+        "wave": "0 Product documentation",
+        "person": "Product manager",
+        "start": 28,
+        "end": 35,
+        "startMonth": 2,
+        "endMonth": 2
+      },
+      {
+        "id": "MVP1-E1-03",
+        "title": "Sign in and sign out",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/24",
+        "issue": 24,
+        "wave": "2 Identity and app shell",
+        "person": "Engineer 2",
+        "start": 35,
+        "end": 42,
+        "startMonth": 2,
+        "endMonth": 3
+      },
+      {
+        "id": "MVP1-E0-26",
+        "title": "Security baseline, secrets and a safe live demo",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/103",
+        "issue": 103,
+        "wave": "4 Extraction",
+        "person": "Engineer 1",
+        "start": 35,
+        "end": 42,
+        "startMonth": 2,
+        "endMonth": 3
+      },
+      {
+        "id": "MVP1-E0-25",
+        "title": "Monitoring",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/102",
+        "issue": 102,
+        "wave": "Harden and show",
+        "person": "Engineer 3",
+        "start": 35,
+        "end": 42,
+        "startMonth": 2,
+        "endMonth": 3
+      },
+      {
+        "id": "MVP1-E0-30",
+        "title": "Support section on every module page",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/107",
+        "issue": 107,
+        "wave": "0 Product documentation",
+        "person": "Product manager",
+        "start": 36,
+        "end": 38,
+        "startMonth": 2,
+        "endMonth": 2
+      },
+      {
+        "id": "MVP1-E1-06",
+        "title": "Route protection",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/27",
+        "issue": 27,
+        "wave": "2 Identity and app shell",
+        "person": "Engineer 3",
+        "start": 43,
+        "end": 45,
+        "startMonth": 3,
+        "endMonth": 3
+      },
+      {
+        "id": "MVP1-E2-01",
+        "title": "S3 bucket and IAM",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/28",
+        "issue": 28,
+        "wave": "3 Upload",
+        "person": "Engineer 1",
+        "start": 43,
+        "end": 45,
+        "startMonth": 3,
+        "endMonth": 3
+      },
+      {
+        "id": "MVP1-E6-01",
+        "title": "Checkout session",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/46",
+        "issue": 46,
+        "wave": "6 Outputs and payment",
+        "person": "Engineer 2",
+        "start": 43,
+        "end": 50,
+        "startMonth": 3,
+        "endMonth": 3
+      },
+      {
+        "id": "MVP1-E0-09",
+        "title": "DocFlow app shell",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/19",
+        "issue": 19,
+        "wave": "2 Identity and app shell",
+        "person": "Engineer 3",
+        "start": 46,
+        "end": 53,
+        "startMonth": 3,
+        "endMonth": 3
+      },
+      {
+        "id": "MVP1-E2-02",
+        "title": "Presigned upload URL",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/29",
+        "issue": 29,
+        "wave": "3 Upload",
+        "person": "Engineer 1",
+        "start": 46,
+        "end": 53,
+        "startMonth": 3,
+        "endMonth": 3
+      },
+      {
+        "id": "MVP1-E6-02",
+        "title": "Webhook",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/47",
+        "issue": 47,
+        "wave": "6 Outputs and payment",
+        "person": "Engineer 2",
+        "start": 51,
+        "end": 58,
+        "startMonth": 3,
+        "endMonth": 3
+      },
+      {
+        "id": "MVP1-E2-03",
+        "title": "Upload confirmation and checks",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/30",
+        "issue": 30,
+        "wave": "3 Upload",
+        "person": "Engineer 3",
+        "start": 54,
+        "end": 56,
+        "startMonth": 3,
+        "endMonth": 3
+      },
+      {
+        "id": "MVP1-E3-01",
+        "title": "Extraction job lifecycle",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/33",
+        "issue": 33,
+        "wave": "4 Extraction",
+        "person": "Engineer 1",
+        "start": 54,
+        "end": 61,
+        "startMonth": 3,
+        "endMonth": 4
+      },
+      {
+        "id": "MVP1-E2-04",
+        "title": "Upload page UI",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/31",
+        "issue": 31,
+        "wave": "3 Upload",
+        "person": "Engineer 3",
+        "start": 57,
+        "end": 64,
+        "startMonth": 3,
+        "endMonth": 4
+      },
+      {
+        "id": "MVP1-E6-03",
+        "title": "Payment page and states",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/48",
+        "issue": 48,
+        "wave": "6 Outputs and payment",
+        "person": "Engineer 2",
+        "start": 59,
+        "end": 61,
+        "startMonth": 3,
+        "endMonth": 4
+      },
+      {
+        "id": "MVP1-E3-02",
+        "title": "Claude extraction call",
+        "size": "L",
+        "href": "https://github.com/founder2863/01scale.com/issues/34",
+        "issue": 34,
+        "wave": "4 Extraction",
+        "person": "Engineer 1",
+        "start": 62,
+        "end": 76,
+        "startMonth": 4,
+        "endMonth": 4
+      },
+      {
+        "id": "MVP1-E3-08",
+        "title": "Hold a job's fields for the app that started it",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/177",
+        "issue": 177,
+        "wave": "4 Extraction",
+        "person": "Engineer 2",
+        "start": 62,
+        "end": 64,
+        "startMonth": 4,
+        "endMonth": 4
+      },
+      {
+        "id": "MVP1-E1-05",
+        "title": "Account page",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/26",
+        "issue": 26,
+        "wave": "2 Identity and app shell",
+        "person": "Engineer 2",
+        "start": 65,
+        "end": 72,
+        "startMonth": 4,
+        "endMonth": 4
+      },
+      {
+        "id": "MVP1-E0-06",
+        "title": "Agent access: API keys and MCP",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/18",
+        "issue": 18,
+        "wave": "2 Identity and app shell",
+        "person": "Engineer 3",
+        "start": 65,
+        "end": 72,
+        "startMonth": 4,
+        "endMonth": 4
+      },
+      {
+        "id": "MVP1-E1-04",
+        "title": "Forgot and reset password",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/25",
+        "issue": 25,
+        "wave": "2 Identity and app shell",
+        "person": "Engineer 3",
+        "start": 73,
+        "end": 75,
+        "startMonth": 4,
+        "endMonth": 4
+      },
+      {
+        "id": "MVP1-E1-08",
+        "title": "Sign in with Google",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/54",
+        "issue": 54,
+        "wave": "Product extras",
+        "person": "Engineer 2",
+        "start": 73,
+        "end": 80,
+        "startMonth": 4,
+        "endMonth": 4
+      },
+      {
+        "id": "MVP1-E2-05",
+        "title": "Documents list",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/32",
+        "issue": 32,
+        "wave": "3 Upload",
+        "person": "Engineer 3",
+        "start": 76,
+        "end": 78,
+        "startMonth": 4,
+        "endMonth": 4
+      },
+      {
+        "id": "MVP1-E3-03",
+        "title": "Rule checks and final confidence",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/35",
+        "issue": 35,
+        "wave": "4 Extraction",
+        "person": "Engineer 1",
+        "start": 77,
+        "end": 84,
+        "startMonth": 4,
+        "endMonth": 5
+      },
+      {
+        "id": "MVP1-E3-05",
+        "title": "Cost and latency logging",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/37",
+        "issue": 37,
+        "wave": "4 Extraction",
+        "person": "Engineer 3",
+        "start": 79,
+        "end": 81,
+        "startMonth": 4,
+        "endMonth": 5
+      },
+      {
+        "id": "MVP1-E3-09",
+        "title": "A free daily quota for jobs a person starts",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/181",
+        "issue": 181,
+        "wave": "Product extras",
+        "person": "Engineer 2",
+        "start": 81,
+        "end": 83,
+        "startMonth": 5,
+        "endMonth": 5
+      },
+      {
+        "id": "MVP1-E6-04",
+        "title": "Refunds",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/92",
+        "issue": 92,
+        "wave": "Product extras",
+        "person": "Engineer 3",
+        "start": 82,
+        "end": 84,
+        "startMonth": 5,
+        "endMonth": 5
+      },
+      {
+        "id": "MVP1-E1-07",
+        "title": "Branded sign-in page and address",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/53",
+        "issue": 53,
+        "wave": "Product extras",
+        "person": "Engineer 2",
+        "start": 84,
+        "end": 86,
+        "startMonth": 5,
+        "endMonth": 5
+      },
+      {
+        "id": "MVP1-E4-01",
+        "title": "Review queue",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/38",
+        "issue": 38,
+        "wave": "5 Review",
+        "person": "Engineer 1",
+        "start": 85,
+        "end": 92,
+        "startMonth": 5,
+        "endMonth": 5
+      },
+      {
+        "id": "MVP1-E5-01",
+        "title": "Final JSON with metadata",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/42",
+        "issue": 42,
+        "wave": "6 Outputs and payment",
+        "person": "Engineer 3",
+        "start": 85,
+        "end": 92,
+        "startMonth": 5,
+        "endMonth": 5
+      },
+      {
+        "id": "MVP1-E3-06",
+        "title": "Ask questions about my documents (RAG)",
+        "size": "L",
+        "href": "https://github.com/founder2863/01scale.com/issues/88",
+        "issue": 88,
+        "wave": "Product extras",
+        "person": "Engineer 2",
+        "start": 87,
+        "end": 101,
+        "startMonth": 5,
+        "endMonth": 6
+      },
+      {
+        "id": "MVP1-E4-06",
+        "title": "Hold a review task's fields for the app that started it",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/178",
+        "issue": 178,
+        "wave": "5 Review",
+        "person": "Engineer 1",
+        "start": 93,
+        "end": 95,
+        "startMonth": 5,
+        "endMonth": 5
+      },
+      {
+        "id": "MVP1-E5-03",
+        "title": "Locked preview",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/44",
+        "issue": 44,
+        "wave": "6 Outputs and payment",
+        "person": "Engineer 3",
+        "start": 93,
+        "end": 95,
+        "startMonth": 5,
+        "endMonth": 5
+      },
+      {
+        "id": "MVP1-E5-05",
+        "title": "DocFlow holds results until payment",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/179",
+        "issue": 179,
+        "wave": "6 Outputs and payment",
+        "person": "Engineer 3",
+        "start": 96,
+        "end": 98,
+        "startMonth": 5,
+        "endMonth": 5
+      },
+      {
+        "id": "MVP1-E5-02",
+        "title": "CSV export",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/43",
+        "issue": 43,
+        "wave": "6 Outputs and payment",
+        "person": "Engineer 1",
+        "start": 96,
+        "end": 98,
+        "startMonth": 5,
+        "endMonth": 5
+      },
+      {
+        "id": "MVP1-E4-02",
+        "title": "Accept, edit or mark not present",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/39",
+        "issue": 39,
+        "wave": "5 Review",
+        "person": "Engineer 3",
+        "start": 99,
+        "end": 106,
+        "startMonth": 5,
+        "endMonth": 6
+      },
+      {
+        "id": "MVP1-E5-04",
+        "title": "Build outputs on demand",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/45",
+        "issue": 45,
+        "wave": "6 Outputs and payment",
+        "person": "Engineer 1",
+        "start": 99,
+        "end": 101,
+        "startMonth": 5,
+        "endMonth": 6
+      },
+      {
+        "id": "MVP1-E3-04",
+        "title": "Extraction page",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/36",
+        "issue": 36,
+        "wave": "4 Extraction",
+        "person": "Engineer 2",
+        "start": 102,
+        "end": 109,
+        "startMonth": 6,
+        "endMonth": 6
+      },
+      {
+        "id": "MVP1-E7-01",
+        "title": "Success page",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/49",
+        "issue": 49,
+        "wave": "7 Delivery",
+        "person": "Engineer 1",
+        "start": 102,
+        "end": 109,
+        "startMonth": 6,
+        "endMonth": 6
+      },
+      {
+        "id": "MVP1-E4-03",
+        "title": "Complete review",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/40",
+        "issue": 40,
+        "wave": "5 Review",
+        "person": "Engineer 3",
+        "start": 107,
+        "end": 109,
+        "startMonth": 6,
+        "endMonth": 6
+      },
+      {
+        "id": "MVP1-E4-04",
+        "title": "Corrections feed the eval set",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/41",
+        "issue": 41,
+        "wave": "5 Review",
+        "person": "Engineer 2",
+        "start": 110,
+        "end": 112,
+        "startMonth": 6,
+        "endMonth": 6
+      },
+      {
+        "id": "MVP1-E7-02",
+        "title": "Secure downloads",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/50",
+        "issue": 50,
+        "wave": "7 Delivery",
+        "person": "Engineer 3",
+        "start": 110,
+        "end": 112,
+        "startMonth": 6,
+        "endMonth": 6
+      },
+      {
+        "id": "MVP1-E7-03",
+        "title": "Email delivery",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/51",
+        "issue": 51,
+        "wave": "7 Delivery",
+        "person": "Engineer 1",
+        "start": 110,
+        "end": 117,
+        "startMonth": 6,
+        "endMonth": 6
+      },
+      {
+        "id": "MVP1-E0-18",
+        "title": "A working journey on every module page (\"Try it\")",
+        "size": "L",
+        "href": "https://github.com/founder2863/01scale.com/issues/95",
+        "issue": 95,
+        "wave": "Harden and show",
+        "person": "Engineer 1",
+        "start": 118,
+        "end": 132,
+        "startMonth": 6,
+        "endMonth": 7
+      }
+    ],
+    "milestones": [
+      {
+        "name": "Product documentation complete",
+        "day": 38,
+        "month": 2
+      },
+      {
+        "name": "Platform foundation live: service template and gateway",
+        "day": 34,
+        "month": 2
+      },
+      {
+        "name": "People can sign up and sign in",
+        "day": 45,
+        "month": 3
+      },
+      {
+        "name": "Upload a document",
+        "day": 64,
+        "month": 4
+      },
+      {
+        "name": "Claude extracts the fields, checked by rules and evals",
+        "day": 84,
+        "month": 5
+      },
+      {
+        "name": "A person reviews low-confidence fields",
+        "day": 109,
+        "month": 6
+      },
+      {
+        "name": "Pay with Stripe (test mode)",
+        "day": 61,
+        "month": 4
+      },
+      {
+        "name": "DocFlow works end to end: results by download and email",
+        "day": 117,
+        "month": 6
+      }
+    ],
+    "notPlanned": [
+      "MVP1-E0-54",
+      "MVP1-E0-44",
+      "MVP1-E8-02",
+      "MVP1-E8-03",
+      "MVP1-E8-04",
+      "MVP1-E8-05",
+      "MVP1-E8-06",
+      "MVP1-E8-07",
+      "MVP1-E8-08"
+    ]
+  },
   "groups": [
     {
       "kind": "main",
@@ -51,11 +906,11 @@ export const roadmap = {
       "reasonLabel": "Why here",
       "rows": [
         {
-          "name": "0a Requirements and go-to-market",
+          "name": "0 Product documentation",
           "value": "High",
-          "reason": "Nikhil's rules (PR #189): the documentation, from requirements to architecture, is done before the business steps are built, and it takes a month. Its 60 person-days are split into two lanes of 30 that run side by side (two people). This lane is the product story: requirements first, then the market, how it makes money, how it reaches customers and how it is supported. GTM links to the Metrics funnel, which lane 0b writes first.",
-          "days": 30,
-          "remainingDays": 30,
+          "reason": "Nikhil's rule (PR #189): the documentation, from requirements to architecture, is done before the business steps are built. The product manager writes the product sections in the order the product page reads; engineers write the architecture and interfaces between foundation stories.",
+          "days": 60,
+          "remainingDays": 60,
           "stories": [
             {
               "id": "MVP1-E0-15",
@@ -74,6 +929,15 @@ export const roadmap = {
               "done": false,
               "issue": 84,
               "href": "https://github.com/founder2863/01scale.com/issues/84"
+            },
+            {
+              "id": "MVP1-E0-27",
+              "title": "Metrics section on every module page",
+              "size": "M",
+              "days": 8,
+              "done": false,
+              "issue": 104,
+              "href": "https://github.com/founder2863/01scale.com/issues/104"
             },
             {
               "id": "MVP1-E0-28",
@@ -101,28 +965,6 @@ export const roadmap = {
               "done": false,
               "issue": 107,
               "href": "https://github.com/founder2863/01scale.com/issues/107"
-            }
-          ],
-          "after": [],
-          "start": 1,
-          "end": 30,
-          "lane": 0
-        },
-        {
-          "name": "0b Metrics, architecture and interfaces",
-          "value": "High",
-          "reason": "The second documentation lane: how success is measured, then the architecture and the interfaces. Metrics comes first because GTM (lane 0a) links to its funnel; it shows live service health once Monitoring (E0-25) exists, and the section and its targets come first.",
-          "days": 30,
-          "remainingDays": 30,
-          "stories": [
-            {
-              "id": "MVP1-E0-27",
-              "title": "Metrics section on every module page",
-              "size": "M",
-              "days": 8,
-              "done": false,
-              "issue": 104,
-              "href": "https://github.com/founder2863/01scale.com/issues/104"
             },
             {
               "id": "MVP1-E0-20",
@@ -160,11 +1002,7 @@ export const roadmap = {
               "issue": 86,
               "href": "https://github.com/founder2863/01scale.com/issues/86"
             }
-          ],
-          "after": [],
-          "start": 1,
-          "end": 30,
-          "lane": 1
+          ]
         },
         {
           "name": "1 Foundation",
@@ -227,11 +1065,7 @@ export const roadmap = {
               "issue": 21,
               "href": "https://github.com/founder2863/01scale.com/issues/21"
             }
-          ],
-          "after": [],
-          "start": 1,
-          "end": 40,
-          "lane": 2
+          ]
         },
         {
           "name": "2 Identity and app shell",
@@ -312,18 +1146,12 @@ export const roadmap = {
               "issue": 19,
               "href": "https://github.com/founder2863/01scale.com/issues/19"
             }
-          ],
-          "after": [
-            "1"
-          ],
-          "start": 41,
-          "end": 89,
-          "lane": 2
+          ]
         },
         {
           "name": "3 Upload",
           "value": "High",
-          "reason": "The first business step: it waits for both documentation lanes (wave 0) and for sign-in (wave 2). Small and low risk.",
+          "reason": "The first business step: it waits for the documentation (wave 0) and the gateway. Small and low risk.",
           "days": 25,
           "remainingDays": 25,
           "stories": [
@@ -372,21 +1200,12 @@ export const roadmap = {
               "issue": 32,
               "href": "https://github.com/founder2863/01scale.com/issues/32"
             }
-          ],
-          "after": [
-            "0a",
-            "0b",
-            "2"
-          ],
-          "start": 90,
-          "end": 114,
-          "lane": 0,
-          "join": true
+          ]
         },
         {
           "name": "4 Extraction",
           "value": "High",
-          "reason": "The most valuable and riskiest step. LLM features ship with evals (CLAUDE.md), so E0-04 comes first. E0-26 is moved forward so a public demo cannot run up the Claude bill. STATUS.md: E3-08 before DocFlow's extraction step goes live.",
+          "reason": "The most valuable and riskiest step. LLM features ship with evals (CLAUDE.md), so E0-04 comes before the Claude call. E0-26 caps spend before a public demo can call Claude. STATUS.md: E3-08 before DocFlow's extraction step goes live.",
           "days": 61,
           "remainingDays": 61,
           "stories": [
@@ -462,13 +1281,7 @@ export const roadmap = {
               "issue": 37,
               "href": "https://github.com/founder2863/01scale.com/issues/37"
             }
-          ],
-          "after": [
-            "3"
-          ],
-          "start": 115,
-          "end": 175,
-          "lane": 0
+          ]
         },
         {
           "name": "5 Review",
@@ -522,13 +1335,7 @@ export const roadmap = {
               "issue": 41,
               "href": "https://github.com/founder2863/01scale.com/issues/41"
             }
-          ],
-          "after": [
-            "4"
-          ],
-          "start": 176,
-          "end": 200,
-          "lane": 0
+          ]
         },
         {
           "name": "6 Outputs and payment",
@@ -609,13 +1416,7 @@ export const roadmap = {
               "issue": 48,
               "href": "https://github.com/founder2863/01scale.com/issues/48"
             }
-          ],
-          "after": [
-            "5"
-          ],
-          "start": 201,
-          "end": 239,
-          "lane": 0
+          ]
         },
         {
           "name": "7 Delivery",
@@ -651,16 +1452,9 @@ export const roadmap = {
               "issue": 51,
               "href": "https://github.com/founder2863/01scale.com/issues/51"
             }
-          ],
-          "after": [
-            "6"
-          ],
-          "start": 240,
-          "end": 258,
-          "lane": 0
+          ]
         }
       ],
-      "elapsedDays": 258,
       "days": 318,
       "remainingDays": 318,
       "storyCount": 53
@@ -673,7 +1467,7 @@ export const roadmap = {
         {
           "name": "Harden and show",
           "value": "Medium",
-          "reason": "After wave 7. Monitoring feeds live health into the Metrics section; E0-18 stays open until every module has Try it.",
+          "reason": "Monitoring once the gateway is up; it feeds live health into the Metrics section. E0-18 closes when every module has Try it.",
           "days": 23,
           "remainingDays": 23,
           "stories": [
@@ -700,7 +1494,7 @@ export const roadmap = {
         {
           "name": "Roadmap on the site",
           "value": "Medium",
-          "reason": "Any time; reads this file.",
+          "reason": "Built in PR #189, so not planned.",
           "days": 8,
           "remainingDays": 8,
           "stories": [
@@ -728,7 +1522,7 @@ export const roadmap = {
         {
           "name": "Product extras",
           "value": "Medium",
-          "reason": "Not on the path to the journey. E3-09 builds the free tier that Monetization (E0-28, wave 0) designs. RAG is impressive but needs extraction finished first.",
+          "reason": "Not on the path to the journey; planned when an engineer has nothing more urgent. E3-09 builds the free tier that Monetization (E0-28) designs. RAG needs extraction first.",
           "days": 32,
           "remainingDays": 32,
           "stories": [
@@ -782,7 +1576,7 @@ export const roadmap = {
         {
           "name": "Waiting for Nikhil's go",
           "value": "Low",
-          "reason": "Built when Nikhil says go. E8-04 (a dependency-aware timeline for a human team) can take its build order from this file.",
+          "reason": "Built when Nikhil says go, so not planned. E8-04 (a dependency-aware timeline for a human team) can take its plan from this file.",
           "days": 68,
           "remainingDays": 68,
           "stories": [

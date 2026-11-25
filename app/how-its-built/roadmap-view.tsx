@@ -1,14 +1,17 @@
 import { Fragment, type ReactNode } from "react";
 import { roadmap } from "./roadmap";
 
-// The Roadmap tab of How It's Built (MVP1-E0-54): a vertical timeline (Nikhil, PR #189).
-// Everything here comes from roadmap.ts, generated from docs/process/ROADMAP.md and the epics
-// files by `npm run roadmap`.
+// The Roadmap tab of How It's Built (MVP1-E0-54). A monthly roadmap for a team of three
+// engineers and a product manager, with what each month achieves (Nikhil, PR #189).
+// Everything here comes from roadmap.ts, generated from docs/process/ROADMAP.md and the
+// epics files by `npm run roadmap`, which also plans the team.
 
 const REPO = "https://github.com/founder2863/01scale.com/blob/main";
+const HORIZON = 5; // months shown one by one; the rest share a last column
 
 type Group = (typeof roadmap.groups)[number];
 type Row = Group["rows"][number];
+type Planned = (typeof roadmap.plan.stories)[number];
 
 // ROADMAP.md uses **bold** and `code` inline; render just those two.
 function inline(text: string): ReactNode {
@@ -30,51 +33,142 @@ function days(n: number) {
   return `${n} person-day${n === 1 ? "" : "s"}`;
 }
 
-// "0a Requirements and go-to-market" -> { number: "0a", name: "Requirements and go-to-market" }
+function shortId(id: string) {
+  return id.replace(/^MVP1-/, "");
+}
+
+// "0 Product documentation" -> { number: "0", name: "Product documentation" }
 function split(name: string) {
   const m = name.match(/^(\d+[a-z]?)\s+(.*)$/);
   return m ? { number: m[1], name: m[2] } : { number: "", name };
 }
 
-function range(row: Row) {
-  return "start" in row ? `Day ${row.start} to ${row.end}` : null;
+// A colour family per kind of wave, so a wave reads the same on the board and in the team chart.
+function tone(wave: string) {
+  const { number } = split(wave);
+  if (number === "0") return "rm-tone-docs";
+  if (number === "1" || number === "2") return "rm-tone-platform";
+  if (number) return "rm-tone-business";
+  return "rm-tone-extra";
 }
 
-function Stories({ row }: { row: Row }) {
-  const done = row.stories.filter((s) => s.done).length;
+const plan = roadmap.plan;
+const waveOrder: string[] = roadmap.groups.flatMap((g) => g.rows.map((r) => r.name));
+
+// The months shown as columns: 1 to HORIZON, then one column for the rest.
+const columns = (() => {
+  const cols: { from: number; to: number; label: string }[] = [];
+  for (let m = 1; m <= Math.min(HORIZON, plan.months); m += 1) cols.push({ from: m, to: m, label: `Month ${m}` });
+  if (plan.months > HORIZON) cols.push({ from: HORIZON + 1, to: plan.months, label: `Month ${HORIZON + 1} and later` });
+  return cols;
+})();
+
+function waveMonths(row: Row) {
+  const mine = plan.stories.filter((s) => s.wave === row.name);
+  if (!mine.length) return null;
+  const a = Math.min(...mine.map((s) => s.startMonth));
+  const b = Math.max(...mine.map((s) => s.endMonth));
+  return a === b ? `Month ${a}` : `Month ${a} to ${b}`;
+}
+
+function MonthColumn({ from, to, label }: { from: number; to: number; label: string }) {
+  const achieved = plan.milestones.filter((m) => m.month >= from && m.month <= to);
+  const active = plan.stories.filter((s) => s.startMonth <= to && s.endMonth >= from);
+  const waves = waveOrder.filter((w) => active.some((s) => s.wave === w));
   return (
-    <details className="rm-details">
-      <summary>
-        {row.stories.length} {row.stories.length === 1 ? "story" : "stories"}
-        {done ? `, ${done} done` : ""}
-      </summary>
-      <ol className="rm-stories">
-        {row.stories.map((story) => (
-          <li key={story.id} className={story.done ? "rm-story is-done" : "rm-story"}>
-            <a href={story.href} className="rm-story-id">
-              {story.id.replace(/^MVP1-/, "")}
-              {story.issue ? <span className="rm-issue"> #{story.issue}</span> : null}
-            </a>
-            <span className="rm-story-title">{story.title}</span>
-            <span className="rm-story-meta">
-              {story.done ? <span className="rm-done">Done</span> : null}
-              <span className="rm-size" title={story.days ? days(story.days) : "No size yet"}>
-                {story.size ?? "TBD"}
-              </span>
-            </span>
-          </li>
-        ))}
-      </ol>
-    </details>
+    <section className="rm-month" aria-label={label}>
+      <h4 className="rm-month-title">{label}</h4>
+      <div className="rm-achieved">
+        <p className="rm-achieved-label">Achieved</p>
+        {achieved.length ? (
+          <ul>
+            {achieved.map((m) => (
+              <li key={m.name}>{m.name}</li>
+            ))}
+          </ul>
+        ) : (
+          <p className="rm-achieved-none">Work in progress, no milestone yet</p>
+        )}
+      </div>
+      {waves.map((wave) => (
+        <div key={wave} className={`rm-month-wave ${tone(wave)}`}>
+          <p className="rm-month-wave-name">{split(wave).name}</p>
+          <ul className="rm-chips">
+            {active
+              .filter((s) => s.wave === wave)
+              .map((s) => {
+                const finishes = s.endMonth <= to;
+                return (
+                  <li
+                    key={s.id}
+                    className={finishes ? "rm-chip" : "rm-chip is-ongoing"}
+                    title={`${s.title} · ${s.person} · day ${s.start} to ${s.end}`}
+                  >
+                    <a href={s.href}>{shortId(s.id)}</a>
+                    <span className="rm-chip-title">{s.title}</span>
+                    <span className="rm-chip-state" aria-label={finishes ? "finishes" : "carries on"}>
+                      {finishes ? "✓" : "→"}
+                    </span>
+                  </li>
+                );
+              })}
+          </ul>
+        </div>
+      ))}
+    </section>
   );
 }
 
-function Entry({ row, group }: { row: Row; group: Group }) {
+// Who does what, day by day: a row per person, the stories placed by their working days.
+function TeamChart() {
+  const total = plan.months * plan.daysPerMonth;
+  return (
+    <div className="rm-scroll" tabIndex={0} aria-label="Team chart, scrolls sideways on small screens">
+      <div className="rm-team">
+        <div className="rm-team-row rm-team-head" aria-hidden="true">
+          <span className="rm-team-name" />
+          <div className="rm-team-track">
+            {Array.from({ length: plan.months }, (_, i) => (
+              <span key={i} className="rm-team-month" style={{ left: `${(i / plan.months) * 100}%`, width: `${100 / plan.months}%` }}>
+                Month {i + 1}
+              </span>
+            ))}
+          </div>
+        </div>
+        {plan.people.map((person) => (
+          <div key={person.name} className="rm-team-row">
+            <span className="rm-team-name">
+              {person.name}
+              <span className="rm-team-busy">{person.busyDays} days of work</span>
+            </span>
+            <div className="rm-team-track">
+              {plan.stories
+                .filter((s) => s.person === person.name)
+                .map((s: Planned) => (
+                  <a
+                    key={s.id}
+                    href={s.href}
+                    className={`rm-team-bar ${tone(s.wave)}`}
+                    style={{ left: `${((s.start - 1) / total) * 100}%`, width: `${((s.end - s.start + 1) / total) * 100}%` }}
+                    title={`${s.id} ${s.title}: day ${s.start} to ${s.end}`}
+                  >
+                    {shortId(s.id)}
+                  </a>
+                ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function Wave({ row, group }: { row: Row; group: Group }) {
   const { number, name } = split(row.name);
-  const when = range(row);
+  const when = waveMonths(row);
   return (
     <li className={`rm-entry rm-entry-${group.kind}`}>
-      <div className="rm-when">{when ?? (group.kind === "side" ? "Alongside" : "Later")}</div>
+      <div className="rm-when">{when ?? "Not planned"}</div>
       <div className="rm-marker" aria-hidden="true">
         {number || "•"}
       </div>
@@ -87,7 +181,7 @@ function Entry({ row, group }: { row: Row; group: Group }) {
           <span className={valueTone(row.value)}>{row.value} value</span>
         </header>
         <p className="rm-meta">
-          {when ? <span className="rm-when-inline">{when} · </span> : null}
+          <span className="rm-when-inline">{when ?? "Not planned"} · </span>
           {days(row.days)}
           {row.remainingDays !== row.days ? ` · ${row.remainingDays} left` : ""}
         </p>
@@ -95,83 +189,42 @@ function Entry({ row, group }: { row: Row; group: Group }) {
           <span className="rm-reason-label">{group.reasonLabel}: </span>
           {inline(row.reason)}
         </p>
-        <Stories row={row} />
-      </article>
-    </li>
-  );
-}
-
-function lane(row: Row) {
-  return "lane" in row ? row.lane : 0;
-}
-
-// The Jira-style view: one row per lane, each wave placed by its start and end day.
-function Gantt({ rows, total, marks }: { rows: readonly Row[]; total: number; marks: number[] }) {
-  const laneIds = [...new Set(rows.map(lane))].sort();
-  const ticks = [...new Set([1, ...marks, ...rows.filter((r) => "join" in r && r.join && "start" in r).map((r) => ("start" in r ? r.start : 1)), total])];
-  return (
-    <div className="rm-gantt" role="img" aria-label={`Main path over ${total} days: ${rows.map((r) => `${r.name}, ${range(r)}`).join("; ")}`}>
-      {laneIds.map((id) => (
-        <div key={id} className="rm-gantt-lane">
-          {rows
-            .filter((row) => lane(row) === id && "start" in row)
-            .map((row) => {
-              const { number, name } = split(row.name);
-              const start = "start" in row ? row.start : 1;
-              return (
-                <span
-                  key={row.name}
-                  className={number.startsWith("0") ? "rm-gantt-bar is-docs" : "rm-gantt-bar"}
-                  style={{ left: `${((start - 1) / total) * 100}%`, width: `${(row.days / total) * 100}%` }}
-                  title={`${row.name}: ${range(row)}`}
-                >
-                  <span className="rm-bar-number">{number}</span>
-                  <span className="rm-bar-name">{name}</span>
+        <details className="rm-details">
+          <summary>
+            {row.stories.length} {row.stories.length === 1 ? "story" : "stories"}
+          </summary>
+          <ol className="rm-stories">
+            {row.stories.map((story) => (
+              <li key={story.id} className={story.done ? "rm-story is-done" : "rm-story"}>
+                <a href={story.href} className="rm-story-id">
+                  {shortId(story.id)}
+                  {story.issue ? <span className="rm-issue"> #{story.issue}</span> : null}
+                </a>
+                <span className="rm-story-title">{story.title}</span>
+                <span className="rm-story-meta">
+                  {story.done ? <span className="rm-done">Done</span> : null}
+                  <span className="rm-size" title={story.days ? days(story.days) : "No size yet"}>
+                    {story.size ?? "TBD"}
+                  </span>
                 </span>
-              );
-            })}
-        </div>
-      ))}
-      <div className="rm-gantt-axis" aria-hidden="true">
-        {ticks.map((day) => (
-          <span key={day} style={{ left: `${((day - 1) / total) * 100}%` }}>
-            Day {day}
-          </span>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function Milestone({ label, day }: { label: string; day?: number }) {
-  return (
-    <li className="rm-entry rm-milestone">
-      <div className="rm-when">{day ? `Day ${day}` : ""}</div>
-      <div className="rm-marker" aria-hidden="true">
-        ◆
-      </div>
-      <p className="rm-milestone-label">
-        {label}
-        {day ? <span className="rm-when-inline"> · day {day}</span> : null}
-      </p>
+              </li>
+            ))}
+          </ol>
+        </details>
+      </article>
     </li>
   );
 }
 
 export default function RoadmapView() {
   const { totals, groups, method, risks } = roadmap;
-  const main = groups.find((g) => g.kind === "main");
-  const others = groups.filter((g) => g.kind !== "main");
-  const mainRows = main?.rows ?? [];
-  const last = mainRows[mainRows.length - 1];
-  const elapsed: number = main && "elapsedDays" in main ? (main as { elapsedDays: number }).elapsedDays : 0;
-  // Waves before the first one that waits for two others run in parallel, one lane each.
-  const joinIndex = mainRows.findIndex((row) => "join" in row && row.join);
-  const parallel = joinIndex > 0 ? mainRows.slice(0, joinIndex) : [];
-  const sequential = joinIndex > 0 ? mainRows.slice(joinIndex) : mainRows;
-  const join = joinIndex > 0 ? mainRows[joinIndex] : undefined;
-  const docsEnd = Math.max(0, ...mainRows.filter((r) => split(r.name).number.startsWith("0") && "end" in r).map((r) => ("end" in r ? r.end : 0)));
-  const lanes = [...new Set(parallel.map(lane))].map((n) => parallel.filter((row) => lane(row) === n));
+  const engineers = plan.people.filter((p) => !p.pm).length;
+  const pms = plan.people.length - engineers;
+  const endToEnd = plan.milestones.reduce((a, b) => (b.day > a.day ? b : a), plan.milestones[0]);
+  const notPlannedIds: readonly string[] = plan.notPlanned;
+  type StoryLink = { id: string; title: string; href: string };
+  const allStories = (groups as unknown as { rows: { stories: StoryLink[] }[] }[]).flatMap((g) => g.rows.flatMap((r) => r.stories));
+  const notPlanned = allStories.filter((s) => notPlannedIds.includes(s.id));
 
   return (
     <section id="roadmap">
@@ -179,75 +232,57 @@ export default function RoadmapView() {
         Roadmap <span className="status">Planned</span>
       </h2>
       <p className="note">
-        What is left to build and in what order: by dependency first, then by value, with each
-        story&apos;s size. Product documentation, from requirements to architecture, is done before the
-        business steps are built, while the platform foundation is built alongside it; then the main path builds the shortest way to a DocFlow a visitor can use from sign-in to delivery. Days are
-        counted from the start: waves in the same lane follow each other, lanes run side by side.
+        What is left to build, month by month, for a team of {engineers} engineers and {pms} product
+        manager. Each person takes the most urgent story that is ready, so whatever can run in parallel
+        does. Product documentation, from requirements to architecture, is done before the business
+        steps are built; the platform foundation is built alongside it. A month is {plan.daysPerMonth}{" "}
+        working days.
       </p>
 
       <div className="stat-row">
         <div className="stat">
-          <span className="stat-value">{totals.stories}</span>
-          <span className="stat-label">Stories on the roadmap</span>
+          <span className="stat-value">
+            {engineers} + {pms}
+          </span>
+          <span className="stat-label">Engineers + product manager</span>
+        </div>
+        <div className="stat">
+          <span className="stat-value">Month {endToEnd?.month}</span>
+          <span className="stat-label">DocFlow works end to end</span>
+        </div>
+        <div className="stat">
+          <span className="stat-value">{plan.months} months</span>
+          <span className="stat-label">Everything planned</span>
         </div>
         <div className="stat">
           <span className="stat-value">{totals.days}</span>
-          <span className="stat-label">Person-days in all</span>
-        </div>
-        <div className="stat">
-          <span className="stat-value">{elapsed}</span>
-          <span className="stat-label">Days to a working DocFlow, with work in parallel</span>
-        </div>
-        <div className="stat">
-          <span className="stat-value">{totals.doneStories}</span>
-          <span className="stat-label">Done</span>
+          <span className="stat-label">Person-days in {totals.stories} stories</span>
         </div>
       </div>
 
-      {main && (
-        <>
-          <h3 className="section-subtitle">The main path at a glance</h3>
-          <Gantt rows={mainRows} total={elapsed} marks={docsEnd ? [docsEnd] : []} />
+      <h3 className="section-subtitle">Month by month</h3>
+      <p className="note">
+        Each month: what is achieved by its end, then the stories worked on, by wave. ✓ finishes that
+        month; → carries on into the next.
+      </p>
+      <div className="rm-scroll" tabIndex={0} aria-label="Monthly roadmap, scrolls sideways on small screens">
+        <div className="rm-months" style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))` }}>
+          {columns.map((c) => (
+            <MonthColumn key={c.label} {...c} />
+          ))}
+        </div>
+      </div>
 
-          <h3 className="section-subtitle" id="rm-main">
-            {main.title}{" "}
-            <span className="rm-group-total">
-              {main.storyCount} stories · {days(main.days)}
-            </span>
-          </h3>
-          <ol className="rm-timeline" aria-labelledby="rm-main">
-            {parallel.length > 0 && (
-              <li className="rm-entry rm-parallel">
-                <div className="rm-when">Day 1</div>
-                <div className="rm-marker" aria-hidden="true">
-                  ∥
-                </div>
-                <div className="rm-lanes">
-                  <p className="rm-parallel-label">
-                    In parallel{docsEnd ? <span className="rm-group-total">documentation done by day {docsEnd}</span> : null}
-                  </p>
-                  {lanes.map((lane) => (
-                    <ol key={lane[0].name} className="rm-lane">
-                      {lane.map((row) => (
-                        <Entry key={row.name} row={row} group={main} />
-                      ))}
-                    </ol>
-                  ))}
-                </div>
-              </li>
-            )}
-            {join && "start" in join ? (
-              <Milestone label="Documentation and platform ready: the business steps start" day={join.start} />
-            ) : null}
-            {sequential.map((row) => (
-              <Entry key={row.name} row={row} group={main} />
-            ))}
-            {last && "end" in last ? <Milestone label="DocFlow works end to end (MVP1)" day={last.end} /> : null}
-          </ol>
-        </>
-      )}
+      <h3 className="section-subtitle">Who does what</h3>
+      <TeamChart />
+      <p className="rm-legend">
+        <span className="rm-tone-docs">Documentation</span>
+        <span className="rm-tone-platform">Platform foundation and identity</span>
+        <span className="rm-tone-business">Business steps</span>
+        <span className="rm-tone-extra">Extras and hardening</span>
+      </p>
 
-      {others.map((group) => (
+      {groups.map((group) => (
         <Fragment key={group.kind}>
           <h3 className="section-subtitle" id={`rm-${group.kind}`}>
             {group.title}{" "}
@@ -257,13 +292,28 @@ export default function RoadmapView() {
           </h3>
           <ol className="rm-timeline" aria-labelledby={`rm-${group.kind}`}>
             {group.rows.map((row) => (
-              <Entry key={row.name} row={row} group={group} />
+              <Wave key={row.name} row={row} group={group} />
             ))}
           </ol>
         </Fragment>
       ))}
 
-      <h3 className="section-subtitle">How the order was worked out</h3>
+      {notPlanned.length > 0 && (
+        <>
+          <h3 className="section-subtitle">Not planned</h3>
+          <p className="note">
+            {notPlanned.map((s, i) => (
+              <Fragment key={s.id}>
+                {i ? ", " : ""}
+                <a href={s.href}>{shortId(s.id)}</a> {s.title}
+              </Fragment>
+            ))}
+            . Built already or waiting for Nikhil&apos;s go.
+          </p>
+        </>
+      )}
+
+      <h3 className="section-subtitle">How the plan was worked out</h3>
       <ul className="rm-list">
         {method.map((item) => (
           <li key={item.label}>

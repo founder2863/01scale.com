@@ -141,6 +141,138 @@ def saved_issues():
     return {sid: int(n) for sid, n in re.findall(r'"id": "([A-Z0-9]+-E\d+-\d+)",\s*"title": [^\n]*\n\s*"size": [^\n]*\n\s*"days": [^\n]*\n\s*"done": [^\n]*\n\s*"issue": (\d+)', text)}
 
 
+DAYS_PER_MONTH = 20
+
+
+def team_plan(groups, tables, order, errors):
+    """Plan the stories for the team: each person takes the most urgent ready story their role
+    does (the one with the longest chain of work waiting on it); one person per story."""
+    team = tables.get("team") or []
+    if not team:
+        errors.append("no Team table")
+        return None
+    people, pm_stories = [], set()
+    for role, count, does in (r[:3] for r in team):
+        is_pm = role.lower().startswith("product")
+        for i in range(int(count)):
+            label = role if int(count) == 1 else f"{role} {i + 1}"
+            people.append({"name": label, "pm": is_pm})
+        if is_pm:
+            pm_stories |= set(story_ids(does, order))
+
+    stories = {s["id"]: s for g in groups for r in g["rows"] for s in r["stories"]}
+    wave_of = {s["id"]: r["name"] for g in groups for r in g["rows"] for s in r["stories"]}
+    wave0 = [s["id"] for g in groups if g["kind"] == "main" for r in g["rows"][:1] for s in r["stories"]]
+    needs = {}
+    for story_cell, needs_cell in ((r[0], r[1]) for r in tables.get("story", [])):
+        ids = story_ids(story_cell, order)
+        if len(ids) != 1 or ids[0] not in stories:
+            errors.append(f"Story dependencies: '{story_cell}' is not one story on the roadmap")
+            continue
+        deps = []
+        if re.search(r"\bWave 0\b", needs_cell):
+            deps += wave0
+        deps += story_ids(re.sub(r"\bWave 0\b", "", needs_cell), order)
+        for d in deps:
+            if d not in stories:
+                errors.append(f"{ids[0]} needs {d}, which is not on the roadmap")
+        needs[ids[0]] = [d for d in deps if d in stories and d != ids[0]]
+    for sid, deps in needs.items():
+        for d in deps:
+            if d not in needs:
+                errors.append(f"{sid} needs {d}, which is not planned (add it to Story dependencies)")
+    if errors:
+        return None
+
+    # Urgency: the story's own days plus the longest chain of planned work that waits on it.
+    waiting = {sid: [o for o, deps in needs.items() if sid in deps] for sid in needs}
+    urgency = {}
+
+    def chain(sid, seen=()):
+        if sid in seen:
+            errors.append(f"dependency loop through {sid}")
+            return 0
+        if sid not in urgency:
+            urgency[sid] = (stories[sid]["days"] or 0) + max([chain(o, seen + (sid,)) for o in waiting[sid]] or [0])
+        return urgency[sid]
+
+    for sid in needs:
+        chain(sid)
+    if errors:
+        return None
+
+    # Ties go to the story listed first on the roadmap (requirements before the market, and so on).
+    rank = {sid: i for i, sid in enumerate(stories)}
+    finish, start, who = {}, {}, {}
+    free_at = [0] * len(people)
+    todo = [sid for sid in needs if not stories[sid]["done"]]
+    for sid in needs:
+        if stories[sid]["done"]:
+            finish[sid] = 0
+    t = 0
+    while todo:
+        progressed = False
+        for p in sorted(range(len(people)), key=lambda i: people[i]["pm"], reverse=True):
+            if free_at[p] > t:
+                continue
+            ready = [sid for sid in todo
+                     if all(d in finish and finish[d] <= t for d in needs[sid])
+                     and (sid in pm_stories) == people[p]["pm"]]
+            if not ready:
+                continue
+            sid = max(ready, key=lambda x: (urgency[x], -rank[x]))
+            start[sid], finish[sid], who[sid] = t, t + (stories[sid]["days"] or 0), p
+            free_at[p] = finish[sid]
+            todo.remove(sid)
+            progressed = True
+        if not progressed:
+            later = [f for f in free_at if f > t] + [f for f in finish.values() if f > t]
+            if not later:
+                errors.append("stories that can never start: " + ", ".join(todo))
+                return None
+            t = min(later)
+
+    def month(day):
+        return day // DAYS_PER_MONTH + 1
+
+    end = max(finish.values() or [0])
+    planned = []
+    for sid in sorted(start, key=lambda x: (start[x], rank[x])):
+        planned.append({
+            "id": sid,
+            "title": stories[sid]["title"],
+            "size": stories[sid]["size"],
+            "href": stories[sid]["href"],
+            "issue": stories[sid]["issue"],
+            "wave": wave_of[sid],
+            "person": people[who[sid]]["name"],
+            "start": start[sid] + 1,
+            "end": finish[sid],
+            "startMonth": month(start[sid]),
+            "endMonth": month(finish[sid] - 1),
+        })
+    milestones = []
+    for name, when in ((r[0], r[1]) for r in tables.get("milestones", [])):
+        ids = wave0 if re.search(r"\bWave 0\b", when) else []
+        ids += story_ids(re.sub(r"\bWave 0\b", "", when), order)
+        missing = [i for i in ids if i not in finish]
+        if missing or not ids:
+            errors.append(f"milestone '{name}' needs {', '.join(missing) or 'a story'}, not planned")
+            continue
+        day = max(finish[i] for i in ids)
+        milestones.append({"name": name, "day": day, "month": month(day - 1)})
+    busy = [sum(finish[s] - start[s] for s in start if who[s] == p) for p in range(len(people))]
+    return {
+        "daysPerMonth": DAYS_PER_MONTH,
+        "people": [{"name": p["name"], "pm": p["pm"], "busyDays": b} for p, b in zip(people, busy)],
+        "endDay": end,
+        "months": month(end - 1) if end else 0,
+        "stories": planned,
+        "milestones": milestones,
+        "notPlanned": [sid for sid in stories if sid not in needs],
+    }
+
+
 def main(argv):
     model = json.load(open(MODEL, encoding="utf-8"))
     per_size = model["person_days_per_size"]
@@ -156,7 +288,7 @@ def main(argv):
             print(f"Could not read issues ({e}); using saved issue numbers.", file=sys.stderr)
     issues.update(done)
 
-    method, risks, groups, errors = [], [], [], []
+    method, risks, groups, errors, tables = [], [], [], [], {}
     for section in parse_roadmap(open(ROADMAP, encoding="utf-8").read()):
         heading = section["heading"]
         if heading.startswith("How it was worked out"):
@@ -166,6 +298,9 @@ def main(argv):
             continue
         if heading.startswith("Risks"):
             risks = bullets(section["lines"])
+            continue
+        if heading.startswith(("Team", "Story dependencies", "Milestones")):
+            tables[heading.split()[0].lower()] = table(section["lines"])[1]
             continue
         kind = next((v for k, v in SECTIONS.items() if heading.startswith(k)), None)
         if not kind:
@@ -183,7 +318,6 @@ def main(argv):
             col = {h.lower(): c for h, c in zip(header, cells)}
             name, story_cell, reason = cells[0], cells[1], cells[-1]
             days_cell, value = col.get("days", ""), col.get("value", "")
-            after_cell = col.get("starts after")
             stories, seen = [], set()
             for sid in story_ids(story_cell, order):
                 if sid in seen:
@@ -211,41 +345,7 @@ def main(argv):
                 "remainingDays": sum(s["days"] or 0 for s in stories if not s["done"]),
                 "stories": stories,
             }
-            if after_cell is not None:
-                # "Start", or the waves it waits for by number: "1", "0a, 0b and 2".
-                row["after"] = [] if after_cell.strip().lower() == "start" else re.findall(r"\d+[a-z]?", after_cell)
             group["rows"].append(row)
-        # The main path runs one wave after another: give each wave its place on the timeline,
-        # counted in person-days from the start (one builder, no parallel work).
-        # With a "Starts after" column, a wave starts the day after the last wave it waits for
-        # ends, so waves can run in parallel; without it, one after another.
-        if kind == "main":
-            by_number, elapsed = {}, 0
-            for r in group["rows"]:
-                number = (re.match(r"(\d+[a-z]?)\b", r["name"]) or [None, r["name"]])[1]
-                if "after" in r:
-                    missing = [n for n in r["after"] if n not in by_number]
-                    if missing:
-                        errors.append(f"'{r['name']}' starts after wave {', '.join(missing)}, which is not listed above it")
-                    begin = max([by_number[n]["end"] for n in r["after"] if n in by_number] or [0])
-                else:
-                    begin = elapsed
-                r["start"], r["end"] = begin + 1, begin + r["days"]
-                by_number[number] = r
-                elapsed = max(elapsed, r["end"])
-            # Lanes: a wave that starts at the beginning opens a lane; a wave after one other wave
-            # stays in its lane; a wave after two or more joins them back into lane 0.
-            for r in group["rows"]:
-                after = r.get("after")
-                if after is None:
-                    r["lane"] = 0
-                elif not after:
-                    r["lane"] = len({x["lane"] for x in group["rows"] if "lane" in x and x.get("after") == []})
-                elif len(after) == 1 and after[0] in by_number:
-                    r["lane"] = by_number[after[0]]["lane"]
-                else:
-                    r["lane"], r["join"] = 0, True
-            group["elapsedDays"] = elapsed
         group["days"] = sum(r["days"] for r in group["rows"])
         group["remainingDays"] = sum(r["remainingDays"] for r in group["rows"])
         group["storyCount"] = sum(len(r["stories"]) for r in group["rows"])
@@ -264,14 +364,17 @@ def main(argv):
     if errors:
         fail("\n  ".join(["ROADMAP.md does not match the epics files:"] + errors))
 
-    main_group = next((g for g in groups if g["kind"] == "main"), None)
+    plan = team_plan(groups, tables, order, errors)
+    if errors:
+        fail("\n  ".join(["ROADMAP.md's team plan does not hold together:"] + errors))
+
     data = {
         "updated": date.today().isoformat(),
         "source": ROADMAP,
         "personDaysPerSize": per_size,
         "method": method,
         "risks": risks,
-        "criticalPath": [r["name"] for r in main_group["rows"]] if main_group else [],
+        "plan": plan,
         "groups": groups,
         "totals": {
             "stories": len(all_stories),
@@ -289,6 +392,10 @@ def main(argv):
     t = data["totals"]
     print(f"Roadmap: {t['stories']} stories, {t['days']} person-days, "
           f"{t['doneStories']} done, {t['remainingDays']} person-days left. Wrote {OUT}")
+    print(f"Team plan: {len(plan['people'])} people, {plan['months']} months ({plan['endDay']} working days); "
+          f"not planned: {', '.join(plan['notPlanned']) or 'none'}")
+    for m in plan["milestones"]:
+        print(f"  month {m['month']} (day {m['day']}): {m['name']}")
 
 
 if __name__ == "__main__":
