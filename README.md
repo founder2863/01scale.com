@@ -102,7 +102,7 @@ Built with Claude Code, from VS Code on a laptop and mostly from the Claude app 
 4. Review the diff and merge. Vercel deploys to 01scale.com automatically.
 5. Close the story's issue with its measured token cost and the estimated cost for a human team.
 
-The [How It's Built](https://01scale.com/how-its-built) pages show the skills, the token cost of every story, what a human team would cost, the constraints and the expensive mistakes.
+The [How It's Built](https://01scale.com/how-its-built) pages show the skills, the token cost of every story, what a human team would cost, the roadmap of what is left to build (by dependency, size and value), the constraints and the expensive mistakes.
 
 ## Each module includes
 

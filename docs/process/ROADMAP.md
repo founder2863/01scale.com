@@ -1,10 +1,10 @@
 # Roadmap: open stories by dependency, size and value
 
-Built from the 68 open story issues on 25 Nov 2026 (the eight epic issues are not counted). Linked from `docs/process/STATUS.md`. Update it in the PR that ships, adds, resizes or reorders a story. It goes on the How It's Built page in story `MVP1-E0-54`.
+Built from the 68 open story issues on 25 Nov 2026, plus MVP1-E0-54 (#188) added the same day: 69 stories, 449 person-days (the eight epic issues are not counted). Linked from `docs/process/STATUS.md`. Update it in the PR that ships, adds, resizes or reorders a story. It goes on the How It's Built page in story `MVP1-E0-54`.
 
 ## How it was worked out
 
-- **Size:** from `docs/epics/MVP1-EPICS.md`, on the human scale (S ≈ 3, M ≈ 8, L ≈ 15 person-days, including tests, review and QA). The 68 open stories come to **441 person-days**.
+- **Size:** from `docs/epics/MVP1-EPICS.md`, on the human scale (S ≈ 3, M ≈ 8, L ≈ 15 person-days, including tests, review and QA). The totals on the site are added up from the sizes by `npm run roadmap`, which also checks every day count typed in this file.
 - **Dependency:** the epics file has no "depends on" field. Dependencies come from the stories that a story names in its text, plus the build order in CLAUDE.md: service template, gateway, then the services in the order DocFlow calls them (upload → extraction → review → payment → delivery), provider before consumer.
 - **Value:** how much a story moves the site's purpose: letting a hiring manager click through a working DocFlow journey that is built on real platform services. **High** is on the path to that journey, **medium** makes the platform's depth visible, **low** is useful but nobody waits for it.
 
@@ -34,7 +34,7 @@ Each wave depends on the one before it. Inside a wave the order matters where an
 
 | Group | Stories | Days | Value | Why later |
 |---|---|---|---|---|
-| Product extras | E3-09 Free daily quota (S) with E0-28 Monetization (M), E6-04 Refunds (S), E1-07 Branded sign-in (S), E1-08 Sign in with Google (M), E3-06 Ask questions about my documents, RAG (L) | 50 | Medium | Not on the path to the journey. E3-09 and E0-28 are designed together. RAG is impressive but needs extraction finished first. |
+| Product extras | E3-09 Free daily quota (S) with E0-28 Monetization (M), E6-04 Refunds (S), E1-07 Branded sign-in (S), E1-08 Sign in with Google (M), E3-06 Ask questions about my documents, RAG (L) | 40 | Medium | Not on the path to the journey. E3-09 and E0-28 are designed together. RAG is impressive but needs extraction finished first. |
 | Placeholder sections | E0-14 Market Outlook (M), E0-29 GTM (M), E0-30 Support (S) | 19 | Low | Show "Coming Soon..." until designed. |
 | Waiting for Nikhil's go | E0-44 Product names and versions (L); E8-02 to E8-08, the human versus Claude Code cost pages (53 days) | 68 | Low | Built when Nikhil says go. E8-04 (a dependency-aware timeline for a human team) can take its build order from this file. |
 

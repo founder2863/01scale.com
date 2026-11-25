@@ -3591,3 +3591,194 @@ section[id] {
   padding: 0;
   list-style: none;
 }
+
+/* ------------------------------------------------------------ Roadmap (MVP1-E0-54) */
+
+.rm-path {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 8px;
+  padding: 0;
+  list-style: none;
+  counter-reset: rm-path;
+}
+
+.rm-path li {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--chip-bg);
+  color: var(--chip-text);
+  font-size: 0.9rem;
+  font-weight: 600;
+  counter-increment: rm-path;
+}
+
+.rm-path li::before {
+  content: counter(rm-path);
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: var(--brand);
+  color: #ffffff;
+  font-size: 0.75rem;
+}
+
+.rm-group {
+  margin-top: 28px;
+}
+
+.rm-group-total {
+  margin-left: 6px;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.rm-waves {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 360px), 1fr));
+  gap: 16px;
+}
+
+.rm-wave {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.rm-wave-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 6px 12px;
+}
+
+.rm-wave-days {
+  margin: 0 0 8px;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.rm-value {
+  padding: 1px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.rm-value-high {
+  background: var(--success-bg);
+  color: var(--success-text);
+}
+
+.rm-value-medium {
+  background: var(--info-bg);
+  color: var(--info-text);
+}
+
+.rm-value-low {
+  background: var(--chip-bg);
+  color: var(--chip-text);
+}
+
+.rm-reason {
+  font-size: 0.92rem;
+}
+
+.rm-reason-label {
+  font-weight: 600;
+}
+
+.rm-stories {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rm-story {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: baseline;
+  gap: 4px 10px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 0.9rem;
+}
+
+.rm-story.is-done {
+  background: var(--success-bg);
+}
+
+.rm-story.is-done .rm-story-title {
+  text-decoration: line-through;
+}
+
+.rm-story-id {
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.rm-issue {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.rm-story-title {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.rm-story-meta {
+  display: inline-flex;
+  gap: 6px;
+}
+
+.rm-size,
+.rm-done {
+  padding: 0 8px;
+  border-radius: 999px;
+  background: var(--chip-bg);
+  color: var(--chip-text);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.rm-done {
+  background: var(--success-solid, var(--success-bg));
+  color: #ffffff;
+}
+
+.rm-list {
+  margin: 0 0 8px;
+  padding-left: 20px;
+}
+
+.rm-list li + li {
+  margin-top: 6px;
+}
+
+/* On a narrow phone the story ID sits above its title. */
+@media (max-width: 420px) {
+  .rm-story {
+    grid-template-columns: 1fr auto;
+  }
+
+  .rm-story-title {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+}

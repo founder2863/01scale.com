@@ -657,6 +657,8 @@ As a hiring manager, I want to see what is left to build and in what order, with
 - **API design:** No endpoints.
 - **Database design:** No tables.
 
+**Status: built (#188). `npm run roadmap` (`scripts/site/roadmap.py`) reads ROADMAP.md, the epics files and the done list in `docs/process/cost-model.json` into `app/how-its-built/roadmap.ts`, and stops if a day count typed in ROADMAP.md does not match the sizes. Issue numbers come from GitHub when online and are kept from the last run when offline.**
+
 ## E1 · Accounts with AWS Cognito (MVP1 "a")
 **Goal:** users can create and manage an account securely, through OIDC so the provider can be swapped in MVP2.
 

@@ -52,7 +52,8 @@
     "MVP1-E3-08-E5-05": "MVP1-E3-08, E4-06, E5-05 · Results held for the app until it releases them (design)",
     "MVP1-E3-09": "MVP1-E3-09 · A free daily quota for jobs a person starts (design)",
     "MVP1-E0-52": "MVP1-E0-52 · Design system page shows the components",
-    "MVP1-E0-53": "MVP1-E0-53 · Hide the app flow bands on module pages"
+    "MVP1-E0-53": "MVP1-E0-53 · Hide the app flow bands on module pages",
+    "MVP1-E0-54": "MVP1-E0-54 · Roadmap tab on How It's Built"
   },
   "sessions": [
     {
@@ -195,6 +196,19 @@
         "cache_write": 0.0
       },
       "overhead_usd": 0,
+      "splits": []
+    },
+    {
+      "by_kind_usd": {
+        "input": 0.0,
+        "output": 0.0,
+        "cache_read": 0.0,
+        "cache_write": 0.0
+      },
+      "overhead_usd": 0,
+      "tool_total_usd": 0.7914,
+      "rates_usd_per_million": {},
+      "id": "c5c5ca89-4115-59c8-af00-32ff5dda3a8b",
       "splits": []
     }
   ],
@@ -3894,6 +3908,50 @@
       "output_tokens": 521,
       "cost_usd": null,
       "estimated_usd": 0.1047
+    },
+    {
+      "session": "c5c5ca89",
+      "n": 1,
+      "ts": "2026-11-25T04:28:18.493Z",
+      "area": "MVP1-E0-54",
+      "kind": "build",
+      "summary": "Product planning: order the open stories by dependency, size and value (became docs/process/ROADMAP.md)",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 806028,
+      "output_tokens": 6741,
+      "cost_usd": 0.7913
+    },
+    {
+      "session": "c5c5ca89",
+      "n": 2,
+      "ts": "2026-11-25T04:36:07.596Z",
+      "area": "MVP1-E0-54",
+      "kind": "build",
+      "summary": "Commit ROADMAP.md, link it from STATUS, write story E0-54 and its issue, refresh the human cost projection",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 1087619,
+      "output_tokens": 7403,
+      "cost_usd": null,
+      "estimated_usd": 0.4625
+    },
+    {
+      "session": "c5c5ca89",
+      "n": 3,
+      "ts": "2026-11-25T04:41:32.875Z",
+      "area": "MVP1-E0-54",
+      "kind": "build",
+      "summary": "Build the Roadmap tab: generator script with day-count checks, page, styles, docs; screenshots at four widths",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 3961869,
+      "output_tokens": 21727,
+      "cost_usd": null,
+      "estimated_usd": 1.612
     }
   ]
 }
