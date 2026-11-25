@@ -20,7 +20,7 @@ export const roadmap = {
     },
     {
       "label": "Documentation before the business steps (Nikhil, PR #189)",
-      "text": "every module's product documentation, from requirements to architecture, is finished before the business process steps (Upload to Delivery, waves 3 to 7) are built. Foundation and Identity (waves 1 and 2) do not wait for it and run alongside. The **Starts after** column says which waves each wave waits for; the site works out the days from it."
+      "text": "every module's product documentation, from requirements to architecture, is finished before the business process steps (Upload to Delivery, waves 3 to 7) are built, within a month: two lanes of 30 days. Foundation and Identity (waves 1 and 2) do not wait for it and run alongside. The **Starts after** column says which waves each wave waits for; the site works out the days from it."
     },
     {
       "label": "Value",
@@ -28,13 +28,14 @@ export const roadmap = {
     }
   ],
   "risks": [
-    "**Biggest risk:** E0-07 (L). The critical path runs through it: Foundation and Identity (89 days) are longer than the documentation (60 days), so the business steps wait on the foundation, not on the documents.",
-    "**Wave 0 gates the business steps:** its sections need real sources (market figures with links, prices, metrics targets); a section without them stays \"Coming Soon...\". It has 29 days of slack before it holds up Upload.",
+    "**Biggest risk:** E0-07 (L). The critical path runs through it: Foundation and Identity (89 days) are longer than the documentation (30 days), so the business steps wait on the foundation, not on the documents.",
+    "**Wave 0 gates the business steps:** its sections need real sources (market figures with links, prices, metrics targets); a section without them stays \"Coming Soon...\". Done in a month (Nikhil, PR #189), it has 59 days of slack before it holds up Upload; shortening it does not bring DocFlow forward.",
     "**Second:** E3-02 (L), the first real Claude call; its quality is measured by E0-04's evals and its spend capped by E0-26.",
     "Issue #45 is titled \"Store outputs\"; the epics file now calls E5-04 \"Build outputs on demand\"."
   ],
   "criticalPath": [
-    "0 Product documentation",
+    "0a Requirements and go-to-market",
+    "0b Metrics, architecture and interfaces",
     "1 Foundation",
     "2 Identity and app shell",
     "3 Upload",
@@ -50,11 +51,11 @@ export const roadmap = {
       "reasonLabel": "Why here",
       "rows": [
         {
-          "name": "0 Product documentation",
+          "name": "0a Requirements and go-to-market",
           "value": "High",
-          "reason": "Nikhil's rule (PR #189): the documentation, from requirements to architecture, is done before the business steps are built. It runs alongside the foundation, and with 60 days against the foundation's 89 it is off the critical path. Ordered as the product page reads: requirements, then the business sections, then architecture and interfaces. Metrics shows live service health once Monitoring (E0-25) exists; the section and its targets come first.",
-          "days": 60,
-          "remainingDays": 60,
+          "reason": "Nikhil's rules (PR #189): the documentation, from requirements to architecture, is done before the business steps are built, and it takes a month. Its 60 person-days are split into two lanes of 30 that run side by side (two people). This lane is the product story: requirements first, then the market, how it makes money, how it reaches customers and how it is supported. GTM links to the Metrics funnel, which lane 0b writes first.",
+          "days": 30,
+          "remainingDays": 30,
           "stories": [
             {
               "id": "MVP1-E0-15",
@@ -73,15 +74,6 @@ export const roadmap = {
               "done": false,
               "issue": 84,
               "href": "https://github.com/founder2863/01scale.com/issues/84"
-            },
-            {
-              "id": "MVP1-E0-27",
-              "title": "Metrics section on every module page",
-              "size": "M",
-              "days": 8,
-              "done": false,
-              "issue": 104,
-              "href": "https://github.com/founder2863/01scale.com/issues/104"
             },
             {
               "id": "MVP1-E0-28",
@@ -109,6 +101,28 @@ export const roadmap = {
               "done": false,
               "issue": 107,
               "href": "https://github.com/founder2863/01scale.com/issues/107"
+            }
+          ],
+          "after": [],
+          "start": 1,
+          "end": 30,
+          "lane": 0
+        },
+        {
+          "name": "0b Metrics, architecture and interfaces",
+          "value": "High",
+          "reason": "The second documentation lane: how success is measured, then the architecture and the interfaces. Metrics comes first because GTM (lane 0a) links to its funnel; it shows live service health once Monitoring (E0-25) exists, and the section and its targets come first.",
+          "days": 30,
+          "remainingDays": 30,
+          "stories": [
+            {
+              "id": "MVP1-E0-27",
+              "title": "Metrics section on every module page",
+              "size": "M",
+              "days": 8,
+              "done": false,
+              "issue": 104,
+              "href": "https://github.com/founder2863/01scale.com/issues/104"
             },
             {
               "id": "MVP1-E0-20",
@@ -149,8 +163,8 @@ export const roadmap = {
           ],
           "after": [],
           "start": 1,
-          "end": 60,
-          "lane": 0
+          "end": 30,
+          "lane": 1
         },
         {
           "name": "1 Foundation",
@@ -217,7 +231,7 @@ export const roadmap = {
           "after": [],
           "start": 1,
           "end": 40,
-          "lane": 1
+          "lane": 2
         },
         {
           "name": "2 Identity and app shell",
@@ -304,12 +318,12 @@ export const roadmap = {
           ],
           "start": 41,
           "end": 89,
-          "lane": 1
+          "lane": 2
         },
         {
           "name": "3 Upload",
           "value": "High",
-          "reason": "The first business step: it waits for the documentation (wave 0) and for sign-in (wave 2). Small and low risk.",
+          "reason": "The first business step: it waits for both documentation lanes (wave 0) and for sign-in (wave 2). Small and low risk.",
           "days": 25,
           "remainingDays": 25,
           "stories": [
@@ -360,7 +374,8 @@ export const roadmap = {
             }
           ],
           "after": [
-            "0",
+            "0a",
+            "0b",
             "2"
           ],
           "start": 90,

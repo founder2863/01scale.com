@@ -30,9 +30,9 @@ function days(n: number) {
   return `${n} person-day${n === 1 ? "" : "s"}`;
 }
 
-// "0 Product documentation" -> { number: "0", name: "Product documentation" }
+// "0a Requirements and go-to-market" -> { number: "0a", name: "Requirements and go-to-market" }
 function split(name: string) {
-  const m = name.match(/^(\d+)\s+(.*)$/);
+  const m = name.match(/^(\d+[a-z]?)\s+(.*)$/);
   return m ? { number: m[1], name: m[2] } : { number: "", name };
 }
 
@@ -106,9 +106,9 @@ function lane(row: Row) {
 }
 
 // The Jira-style view: one row per lane, each wave placed by its start and end day.
-function Gantt({ rows, total }: { rows: readonly Row[]; total: number }) {
+function Gantt({ rows, total, marks }: { rows: readonly Row[]; total: number; marks: number[] }) {
   const laneIds = [...new Set(rows.map(lane))].sort();
-  const ticks = [...new Set([1, ...rows.filter((r) => "join" in r && r.join && "start" in r).map((r) => ("start" in r ? r.start : 1)), total])];
+  const ticks = [...new Set([1, ...marks, ...rows.filter((r) => "join" in r && r.join && "start" in r).map((r) => ("start" in r ? r.start : 1)), total])];
   return (
     <div className="rm-gantt" role="img" aria-label={`Main path over ${total} days: ${rows.map((r) => `${r.name}, ${range(r)}`).join("; ")}`}>
       {laneIds.map((id) => (
@@ -121,7 +121,7 @@ function Gantt({ rows, total }: { rows: readonly Row[]; total: number }) {
               return (
                 <span
                   key={row.name}
-                  className={number === "0" ? "rm-gantt-bar is-docs" : "rm-gantt-bar"}
+                  className={number.startsWith("0") ? "rm-gantt-bar is-docs" : "rm-gantt-bar"}
                   style={{ left: `${((start - 1) / total) * 100}%`, width: `${(row.days / total) * 100}%` }}
                   title={`${row.name}: ${range(row)}`}
                 >
@@ -170,6 +170,7 @@ export default function RoadmapView() {
   const parallel = joinIndex > 0 ? mainRows.slice(0, joinIndex) : [];
   const sequential = joinIndex > 0 ? mainRows.slice(joinIndex) : mainRows;
   const join = joinIndex > 0 ? mainRows[joinIndex] : undefined;
+  const docsEnd = Math.max(0, ...mainRows.filter((r) => split(r.name).number.startsWith("0") && "end" in r).map((r) => ("end" in r ? r.end : 0)));
   const lanes = [...new Set(parallel.map(lane))].map((n) => parallel.filter((row) => lane(row) === n));
 
   return (
@@ -206,7 +207,7 @@ export default function RoadmapView() {
       {main && (
         <>
           <h3 className="section-subtitle">The main path at a glance</h3>
-          <Gantt rows={mainRows} total={elapsed} />
+          <Gantt rows={mainRows} total={elapsed} marks={docsEnd ? [docsEnd] : []} />
 
           <h3 className="section-subtitle" id="rm-main">
             {main.title}{" "}
@@ -222,7 +223,9 @@ export default function RoadmapView() {
                   ∥
                 </div>
                 <div className="rm-lanes">
-                  <p className="rm-parallel-label">In parallel</p>
+                  <p className="rm-parallel-label">
+                    In parallel{docsEnd ? <span className="rm-group-total">documentation done by day {docsEnd}</span> : null}
+                  </p>
                   {lanes.map((lane) => (
                     <ol key={lane[0].name} className="rm-lane">
                       {lane.map((row) => (

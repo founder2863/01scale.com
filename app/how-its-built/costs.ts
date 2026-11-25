@@ -630,19 +630,19 @@ export const costs = {
     {
       "key": "MVP1-E0-54",
       "name": "MVP1-E0-54 · Roadmap tab on How It's Built",
-      "requests": 5,
+      "requests": 6,
       "buildTokens": 6977449,
-      "reworkTokens": 4482749,
+      "reworkTokens": 6494367,
       "buildCost": 3.26,
       "reworkCost": 0,
       "totalCost": 3.26,
-      "yield": 61,
+      "yield": 52,
       "pending": true
     }
   ],
   "storyTotals": {
-    "requests": 164,
-    "tokens": 674686281,
+    "requests": 165,
+    "tokens": 676697899,
     "buildCost": 182.95,
     "reworkCost": 132.97,
     "cost": 315.91,
@@ -693,17 +693,17 @@ export const costs = {
     "cost": 84.46
   },
   "totals": {
-    "requests": 268,
-    "tokens": 883698557,
+    "requests": 269,
+    "tokens": 885710175,
     "cost": 400.37,
     "buildCost": 182.95,
     "reworkCost": 132.97,
     "scaffoldingCost": 84.46,
     "storyYield": 59,
     "overallYield": 45,
-    "pendingRequests": 23,
-    "pendingEstimate": 15.43,
-    "pendingEstimated": 17
+    "pendingRequests": 24,
+    "pendingEstimate": 16.17,
+    "pendingEstimated": 18
   },
   "byKind": {
     "input": 0.13,

@@ -3976,10 +3976,25 @@
       "models": [
         "claude-opus-5-5"
       ],
-      "tokens": 1666512,
-      "output_tokens": 10243,
+      "tokens": 2407091,
+      "output_tokens": 14275,
       "cost_usd": null,
-      "estimated_usd": 0.6403
+      "estimated_usd": 0.9055
+    },
+    {
+      "session": "c5c5ca89",
+      "ts": "2026-11-25T19:44:05.680Z",
+      "area": "MVP1-E0-54",
+      "kind": "rework",
+      "summary": "Rework from Nikhil on PR #189: documentation done within a month, wave 0 split into two 30-day lanes",
+      "n": 6,
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 1271039,
+      "output_tokens": 7748,
+      "cost_usd": null,
+      "estimated_usd": 0.4752
     }
   ]
 }

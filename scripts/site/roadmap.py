@@ -212,8 +212,8 @@ def main(argv):
                 "stories": stories,
             }
             if after_cell is not None:
-                # "Start", or the waves it waits for by number: "1", "0 and 2".
-                row["after"] = [] if after_cell.strip().lower() == "start" else re.findall(r"\d+", after_cell)
+                # "Start", or the waves it waits for by number: "1", "0a, 0b and 2".
+                row["after"] = [] if after_cell.strip().lower() == "start" else re.findall(r"\d+[a-z]?", after_cell)
             group["rows"].append(row)
         # The main path runs one wave after another: give each wave its place on the timeline,
         # counted in person-days from the start (one builder, no parallel work).
@@ -222,7 +222,7 @@ def main(argv):
         if kind == "main":
             by_number, elapsed = {}, 0
             for r in group["rows"]:
-                number = (re.match(r"(\d+)", r["name"]) or [None, r["name"]])[1]
+                number = (re.match(r"(\d+[a-z]?)\b", r["name"]) or [None, r["name"]])[1]
                 if "after" in r:
                     missing = [n for n in r["after"] if n not in by_number]
                     if missing:
