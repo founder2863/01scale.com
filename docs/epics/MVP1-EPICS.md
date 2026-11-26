@@ -646,6 +646,19 @@ As a visitor on a module page, I want to reach the module's content straight awa
 
 **Status: built (#186). `SHOW_FLOW_BANDS = false` in the module page hides both bands; app pages keep their flow.**
 
+### MVP1-E0-54 · Roadmap tab on How It's Built — M
+As a hiring manager, I want to see what is left to build and in what order, with the reasons, so I can judge how the work is planned by dependency, size and value, not only what is done.
+- **AC1:** How It's Built has a **Roadmap** tab (`/how-its-built/roadmap`), in the menu and tabs in `app/how-its-built/tabs.ts`, after Total Cost. CLAUDE.md (step 5) and the README name seven tabs in the same PR.
+- **AC2:** It shows the waves of the main path (Foundation, Identity and app shell, Upload, Extraction, Review, Outputs and payment, Delivery), then the side tracks and Later, each with its stories in order, their size, person-days, value and why it is there, as in `docs/process/ROADMAP.md`. Each story links to its GitHub issue.
+- **AC3:** The page is generated from `docs/process/ROADMAP.md` and the sizes and status in the epics files by a script, never typed by hand: a story marked built shows as done, and the totals (stories, person-days, per wave and overall) are worked out, so the page cannot drift from the docs.
+- **AC4:** It names the critical path (E0-07, then the waves in order) and the biggest risks, and says the dependencies come from the stories and the build order in CLAUDE.md.
+- **AC5:** Works from 320 to 1920 pixels wide, in light and dark mode; on a phone the waves stack as cards; keyboard reachable.
+- **Service:** Site (`apps/web`) and `scripts/`
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+**Status: built (#188). `npm run roadmap` (`scripts/site/roadmap.py`) reads ROADMAP.md, the epics files and the done list in `docs/process/cost-model.json` into `app/how-its-built/roadmap.ts`, and stops if a day count typed in ROADMAP.md does not match the sizes. Issue numbers come from GitHub when online and are kept from the last run when offline.**
+
 ## E1 · Accounts with AWS Cognito (MVP1 "a")
 **Goal:** users can create and manage an account securely, through OIDC so the provider can be swapped in MVP2.
 

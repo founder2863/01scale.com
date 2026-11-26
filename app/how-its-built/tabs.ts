@@ -1,4 +1,4 @@
-// The six sections of How It's Built. Each has its own address; Skills is the
+// The seven sections of How It's Built. Each has its own address; Skills is the
 // default, so "/how-its-built" opens it. Used by the page's tab bar and the header menu.
 export const builtTabs = [
   { slug: "skills", label: "Skills", href: "/how-its-built" },
@@ -7,6 +7,8 @@ export const builtTabs = [
   // Renamed from "Costs" and Constraints split into its own tab (MVP1-E8-01); labelled "Total Cost"
   // since MVP1-E8-11. The address keeps "total-projected-cost" so no link breaks.
   { slug: "total-projected-cost", label: "Total Cost", href: "/how-its-built/total-projected-cost" },
+  // What is left to build, in order, from docs/process/ROADMAP.md (MVP1-E0-54).
+  { slug: "roadmap", label: "Roadmap", href: "/how-its-built/roadmap" },
   { slug: "constraints", label: "Constraints", href: "/how-its-built/constraints" },
   // Lessons from mistakes, with their measured cost (MVP1-E0-46).
   { slug: "expensive-mistakes", label: "Expensive Mistakes", href: "/how-its-built/expensive-mistakes" },

@@ -10,6 +10,7 @@ import { CostPager, CostTabs } from "../cost-tabs";
 import { findMistake, mistakes } from "../mistakes";
 import { articleBody, articleDomains, articles, findArticle } from "../articles";
 import YieldExplainer from "../yield-explainer";
+import RoadmapView from "../roadmap-view";
 
 const REPO = "https://github.com/founder2863/01scale.com/blob/main";
 
@@ -740,6 +741,8 @@ export default async function HowItsBuilt({ params }: { params: Promise<Params> 
           <CostPager current={costTab} />
         </section>
         )}
+
+        {tab === "roadmap" && <RoadmapView />}
 
         {tab === "constraints" && (
         <section id="constraints">
