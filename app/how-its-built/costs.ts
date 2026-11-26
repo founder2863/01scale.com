@@ -642,22 +642,22 @@ export const costs = {
     {
       "key": "MVP1-E8-12",
       "name": "MVP1-E8-12 · Four estimates per story, and the plan without and with Claude Code",
-      "requests": 3,
+      "requests": 2,
       "buildTokens": 10868292,
-      "reworkTokens": 4464935,
+      "reworkTokens": 3686408,
       "buildCost": 5.55,
-      "reworkCost": 4.13,
-      "totalCost": 9.69,
-      "yield": 71,
+      "reworkCost": 1.41,
+      "totalCost": 6.96,
+      "yield": 75,
       "pending": false
     }
   ],
   "storyTotals": {
-    "requests": 169,
-    "tokens": 699415694,
+    "requests": 168,
+    "tokens": 698637167,
     "buildCost": 188.38,
-    "reworkCost": 143.58,
-    "cost": 331.96,
+    "reworkCost": 140.85,
+    "cost": 329.23,
     "yield": 59,
     "pending": true
   },
@@ -688,9 +688,9 @@ export const costs = {
     },
     {
       "name": "Process",
-      "requests": 53,
-      "tokens": 173461028,
-      "cost": 43.22
+      "requests": 54,
+      "tokens": 174239555,
+      "cost": 45.95
     },
     {
       "name": "Tool overhead (background calls)",
@@ -700,17 +700,17 @@ export const costs = {
     }
   ],
   "scaffoldingTotals": {
-    "requests": 104,
-    "tokens": 209012276,
-    "cost": 83.6
+    "requests": 105,
+    "tokens": 209790803,
+    "cost": 86.32
   },
   "totals": {
     "requests": 273,
     "tokens": 908427970,
     "cost": 415.55,
     "buildCost": 188.38,
-    "reworkCost": 143.58,
-    "scaffoldingCost": 83.6,
+    "reworkCost": 140.85,
+    "scaffoldingCost": 86.32,
     "storyYield": 59,
     "overallYield": 45,
     "pendingRequests": 21,

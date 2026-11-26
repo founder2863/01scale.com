@@ -4032,9 +4032,9 @@
     {
       "session": "c5c5ca89",
       "ts": "2026-11-26T16:40:21.170Z",
-      "area": "MVP1-E8-12",
-      "kind": "rework",
-      "summary": "Rework from Nikhil on PR #193: explain the assumptions; 10% sprint product work, 25% joint design sessions, same Claude Code factor; plan tasks instead of stories",
+      "area": "Process",
+      "kind": "scaffolding",
+      "summary": "Questions on PR #193: explain the estimate assumptions and the PM load, and compare alternative settings",
       "n": 9,
       "models": [
         "claude-opus-5-5"
