@@ -156,55 +156,88 @@ def pm_story_ids(tables, order):
     return ids
 
 
-def half(x, step):
-    """Round to the nearest step (0.5 days); never round real work down to nothing."""
+def step_round(x, step):
+    """Round to the nearest step (a quarter day); never round real work down to nothing."""
     if x <= 0:
         return 0.0
     return max(step, round(x / step) * step)
 
 
-def story_estimates(stories, pm_ids, model):
+def story_estimates(stories, pm_ids, design_ids, model):
     """The four estimates per story, in person-days: product and development work, without and
-    with Claude Code. Sizes are the human estimates; the split and the factors are assumptions in
-    docs/process/cost-model.json ("estimates")."""
+    with Claude Code. The owner's work is the story's size. On top of it (assumptions in
+    docs/process/cost-model.json, "estimates", Nikhil on PR #193):
+    - an engineering story takes the product manager a share of its size during the sprint
+      (refining, answering questions, accepting it), before the engineer starts;
+    - a design story (the documentation wave) has a share of design discussions and reviews that
+      the product manager and an engineer do together, so the other role spends that time too.
+    With Claude Code every part is scaled by the same factor."""
     cfg = model["estimates"]
-    share, step = cfg["product_share_of_engineering_story"], cfg["round_to_days"]
+    sprint, joint, step = cfg["product_share_of_engineering_story"], cfg["joint_share_of_design_story"], cfg["round_to_days"]
     f = cfg["with_claude_code_factor"]
     out = {}
     for sid, s in stories.items():
-        total = s["days"] or 0
-        if sid in pm_ids:
-            product, dev = float(total), 0.0
+        total = float(s["days"] or 0)
+        if sid in design_ids:
+            other = step_round(total * joint, step)
+            product, dev = (total, other) if sid in pm_ids else (other, total)
         else:
-            product = half(total * share, step)
-            dev = max(0.0, total - product)
+            product, dev = step_round(total * sprint, step), total
         out[sid] = {
             "productWithout": product,
-            "productWith": half(product * f["product"], step),
+            "productWith": step_round(product * f["product"], step),
             "devWithout": dev,
-            "devWith": half(dev * f["development"], step),
+            "devWith": step_round(dev * f["development"], step),
+            "joint": sid in design_ids,
         }
     return out
 
 
-def team_plan(groups, tables, order, errors, duration):
-    """Plan the stories for the team: each person takes the most urgent ready story their role
-    does (the one with the longest chain of work waiting on it); one person per story."""
+def build_tasks(stories_needed, est, key, pm_ids, design_ids, done):
+    """Each story as the tasks people actually do. An engineering story: the product manager's
+    sprint work, then the engineer's development. A design story: the owner alone, then a joint
+    session where the product manager and an engineer work together."""
+    tasks, last = {}, {}
+    for sid, deps in stories_needed.items():
+        if sid in done:
+            continue
+        e = est[sid]
+        product, dev = e[f"product{key}"], e[f"dev{key}"]
+        before = [("story", d) for d in deps]
+        if sid in design_ids:
+            owner = "pm" if sid in pm_ids else "eng"
+            own, other = (product, dev) if owner == "pm" else (dev, product)
+            solo = max(0.0, own - other)
+            tasks[(sid, "solo")] = {"story": sid, "kind": "product" if owner == "pm" else "dev",
+                                    "roles": [owner], "dur": solo, "deps": before}
+            tasks[(sid, "joint")] = {"story": sid, "kind": "joint", "roles": ["pm", "eng"], "dur": other,
+                                     "deps": [("task", (sid, "solo"))]}
+            last[sid] = (sid, "joint")
+        else:
+            tasks[(sid, "product")] = {"story": sid, "kind": "product", "roles": ["pm"], "dur": product, "deps": []}
+            tasks[(sid, "dev")] = {"story": sid, "kind": "dev", "roles": ["eng"], "dur": dev,
+                                   "deps": before + [("task", (sid, "product"))]}
+            last[sid] = (sid, "dev")
+    # Point story dependencies at the last task of the story they wait for.
+    for t in tasks.values():
+        t["deps"] = [last[x] if kind == "story" else x for kind, x in t["deps"] if not (kind == "story" and x in done)]
+    return tasks, last
+
+
+def parse_team(tables, order, errors):
     team = tables.get("team") or []
     if not team:
         errors.append("no Team table")
-        return None
-    people, pm_stories = [], set()
-    for role, count, does in (r[:3] for r in team):
+    people = []
+    for role, count, _does in (r[:3] for r in team):
         is_pm = role.lower().startswith("product")
         for i in range(int(count)):
-            label = role if int(count) == 1 else f"{role} {i + 1}"
-            people.append({"name": label, "pm": is_pm})
-        if is_pm:
-            pm_stories |= set(story_ids(does, order))
+            people.append({"name": role if int(count) == 1 else f"{role} {i + 1}", "role": "pm" if is_pm else "eng"})
+    return people
 
+
+def story_needs(groups, tables, order, errors):
     stories = {s["id"]: s for g in groups for r in g["rows"] for s in r["stories"]}
-    wave_of = {s["id"]: r["name"] for g in groups for r in g["rows"] for s in r["stories"]}
     wave0 = [s["id"] for g in groups if g["kind"] == "main" for r in g["rows"][:1] for s in r["stories"]]
     needs = {}
     for story_cell, needs_cell in ((r[0], r[1]) for r in tables.get("story", [])):
@@ -224,63 +257,100 @@ def team_plan(groups, tables, order, errors, duration):
         for d in deps:
             if d not in needs:
                 errors.append(f"{sid} needs {d}, which is not planned (add it to Story dependencies)")
-    if errors:
-        return None
+    return needs, wave0
 
-    # Urgency: the story's own days plus the longest chain of planned work that waits on it.
-    waiting = {sid: [o for o, deps in needs.items() if sid in deps] for sid in needs}
+
+def team_plan(groups, tables, order, errors, people, needs, wave0, est, key, pm_ids, design_ids):
+    """Plan the tasks for the team. Whenever people are free, the most urgent ready task (the one
+    with the longest chain of work waiting on it) goes to whoever its roles need; a joint task
+    needs the product manager and an engineer free at the same time."""
+    stories = {s["id"]: s for g in groups for r in g["rows"] for s in r["stories"]}
+    wave_of = {s["id"]: r["name"] for g in groups for r in g["rows"] for s in r["stories"]}
+    done = {sid for sid in needs if stories[sid]["done"]}
+    tasks, last = build_tasks(needs, est, key, pm_ids, design_ids, done)
+
+    waiting = {tid: [o for o, t in tasks.items() if tid in t["deps"]] for tid in tasks}
     urgency = {}
 
-    def chain(sid, seen=()):
-        if sid in seen:
-            errors.append(f"dependency loop through {sid}")
+    def chain(tid, seen=()):
+        if tid in seen:
+            errors.append(f"dependency loop through {tid[0]}")
             return 0
-        if sid not in urgency:
-            urgency[sid] = duration[sid] + max([chain(o, seen + (sid,)) for o in waiting[sid]] or [0])
-        return urgency[sid]
+        if tid not in urgency:
+            urgency[tid] = tasks[tid]["dur"] + max([chain(o, seen + (tid,)) for o in waiting[tid]] or [0])
+        return urgency[tid]
 
-    for sid in needs:
-        chain(sid)
+    for tid in tasks:
+        chain(tid)
     if errors:
         return None
 
-    # Ties go to the story listed first on the roadmap (requirements before the market, and so on).
     rank = {sid: i for i, sid in enumerate(stories)}
-    finish, start, who = {}, {}, {}
-    free_at = [0] * len(people)
-    todo = [sid for sid in needs if not stories[sid]["done"]]
-    for sid in needs:
-        if stories[sid]["done"]:
-            finish[sid] = 0
-    t = 0
+    start, finish, who = {}, {}, {}
+
+    # Sprint refinement comes first when it is the only thing a story's development waits for:
+    # a product manager refines a story as soon as an engineer could start it. They can still
+    # hold a story up while in the middle of longer work, and the plan shows where.
+    def waiting_only_on_product(tid):
+        if tid[1] != "product" or (tid[0], "dev") not in tasks:
+            return 0
+        deps = [d for d in tasks[(tid[0], "dev")]["deps"] if d != tid]
+        return 1 if all(d in finish and finish[d] <= t for d in deps) else 0
+    free_at = [0.0] * len(people)
+    todo = set(tasks)
+    t = 0.0
     while todo:
-        progressed = False
-        for p in sorted(range(len(people)), key=lambda i: people[i]["pm"], reverse=True):
-            if free_at[p] > t:
-                continue
-            ready = [sid for sid in todo
-                     if all(d in finish and finish[d] <= t for d in needs[sid])
-                     and (sid in pm_stories) == people[p]["pm"]]
-            if not ready:
-                continue
-            sid = max(ready, key=lambda x: (urgency[x], -rank[x]))
-            start[sid], finish[sid], who[sid] = t, t + duration[sid], p
-            free_at[p] = finish[sid]
-            todo.remove(sid)
-            progressed = True
-        if not progressed:
-            later = [f for f in free_at if f > t] + [f for f in finish.values() if f > t]
+        assigned = True
+        while assigned:
+            assigned = False
+            ready = sorted((tid for tid in todo if all(d in finish and finish[d] <= t for d in tasks[tid]["deps"])),
+                           key=lambda x: (-waiting_only_on_product(x), -urgency[x], rank[x[0]], x[1]))
+            for tid in ready:
+                picked = []
+                for role in tasks[tid]["roles"]:
+                    free = [i for i, p in enumerate(people) if p["role"] == role and free_at[i] <= t and i not in picked]
+                    if not free:
+                        break
+                    picked.append(min(free, key=lambda i: (free_at[i], i)))
+                if len(picked) != len(tasks[tid]["roles"]):
+                    continue
+                start[tid], finish[tid], who[tid] = t, t + tasks[tid]["dur"], picked
+                for i in picked:
+                    free_at[i] = finish[tid]
+                todo.discard(tid)
+                assigned = True
+                break
+        if todo:
+            later = sorted({x for x in list(free_at) + list(finish.values()) if x > t})
             if not later:
-                errors.append("stories that can never start: " + ", ".join(todo))
+                errors.append("tasks that can never start: " + ", ".join(sorted({x[0] for x in todo})))
                 return None
-            t = min(later)
+            t = later[0]
 
     def month(day):
         return int(day // DAYS_PER_MONTH) + 1
 
+    story_start = {}
+    for tid, st in start.items():
+        sid = tid[0]
+        story_start[sid] = min(story_start.get(sid, st), st)
+    story_end = {sid: finish[last[sid]] for sid in last}
+
+    # Where the product manager held a story up: its development was ready to start (everything it
+    # waits for was done) but its sprint product work was not.
+    blocked = []
+    for sid in last:
+        if (sid, "dev") in tasks:
+            deps_done = max([finish[d] for d in tasks[(sid, "dev")]["deps"] if d != (sid, "product")] or [0.0])
+            wait = finish[(sid, "product")] - deps_done
+            if wait > 0.01:
+                blocked.append({"id": sid, "days": round(wait, 2)})
+
     end = max(finish.values() or [0])
+    owner_task = {sid: (tasks.get((sid, "dev")) and (sid, "dev")) or (sid, "solo") for sid in last}
     planned = []
-    for sid in sorted(start, key=lambda x: (start[x], rank[x])):
+    for sid in sorted(last, key=lambda x: (story_start[x], rank[x])):
+        main_people = who[owner_task[sid]]
         planned.append({
             "id": sid,
             "title": stories[sid]["title"],
@@ -288,29 +358,38 @@ def team_plan(groups, tables, order, errors, duration):
             "href": stories[sid]["href"],
             "issue": stories[sid]["issue"],
             "wave": wave_of[sid],
-            "person": people[who[sid]]["name"],
-            "start": int(start[sid]) + 1,
-            "end": math.ceil(finish[sid]),
-            "startMonth": month(start[sid]),
-            "endMonth": month(finish[sid] - 1),
+            "person": people[main_people[0]]["name"],
+            "start": int(story_start[sid]) + 1,
+            "end": math.ceil(story_end[sid]),
+            "startMonth": month(story_start[sid]),
+            "endMonth": month(max(story_end[sid] - 0.001, 0)),
         })
+    task_rows = []
+    for tid in sorted(start, key=lambda x: (start[x], rank[x[0]])):
+        if tasks[tid]["dur"] <= 0:
+            continue
+        for i in who[tid]:
+            task_rows.append({"story": tid[0], "kind": tasks[tid]["kind"], "wave": wave_of[tid[0]],
+                              "person": people[i]["name"], "start": round(start[tid], 2), "end": round(finish[tid], 2)})
     milestones = []
     for name, when in ((r[0], r[1]) for r in tables.get("milestones", [])):
         ids = wave0 if re.search(r"\bWave 0\b", when) else []
         ids += story_ids(re.sub(r"\bWave 0\b", "", when), order)
-        missing = [i for i in ids if i not in finish]
+        missing = [i for i in ids if i not in story_end and i not in done]
         if missing or not ids:
             errors.append(f"milestone '{name}' needs {', '.join(missing) or 'a story'}, not planned")
             continue
-        day = max(finish[i] for i in ids)
-        milestones.append({"name": name, "day": math.ceil(day), "month": month(math.ceil(day) - 1)})
-    busy = [round(sum(finish[s] - start[s] for s in start if who[s] == p), 1) for p in range(len(people))]
+        day = math.ceil(max([story_end.get(i, 0) for i in ids]))
+        milestones.append({"name": name, "day": day, "month": month(max(day - 1, 0))})
+    busy = [round(sum(finish[x] - start[x] for x in start if i in who[x]), 1) for i in range(len(people))]
     return {
         "daysPerMonth": DAYS_PER_MONTH,
-        "people": [{"name": p["name"], "pm": p["pm"], "busyDays": b} for p, b in zip(people, busy)],
+        "people": [{"name": p["name"], "pm": p["role"] == "pm", "busyDays": b} for p, b in zip(people, busy)],
         "endDay": math.ceil(end),
         "months": month(math.ceil(end) - 1) if end else 0,
         "stories": planned,
+        "tasks": task_rows,
+        "pmBlocked": sorted(blocked, key=lambda b: -b["days"]),
         "milestones": milestones,
         "notPlanned": [sid for sid in stories if sid not in needs],
     }
@@ -409,16 +488,17 @@ def main(argv):
 
     stories_by_id = {s["id"]: s for g in groups for r in g["rows"] for s in r["stories"]}
     pm_ids = pm_story_ids(tables, order)
-    est = story_estimates(stories_by_id, pm_ids, model)
+    people = parse_team(tables, order, errors)
+    needs, wave0 = story_needs(groups, tables, order, errors)
+    design_ids = set(wave0)
+    est = story_estimates(stories_by_id, pm_ids, design_ids, model)
     for sid, s in stories_by_id.items():
         s["estimates"] = est[sid]
-    # The person who owns a story does its main work: the product manager the product work of
-    # their own stories, an engineer the development work. The product share of an engineering
-    # story is the product manager's, alongside it, and does not hold the engineer up.
-    def owner_days(key):
-        return {sid: est[sid][f"product{key}"] if sid in pm_ids else est[sid][f"dev{key}"] for sid in est}
-    plan = team_plan(groups, tables, order, errors, owner_days("Without"))
-    plan_cc = team_plan(groups, tables, order, errors, owner_days("With")) if not errors else None
+    plan = plan_cc = None
+    if not errors:
+        plan = team_plan(groups, tables, order, errors, people, needs, wave0, est, "Without", pm_ids, design_ids)
+    if not errors:
+        plan_cc = team_plan(groups, tables, order, errors, people, needs, wave0, est, "With", pm_ids, design_ids)
     if errors:
         fail("\n  ".join(["ROADMAP.md's team plan does not hold together:"] + errors))
 
@@ -431,8 +511,9 @@ def main(argv):
         "plan": plan,
         "planWithClaudeCode": plan_cc,
         "estimatesModel": {k: model["estimates"][k] for k in
-                           ("source", "product_share_of_engineering_story", "with_claude_code_factor",
-                            "product_share_why", "with_claude_code_why")},
+                           ("source", "product_share_of_engineering_story", "joint_share_of_design_story",
+                            "with_claude_code_factor", "product_share_why", "joint_share_why",
+                            "with_claude_code_why")},
         "estimateTotals": {k: sum(e[k] for e in est.values()) for k in
                            ("productWithout", "productWith", "devWithout", "devWith")},
         "groups": groups,

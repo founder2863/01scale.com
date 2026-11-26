@@ -633,31 +633,31 @@ export const costs = {
       "requests": 7,
       "buildTokens": 6977449,
       "reworkTokens": 13878935,
-      "buildCost": 3.23,
-      "reworkCost": 6.75,
-      "totalCost": 9.98,
+      "buildCost": 3.13,
+      "reworkCost": 6.48,
+      "totalCost": 9.61,
       "yield": 33,
       "pending": false
     },
     {
       "key": "MVP1-E8-12",
       "name": "MVP1-E8-12 · Four estimates per story, and the plan without and with Claude Code",
-      "requests": 1,
-      "buildTokens": 9329395,
-      "reworkTokens": 0,
-      "buildCost": 0,
-      "reworkCost": 0,
-      "totalCost": 0,
-      "yield": 100,
-      "pending": true
+      "requests": 3,
+      "buildTokens": 10868292,
+      "reworkTokens": 4464935,
+      "buildCost": 5.55,
+      "reworkCost": 4.13,
+      "totalCost": 9.69,
+      "yield": 71,
+      "pending": false
     }
   ],
   "storyTotals": {
-    "requests": 167,
-    "tokens": 693411862,
-    "buildCost": 182.92,
-    "reworkCost": 139.72,
-    "cost": 322.64,
+    "requests": 169,
+    "tokens": 699415694,
+    "buildCost": 188.38,
+    "reworkCost": 143.58,
+    "cost": 331.96,
     "yield": 59,
     "pending": true
   },
@@ -696,32 +696,32 @@ export const costs = {
       "name": "Tool overhead (background calls)",
       "requests": 0,
       "tokens": 0,
-      "cost": 1.17
+      "cost": 0.31
     }
   ],
   "scaffoldingTotals": {
     "requests": 104,
     "tokens": 209012276,
-    "cost": 84.46
+    "cost": 83.6
   },
   "totals": {
-    "requests": 271,
-    "tokens": 902424138,
-    "cost": 407.09,
-    "buildCost": 182.92,
-    "reworkCost": 139.72,
-    "scaffoldingCost": 84.46,
+    "requests": 273,
+    "tokens": 908427970,
+    "cost": 415.55,
+    "buildCost": 188.38,
+    "reworkCost": 143.58,
+    "scaffoldingCost": 83.6,
     "storyYield": 59,
     "overallYield": 45,
-    "pendingRequests": 22,
-    "pendingEstimate": 17.69,
-    "pendingEstimated": 16
+    "pendingRequests": 21,
+    "pendingEstimate": 12.59,
+    "pendingEstimated": 15
   },
   "byKind": {
-    "input": 0.13,
-    "output": 23.46,
-    "cache_read": 59.13,
-    "cache_write": 61.75
+    "input": 0.15,
+    "output": 26.96,
+    "cache_read": 65.85,
+    "cache_write": 69.95
   },
   "mistakes": {
     "designRedo": {
@@ -740,11 +740,11 @@ export const costs = {
     },
     "reloads": {
       "requests": 14,
-      "cost": 105.75,
-      "share": 26,
+      "cost": 105.4,
+      "share": 25,
       "median": 8.2,
-      "typical": 0.6,
-      "extra": 97.34
+      "typical": 0.63,
+      "extra": 96.59
     },
     "mergedTooSoon": {
       "requests": 1,

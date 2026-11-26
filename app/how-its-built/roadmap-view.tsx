@@ -21,8 +21,11 @@ type PlanStory = {
   startMonth: number;
   endMonth: number;
 };
+type PlanTask = { story: string; kind: "product" | "dev" | "joint"; wave: string; person: string; start: number; end: number };
 type Plan = {
   daysPerMonth: number;
+  tasks: PlanTask[];
+  pmBlocked: { id: string; days: number }[];
   people: { name: string; pm: boolean; busyDays: number }[];
   endDay: number;
   months: number;
@@ -91,12 +94,12 @@ function endToEnd(plan: Plan) {
   return plan.milestones.reduce((a, b) => (b.day > a.day ? b : a), plan.milestones[0]);
 }
 
-// Product work the product manager carries: their own stories plus the product share of every
-// engineering story, against the length of the plan.
-function pmLoad(plan: Plan, key: "Without" | "With") {
-  const planned = plan.stories.map((s) => storyById.get(s.id)).filter((s): s is Story => Boolean(s));
-  const work = planned.reduce((sum, s) => sum + s.estimates[`product${key}`], 0);
-  return { work, length: plan.endDay, percent: Math.round((work / Math.max(1, plan.endDay)) * 100) };
+// How much of the plan the product manager is busy, and where they held a story up.
+function pmLoad(plan: Plan) {
+  const pm = plan.people.find((p) => p.pm);
+  const work = pm ? pm.busyDays : 0;
+  const blockedDays = plan.pmBlocked.reduce((sum, b) => sum + b.days, 0);
+  return { work, length: plan.endDay, percent: Math.round((work / Math.max(1, plan.endDay)) * 100), blocked: plan.pmBlocked.length, blockedDays };
 }
 
 function columnsFor(plan: Plan) {
@@ -169,7 +172,7 @@ function MonthBoard({ plan }: { plan: Plan }) {
 
 // Who does what, day by day: a row per person, the stories placed by their working days. Both
 // plans use the same scale (`months`), so they can be compared by eye.
-function TeamChart({ plan, months, label, pm }: { plan: Plan; months: number; label: string; pm: ReturnType<typeof pmLoad> }) {
+function TeamChart({ plan, months, label }: { plan: Plan; months: number; label: string }) {
   const total = months * plan.daysPerMonth;
   return (
     <div className="rm-scroll" tabIndex={0} aria-label={`${label}: team chart, scrolls sideways on small screens`}>
@@ -192,23 +195,27 @@ function TeamChart({ plan, months, label, pm }: { plan: Plan; months: number; la
             <span className="rm-team-name">
               {person.name}
               <span className="rm-team-busy">
-                {person.pm ? `${num(pm.work)} days of product work (${pm.percent}% load)` : `${num(person.busyDays)} days of work`}
+                {num(person.busyDays)} days busy ({Math.round((person.busyDays / Math.max(1, plan.endDay)) * 100)}%)
               </span>
             </span>
             <div className="rm-team-track">
-              {plan.stories
-                .filter((s) => s.person === person.name)
-                .map((s) => (
-                  <a
-                    key={s.id}
-                    href={s.href}
-                    className={`rm-team-bar ${tone(s.wave)}`}
-                    style={{ left: `${((s.start - 1) / total) * 100}%`, width: `${((s.end - s.start + 1) / total) * 100}%` }}
-                    title={`${s.id} ${s.title}: day ${s.start} to ${s.end}`}
-                  >
-                    {shortId(s.id)}
-                  </a>
-                ))}
+              {plan.tasks
+                .filter((t) => t.person === person.name)
+                .map((t) => {
+                  const story = storyById.get(t.story);
+                  const what = t.kind === "joint" ? "design session, product manager and engineer together" : t.kind === "product" ? "product work" : "development";
+                  return (
+                    <a
+                      key={`${t.story}-${t.kind}`}
+                      href={story?.href}
+                      className={`rm-team-bar ${tone(t.wave)}${t.kind === "joint" ? " is-joint" : ""}`}
+                      style={{ left: `${(t.start / total) * 100}%`, width: `${((t.end - t.start) / total) * 100}%` }}
+                      title={`${t.story} ${story?.title ?? ""}: ${what}, day ${num(Math.round(t.start * 4) / 4)} to ${num(Math.round(t.end * 4) / 4)}`}
+                    >
+                      {shortId(t.story)}
+                    </a>
+                  );
+                })}
             </div>
           </div>
         ))}
@@ -295,7 +302,7 @@ export default function RoadmapView() {
   const engineers = without.plan.people.filter((p) => !p.pm).length;
   const pms = without.plan.people.length - engineers;
   const scale = Math.max(without.plan.months, withCc.plan.months);
-  const loads = { without: pmLoad(without.plan, "Without"), with: pmLoad(withCc.plan, "With") };
+  const loads = { without: pmLoad(without.plan), with: pmLoad(withCc.plan) };
   const notPlanned = without.plan.notPlanned.map((id) => storyById.get(id)).filter((s): s is Story => Boolean(s));
   const f = model.with_claude_code_factor;
 
@@ -374,17 +381,18 @@ export default function RoadmapView() {
         </table>
       </div>
       <p className="note">
-        <strong>Assumptions, not yet decided by Nikhil:</strong> with Claude Code, development takes{" "}
-        {Math.round(f.development * 100)}% of the time and product work {Math.round(f.product * 100)}%.{" "}
-        {model.with_claude_code_why} On an engineering story,{" "}
-        {Math.round(model.product_share_of_engineering_story * 100)}% of its size is product work for the
-        product manager. All of it is set in <code>docs/process/cost-model.json</code>.
+        <strong>Assumptions (Nikhil, PR #193):</strong> during a sprint the product manager spends{" "}
+        {Math.round(model.product_share_of_engineering_story * 100)}% of an engineering story&apos;s size on it
+        before the engineer starts. A quarter of every design story ({Math.round(model.joint_share_of_design_story * 100)}%)
+        is design discussions and reviews that the product manager and an engineer do together. With Claude Code,
+        product and development work both take {Math.round(f.development * 100)}% of the time (2.5 times faster):
+        people still review, test and decide. All of it is set in <code>docs/process/cost-model.json</code>.
       </p>
 
       {plans.map(({ key, label, plan }) => (
         <Fragment key={key}>
           <h3 className="section-subtitle">Who does what · {label}</h3>
-          <TeamChart plan={plan} months={scale} label={label} pm={loads[key as "without" | "with"]} />
+          <TeamChart plan={plan} months={scale} label={label} />
         </Fragment>
       ))}
       <p className="rm-legend">
@@ -392,20 +400,24 @@ export default function RoadmapView() {
         <span className="rm-tone-platform">Platform foundation and identity</span>
         <span className="rm-tone-business">Business steps</span>
         <span className="rm-tone-extra">Spikes, extras and hardening</span>
+        <span className="rm-legend-joint">Striped: product manager and engineer together</span>
       </p>
-      {loads.without.percent > 100 || loads.with.percent > 100 ? (
-        <p className="note">
-          <strong>
-            {loads.with.percent > 100 && loads.without.percent <= 100
-              ? "With Claude Code, the product manager becomes the bottleneck:"
-              : "The product manager is the bottleneck:"}
-          </strong>{" "}
-          {num(loads.without.work)} days of product work in a {loads.without.length}-day plan without Claude Code (
-          {loads.without.percent}% load), and {num(loads.with.work)} in {loads.with.length} days with it (
-          {loads.with.percent}%). Engineers speed up more than product work does. The product share of
-          engineering stories runs alongside them and is not planned day by day.
-        </p>
-      ) : null}
+      <p className="note">
+        <strong>Where the product manager held a story up:</strong> {loads.without.blocked} stories,{" "}
+        {num(Math.round(loads.without.blockedDays))} days in all without Claude Code; {loads.with.blocked} stories,{" "}
+        {num(Math.round(loads.with.blockedDays))} days with it. A story is held up when everything it waits for
+        is done but its sprint product work is not, because the product manager is in the middle of other
+        work. The product manager is busy {loads.without.percent}% of the plan without Claude Code and{" "}
+        {loads.with.percent}% with it. What sets the end date is the chain of dependencies (review, then results,
+        then delivery), which leaves engineers with gaps late in the plan for spikes and extras. Most held up:{" "}
+        {without.plan.pmBlocked.slice(0, 5).map((b, i) => (
+          <Fragment key={b.id}>
+            {i ? ", " : ""}
+            {shortId(b.id)} ({num(Math.round(b.days * 4) / 4)} days)
+          </Fragment>
+        ))}
+        .
+      </p>
 
       <h3 className="section-subtitle">Month by month</h3>
       <p className="note">

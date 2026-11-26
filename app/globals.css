@@ -4164,3 +4164,11 @@ section[id] {
   color: var(--muted);
   font-size: 0.8rem;
 }
+
+.rm-team-bar.is-joint {
+  background-image: repeating-linear-gradient(135deg, transparent 0 4px, rgb(255 255 255 / 0.35) 4px 7px);
+}
+
+.rm-legend-joint::before {
+  background: repeating-linear-gradient(135deg, var(--brand) 0 3px, var(--chip-bg) 3px 5px) !important;
+}
