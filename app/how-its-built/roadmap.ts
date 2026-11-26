@@ -2,7 +2,7 @@
 // Do not edit: change ROADMAP.md or the epics files, then run `npm run roadmap`.
 
 export const roadmap = {
-  "updated": "2026-11-25",
+  "updated": "2026-11-26",
   "source": "docs/process/ROADMAP.md",
   "personDaysPerSize": {
     "S": 3,
@@ -27,6 +27,18 @@ export const roadmap = {
       "text": "each person takes the most urgent story that is ready and that their role does: the one with the longest chain of work still waiting on it. A story is done by one person from start to end. A month is 20 working days. Stories not listed under Story dependencies are not planned."
     },
     {
+      "label": "Spare time goes to spikes (Nikhil, PR #189)",
+      "text": "when an engineer has nothing ready, they take a spike on an external service, so research is done before the stories that depend on it."
+    },
+    {
+      "label": "Four estimates per story",
+      "text": "product and development work, each without and with Claude Code, in person-days. The size is the estimate without Claude Code; the product share of an engineering story and the Claude Code factors are assumptions in `docs/process/cost-model.json` (`estimates`). The plan is made twice, without and with Claude Code; `docs/process/estimates.csv` lists every story's four estimates and planned months for reports."
+    },
+    {
+      "label": "Reports",
+      "text": "`docs/process/estimates.csv` has one row per story: its four estimates, owner and planned months, without and with Claude Code. On GitHub, the four estimates go in four **Number** issue fields named exactly `Product estimate without Claude Code`, `Product estimate with Claude Code`, `Dev estimate without Claude Code` and `Dev estimate with Claude Code` (person-days); once they exist, a session can fill them on every issue from this plan."
+    },
+    {
       "label": "Value",
       "text": "how much a story moves the site's purpose: letting a hiring manager click through a working DocFlow journey that is built on real platform services. **High** is on the path to that journey, **medium** makes the platform's depth visible, **low** is useful but nobody waits for it."
     }
@@ -43,26 +55,26 @@ export const roadmap = {
       {
         "name": "Product manager",
         "pm": true,
-        "busyDays": 38
+        "busyDays": 38.0
       },
       {
         "name": "Engineer 1",
         "pm": false,
-        "busyDays": 132
+        "busyDays": 113.5
       },
       {
         "name": "Engineer 2",
         "pm": false,
-        "busyDays": 98
+        "busyDays": 87.0
       },
       {
         "name": "Engineer 3",
         "pm": false,
-        "busyDays": 105
+        "busyDays": 81.5
       }
     ],
-    "endDay": 132,
-    "months": 7,
+    "endDay": 114,
+    "months": 6,
     "stories": [
       {
         "id": "MVP1-E0-15",
@@ -86,7 +98,7 @@ export const roadmap = {
         "wave": "0 Product documentation",
         "person": "Engineer 3",
         "start": 1,
-        "end": 8,
+        "end": 7,
         "startMonth": 1,
         "endMonth": 1
       },
@@ -117,6 +129,32 @@ export const roadmap = {
         "endMonth": 1
       },
       {
+        "id": "MVP1-E0-07",
+        "title": "Service template",
+        "size": "L",
+        "href": "https://github.com/founder2863/01scale.com/issues/13",
+        "issue": 13,
+        "wave": "1 Foundation",
+        "person": "Engineer 1",
+        "start": 3,
+        "end": 15,
+        "startMonth": 1,
+        "endMonth": 1
+      },
+      {
+        "id": "MVP1-E0-04",
+        "title": "Eval harness skeleton",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/20",
+        "issue": 20,
+        "wave": "4 Extraction",
+        "person": "Engineer 2",
+        "start": 3,
+        "end": 9,
+        "startMonth": 1,
+        "endMonth": 1
+      },
+      {
         "id": "MVP1-E0-14",
         "title": "Market Outlook section on every module page",
         "size": "M",
@@ -130,32 +168,6 @@ export const roadmap = {
         "endMonth": 1
       },
       {
-        "id": "MVP1-E0-07",
-        "title": "Service template",
-        "size": "L",
-        "href": "https://github.com/founder2863/01scale.com/issues/13",
-        "issue": 13,
-        "wave": "1 Foundation",
-        "person": "Engineer 1",
-        "start": 4,
-        "end": 18,
-        "startMonth": 1,
-        "endMonth": 1
-      },
-      {
-        "id": "MVP1-E0-04",
-        "title": "Eval harness skeleton",
-        "size": "M",
-        "href": "https://github.com/founder2863/01scale.com/issues/20",
-        "issue": 20,
-        "wave": "4 Extraction",
-        "person": "Engineer 2",
-        "start": 4,
-        "end": 11,
-        "startMonth": 1,
-        "endMonth": 1
-      },
-      {
         "id": "MVP1-E0-16",
         "title": "MCP section on every module page",
         "size": "M",
@@ -163,8 +175,21 @@ export const roadmap = {
         "issue": 86,
         "wave": "0 Product documentation",
         "person": "Engineer 3",
-        "start": 9,
-        "end": 16,
+        "start": 7,
+        "end": 13,
+        "startMonth": 1,
+        "endMonth": 1
+      },
+      {
+        "id": "MVP1-E0-51",
+        "title": "DocFlow high-level design diagram",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/173",
+        "issue": 173,
+        "wave": "0 Product documentation",
+        "person": "Engineer 2",
+        "start": 10,
+        "end": 12,
         "startMonth": 1,
         "endMonth": 1
       },
@@ -182,19 +207,6 @@ export const roadmap = {
         "endMonth": 1
       },
       {
-        "id": "MVP1-E0-51",
-        "title": "DocFlow high-level design diagram",
-        "size": "S",
-        "href": "https://github.com/founder2863/01scale.com/issues/173",
-        "issue": 173,
-        "wave": "0 Product documentation",
-        "person": "Engineer 2",
-        "start": 12,
-        "end": 14,
-        "startMonth": 1,
-        "endMonth": 1
-      },
-      {
         "id": "MVP1-E0-24",
         "title": "\"Built on\" panel on every service and app page",
         "size": "S",
@@ -202,8 +214,8 @@ export const roadmap = {
         "issue": 101,
         "wave": "0 Product documentation",
         "person": "Engineer 2",
-        "start": 15,
-        "end": 17,
+        "start": 12,
+        "end": 14,
         "startMonth": 1,
         "endMonth": 1
       },
@@ -215,8 +227,21 @@ export const roadmap = {
         "issue": 22,
         "wave": "2 Identity and app shell",
         "person": "Engineer 3",
-        "start": 17,
-        "end": 19,
+        "start": 14,
+        "end": 16,
+        "startMonth": 1,
+        "endMonth": 1
+      },
+      {
+        "id": "MVP1-E3-10",
+        "title": "Spike: LLM extraction options (AWS, Claude, Microsoft)",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/190",
+        "issue": 190,
+        "wave": "Spikes",
+        "person": "Engineer 2",
+        "start": 15,
+        "end": 21,
         "startMonth": 1,
         "endMonth": 1
       },
@@ -228,21 +253,21 @@ export const roadmap = {
         "issue": 15,
         "wave": "1 Foundation",
         "person": "Engineer 1",
-        "start": 19,
-        "end": 26,
+        "start": 15,
+        "end": 21,
         "startMonth": 1,
         "endMonth": 2
       },
       {
-        "id": "MVP1-E0-02",
-        "title": "Audit log",
-        "size": "S",
-        "href": "https://github.com/founder2863/01scale.com/issues/16",
-        "issue": 16,
-        "wave": "1 Foundation",
-        "person": "Engineer 2",
-        "start": 19,
-        "end": 21,
+        "id": "MVP1-E1-02",
+        "title": "Sign up with email verification",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/23",
+        "issue": 23,
+        "wave": "2 Identity and app shell",
+        "person": "Engineer 3",
+        "start": 16,
+        "end": 22,
         "startMonth": 1,
         "endMonth": 2
       },
@@ -260,16 +285,16 @@ export const roadmap = {
         "endMonth": 2
       },
       {
-        "id": "MVP1-E1-02",
-        "title": "Sign up with email verification",
-        "size": "M",
-        "href": "https://github.com/founder2863/01scale.com/issues/23",
-        "issue": 23,
-        "wave": "2 Identity and app shell",
-        "person": "Engineer 3",
-        "start": 20,
-        "end": 27,
-        "startMonth": 1,
+        "id": "MVP1-E0-02",
+        "title": "Audit log",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/16",
+        "issue": 16,
+        "wave": "1 Foundation",
+        "person": "Engineer 2",
+        "start": 21,
+        "end": 23,
+        "startMonth": 2,
         "endMonth": 2
       },
       {
@@ -280,8 +305,21 @@ export const roadmap = {
         "issue": 21,
         "wave": "1 Foundation",
         "person": "Engineer 1",
-        "start": 27,
-        "end": 34,
+        "start": 22,
+        "end": 28,
+        "startMonth": 2,
+        "endMonth": 2
+      },
+      {
+        "id": "MVP1-E6-05",
+        "title": "Spike: Stripe Billing APIs",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/191",
+        "issue": 191,
+        "wave": "Spikes",
+        "person": "Engineer 3",
+        "start": 23,
+        "end": 25,
         "startMonth": 2,
         "endMonth": 2
       },
@@ -306,10 +344,10 @@ export const roadmap = {
         "issue": 24,
         "wave": "2 Identity and app shell",
         "person": "Engineer 2",
-        "start": 35,
-        "end": 42,
+        "start": 28,
+        "end": 34,
         "startMonth": 2,
-        "endMonth": 3
+        "endMonth": 2
       },
       {
         "id": "MVP1-E0-26",
@@ -319,10 +357,10 @@ export const roadmap = {
         "issue": 103,
         "wave": "4 Extraction",
         "person": "Engineer 1",
-        "start": 35,
-        "end": 42,
+        "start": 28,
+        "end": 34,
         "startMonth": 2,
-        "endMonth": 3
+        "endMonth": 2
       },
       {
         "id": "MVP1-E0-25",
@@ -332,10 +370,49 @@ export const roadmap = {
         "issue": 102,
         "wave": "Harden and show",
         "person": "Engineer 3",
-        "start": 35,
-        "end": 42,
+        "start": 28,
+        "end": 34,
         "startMonth": 2,
-        "endMonth": 3
+        "endMonth": 2
+      },
+      {
+        "id": "MVP1-E1-06",
+        "title": "Route protection",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/27",
+        "issue": 27,
+        "wave": "2 Identity and app shell",
+        "person": "Engineer 1",
+        "start": 35,
+        "end": 37,
+        "startMonth": 2,
+        "endMonth": 2
+      },
+      {
+        "id": "MVP1-E1-05",
+        "title": "Account page",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/26",
+        "issue": 26,
+        "wave": "2 Identity and app shell",
+        "person": "Engineer 3",
+        "start": 35,
+        "end": 41,
+        "startMonth": 2,
+        "endMonth": 2
+      },
+      {
+        "id": "MVP1-E0-09",
+        "title": "DocFlow app shell",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/19",
+        "issue": 19,
+        "wave": "2 Identity and app shell",
+        "person": "Engineer 2",
+        "start": 35,
+        "end": 41,
+        "startMonth": 2,
+        "endMonth": 2
       },
       {
         "id": "MVP1-E0-30",
@@ -351,16 +428,16 @@ export const roadmap = {
         "endMonth": 2
       },
       {
-        "id": "MVP1-E1-06",
-        "title": "Route protection",
-        "size": "S",
-        "href": "https://github.com/founder2863/01scale.com/issues/27",
-        "issue": 27,
+        "id": "MVP1-E0-06",
+        "title": "Agent access: API keys and MCP",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/18",
+        "issue": 18,
         "wave": "2 Identity and app shell",
-        "person": "Engineer 3",
-        "start": 43,
-        "end": 45,
-        "startMonth": 3,
+        "person": "Engineer 1",
+        "start": 37,
+        "end": 43,
+        "startMonth": 2,
         "endMonth": 3
       },
       {
@@ -370,9 +447,9 @@ export const roadmap = {
         "href": "https://github.com/founder2863/01scale.com/issues/28",
         "issue": 28,
         "wave": "3 Upload",
-        "person": "Engineer 1",
-        "start": 43,
-        "end": 45,
+        "person": "Engineer 2",
+        "start": 41,
+        "end": 43,
         "startMonth": 3,
         "endMonth": 3
       },
@@ -383,22 +460,9 @@ export const roadmap = {
         "href": "https://github.com/founder2863/01scale.com/issues/46",
         "issue": 46,
         "wave": "6 Outputs and payment",
-        "person": "Engineer 2",
-        "start": 43,
-        "end": 50,
-        "startMonth": 3,
-        "endMonth": 3
-      },
-      {
-        "id": "MVP1-E0-09",
-        "title": "DocFlow app shell",
-        "size": "M",
-        "href": "https://github.com/founder2863/01scale.com/issues/19",
-        "issue": 19,
-        "wave": "2 Identity and app shell",
         "person": "Engineer 3",
-        "start": 46,
-        "end": 53,
+        "start": 41,
+        "end": 47,
         "startMonth": 3,
         "endMonth": 3
       },
@@ -410,8 +474,21 @@ export const roadmap = {
         "issue": 29,
         "wave": "3 Upload",
         "person": "Engineer 1",
-        "start": 46,
-        "end": 53,
+        "start": 44,
+        "end": 50,
+        "startMonth": 3,
+        "endMonth": 3
+      },
+      {
+        "id": "MVP1-E1-08",
+        "title": "Sign in with Google",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/54",
+        "issue": 54,
+        "wave": "Product extras",
+        "person": "Engineer 2",
+        "start": 44,
+        "end": 50,
         "startMonth": 3,
         "endMonth": 3
       },
@@ -422,9 +499,9 @@ export const roadmap = {
         "href": "https://github.com/founder2863/01scale.com/issues/47",
         "issue": 47,
         "wave": "6 Outputs and payment",
-        "person": "Engineer 2",
-        "start": 51,
-        "end": 58,
+        "person": "Engineer 3",
+        "start": 48,
+        "end": 54,
         "startMonth": 3,
         "endMonth": 3
       },
@@ -435,9 +512,9 @@ export const roadmap = {
         "href": "https://github.com/founder2863/01scale.com/issues/30",
         "issue": 30,
         "wave": "3 Upload",
-        "person": "Engineer 3",
-        "start": 54,
-        "end": 56,
+        "person": "Engineer 2",
+        "start": 50,
+        "end": 52,
         "startMonth": 3,
         "endMonth": 3
       },
@@ -449,10 +526,10 @@ export const roadmap = {
         "issue": 33,
         "wave": "4 Extraction",
         "person": "Engineer 1",
-        "start": 54,
-        "end": 61,
+        "start": 50,
+        "end": 56,
         "startMonth": 3,
-        "endMonth": 4
+        "endMonth": 3
       },
       {
         "id": "MVP1-E2-04",
@@ -461,11 +538,11 @@ export const roadmap = {
         "href": "https://github.com/founder2863/01scale.com/issues/31",
         "issue": 31,
         "wave": "3 Upload",
-        "person": "Engineer 3",
-        "start": 57,
-        "end": 64,
+        "person": "Engineer 2",
+        "start": 53,
+        "end": 59,
         "startMonth": 3,
-        "endMonth": 4
+        "endMonth": 3
       },
       {
         "id": "MVP1-E6-03",
@@ -474,11 +551,11 @@ export const roadmap = {
         "href": "https://github.com/founder2863/01scale.com/issues/48",
         "issue": 48,
         "wave": "6 Outputs and payment",
-        "person": "Engineer 2",
-        "start": 59,
-        "end": 61,
+        "person": "Engineer 3",
+        "start": 54,
+        "end": 56,
         "startMonth": 3,
-        "endMonth": 4
+        "endMonth": 3
       },
       {
         "id": "MVP1-E3-02",
@@ -488,9 +565,9 @@ export const roadmap = {
         "issue": 34,
         "wave": "4 Extraction",
         "person": "Engineer 1",
-        "start": 62,
-        "end": 76,
-        "startMonth": 4,
+        "start": 57,
+        "end": 68,
+        "startMonth": 3,
         "endMonth": 4
       },
       {
@@ -500,37 +577,11 @@ export const roadmap = {
         "href": "https://github.com/founder2863/01scale.com/issues/177",
         "issue": 177,
         "wave": "4 Extraction",
-        "person": "Engineer 2",
-        "start": 62,
-        "end": 64,
-        "startMonth": 4,
-        "endMonth": 4
-      },
-      {
-        "id": "MVP1-E1-05",
-        "title": "Account page",
-        "size": "M",
-        "href": "https://github.com/founder2863/01scale.com/issues/26",
-        "issue": 26,
-        "wave": "2 Identity and app shell",
-        "person": "Engineer 2",
-        "start": 65,
-        "end": 72,
-        "startMonth": 4,
-        "endMonth": 4
-      },
-      {
-        "id": "MVP1-E0-06",
-        "title": "Agent access: API keys and MCP",
-        "size": "M",
-        "href": "https://github.com/founder2863/01scale.com/issues/18",
-        "issue": 18,
-        "wave": "2 Identity and app shell",
         "person": "Engineer 3",
-        "start": 65,
-        "end": 72,
-        "startMonth": 4,
-        "endMonth": 4
+        "start": 57,
+        "end": 59,
+        "startMonth": 3,
+        "endMonth": 3
       },
       {
         "id": "MVP1-E1-04",
@@ -539,23 +590,10 @@ export const roadmap = {
         "href": "https://github.com/founder2863/01scale.com/issues/25",
         "issue": 25,
         "wave": "2 Identity and app shell",
-        "person": "Engineer 3",
-        "start": 73,
-        "end": 75,
-        "startMonth": 4,
-        "endMonth": 4
-      },
-      {
-        "id": "MVP1-E1-08",
-        "title": "Sign in with Google",
-        "size": "M",
-        "href": "https://github.com/founder2863/01scale.com/issues/54",
-        "issue": 54,
-        "wave": "Product extras",
         "person": "Engineer 2",
-        "start": 73,
-        "end": 80,
-        "startMonth": 4,
+        "start": 59,
+        "end": 61,
+        "startMonth": 3,
         "endMonth": 4
       },
       {
@@ -566,8 +604,47 @@ export const roadmap = {
         "issue": 32,
         "wave": "3 Upload",
         "person": "Engineer 3",
-        "start": 76,
-        "end": 78,
+        "start": 59,
+        "end": 61,
+        "startMonth": 3,
+        "endMonth": 4
+      },
+      {
+        "id": "MVP1-E3-09",
+        "title": "A free daily quota for jobs a person starts",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/181",
+        "issue": 181,
+        "wave": "Product extras",
+        "person": "Engineer 2",
+        "start": 62,
+        "end": 64,
+        "startMonth": 4,
+        "endMonth": 4
+      },
+      {
+        "id": "MVP1-E6-04",
+        "title": "Refunds",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/92",
+        "issue": 92,
+        "wave": "Product extras",
+        "person": "Engineer 3",
+        "start": 62,
+        "end": 64,
+        "startMonth": 4,
+        "endMonth": 4
+      },
+      {
+        "id": "MVP1-E1-07",
+        "title": "Branded sign-in page and address",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/53",
+        "issue": 53,
+        "wave": "Product extras",
+        "person": "Engineer 2",
+        "start": 64,
+        "end": 66,
         "startMonth": 4,
         "endMonth": 4
       },
@@ -579,10 +656,10 @@ export const roadmap = {
         "issue": 35,
         "wave": "4 Extraction",
         "person": "Engineer 1",
-        "start": 77,
-        "end": 84,
+        "start": 69,
+        "end": 75,
         "startMonth": 4,
-        "endMonth": 5
+        "endMonth": 4
       },
       {
         "id": "MVP1-E3-05",
@@ -591,50 +668,11 @@ export const roadmap = {
         "href": "https://github.com/founder2863/01scale.com/issues/37",
         "issue": 37,
         "wave": "4 Extraction",
-        "person": "Engineer 3",
-        "start": 79,
-        "end": 81,
+        "person": "Engineer 2",
+        "start": 69,
+        "end": 71,
         "startMonth": 4,
-        "endMonth": 5
-      },
-      {
-        "id": "MVP1-E3-09",
-        "title": "A free daily quota for jobs a person starts",
-        "size": "S",
-        "href": "https://github.com/founder2863/01scale.com/issues/181",
-        "issue": 181,
-        "wave": "Product extras",
-        "person": "Engineer 2",
-        "start": 81,
-        "end": 83,
-        "startMonth": 5,
-        "endMonth": 5
-      },
-      {
-        "id": "MVP1-E6-04",
-        "title": "Refunds",
-        "size": "S",
-        "href": "https://github.com/founder2863/01scale.com/issues/92",
-        "issue": 92,
-        "wave": "Product extras",
-        "person": "Engineer 3",
-        "start": 82,
-        "end": 84,
-        "startMonth": 5,
-        "endMonth": 5
-      },
-      {
-        "id": "MVP1-E1-07",
-        "title": "Branded sign-in page and address",
-        "size": "S",
-        "href": "https://github.com/founder2863/01scale.com/issues/53",
-        "issue": 53,
-        "wave": "Product extras",
-        "person": "Engineer 2",
-        "start": 84,
-        "end": 86,
-        "startMonth": 5,
-        "endMonth": 5
+        "endMonth": 4
       },
       {
         "id": "MVP1-E4-01",
@@ -644,9 +682,9 @@ export const roadmap = {
         "issue": 38,
         "wave": "5 Review",
         "person": "Engineer 1",
-        "start": 85,
-        "end": 92,
-        "startMonth": 5,
+        "start": 75,
+        "end": 81,
+        "startMonth": 4,
         "endMonth": 5
       },
       {
@@ -656,10 +694,10 @@ export const roadmap = {
         "href": "https://github.com/founder2863/01scale.com/issues/42",
         "issue": 42,
         "wave": "6 Outputs and payment",
-        "person": "Engineer 3",
-        "start": 85,
-        "end": 92,
-        "startMonth": 5,
+        "person": "Engineer 2",
+        "start": 75,
+        "end": 81,
+        "startMonth": 4,
         "endMonth": 5
       },
       {
@@ -669,11 +707,11 @@ export const roadmap = {
         "href": "https://github.com/founder2863/01scale.com/issues/88",
         "issue": 88,
         "wave": "Product extras",
-        "person": "Engineer 2",
-        "start": 87,
-        "end": 101,
-        "startMonth": 5,
-        "endMonth": 6
+        "person": "Engineer 3",
+        "start": 75,
+        "end": 87,
+        "startMonth": 4,
+        "endMonth": 5
       },
       {
         "id": "MVP1-E4-06",
@@ -683,8 +721,8 @@ export const roadmap = {
         "issue": 178,
         "wave": "5 Review",
         "person": "Engineer 1",
-        "start": 93,
-        "end": 95,
+        "start": 82,
+        "end": 84,
         "startMonth": 5,
         "endMonth": 5
       },
@@ -695,9 +733,9 @@ export const roadmap = {
         "href": "https://github.com/founder2863/01scale.com/issues/44",
         "issue": 44,
         "wave": "6 Outputs and payment",
-        "person": "Engineer 3",
-        "start": 93,
-        "end": 95,
+        "person": "Engineer 2",
+        "start": 82,
+        "end": 84,
         "startMonth": 5,
         "endMonth": 5
       },
@@ -708,9 +746,9 @@ export const roadmap = {
         "href": "https://github.com/founder2863/01scale.com/issues/179",
         "issue": 179,
         "wave": "6 Outputs and payment",
-        "person": "Engineer 3",
-        "start": 96,
-        "end": 98,
+        "person": "Engineer 2",
+        "start": 84,
+        "end": 86,
         "startMonth": 5,
         "endMonth": 5
       },
@@ -722,8 +760,8 @@ export const roadmap = {
         "issue": 43,
         "wave": "6 Outputs and payment",
         "person": "Engineer 1",
-        "start": 96,
-        "end": 98,
+        "start": 84,
+        "end": 86,
         "startMonth": 5,
         "endMonth": 5
       },
@@ -734,11 +772,11 @@ export const roadmap = {
         "href": "https://github.com/founder2863/01scale.com/issues/39",
         "issue": 39,
         "wave": "5 Review",
-        "person": "Engineer 3",
-        "start": 99,
-        "end": 106,
+        "person": "Engineer 2",
+        "start": 87,
+        "end": 93,
         "startMonth": 5,
-        "endMonth": 6
+        "endMonth": 5
       },
       {
         "id": "MVP1-E5-04",
@@ -748,10 +786,10 @@ export const roadmap = {
         "issue": 45,
         "wave": "6 Outputs and payment",
         "person": "Engineer 1",
-        "start": 99,
-        "end": 101,
+        "start": 87,
+        "end": 89,
         "startMonth": 5,
-        "endMonth": 6
+        "endMonth": 5
       },
       {
         "id": "MVP1-E3-04",
@@ -760,11 +798,11 @@ export const roadmap = {
         "href": "https://github.com/founder2863/01scale.com/issues/36",
         "issue": 36,
         "wave": "4 Extraction",
-        "person": "Engineer 2",
-        "start": 102,
-        "end": 109,
-        "startMonth": 6,
-        "endMonth": 6
+        "person": "Engineer 3",
+        "start": 87,
+        "end": 93,
+        "startMonth": 5,
+        "endMonth": 5
       },
       {
         "id": "MVP1-E7-01",
@@ -774,10 +812,10 @@ export const roadmap = {
         "issue": 49,
         "wave": "7 Delivery",
         "person": "Engineer 1",
-        "start": 102,
-        "end": 109,
-        "startMonth": 6,
-        "endMonth": 6
+        "start": 89,
+        "end": 95,
+        "startMonth": 5,
+        "endMonth": 5
       },
       {
         "id": "MVP1-E4-03",
@@ -786,11 +824,11 @@ export const roadmap = {
         "href": "https://github.com/founder2863/01scale.com/issues/40",
         "issue": 40,
         "wave": "5 Review",
-        "person": "Engineer 3",
-        "start": 107,
-        "end": 109,
-        "startMonth": 6,
-        "endMonth": 6
+        "person": "Engineer 2",
+        "start": 93,
+        "end": 95,
+        "startMonth": 5,
+        "endMonth": 5
       },
       {
         "id": "MVP1-E4-04",
@@ -800,10 +838,10 @@ export const roadmap = {
         "issue": 41,
         "wave": "5 Review",
         "person": "Engineer 2",
-        "start": 110,
-        "end": 112,
-        "startMonth": 6,
-        "endMonth": 6
+        "start": 96,
+        "end": 98,
+        "startMonth": 5,
+        "endMonth": 5
       },
       {
         "id": "MVP1-E7-02",
@@ -813,10 +851,10 @@ export const roadmap = {
         "issue": 50,
         "wave": "7 Delivery",
         "person": "Engineer 3",
-        "start": 110,
-        "end": 112,
-        "startMonth": 6,
-        "endMonth": 6
+        "start": 96,
+        "end": 98,
+        "startMonth": 5,
+        "endMonth": 5
       },
       {
         "id": "MVP1-E7-03",
@@ -826,9 +864,9 @@ export const roadmap = {
         "issue": 51,
         "wave": "7 Delivery",
         "person": "Engineer 1",
-        "start": 110,
-        "end": 117,
-        "startMonth": 6,
+        "start": 96,
+        "end": 102,
+        "startMonth": 5,
         "endMonth": 6
       },
       {
@@ -839,10 +877,10 @@ export const roadmap = {
         "issue": 95,
         "wave": "Harden and show",
         "person": "Engineer 1",
-        "start": 118,
-        "end": 132,
+        "start": 102,
+        "end": 114,
         "startMonth": 6,
-        "endMonth": 7
+        "endMonth": 6
       }
     ],
     "milestones": [
@@ -853,42 +891,43 @@ export const roadmap = {
       },
       {
         "name": "Platform foundation live: service template and gateway",
-        "day": 34,
+        "day": 28,
         "month": 2
       },
       {
         "name": "People can sign up and sign in",
-        "day": 45,
-        "month": 3
+        "day": 37,
+        "month": 2
       },
       {
         "name": "Upload a document",
-        "day": 64,
-        "month": 4
+        "day": 59,
+        "month": 3
       },
       {
         "name": "Claude extracts the fields, checked by rules and evals",
-        "day": 84,
-        "month": 5
-      },
-      {
-        "name": "A person reviews low-confidence fields",
-        "day": 109,
-        "month": 6
-      },
-      {
-        "name": "Pay with Stripe (test mode)",
-        "day": 61,
+        "day": 75,
         "month": 4
       },
       {
+        "name": "A person reviews low-confidence fields",
+        "day": 95,
+        "month": 5
+      },
+      {
+        "name": "Pay with Stripe (test mode)",
+        "day": 56,
+        "month": 3
+      },
+      {
         "name": "DocFlow works end to end: results by download and email",
-        "day": 117,
+        "day": 102,
         "month": 6
       }
     ],
     "notPlanned": [
       "MVP1-E0-54",
+      "MVP1-E8-12",
       "MVP1-E0-44",
       "MVP1-E8-02",
       "MVP1-E8-03",
@@ -898,6 +937,911 @@ export const roadmap = {
       "MVP1-E8-07",
       "MVP1-E8-08"
     ]
+  },
+  "planWithClaudeCode": {
+    "daysPerMonth": 20,
+    "people": [
+      {
+        "name": "Product manager",
+        "pm": true,
+        "busyDays": 19.0
+      },
+      {
+        "name": "Engineer 1",
+        "pm": false,
+        "busyDays": 47.0
+      },
+      {
+        "name": "Engineer 2",
+        "pm": false,
+        "busyDays": 35.5
+      },
+      {
+        "name": "Engineer 3",
+        "pm": false,
+        "busyDays": 28.5
+      }
+    ],
+    "endDay": 48,
+    "months": 3,
+    "stories": [
+      {
+        "id": "MVP1-E0-15",
+        "title": "PRD Reference section on every module page",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/85",
+        "issue": 85,
+        "wave": "0 Product documentation",
+        "person": "Product manager",
+        "start": 1,
+        "end": 2,
+        "startMonth": 1,
+        "endMonth": 1
+      },
+      {
+        "id": "MVP1-E0-20",
+        "title": "Architecture & System Design section for every service and app",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/97",
+        "issue": 97,
+        "wave": "0 Product documentation",
+        "person": "Engineer 3",
+        "start": 1,
+        "end": 3,
+        "startMonth": 1,
+        "endMonth": 1
+      },
+      {
+        "id": "MVP1-E0-01",
+        "title": "Database and migrations",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/14",
+        "issue": 14,
+        "wave": "1 Foundation",
+        "person": "Engineer 1",
+        "start": 1,
+        "end": 1,
+        "startMonth": 1,
+        "endMonth": 1
+      },
+      {
+        "id": "MVP1-E0-03",
+        "title": "CI",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/17",
+        "issue": 17,
+        "wave": "1 Foundation",
+        "person": "Engineer 2",
+        "start": 1,
+        "end": 1,
+        "startMonth": 1,
+        "endMonth": 1
+      },
+      {
+        "id": "MVP1-E0-07",
+        "title": "Service template",
+        "size": "L",
+        "href": "https://github.com/founder2863/01scale.com/issues/13",
+        "issue": 13,
+        "wave": "1 Foundation",
+        "person": "Engineer 1",
+        "start": 2,
+        "end": 6,
+        "startMonth": 1,
+        "endMonth": 1
+      },
+      {
+        "id": "MVP1-E0-04",
+        "title": "Eval harness skeleton",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/20",
+        "issue": 20,
+        "wave": "4 Extraction",
+        "person": "Engineer 2",
+        "start": 2,
+        "end": 4,
+        "startMonth": 1,
+        "endMonth": 1
+      },
+      {
+        "id": "MVP1-E0-14",
+        "title": "Market Outlook section on every module page",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/84",
+        "issue": 84,
+        "wave": "0 Product documentation",
+        "person": "Product manager",
+        "start": 2,
+        "end": 6,
+        "startMonth": 1,
+        "endMonth": 1
+      },
+      {
+        "id": "MVP1-E0-16",
+        "title": "MCP section on every module page",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/86",
+        "issue": 86,
+        "wave": "0 Product documentation",
+        "person": "Engineer 3",
+        "start": 3,
+        "end": 5,
+        "startMonth": 1,
+        "endMonth": 1
+      },
+      {
+        "id": "MVP1-E0-51",
+        "title": "DocFlow high-level design diagram",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/173",
+        "issue": 173,
+        "wave": "0 Product documentation",
+        "person": "Engineer 2",
+        "start": 4,
+        "end": 5,
+        "startMonth": 1,
+        "endMonth": 1
+      },
+      {
+        "id": "MVP1-E0-24",
+        "title": "\"Built on\" panel on every service and app page",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/101",
+        "issue": 101,
+        "wave": "0 Product documentation",
+        "person": "Engineer 2",
+        "start": 5,
+        "end": 6,
+        "startMonth": 1,
+        "endMonth": 1
+      },
+      {
+        "id": "MVP1-E1-01",
+        "title": "Cognito user pool setup",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/22",
+        "issue": 22,
+        "wave": "2 Identity and app shell",
+        "person": "Engineer 3",
+        "start": 6,
+        "end": 6,
+        "startMonth": 1,
+        "endMonth": 1
+      },
+      {
+        "id": "MVP1-E0-27",
+        "title": "Metrics section on every module page",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/104",
+        "issue": 104,
+        "wave": "0 Product documentation",
+        "person": "Product manager",
+        "start": 6,
+        "end": 10,
+        "startMonth": 1,
+        "endMonth": 1
+      },
+      {
+        "id": "MVP1-E3-10",
+        "title": "Spike: LLM extraction options (AWS, Claude, Microsoft)",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/190",
+        "issue": 190,
+        "wave": "Spikes",
+        "person": "Engineer 2",
+        "start": 6,
+        "end": 8,
+        "startMonth": 1,
+        "endMonth": 1
+      },
+      {
+        "id": "MVP1-E0-05",
+        "title": "API contract in every service",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/15",
+        "issue": 15,
+        "wave": "1 Foundation",
+        "person": "Engineer 1",
+        "start": 7,
+        "end": 9,
+        "startMonth": 1,
+        "endMonth": 1
+      },
+      {
+        "id": "MVP1-E1-02",
+        "title": "Sign up with email verification",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/23",
+        "issue": 23,
+        "wave": "2 Identity and app shell",
+        "person": "Engineer 3",
+        "start": 7,
+        "end": 9,
+        "startMonth": 1,
+        "endMonth": 1
+      },
+      {
+        "id": "MVP1-E0-02",
+        "title": "Audit log",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/16",
+        "issue": 16,
+        "wave": "1 Foundation",
+        "person": "Engineer 2",
+        "start": 9,
+        "end": 9,
+        "startMonth": 1,
+        "endMonth": 1
+      },
+      {
+        "id": "MVP1-E0-08",
+        "title": "Gateway",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/21",
+        "issue": 21,
+        "wave": "1 Foundation",
+        "person": "Engineer 1",
+        "start": 9,
+        "end": 11,
+        "startMonth": 1,
+        "endMonth": 1
+      },
+      {
+        "id": "MVP1-E6-05",
+        "title": "Spike: Stripe Billing APIs",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/191",
+        "issue": 191,
+        "wave": "Spikes",
+        "person": "Engineer 3",
+        "start": 9,
+        "end": 10,
+        "startMonth": 1,
+        "endMonth": 1
+      },
+      {
+        "id": "MVP1-E0-28",
+        "title": "Monetization section on every module page",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/105",
+        "issue": 105,
+        "wave": "0 Product documentation",
+        "person": "Product manager",
+        "start": 10,
+        "end": 14,
+        "startMonth": 1,
+        "endMonth": 1
+      },
+      {
+        "id": "MVP1-E1-03",
+        "title": "Sign in and sign out",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/24",
+        "issue": 24,
+        "wave": "2 Identity and app shell",
+        "person": "Engineer 2",
+        "start": 12,
+        "end": 14,
+        "startMonth": 1,
+        "endMonth": 1
+      },
+      {
+        "id": "MVP1-E0-26",
+        "title": "Security baseline, secrets and a safe live demo",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/103",
+        "issue": 103,
+        "wave": "4 Extraction",
+        "person": "Engineer 1",
+        "start": 12,
+        "end": 14,
+        "startMonth": 1,
+        "endMonth": 1
+      },
+      {
+        "id": "MVP1-E0-25",
+        "title": "Monitoring",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/102",
+        "issue": 102,
+        "wave": "Harden and show",
+        "person": "Engineer 3",
+        "start": 12,
+        "end": 14,
+        "startMonth": 1,
+        "endMonth": 1
+      },
+      {
+        "id": "MVP1-E0-29",
+        "title": "GTM section on every module page",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/106",
+        "issue": 106,
+        "wave": "0 Product documentation",
+        "person": "Product manager",
+        "start": 14,
+        "end": 18,
+        "startMonth": 1,
+        "endMonth": 1
+      },
+      {
+        "id": "MVP1-E1-06",
+        "title": "Route protection",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/27",
+        "issue": 27,
+        "wave": "2 Identity and app shell",
+        "person": "Engineer 1",
+        "start": 14,
+        "end": 15,
+        "startMonth": 1,
+        "endMonth": 1
+      },
+      {
+        "id": "MVP1-E1-05",
+        "title": "Account page",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/26",
+        "issue": 26,
+        "wave": "2 Identity and app shell",
+        "person": "Engineer 3",
+        "start": 14,
+        "end": 16,
+        "startMonth": 1,
+        "endMonth": 1
+      },
+      {
+        "id": "MVP1-E0-09",
+        "title": "DocFlow app shell",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/19",
+        "issue": 19,
+        "wave": "2 Identity and app shell",
+        "person": "Engineer 2",
+        "start": 14,
+        "end": 16,
+        "startMonth": 1,
+        "endMonth": 1
+      },
+      {
+        "id": "MVP1-E0-06",
+        "title": "Agent access: API keys and MCP",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/18",
+        "issue": 18,
+        "wave": "2 Identity and app shell",
+        "person": "Engineer 1",
+        "start": 15,
+        "end": 17,
+        "startMonth": 1,
+        "endMonth": 1
+      },
+      {
+        "id": "MVP1-E1-04",
+        "title": "Forgot and reset password",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/25",
+        "issue": 25,
+        "wave": "2 Identity and app shell",
+        "person": "Engineer 3",
+        "start": 17,
+        "end": 17,
+        "startMonth": 1,
+        "endMonth": 1
+      },
+      {
+        "id": "MVP1-E1-08",
+        "title": "Sign in with Google",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/54",
+        "issue": 54,
+        "wave": "Product extras",
+        "person": "Engineer 2",
+        "start": 17,
+        "end": 19,
+        "startMonth": 1,
+        "endMonth": 1
+      },
+      {
+        "id": "MVP1-E1-07",
+        "title": "Branded sign-in page and address",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/53",
+        "issue": 53,
+        "wave": "Product extras",
+        "person": "Engineer 1",
+        "start": 18,
+        "end": 18,
+        "startMonth": 1,
+        "endMonth": 1
+      },
+      {
+        "id": "MVP1-E0-30",
+        "title": "Support section on every module page",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/107",
+        "issue": 107,
+        "wave": "0 Product documentation",
+        "person": "Product manager",
+        "start": 18,
+        "end": 19,
+        "startMonth": 1,
+        "endMonth": 1
+      },
+      {
+        "id": "MVP1-E2-01",
+        "title": "S3 bucket and IAM",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/28",
+        "issue": 28,
+        "wave": "3 Upload",
+        "person": "Engineer 1",
+        "start": 20,
+        "end": 20,
+        "startMonth": 1,
+        "endMonth": 1
+      },
+      {
+        "id": "MVP1-E6-01",
+        "title": "Checkout session",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/46",
+        "issue": 46,
+        "wave": "6 Outputs and payment",
+        "person": "Engineer 2",
+        "start": 20,
+        "end": 22,
+        "startMonth": 1,
+        "endMonth": 2
+      },
+      {
+        "id": "MVP1-E2-02",
+        "title": "Presigned upload URL",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/29",
+        "issue": 29,
+        "wave": "3 Upload",
+        "person": "Engineer 1",
+        "start": 21,
+        "end": 23,
+        "startMonth": 2,
+        "endMonth": 2
+      },
+      {
+        "id": "MVP1-E6-02",
+        "title": "Webhook",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/47",
+        "issue": 47,
+        "wave": "6 Outputs and payment",
+        "person": "Engineer 2",
+        "start": 22,
+        "end": 24,
+        "startMonth": 2,
+        "endMonth": 2
+      },
+      {
+        "id": "MVP1-E2-03",
+        "title": "Upload confirmation and checks",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/30",
+        "issue": 30,
+        "wave": "3 Upload",
+        "person": "Engineer 3",
+        "start": 23,
+        "end": 24,
+        "startMonth": 2,
+        "endMonth": 2
+      },
+      {
+        "id": "MVP1-E3-01",
+        "title": "Extraction job lifecycle",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/33",
+        "issue": 33,
+        "wave": "4 Extraction",
+        "person": "Engineer 1",
+        "start": 23,
+        "end": 25,
+        "startMonth": 2,
+        "endMonth": 2
+      },
+      {
+        "id": "MVP1-E2-04",
+        "title": "Upload page UI",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/31",
+        "issue": 31,
+        "wave": "3 Upload",
+        "person": "Engineer 3",
+        "start": 24,
+        "end": 26,
+        "startMonth": 2,
+        "endMonth": 2
+      },
+      {
+        "id": "MVP1-E6-03",
+        "title": "Payment page and states",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/48",
+        "issue": 48,
+        "wave": "6 Outputs and payment",
+        "person": "Engineer 2",
+        "start": 25,
+        "end": 25,
+        "startMonth": 2,
+        "endMonth": 2
+      },
+      {
+        "id": "MVP1-E3-02",
+        "title": "Claude extraction call",
+        "size": "L",
+        "href": "https://github.com/founder2863/01scale.com/issues/34",
+        "issue": 34,
+        "wave": "4 Extraction",
+        "person": "Engineer 1",
+        "start": 26,
+        "end": 30,
+        "startMonth": 2,
+        "endMonth": 2
+      },
+      {
+        "id": "MVP1-E3-08",
+        "title": "Hold a job's fields for the app that started it",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/177",
+        "issue": 177,
+        "wave": "4 Extraction",
+        "person": "Engineer 2",
+        "start": 26,
+        "end": 26,
+        "startMonth": 2,
+        "endMonth": 2
+      },
+      {
+        "id": "MVP1-E2-05",
+        "title": "Documents list",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/32",
+        "issue": 32,
+        "wave": "3 Upload",
+        "person": "Engineer 2",
+        "start": 27,
+        "end": 27,
+        "startMonth": 2,
+        "endMonth": 2
+      },
+      {
+        "id": "MVP1-E3-09",
+        "title": "A free daily quota for jobs a person starts",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/181",
+        "issue": 181,
+        "wave": "Product extras",
+        "person": "Engineer 3",
+        "start": 27,
+        "end": 27,
+        "startMonth": 2,
+        "endMonth": 2
+      },
+      {
+        "id": "MVP1-E6-04",
+        "title": "Refunds",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/92",
+        "issue": 92,
+        "wave": "Product extras",
+        "person": "Engineer 2",
+        "start": 28,
+        "end": 28,
+        "startMonth": 2,
+        "endMonth": 2
+      },
+      {
+        "id": "MVP1-E3-03",
+        "title": "Rule checks and final confidence",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/35",
+        "issue": 35,
+        "wave": "4 Extraction",
+        "person": "Engineer 1",
+        "start": 31,
+        "end": 33,
+        "startMonth": 2,
+        "endMonth": 2
+      },
+      {
+        "id": "MVP1-E3-05",
+        "title": "Cost and latency logging",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/37",
+        "issue": 37,
+        "wave": "4 Extraction",
+        "person": "Engineer 2",
+        "start": 31,
+        "end": 31,
+        "startMonth": 2,
+        "endMonth": 2
+      },
+      {
+        "id": "MVP1-E4-01",
+        "title": "Review queue",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/38",
+        "issue": 38,
+        "wave": "5 Review",
+        "person": "Engineer 1",
+        "start": 33,
+        "end": 35,
+        "startMonth": 2,
+        "endMonth": 2
+      },
+      {
+        "id": "MVP1-E5-01",
+        "title": "Final JSON with metadata",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/42",
+        "issue": 42,
+        "wave": "6 Outputs and payment",
+        "person": "Engineer 2",
+        "start": 33,
+        "end": 35,
+        "startMonth": 2,
+        "endMonth": 2
+      },
+      {
+        "id": "MVP1-E3-06",
+        "title": "Ask questions about my documents (RAG)",
+        "size": "L",
+        "href": "https://github.com/founder2863/01scale.com/issues/88",
+        "issue": 88,
+        "wave": "Product extras",
+        "person": "Engineer 3",
+        "start": 33,
+        "end": 38,
+        "startMonth": 2,
+        "endMonth": 2
+      },
+      {
+        "id": "MVP1-E4-06",
+        "title": "Hold a review task's fields for the app that started it",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/178",
+        "issue": 178,
+        "wave": "5 Review",
+        "person": "Engineer 1",
+        "start": 36,
+        "end": 36,
+        "startMonth": 2,
+        "endMonth": 2
+      },
+      {
+        "id": "MVP1-E5-03",
+        "title": "Locked preview",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/44",
+        "issue": 44,
+        "wave": "6 Outputs and payment",
+        "person": "Engineer 2",
+        "start": 36,
+        "end": 36,
+        "startMonth": 2,
+        "endMonth": 2
+      },
+      {
+        "id": "MVP1-E5-05",
+        "title": "DocFlow holds results until payment",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/179",
+        "issue": 179,
+        "wave": "6 Outputs and payment",
+        "person": "Engineer 2",
+        "start": 37,
+        "end": 37,
+        "startMonth": 2,
+        "endMonth": 2
+      },
+      {
+        "id": "MVP1-E5-02",
+        "title": "CSV export",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/43",
+        "issue": 43,
+        "wave": "6 Outputs and payment",
+        "person": "Engineer 1",
+        "start": 37,
+        "end": 37,
+        "startMonth": 2,
+        "endMonth": 2
+      },
+      {
+        "id": "MVP1-E4-02",
+        "title": "Accept, edit or mark not present",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/39",
+        "issue": 39,
+        "wave": "5 Review",
+        "person": "Engineer 2",
+        "start": 38,
+        "end": 40,
+        "startMonth": 2,
+        "endMonth": 2
+      },
+      {
+        "id": "MVP1-E5-04",
+        "title": "Build outputs on demand",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/45",
+        "issue": 45,
+        "wave": "6 Outputs and payment",
+        "person": "Engineer 1",
+        "start": 38,
+        "end": 38,
+        "startMonth": 2,
+        "endMonth": 2
+      },
+      {
+        "id": "MVP1-E3-04",
+        "title": "Extraction page",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/36",
+        "issue": 36,
+        "wave": "4 Extraction",
+        "person": "Engineer 3",
+        "start": 38,
+        "end": 40,
+        "startMonth": 2,
+        "endMonth": 2
+      },
+      {
+        "id": "MVP1-E7-01",
+        "title": "Success page",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/49",
+        "issue": 49,
+        "wave": "7 Delivery",
+        "person": "Engineer 1",
+        "start": 39,
+        "end": 41,
+        "startMonth": 2,
+        "endMonth": 2
+      },
+      {
+        "id": "MVP1-E4-03",
+        "title": "Complete review",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/40",
+        "issue": 40,
+        "wave": "5 Review",
+        "person": "Engineer 2",
+        "start": 40,
+        "end": 41,
+        "startMonth": 2,
+        "endMonth": 2
+      },
+      {
+        "id": "MVP1-E4-04",
+        "title": "Corrections feed the eval set",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/41",
+        "issue": 41,
+        "wave": "5 Review",
+        "person": "Engineer 2",
+        "start": 41,
+        "end": 42,
+        "startMonth": 3,
+        "endMonth": 3
+      },
+      {
+        "id": "MVP1-E7-02",
+        "title": "Secure downloads",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/50",
+        "issue": 50,
+        "wave": "7 Delivery",
+        "person": "Engineer 3",
+        "start": 41,
+        "end": 42,
+        "startMonth": 3,
+        "endMonth": 3
+      },
+      {
+        "id": "MVP1-E7-03",
+        "title": "Email delivery",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/51",
+        "issue": 51,
+        "wave": "7 Delivery",
+        "person": "Engineer 1",
+        "start": 41,
+        "end": 43,
+        "startMonth": 3,
+        "endMonth": 3
+      },
+      {
+        "id": "MVP1-E0-18",
+        "title": "A working journey on every module page (\"Try it\")",
+        "size": "L",
+        "href": "https://github.com/founder2863/01scale.com/issues/95",
+        "issue": 95,
+        "wave": "Harden and show",
+        "person": "Engineer 1",
+        "start": 44,
+        "end": 48,
+        "startMonth": 3,
+        "endMonth": 3
+      }
+    ],
+    "milestones": [
+      {
+        "name": "Product documentation complete",
+        "day": 19,
+        "month": 1
+      },
+      {
+        "name": "Platform foundation live: service template and gateway",
+        "day": 11,
+        "month": 1
+      },
+      {
+        "name": "People can sign up and sign in",
+        "day": 15,
+        "month": 1
+      },
+      {
+        "name": "Upload a document",
+        "day": 26,
+        "month": 2
+      },
+      {
+        "name": "Claude extracts the fields, checked by rules and evals",
+        "day": 33,
+        "month": 2
+      },
+      {
+        "name": "A person reviews low-confidence fields",
+        "day": 41,
+        "month": 3
+      },
+      {
+        "name": "Pay with Stripe (test mode)",
+        "day": 25,
+        "month": 2
+      },
+      {
+        "name": "DocFlow works end to end: results by download and email",
+        "day": 43,
+        "month": 3
+      }
+    ],
+    "notPlanned": [
+      "MVP1-E0-54",
+      "MVP1-E8-12",
+      "MVP1-E0-44",
+      "MVP1-E8-02",
+      "MVP1-E8-03",
+      "MVP1-E8-04",
+      "MVP1-E8-05",
+      "MVP1-E8-06",
+      "MVP1-E8-07",
+      "MVP1-E8-08"
+    ]
+  },
+  "estimatesModel": {
+    "source": "Assumption proposed by Claude Code on 26 Nov 2026 (PR #189), not yet decided by Nikhil",
+    "product_share_of_engineering_story": 0.2,
+    "with_claude_code_factor": {
+      "product": 0.5,
+      "development": 0.4
+    },
+    "product_share_why": "On an engineering story the size covers the whole story; about a fifth is product work (clarifying and accepting the acceptance criteria, reviewing the demo). Stories the product manager owns are all product work.",
+    "with_claude_code_why": "With Claude Code the person still reviews every pull request, tests it and owns the decisions, so the work does not disappear. Development is assumed 2.5 times faster (0.4): code, tests and fixes are drafted by Claude and reviewed. Product work is assumed twice as fast (0.5): drafts are quick, but sources, numbers and decisions stay with the product manager."
+  },
+  "estimateTotals": {
+    "productWithout": 118.0,
+    "productWith": 74.0,
+    "devWithout": 350.0,
+    "devWith": 138.0
   },
   "groups": [
     {
@@ -919,7 +1863,13 @@ export const roadmap = {
               "days": 3,
               "done": false,
               "issue": 85,
-              "href": "https://github.com/founder2863/01scale.com/issues/85"
+              "href": "https://github.com/founder2863/01scale.com/issues/85",
+              "estimates": {
+                "productWithout": 3.0,
+                "productWith": 1.5,
+                "devWithout": 0.0,
+                "devWith": 0.0
+              }
             },
             {
               "id": "MVP1-E0-14",
@@ -928,7 +1878,13 @@ export const roadmap = {
               "days": 8,
               "done": false,
               "issue": 84,
-              "href": "https://github.com/founder2863/01scale.com/issues/84"
+              "href": "https://github.com/founder2863/01scale.com/issues/84",
+              "estimates": {
+                "productWithout": 8.0,
+                "productWith": 4.0,
+                "devWithout": 0.0,
+                "devWith": 0.0
+              }
             },
             {
               "id": "MVP1-E0-27",
@@ -937,7 +1893,13 @@ export const roadmap = {
               "days": 8,
               "done": false,
               "issue": 104,
-              "href": "https://github.com/founder2863/01scale.com/issues/104"
+              "href": "https://github.com/founder2863/01scale.com/issues/104",
+              "estimates": {
+                "productWithout": 8.0,
+                "productWith": 4.0,
+                "devWithout": 0.0,
+                "devWith": 0.0
+              }
             },
             {
               "id": "MVP1-E0-28",
@@ -946,7 +1908,13 @@ export const roadmap = {
               "days": 8,
               "done": false,
               "issue": 105,
-              "href": "https://github.com/founder2863/01scale.com/issues/105"
+              "href": "https://github.com/founder2863/01scale.com/issues/105",
+              "estimates": {
+                "productWithout": 8.0,
+                "productWith": 4.0,
+                "devWithout": 0.0,
+                "devWith": 0.0
+              }
             },
             {
               "id": "MVP1-E0-29",
@@ -955,7 +1923,13 @@ export const roadmap = {
               "days": 8,
               "done": false,
               "issue": 106,
-              "href": "https://github.com/founder2863/01scale.com/issues/106"
+              "href": "https://github.com/founder2863/01scale.com/issues/106",
+              "estimates": {
+                "productWithout": 8.0,
+                "productWith": 4.0,
+                "devWithout": 0.0,
+                "devWith": 0.0
+              }
             },
             {
               "id": "MVP1-E0-30",
@@ -964,7 +1938,13 @@ export const roadmap = {
               "days": 3,
               "done": false,
               "issue": 107,
-              "href": "https://github.com/founder2863/01scale.com/issues/107"
+              "href": "https://github.com/founder2863/01scale.com/issues/107",
+              "estimates": {
+                "productWithout": 3.0,
+                "productWith": 1.5,
+                "devWithout": 0.0,
+                "devWith": 0.0
+              }
             },
             {
               "id": "MVP1-E0-20",
@@ -973,7 +1953,13 @@ export const roadmap = {
               "days": 8,
               "done": false,
               "issue": 97,
-              "href": "https://github.com/founder2863/01scale.com/issues/97"
+              "href": "https://github.com/founder2863/01scale.com/issues/97",
+              "estimates": {
+                "productWithout": 1.5,
+                "productWith": 1.0,
+                "devWithout": 6.5,
+                "devWith": 2.5
+              }
             },
             {
               "id": "MVP1-E0-51",
@@ -982,7 +1968,13 @@ export const roadmap = {
               "days": 3,
               "done": false,
               "issue": 173,
-              "href": "https://github.com/founder2863/01scale.com/issues/173"
+              "href": "https://github.com/founder2863/01scale.com/issues/173",
+              "estimates": {
+                "productWithout": 0.5,
+                "productWith": 0.5,
+                "devWithout": 2.5,
+                "devWith": 1.0
+              }
             },
             {
               "id": "MVP1-E0-24",
@@ -991,7 +1983,13 @@ export const roadmap = {
               "days": 3,
               "done": false,
               "issue": 101,
-              "href": "https://github.com/founder2863/01scale.com/issues/101"
+              "href": "https://github.com/founder2863/01scale.com/issues/101",
+              "estimates": {
+                "productWithout": 0.5,
+                "productWith": 0.5,
+                "devWithout": 2.5,
+                "devWith": 1.0
+              }
             },
             {
               "id": "MVP1-E0-16",
@@ -1000,7 +1998,13 @@ export const roadmap = {
               "days": 8,
               "done": false,
               "issue": 86,
-              "href": "https://github.com/founder2863/01scale.com/issues/86"
+              "href": "https://github.com/founder2863/01scale.com/issues/86",
+              "estimates": {
+                "productWithout": 1.5,
+                "productWith": 1.0,
+                "devWithout": 6.5,
+                "devWith": 2.5
+              }
             }
           ]
         },
@@ -1018,7 +2022,13 @@ export const roadmap = {
               "days": 3,
               "done": false,
               "issue": 14,
-              "href": "https://github.com/founder2863/01scale.com/issues/14"
+              "href": "https://github.com/founder2863/01scale.com/issues/14",
+              "estimates": {
+                "productWithout": 0.5,
+                "productWith": 0.5,
+                "devWithout": 2.5,
+                "devWith": 1.0
+              }
             },
             {
               "id": "MVP1-E0-03",
@@ -1027,7 +2037,13 @@ export const roadmap = {
               "days": 3,
               "done": false,
               "issue": 17,
-              "href": "https://github.com/founder2863/01scale.com/issues/17"
+              "href": "https://github.com/founder2863/01scale.com/issues/17",
+              "estimates": {
+                "productWithout": 0.5,
+                "productWith": 0.5,
+                "devWithout": 2.5,
+                "devWith": 1.0
+              }
             },
             {
               "id": "MVP1-E0-07",
@@ -1036,7 +2052,13 @@ export const roadmap = {
               "days": 15,
               "done": false,
               "issue": 13,
-              "href": "https://github.com/founder2863/01scale.com/issues/13"
+              "href": "https://github.com/founder2863/01scale.com/issues/13",
+              "estimates": {
+                "productWithout": 3.0,
+                "productWith": 1.5,
+                "devWithout": 12.0,
+                "devWith": 5.0
+              }
             },
             {
               "id": "MVP1-E0-05",
@@ -1045,7 +2067,13 @@ export const roadmap = {
               "days": 8,
               "done": false,
               "issue": 15,
-              "href": "https://github.com/founder2863/01scale.com/issues/15"
+              "href": "https://github.com/founder2863/01scale.com/issues/15",
+              "estimates": {
+                "productWithout": 1.5,
+                "productWith": 1.0,
+                "devWithout": 6.5,
+                "devWith": 2.5
+              }
             },
             {
               "id": "MVP1-E0-02",
@@ -1054,7 +2082,13 @@ export const roadmap = {
               "days": 3,
               "done": false,
               "issue": 16,
-              "href": "https://github.com/founder2863/01scale.com/issues/16"
+              "href": "https://github.com/founder2863/01scale.com/issues/16",
+              "estimates": {
+                "productWithout": 0.5,
+                "productWith": 0.5,
+                "devWithout": 2.5,
+                "devWith": 1.0
+              }
             },
             {
               "id": "MVP1-E0-08",
@@ -1063,7 +2097,13 @@ export const roadmap = {
               "days": 8,
               "done": false,
               "issue": 21,
-              "href": "https://github.com/founder2863/01scale.com/issues/21"
+              "href": "https://github.com/founder2863/01scale.com/issues/21",
+              "estimates": {
+                "productWithout": 1.5,
+                "productWith": 1.0,
+                "devWithout": 6.5,
+                "devWith": 2.5
+              }
             }
           ]
         },
@@ -1081,7 +2121,13 @@ export const roadmap = {
               "days": 3,
               "done": false,
               "issue": 22,
-              "href": "https://github.com/founder2863/01scale.com/issues/22"
+              "href": "https://github.com/founder2863/01scale.com/issues/22",
+              "estimates": {
+                "productWithout": 0.5,
+                "productWith": 0.5,
+                "devWithout": 2.5,
+                "devWith": 1.0
+              }
             },
             {
               "id": "MVP1-E1-02",
@@ -1090,7 +2136,13 @@ export const roadmap = {
               "days": 8,
               "done": false,
               "issue": 23,
-              "href": "https://github.com/founder2863/01scale.com/issues/23"
+              "href": "https://github.com/founder2863/01scale.com/issues/23",
+              "estimates": {
+                "productWithout": 1.5,
+                "productWith": 1.0,
+                "devWithout": 6.5,
+                "devWith": 2.5
+              }
             },
             {
               "id": "MVP1-E1-03",
@@ -1099,7 +2151,13 @@ export const roadmap = {
               "days": 8,
               "done": false,
               "issue": 24,
-              "href": "https://github.com/founder2863/01scale.com/issues/24"
+              "href": "https://github.com/founder2863/01scale.com/issues/24",
+              "estimates": {
+                "productWithout": 1.5,
+                "productWith": 1.0,
+                "devWithout": 6.5,
+                "devWith": 2.5
+              }
             },
             {
               "id": "MVP1-E1-06",
@@ -1108,7 +2166,13 @@ export const roadmap = {
               "days": 3,
               "done": false,
               "issue": 27,
-              "href": "https://github.com/founder2863/01scale.com/issues/27"
+              "href": "https://github.com/founder2863/01scale.com/issues/27",
+              "estimates": {
+                "productWithout": 0.5,
+                "productWith": 0.5,
+                "devWithout": 2.5,
+                "devWith": 1.0
+              }
             },
             {
               "id": "MVP1-E1-04",
@@ -1117,7 +2181,13 @@ export const roadmap = {
               "days": 3,
               "done": false,
               "issue": 25,
-              "href": "https://github.com/founder2863/01scale.com/issues/25"
+              "href": "https://github.com/founder2863/01scale.com/issues/25",
+              "estimates": {
+                "productWithout": 0.5,
+                "productWith": 0.5,
+                "devWithout": 2.5,
+                "devWith": 1.0
+              }
             },
             {
               "id": "MVP1-E1-05",
@@ -1126,7 +2196,13 @@ export const roadmap = {
               "days": 8,
               "done": false,
               "issue": 26,
-              "href": "https://github.com/founder2863/01scale.com/issues/26"
+              "href": "https://github.com/founder2863/01scale.com/issues/26",
+              "estimates": {
+                "productWithout": 1.5,
+                "productWith": 1.0,
+                "devWithout": 6.5,
+                "devWith": 2.5
+              }
             },
             {
               "id": "MVP1-E0-06",
@@ -1135,7 +2211,13 @@ export const roadmap = {
               "days": 8,
               "done": false,
               "issue": 18,
-              "href": "https://github.com/founder2863/01scale.com/issues/18"
+              "href": "https://github.com/founder2863/01scale.com/issues/18",
+              "estimates": {
+                "productWithout": 1.5,
+                "productWith": 1.0,
+                "devWithout": 6.5,
+                "devWith": 2.5
+              }
             },
             {
               "id": "MVP1-E0-09",
@@ -1144,7 +2226,13 @@ export const roadmap = {
               "days": 8,
               "done": false,
               "issue": 19,
-              "href": "https://github.com/founder2863/01scale.com/issues/19"
+              "href": "https://github.com/founder2863/01scale.com/issues/19",
+              "estimates": {
+                "productWithout": 1.5,
+                "productWith": 1.0,
+                "devWithout": 6.5,
+                "devWith": 2.5
+              }
             }
           ]
         },
@@ -1162,7 +2250,13 @@ export const roadmap = {
               "days": 3,
               "done": false,
               "issue": 28,
-              "href": "https://github.com/founder2863/01scale.com/issues/28"
+              "href": "https://github.com/founder2863/01scale.com/issues/28",
+              "estimates": {
+                "productWithout": 0.5,
+                "productWith": 0.5,
+                "devWithout": 2.5,
+                "devWith": 1.0
+              }
             },
             {
               "id": "MVP1-E2-02",
@@ -1171,7 +2265,13 @@ export const roadmap = {
               "days": 8,
               "done": false,
               "issue": 29,
-              "href": "https://github.com/founder2863/01scale.com/issues/29"
+              "href": "https://github.com/founder2863/01scale.com/issues/29",
+              "estimates": {
+                "productWithout": 1.5,
+                "productWith": 1.0,
+                "devWithout": 6.5,
+                "devWith": 2.5
+              }
             },
             {
               "id": "MVP1-E2-03",
@@ -1180,7 +2280,13 @@ export const roadmap = {
               "days": 3,
               "done": false,
               "issue": 30,
-              "href": "https://github.com/founder2863/01scale.com/issues/30"
+              "href": "https://github.com/founder2863/01scale.com/issues/30",
+              "estimates": {
+                "productWithout": 0.5,
+                "productWith": 0.5,
+                "devWithout": 2.5,
+                "devWith": 1.0
+              }
             },
             {
               "id": "MVP1-E2-04",
@@ -1189,7 +2295,13 @@ export const roadmap = {
               "days": 8,
               "done": false,
               "issue": 31,
-              "href": "https://github.com/founder2863/01scale.com/issues/31"
+              "href": "https://github.com/founder2863/01scale.com/issues/31",
+              "estimates": {
+                "productWithout": 1.5,
+                "productWith": 1.0,
+                "devWithout": 6.5,
+                "devWith": 2.5
+              }
             },
             {
               "id": "MVP1-E2-05",
@@ -1198,7 +2310,13 @@ export const roadmap = {
               "days": 3,
               "done": false,
               "issue": 32,
-              "href": "https://github.com/founder2863/01scale.com/issues/32"
+              "href": "https://github.com/founder2863/01scale.com/issues/32",
+              "estimates": {
+                "productWithout": 0.5,
+                "productWith": 0.5,
+                "devWithout": 2.5,
+                "devWith": 1.0
+              }
             }
           ]
         },
@@ -1216,7 +2334,13 @@ export const roadmap = {
               "days": 8,
               "done": false,
               "issue": 20,
-              "href": "https://github.com/founder2863/01scale.com/issues/20"
+              "href": "https://github.com/founder2863/01scale.com/issues/20",
+              "estimates": {
+                "productWithout": 1.5,
+                "productWith": 1.0,
+                "devWithout": 6.5,
+                "devWith": 2.5
+              }
             },
             {
               "id": "MVP1-E0-26",
@@ -1225,7 +2349,13 @@ export const roadmap = {
               "days": 8,
               "done": false,
               "issue": 103,
-              "href": "https://github.com/founder2863/01scale.com/issues/103"
+              "href": "https://github.com/founder2863/01scale.com/issues/103",
+              "estimates": {
+                "productWithout": 1.5,
+                "productWith": 1.0,
+                "devWithout": 6.5,
+                "devWith": 2.5
+              }
             },
             {
               "id": "MVP1-E3-01",
@@ -1234,7 +2364,13 @@ export const roadmap = {
               "days": 8,
               "done": false,
               "issue": 33,
-              "href": "https://github.com/founder2863/01scale.com/issues/33"
+              "href": "https://github.com/founder2863/01scale.com/issues/33",
+              "estimates": {
+                "productWithout": 1.5,
+                "productWith": 1.0,
+                "devWithout": 6.5,
+                "devWith": 2.5
+              }
             },
             {
               "id": "MVP1-E3-02",
@@ -1243,7 +2379,13 @@ export const roadmap = {
               "days": 15,
               "done": false,
               "issue": 34,
-              "href": "https://github.com/founder2863/01scale.com/issues/34"
+              "href": "https://github.com/founder2863/01scale.com/issues/34",
+              "estimates": {
+                "productWithout": 3.0,
+                "productWith": 1.5,
+                "devWithout": 12.0,
+                "devWith": 5.0
+              }
             },
             {
               "id": "MVP1-E3-03",
@@ -1252,7 +2394,13 @@ export const roadmap = {
               "days": 8,
               "done": false,
               "issue": 35,
-              "href": "https://github.com/founder2863/01scale.com/issues/35"
+              "href": "https://github.com/founder2863/01scale.com/issues/35",
+              "estimates": {
+                "productWithout": 1.5,
+                "productWith": 1.0,
+                "devWithout": 6.5,
+                "devWith": 2.5
+              }
             },
             {
               "id": "MVP1-E3-08",
@@ -1261,7 +2409,13 @@ export const roadmap = {
               "days": 3,
               "done": false,
               "issue": 177,
-              "href": "https://github.com/founder2863/01scale.com/issues/177"
+              "href": "https://github.com/founder2863/01scale.com/issues/177",
+              "estimates": {
+                "productWithout": 0.5,
+                "productWith": 0.5,
+                "devWithout": 2.5,
+                "devWith": 1.0
+              }
             },
             {
               "id": "MVP1-E3-04",
@@ -1270,7 +2424,13 @@ export const roadmap = {
               "days": 8,
               "done": false,
               "issue": 36,
-              "href": "https://github.com/founder2863/01scale.com/issues/36"
+              "href": "https://github.com/founder2863/01scale.com/issues/36",
+              "estimates": {
+                "productWithout": 1.5,
+                "productWith": 1.0,
+                "devWithout": 6.5,
+                "devWith": 2.5
+              }
             },
             {
               "id": "MVP1-E3-05",
@@ -1279,7 +2439,13 @@ export const roadmap = {
               "days": 3,
               "done": false,
               "issue": 37,
-              "href": "https://github.com/founder2863/01scale.com/issues/37"
+              "href": "https://github.com/founder2863/01scale.com/issues/37",
+              "estimates": {
+                "productWithout": 0.5,
+                "productWith": 0.5,
+                "devWithout": 2.5,
+                "devWith": 1.0
+              }
             }
           ]
         },
@@ -1297,7 +2463,13 @@ export const roadmap = {
               "days": 8,
               "done": false,
               "issue": 38,
-              "href": "https://github.com/founder2863/01scale.com/issues/38"
+              "href": "https://github.com/founder2863/01scale.com/issues/38",
+              "estimates": {
+                "productWithout": 1.5,
+                "productWith": 1.0,
+                "devWithout": 6.5,
+                "devWith": 2.5
+              }
             },
             {
               "id": "MVP1-E4-02",
@@ -1306,7 +2478,13 @@ export const roadmap = {
               "days": 8,
               "done": false,
               "issue": 39,
-              "href": "https://github.com/founder2863/01scale.com/issues/39"
+              "href": "https://github.com/founder2863/01scale.com/issues/39",
+              "estimates": {
+                "productWithout": 1.5,
+                "productWith": 1.0,
+                "devWithout": 6.5,
+                "devWith": 2.5
+              }
             },
             {
               "id": "MVP1-E4-03",
@@ -1315,7 +2493,13 @@ export const roadmap = {
               "days": 3,
               "done": false,
               "issue": 40,
-              "href": "https://github.com/founder2863/01scale.com/issues/40"
+              "href": "https://github.com/founder2863/01scale.com/issues/40",
+              "estimates": {
+                "productWithout": 0.5,
+                "productWith": 0.5,
+                "devWithout": 2.5,
+                "devWith": 1.0
+              }
             },
             {
               "id": "MVP1-E4-06",
@@ -1324,7 +2508,13 @@ export const roadmap = {
               "days": 3,
               "done": false,
               "issue": 178,
-              "href": "https://github.com/founder2863/01scale.com/issues/178"
+              "href": "https://github.com/founder2863/01scale.com/issues/178",
+              "estimates": {
+                "productWithout": 0.5,
+                "productWith": 0.5,
+                "devWithout": 2.5,
+                "devWith": 1.0
+              }
             },
             {
               "id": "MVP1-E4-04",
@@ -1333,7 +2523,13 @@ export const roadmap = {
               "days": 3,
               "done": false,
               "issue": 41,
-              "href": "https://github.com/founder2863/01scale.com/issues/41"
+              "href": "https://github.com/founder2863/01scale.com/issues/41",
+              "estimates": {
+                "productWithout": 0.5,
+                "productWith": 0.5,
+                "devWithout": 2.5,
+                "devWith": 1.0
+              }
             }
           ]
         },
@@ -1351,7 +2547,13 @@ export const roadmap = {
               "days": 8,
               "done": false,
               "issue": 42,
-              "href": "https://github.com/founder2863/01scale.com/issues/42"
+              "href": "https://github.com/founder2863/01scale.com/issues/42",
+              "estimates": {
+                "productWithout": 1.5,
+                "productWith": 1.0,
+                "devWithout": 6.5,
+                "devWith": 2.5
+              }
             },
             {
               "id": "MVP1-E5-03",
@@ -1360,7 +2562,13 @@ export const roadmap = {
               "days": 3,
               "done": false,
               "issue": 44,
-              "href": "https://github.com/founder2863/01scale.com/issues/44"
+              "href": "https://github.com/founder2863/01scale.com/issues/44",
+              "estimates": {
+                "productWithout": 0.5,
+                "productWith": 0.5,
+                "devWithout": 2.5,
+                "devWith": 1.0
+              }
             },
             {
               "id": "MVP1-E5-05",
@@ -1369,7 +2577,13 @@ export const roadmap = {
               "days": 3,
               "done": false,
               "issue": 179,
-              "href": "https://github.com/founder2863/01scale.com/issues/179"
+              "href": "https://github.com/founder2863/01scale.com/issues/179",
+              "estimates": {
+                "productWithout": 0.5,
+                "productWith": 0.5,
+                "devWithout": 2.5,
+                "devWith": 1.0
+              }
             },
             {
               "id": "MVP1-E5-02",
@@ -1378,7 +2592,13 @@ export const roadmap = {
               "days": 3,
               "done": false,
               "issue": 43,
-              "href": "https://github.com/founder2863/01scale.com/issues/43"
+              "href": "https://github.com/founder2863/01scale.com/issues/43",
+              "estimates": {
+                "productWithout": 0.5,
+                "productWith": 0.5,
+                "devWithout": 2.5,
+                "devWith": 1.0
+              }
             },
             {
               "id": "MVP1-E5-04",
@@ -1387,7 +2607,13 @@ export const roadmap = {
               "days": 3,
               "done": false,
               "issue": 45,
-              "href": "https://github.com/founder2863/01scale.com/issues/45"
+              "href": "https://github.com/founder2863/01scale.com/issues/45",
+              "estimates": {
+                "productWithout": 0.5,
+                "productWith": 0.5,
+                "devWithout": 2.5,
+                "devWith": 1.0
+              }
             },
             {
               "id": "MVP1-E6-01",
@@ -1396,7 +2622,13 @@ export const roadmap = {
               "days": 8,
               "done": false,
               "issue": 46,
-              "href": "https://github.com/founder2863/01scale.com/issues/46"
+              "href": "https://github.com/founder2863/01scale.com/issues/46",
+              "estimates": {
+                "productWithout": 1.5,
+                "productWith": 1.0,
+                "devWithout": 6.5,
+                "devWith": 2.5
+              }
             },
             {
               "id": "MVP1-E6-02",
@@ -1405,7 +2637,13 @@ export const roadmap = {
               "days": 8,
               "done": false,
               "issue": 47,
-              "href": "https://github.com/founder2863/01scale.com/issues/47"
+              "href": "https://github.com/founder2863/01scale.com/issues/47",
+              "estimates": {
+                "productWithout": 1.5,
+                "productWith": 1.0,
+                "devWithout": 6.5,
+                "devWith": 2.5
+              }
             },
             {
               "id": "MVP1-E6-03",
@@ -1414,7 +2652,13 @@ export const roadmap = {
               "days": 3,
               "done": false,
               "issue": 48,
-              "href": "https://github.com/founder2863/01scale.com/issues/48"
+              "href": "https://github.com/founder2863/01scale.com/issues/48",
+              "estimates": {
+                "productWithout": 0.5,
+                "productWith": 0.5,
+                "devWithout": 2.5,
+                "devWith": 1.0
+              }
             }
           ]
         },
@@ -1432,7 +2676,13 @@ export const roadmap = {
               "days": 8,
               "done": false,
               "issue": 49,
-              "href": "https://github.com/founder2863/01scale.com/issues/49"
+              "href": "https://github.com/founder2863/01scale.com/issues/49",
+              "estimates": {
+                "productWithout": 1.5,
+                "productWith": 1.0,
+                "devWithout": 6.5,
+                "devWith": 2.5
+              }
             },
             {
               "id": "MVP1-E7-02",
@@ -1441,7 +2691,13 @@ export const roadmap = {
               "days": 3,
               "done": false,
               "issue": 50,
-              "href": "https://github.com/founder2863/01scale.com/issues/50"
+              "href": "https://github.com/founder2863/01scale.com/issues/50",
+              "estimates": {
+                "productWithout": 0.5,
+                "productWith": 0.5,
+                "devWithout": 2.5,
+                "devWith": 1.0
+              }
             },
             {
               "id": "MVP1-E7-03",
@@ -1450,7 +2706,13 @@ export const roadmap = {
               "days": 8,
               "done": false,
               "issue": 51,
-              "href": "https://github.com/founder2863/01scale.com/issues/51"
+              "href": "https://github.com/founder2863/01scale.com/issues/51",
+              "estimates": {
+                "productWithout": 1.5,
+                "productWith": 1.0,
+                "devWithout": 6.5,
+                "devWith": 2.5
+              }
             }
           ]
         }
@@ -1478,7 +2740,13 @@ export const roadmap = {
               "days": 8,
               "done": false,
               "issue": 102,
-              "href": "https://github.com/founder2863/01scale.com/issues/102"
+              "href": "https://github.com/founder2863/01scale.com/issues/102",
+              "estimates": {
+                "productWithout": 1.5,
+                "productWith": 1.0,
+                "devWithout": 6.5,
+                "devWith": 2.5
+              }
             },
             {
               "id": "MVP1-E0-18",
@@ -1487,15 +2755,60 @@ export const roadmap = {
               "days": 15,
               "done": false,
               "issue": 95,
-              "href": "https://github.com/founder2863/01scale.com/issues/95"
+              "href": "https://github.com/founder2863/01scale.com/issues/95",
+              "estimates": {
+                "productWithout": 3.0,
+                "productWith": 1.5,
+                "devWithout": 12.0,
+                "devWith": 5.0
+              }
+            }
+          ]
+        },
+        {
+          "name": "Spikes",
+          "value": "Medium",
+          "reason": "Nikhil (PR #189): engineers who would otherwise wait for the gateway in month 2 take spikes on the external services. Nothing waits on them, so the plan gives them to whoever is free; the LLM spike reports before the Claude extraction call (E3-02) is built.",
+          "days": 11,
+          "remainingDays": 11,
+          "stories": [
+            {
+              "id": "MVP1-E3-10",
+              "title": "Spike: LLM extraction options (AWS, Claude, Microsoft)",
+              "size": "M",
+              "days": 8,
+              "done": false,
+              "issue": 190,
+              "href": "https://github.com/founder2863/01scale.com/issues/190",
+              "estimates": {
+                "productWithout": 1.5,
+                "productWith": 1.0,
+                "devWithout": 6.5,
+                "devWith": 2.5
+              }
+            },
+            {
+              "id": "MVP1-E6-05",
+              "title": "Spike: Stripe Billing APIs",
+              "size": "S",
+              "days": 3,
+              "done": false,
+              "issue": 191,
+              "href": "https://github.com/founder2863/01scale.com/issues/191",
+              "estimates": {
+                "productWithout": 0.5,
+                "productWith": 0.5,
+                "devWithout": 2.5,
+                "devWith": 1.0
+              }
             }
           ]
         },
         {
           "name": "Roadmap on the site",
           "value": "Medium",
-          "reason": "Built in PR #189, so not planned.",
-          "days": 8,
+          "reason": "Built in PR #189 and the PR after it, so not planned.",
+          "days": 16,
           "remainingDays": 8,
           "stories": [
             {
@@ -1503,16 +2816,37 @@ export const roadmap = {
               "title": "Roadmap tab on How It's Built",
               "size": "M",
               "days": 8,
-              "done": false,
+              "done": true,
               "issue": 188,
-              "href": "https://github.com/founder2863/01scale.com/issues/188"
+              "href": "https://github.com/founder2863/01scale.com/issues/188",
+              "estimates": {
+                "productWithout": 1.5,
+                "productWith": 1.0,
+                "devWithout": 6.5,
+                "devWith": 2.5
+              }
+            },
+            {
+              "id": "MVP1-E8-12",
+              "title": "Four estimates per story, and the plan without and with Claude Code",
+              "size": "M",
+              "days": 8,
+              "done": false,
+              "issue": 192,
+              "href": "https://github.com/founder2863/01scale.com/issues/192",
+              "estimates": {
+                "productWithout": 1.5,
+                "productWith": 1.0,
+                "devWithout": 6.5,
+                "devWith": 2.5
+              }
             }
           ]
         }
       ],
-      "days": 31,
-      "remainingDays": 31,
-      "storyCount": 3
+      "days": 50,
+      "remainingDays": 42,
+      "storyCount": 6
     },
     {
       "kind": "later",
@@ -1533,7 +2867,13 @@ export const roadmap = {
               "days": 3,
               "done": false,
               "issue": 181,
-              "href": "https://github.com/founder2863/01scale.com/issues/181"
+              "href": "https://github.com/founder2863/01scale.com/issues/181",
+              "estimates": {
+                "productWithout": 0.5,
+                "productWith": 0.5,
+                "devWithout": 2.5,
+                "devWith": 1.0
+              }
             },
             {
               "id": "MVP1-E6-04",
@@ -1542,7 +2882,13 @@ export const roadmap = {
               "days": 3,
               "done": false,
               "issue": 92,
-              "href": "https://github.com/founder2863/01scale.com/issues/92"
+              "href": "https://github.com/founder2863/01scale.com/issues/92",
+              "estimates": {
+                "productWithout": 0.5,
+                "productWith": 0.5,
+                "devWithout": 2.5,
+                "devWith": 1.0
+              }
             },
             {
               "id": "MVP1-E1-07",
@@ -1551,7 +2897,13 @@ export const roadmap = {
               "days": 3,
               "done": false,
               "issue": 53,
-              "href": "https://github.com/founder2863/01scale.com/issues/53"
+              "href": "https://github.com/founder2863/01scale.com/issues/53",
+              "estimates": {
+                "productWithout": 0.5,
+                "productWith": 0.5,
+                "devWithout": 2.5,
+                "devWith": 1.0
+              }
             },
             {
               "id": "MVP1-E1-08",
@@ -1560,7 +2912,13 @@ export const roadmap = {
               "days": 8,
               "done": false,
               "issue": 54,
-              "href": "https://github.com/founder2863/01scale.com/issues/54"
+              "href": "https://github.com/founder2863/01scale.com/issues/54",
+              "estimates": {
+                "productWithout": 1.5,
+                "productWith": 1.0,
+                "devWithout": 6.5,
+                "devWith": 2.5
+              }
             },
             {
               "id": "MVP1-E3-06",
@@ -1569,7 +2927,13 @@ export const roadmap = {
               "days": 15,
               "done": false,
               "issue": 88,
-              "href": "https://github.com/founder2863/01scale.com/issues/88"
+              "href": "https://github.com/founder2863/01scale.com/issues/88",
+              "estimates": {
+                "productWithout": 3.0,
+                "productWith": 1.5,
+                "devWithout": 12.0,
+                "devWith": 5.0
+              }
             }
           ]
         },
@@ -1587,7 +2951,13 @@ export const roadmap = {
               "days": 15,
               "done": false,
               "issue": 133,
-              "href": "https://github.com/founder2863/01scale.com/issues/133"
+              "href": "https://github.com/founder2863/01scale.com/issues/133",
+              "estimates": {
+                "productWithout": 3.0,
+                "productWith": 1.5,
+                "devWithout": 12.0,
+                "devWith": 5.0
+              }
             },
             {
               "id": "MVP1-E8-02",
@@ -1596,7 +2966,13 @@ export const roadmap = {
               "days": 3,
               "done": false,
               "issue": 127,
-              "href": "https://github.com/founder2863/01scale.com/issues/127"
+              "href": "https://github.com/founder2863/01scale.com/issues/127",
+              "estimates": {
+                "productWithout": 0.5,
+                "productWith": 0.5,
+                "devWithout": 2.5,
+                "devWith": 1.0
+              }
             },
             {
               "id": "MVP1-E8-03",
@@ -1605,7 +2981,13 @@ export const roadmap = {
               "days": 8,
               "done": false,
               "issue": 128,
-              "href": "https://github.com/founder2863/01scale.com/issues/128"
+              "href": "https://github.com/founder2863/01scale.com/issues/128",
+              "estimates": {
+                "productWithout": 1.5,
+                "productWith": 1.0,
+                "devWithout": 6.5,
+                "devWith": 2.5
+              }
             },
             {
               "id": "MVP1-E8-04",
@@ -1614,7 +2996,13 @@ export const roadmap = {
               "days": 8,
               "done": false,
               "issue": 129,
-              "href": "https://github.com/founder2863/01scale.com/issues/129"
+              "href": "https://github.com/founder2863/01scale.com/issues/129",
+              "estimates": {
+                "productWithout": 1.5,
+                "productWith": 1.0,
+                "devWithout": 6.5,
+                "devWith": 2.5
+              }
             },
             {
               "id": "MVP1-E8-05",
@@ -1623,7 +3011,13 @@ export const roadmap = {
               "days": 8,
               "done": false,
               "issue": 130,
-              "href": "https://github.com/founder2863/01scale.com/issues/130"
+              "href": "https://github.com/founder2863/01scale.com/issues/130",
+              "estimates": {
+                "productWithout": 1.5,
+                "productWith": 1.0,
+                "devWithout": 6.5,
+                "devWith": 2.5
+              }
             },
             {
               "id": "MVP1-E8-06",
@@ -1632,7 +3026,13 @@ export const roadmap = {
               "days": 8,
               "done": false,
               "issue": 131,
-              "href": "https://github.com/founder2863/01scale.com/issues/131"
+              "href": "https://github.com/founder2863/01scale.com/issues/131",
+              "estimates": {
+                "productWithout": 1.5,
+                "productWith": 1.0,
+                "devWithout": 6.5,
+                "devWith": 2.5
+              }
             },
             {
               "id": "MVP1-E8-07",
@@ -1641,7 +3041,13 @@ export const roadmap = {
               "days": 3,
               "done": false,
               "issue": 132,
-              "href": "https://github.com/founder2863/01scale.com/issues/132"
+              "href": "https://github.com/founder2863/01scale.com/issues/132",
+              "estimates": {
+                "productWithout": 0.5,
+                "productWith": 0.5,
+                "devWithout": 2.5,
+                "devWith": 1.0
+              }
             },
             {
               "id": "MVP1-E8-08",
@@ -1650,7 +3056,13 @@ export const roadmap = {
               "days": 15,
               "done": false,
               "issue": 135,
-              "href": "https://github.com/founder2863/01scale.com/issues/135"
+              "href": "https://github.com/founder2863/01scale.com/issues/135",
+              "estimates": {
+                "productWithout": 3.0,
+                "productWith": 1.5,
+                "devWithout": 12.0,
+                "devWith": 5.0
+              }
             }
           ]
         }
@@ -1661,9 +3073,9 @@ export const roadmap = {
     }
   ],
   "totals": {
-    "stories": 69,
-    "days": 449,
-    "doneStories": 0,
-    "remainingDays": 449
+    "stories": 72,
+    "days": 468,
+    "doneStories": 1,
+    "remainingDays": 460
   }
 } as const;

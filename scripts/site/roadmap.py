@@ -23,7 +23,9 @@ Run from the repo root:  npm run roadmap
 Without network (stories without a saved issue number link to an issue search):
   npm run roadmap -- --offline
 """
+import csv
 import json
+import math
 import re
 import subprocess
 import sys
@@ -34,6 +36,7 @@ ROADMAP = "docs/process/ROADMAP.md"
 EPICS = ["docs/epics/MVP1-EPICS.md", "docs/epics/MVP2-EPICS.md", "docs/epics/AUTOREP-EPICS.md"]
 MODEL = "docs/process/cost-model.json"
 OUT = "app/how-its-built/roadmap.ts"
+CSV_OUT = "docs/process/estimates.csv"
 REPO = "founder2863/01scale.com"
 
 HEADING = re.compile(r"^### ([A-Z0-9]+-E\d+-\d+) · (.+?)(?: — ([SML]))?\s*$")
@@ -144,7 +147,47 @@ def saved_issues():
 DAYS_PER_MONTH = 20
 
 
-def team_plan(groups, tables, order, errors):
+def pm_story_ids(tables, order):
+    """The stories the Team table gives to the product manager."""
+    ids = set()
+    for role, _count, does in ((r[0], r[1], r[2]) for r in tables.get("team") or []):
+        if role.lower().startswith("product"):
+            ids |= set(story_ids(does, order))
+    return ids
+
+
+def half(x, step):
+    """Round to the nearest step (0.5 days); never round real work down to nothing."""
+    if x <= 0:
+        return 0.0
+    return max(step, round(x / step) * step)
+
+
+def story_estimates(stories, pm_ids, model):
+    """The four estimates per story, in person-days: product and development work, without and
+    with Claude Code. Sizes are the human estimates; the split and the factors are assumptions in
+    docs/process/cost-model.json ("estimates")."""
+    cfg = model["estimates"]
+    share, step = cfg["product_share_of_engineering_story"], cfg["round_to_days"]
+    f = cfg["with_claude_code_factor"]
+    out = {}
+    for sid, s in stories.items():
+        total = s["days"] or 0
+        if sid in pm_ids:
+            product, dev = float(total), 0.0
+        else:
+            product = half(total * share, step)
+            dev = max(0.0, total - product)
+        out[sid] = {
+            "productWithout": product,
+            "productWith": half(product * f["product"], step),
+            "devWithout": dev,
+            "devWith": half(dev * f["development"], step),
+        }
+    return out
+
+
+def team_plan(groups, tables, order, errors, duration):
     """Plan the stories for the team: each person takes the most urgent ready story their role
     does (the one with the longest chain of work waiting on it); one person per story."""
     team = tables.get("team") or []
@@ -193,7 +236,7 @@ def team_plan(groups, tables, order, errors):
             errors.append(f"dependency loop through {sid}")
             return 0
         if sid not in urgency:
-            urgency[sid] = (stories[sid]["days"] or 0) + max([chain(o, seen + (sid,)) for o in waiting[sid]] or [0])
+            urgency[sid] = duration[sid] + max([chain(o, seen + (sid,)) for o in waiting[sid]] or [0])
         return urgency[sid]
 
     for sid in needs:
@@ -221,7 +264,7 @@ def team_plan(groups, tables, order, errors):
             if not ready:
                 continue
             sid = max(ready, key=lambda x: (urgency[x], -rank[x]))
-            start[sid], finish[sid], who[sid] = t, t + (stories[sid]["days"] or 0), p
+            start[sid], finish[sid], who[sid] = t, t + duration[sid], p
             free_at[p] = finish[sid]
             todo.remove(sid)
             progressed = True
@@ -233,7 +276,7 @@ def team_plan(groups, tables, order, errors):
             t = min(later)
 
     def month(day):
-        return day // DAYS_PER_MONTH + 1
+        return int(day // DAYS_PER_MONTH) + 1
 
     end = max(finish.values() or [0])
     planned = []
@@ -246,8 +289,8 @@ def team_plan(groups, tables, order, errors):
             "issue": stories[sid]["issue"],
             "wave": wave_of[sid],
             "person": people[who[sid]]["name"],
-            "start": start[sid] + 1,
-            "end": finish[sid],
+            "start": int(start[sid]) + 1,
+            "end": math.ceil(finish[sid]),
             "startMonth": month(start[sid]),
             "endMonth": month(finish[sid] - 1),
         })
@@ -260,13 +303,13 @@ def team_plan(groups, tables, order, errors):
             errors.append(f"milestone '{name}' needs {', '.join(missing) or 'a story'}, not planned")
             continue
         day = max(finish[i] for i in ids)
-        milestones.append({"name": name, "day": day, "month": month(day - 1)})
-    busy = [sum(finish[s] - start[s] for s in start if who[s] == p) for p in range(len(people))]
+        milestones.append({"name": name, "day": math.ceil(day), "month": month(math.ceil(day) - 1)})
+    busy = [round(sum(finish[s] - start[s] for s in start if who[s] == p), 1) for p in range(len(people))]
     return {
         "daysPerMonth": DAYS_PER_MONTH,
         "people": [{"name": p["name"], "pm": p["pm"], "busyDays": b} for p, b in zip(people, busy)],
-        "endDay": end,
-        "months": month(end - 1) if end else 0,
+        "endDay": math.ceil(end),
+        "months": month(math.ceil(end) - 1) if end else 0,
         "stories": planned,
         "milestones": milestones,
         "notPlanned": [sid for sid in stories if sid not in needs],
@@ -364,7 +407,18 @@ def main(argv):
     if errors:
         fail("\n  ".join(["ROADMAP.md does not match the epics files:"] + errors))
 
-    plan = team_plan(groups, tables, order, errors)
+    stories_by_id = {s["id"]: s for g in groups for r in g["rows"] for s in r["stories"]}
+    pm_ids = pm_story_ids(tables, order)
+    est = story_estimates(stories_by_id, pm_ids, model)
+    for sid, s in stories_by_id.items():
+        s["estimates"] = est[sid]
+    # The person who owns a story does its main work: the product manager the product work of
+    # their own stories, an engineer the development work. The product share of an engineering
+    # story is the product manager's, alongside it, and does not hold the engineer up.
+    def owner_days(key):
+        return {sid: est[sid][f"product{key}"] if sid in pm_ids else est[sid][f"dev{key}"] for sid in est}
+    plan = team_plan(groups, tables, order, errors, owner_days("Without"))
+    plan_cc = team_plan(groups, tables, order, errors, owner_days("With")) if not errors else None
     if errors:
         fail("\n  ".join(["ROADMAP.md's team plan does not hold together:"] + errors))
 
@@ -375,6 +429,12 @@ def main(argv):
         "method": method,
         "risks": risks,
         "plan": plan,
+        "planWithClaudeCode": plan_cc,
+        "estimatesModel": {k: model["estimates"][k] for k in
+                           ("source", "product_share_of_engineering_story", "with_claude_code_factor",
+                            "product_share_why", "with_claude_code_why")},
+        "estimateTotals": {k: sum(e[k] for e in est.values()) for k in
+                           ("productWithout", "productWith", "devWithout", "devWith")},
         "groups": groups,
         "totals": {
             "stories": len(all_stories),
@@ -389,13 +449,33 @@ def main(argv):
         f.write("export const roadmap = ")
         f.write(json.dumps(data, indent=2, ensure_ascii=False))
         f.write(" as const;\n")
+    # A flat file for reports: one row per story, the four estimates and when it is planned.
+    when = {s["id"]: s for s in plan["stories"]}
+    when_cc = {s["id"]: s for s in plan_cc["stories"]}
+    with open(CSV_OUT, "w", newline="", encoding="utf-8") as f:
+        w = csv.writer(f)
+        w.writerow(["story", "title", "issue", "size", "wave", "owner",
+                    "product_days_without_claude_code", "product_days_with_claude_code",
+                    "dev_days_without_claude_code", "dev_days_with_claude_code",
+                    "month_without_claude_code", "month_with_claude_code"])
+        for g in groups:
+            for r in g["rows"]:
+                for s in r["stories"]:
+                    e = s["estimates"]
+                    a, b = when.get(s["id"]), when_cc.get(s["id"])
+                    w.writerow([s["id"], s["title"], s["issue"] or "", s["size"] or "", r["name"],
+                                "product manager" if s["id"] in pm_ids else "engineer",
+                                e["productWithout"], e["productWith"], e["devWithout"], e["devWith"],
+                                f"{a['startMonth']}-{a['endMonth']}" if a else "not planned",
+                                f"{b['startMonth']}-{b['endMonth']}" if b else "not planned"])
     t = data["totals"]
     print(f"Roadmap: {t['stories']} stories, {t['days']} person-days, "
           f"{t['doneStories']} done, {t['remainingDays']} person-days left. Wrote {OUT}")
     print(f"Team plan: {len(plan['people'])} people, {plan['months']} months ({plan['endDay']} working days); "
           f"not planned: {', '.join(plan['notPlanned']) or 'none'}")
-    for m in plan["milestones"]:
-        print(f"  month {m['month']} (day {m['day']}): {m['name']}")
+    for m, mc in zip(plan["milestones"], plan_cc["milestones"]):
+        print(f"  without Claude Code month {m['month']} (day {m['day']}), with month {mc['month']} (day {mc['day']}): {m['name']}")
+    print(f"With Claude Code: {plan_cc['months']} months ({plan_cc['endDay']} working days). Wrote {CSV_OUT}")
 
 
 if __name__ == "__main__":

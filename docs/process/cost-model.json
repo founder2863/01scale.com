@@ -24,7 +24,7 @@
   "done": {
     "source": "Closed GitHub issues with state_reason completed, titled [ID] Title",
     "repo": "founder2863/01scale.com",
-    "fetched": "2026-11-25",
+    "fetched": "2026-11-26",
     "stories": [
       {
         "id": "MVP1-E0-10",
@@ -177,6 +177,11 @@
         "closed": "2026-11-23"
       },
       {
+        "id": "MVP1-E0-54",
+        "issue": 188,
+        "closed": "2026-11-26"
+      },
+      {
         "id": "MVP1-E1-09",
         "issue": 164,
         "closed": "2026-11-22"
@@ -212,5 +217,17 @@
         "closed": "2026-11-23"
       }
     ]
+  },
+  "estimates": {
+    "about": "Splits each story's size into product and development work, and scales both for a team that builds with Claude Code. Read by scripts/site/roadmap.py (npm run roadmap). Every value here is an assumption until Nikhil confirms it.",
+    "source": "Assumption proposed by Claude Code on 26 Nov 2026 (PR #189), not yet decided by Nikhil",
+    "product_share_of_engineering_story": 0.2,
+    "product_share_why": "On an engineering story the size covers the whole story; about a fifth is product work (clarifying and accepting the acceptance criteria, reviewing the demo). Stories the product manager owns are all product work.",
+    "with_claude_code_factor": {
+      "product": 0.5,
+      "development": 0.4
+    },
+    "with_claude_code_why": "With Claude Code the person still reviews every pull request, tests it and owns the decisions, so the work does not disappear. Development is assumed 2.5 times faster (0.4): code, tests and fixes are drafted by Claude and reviewed. Product work is assumed twice as fast (0.5): drafts are quick, but sources, numbers and decisions stay with the product manager.",
+    "round_to_days": 0.5
   }
 }

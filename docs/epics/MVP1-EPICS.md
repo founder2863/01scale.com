@@ -945,6 +945,16 @@ As the owner, I want a person who calls Extraction directly, not through an app,
 
 **Status: designed (#181), 23 Nov 2026 (Nikhil's decision; `docs/decisions/MVP1-E5.md`).**
 
+### MVP1-E3-10 · Spike: LLM extraction options (AWS, Claude, Microsoft) — M
+As the owner, I want to compare the ways to extract structured data from invoices before building on one, so the choice of Claude for Extraction is measured, not assumed (Nikhil, PR #189).
+- **AC1:** A timeboxed spike (8 days at most) runs the same synthetic invoice set (`evals/datasets/invoices/dev`, no real user documents) through three options: **AWS** (Textract AnalyzeExpense, and a Claude model on Bedrock), **Claude** through the Anthropic API with the structured output planned in `MVP1-E3-02`, and **Microsoft** (Azure AI Document Intelligence, prebuilt invoice model).
+- **AC2:** It compares field accuracy against ground truth, per-field confidence, cost per document, latency, data-handling terms (retention, training, region) and how each fits the Extraction contract, using the metrics in `docs/evals/EVALS.md`.
+- **AC3:** The result is a decision record in `docs/decisions/MVP1-E3.md`: options, measurements, recommendation and what would change it. Nikhil makes the decision; `MVP1-E3-02` is built on it.
+- **AC4:** Spike code stays out of the services (a `spikes/` folder or a branch), and no keys or documents are committed.
+- **Service:** Extraction (spike)
+- **API design:** No endpoints. The spike checks the options against the Extraction API already designed; any change to it is proposed in `MVP1-E3-02`.
+- **Database design:** No tables.
+
 ## E4 · Human review of low-confidence fields (MVP1 "d")
 **Goal:** a person checks only what the system is unsure about, quickly, with evidence beside each field.
 
@@ -1118,6 +1128,15 @@ As the owner, I want to refund a paid order in full, so a demo user who was char
   - DocFlow's webhook handles `payment.order.refunded`.
 - **Database design:** `payment.orders.status` adds `refund_pending` and `refunded`; the order adds `refund_reason`, `stripe_refund_id` (unique) and `refunded_at`. `docflow.documents.status` adds `refunded`.
 
+### MVP1-E6-05 · Spike: Stripe Billing APIs — S
+As the owner, I want to know how Stripe Billing would carry a paid plan beyond the free quota, before Monetization (`MVP1-E0-28`) and the quota (`MVP1-E3-09`) commit to one, so pricing is built on what Stripe supports (Nikhil, PR #189).
+- **AC1:** A timeboxed spike (3 days at most), in Stripe test mode, tries the Billing pieces a paid plan would need: Products and Prices, Subscriptions, usage-based (metered) billing with meter events, the Customer Portal, and the webhooks they send.
+- **AC2:** It states how each fits the Payment service's contract (Checkout today, `MVP1-E6-01` and `E6-02`), what would change in Payment's API and tables, and the fees.
+- **AC3:** The result is a decision record in `docs/decisions/MVP1-E6.md` with a recommendation for MVP1 and MVP2 (saved payment methods are MVP2). No keys are committed.
+- **Service:** Payment (spike)
+- **API design:** No endpoints. Proposed changes go to the Payment stories that would build them.
+- **Database design:** No tables.
+
 ---
 
 ## E7 · Success, download and email (MVP1 "g")
@@ -1266,6 +1285,19 @@ As a visitor, I want the How It's Built item to be called "Total Cost", because 
 - **Database design:** No tables.
 
 **Status: built (#171), 23 Nov 2026, at Nikhil's request.**
+### MVP1-E8-12 · Four estimates per story, and the plan without and with Claude Code — M
+As a product manager, I want every story estimated four ways (product and development work, each without and with Claude Code) and the roadmap planned both ways, so I can see what Claude Code changes and pull reports by story (Nikhil, PR #189).
+- **AC1:** Every story on the roadmap has four estimates in person-days: **product work without Claude Code**, **product work with Claude Code**, **development work without Claude Code** and **development work with Claude Code**. Without Claude Code they come from the story's size (stories the product manager owns are all product work; on an engineering story a stated share is product work); with Claude Code they are scaled by stated factors. The share and the factors live in `docs/process/cost-model.json` (`estimates`), each marked as an assumption until Nikhil decides it.
+- **AC2:** `npm run roadmap` plans the team (3 engineers and 1 product manager) twice, without and with Claude Code, and writes `docs/process/estimates.csv`: one row per story with its four estimates, owner and planned months, for reports.
+- **AC3:** The Roadmap tab compares the two: each milestone's month and day both ways, a team chart for each on the same scale, a month board that switches between them, the four estimates per story and per wave, the assumptions in words, and the product manager's load in each plan.
+- **AC4:** When an engineer has nothing ready, the plan gives them a spike (`MVP1-E3-10`, `MVP1-E6-05`), so spare time in month 2 goes to research on external services (Nikhil, PR #189).
+- **AC5:** Works from 320 to 1920 pixels wide, in light and dark mode; the switch works without JavaScript and by keyboard.
+- **Service:** Site (`apps/web`) and `scripts/`
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+**Status: built (PR to follow #189). It delivers part of `MVP1-E8-03` (effort split into product and development) and of `MVP1-E8-04` (a dependency-aware timeline, here for 3 engineers and a product manager rather than 5 engineers); those stories stay open for their other criteria.**
+
 ## Definition of done for MVP1
 - All stories pass their AC; E3 and E4 evals meet `EVALS.md` MVP1 thresholds on the holdout set.
 - The demo script in PRD §15 runs end to end on a phone in under 3 minutes.

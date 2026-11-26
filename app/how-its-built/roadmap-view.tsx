@@ -2,16 +2,47 @@ import { Fragment, type ReactNode } from "react";
 import { roadmap } from "./roadmap";
 
 // The Roadmap tab of How It's Built (MVP1-E0-54). A monthly roadmap for a team of three
-// engineers and a product manager, with what each month achieves (Nikhil, PR #189).
-// Everything here comes from roadmap.ts, generated from docs/process/ROADMAP.md and the
-// epics files by `npm run roadmap`, which also plans the team.
+// engineers and a product manager, with what each month achieves, planned twice: without and
+// with Claude Code (Nikhil, PR #189). Everything here comes from roadmap.ts, generated from
+// docs/process/ROADMAP.md, the epics files and docs/process/cost-model.json by `npm run roadmap`.
 
 const REPO = "https://github.com/founder2863/01scale.com/blob/main";
 const HORIZON = 5; // months shown one by one; the rest share a last column
 
-type Group = (typeof roadmap.groups)[number];
-type Row = Group["rows"][number];
-type Planned = (typeof roadmap.plan.stories)[number];
+type Estimates = { productWithout: number; productWith: number; devWithout: number; devWith: number };
+type PlanStory = {
+  id: string;
+  title: string;
+  href: string;
+  wave: string;
+  person: string;
+  start: number;
+  end: number;
+  startMonth: number;
+  endMonth: number;
+};
+type Plan = {
+  daysPerMonth: number;
+  people: { name: string; pm: boolean; busyDays: number }[];
+  endDay: number;
+  months: number;
+  stories: PlanStory[];
+  milestones: { name: string; day: number; month: number }[];
+  notPlanned: string[];
+};
+type Story = { id: string; title: string; href: string; issue: number | null; size: string | null; days: number | null; done: boolean; estimates: Estimates };
+type Row = { name: string; value: string; reason: string; days: number; remainingDays: number; stories: Story[] };
+type Group = { kind: string; title: string; reasonLabel: string; days: number; storyCount: number; rows: Row[] };
+
+const groups = roadmap.groups as unknown as Group[];
+const plans: { key: string; label: string; plan: Plan }[] = [
+  { key: "without", label: "Without Claude Code", plan: roadmap.plan as unknown as Plan },
+  { key: "with", label: "With Claude Code", plan: roadmap.planWithClaudeCode as unknown as Plan },
+];
+const model = roadmap.estimatesModel;
+const estimateTotals = roadmap.estimateTotals as Estimates;
+const waveOrder = groups.flatMap((g) => g.rows.map((r) => r.name));
+const storyById = new Map(groups.flatMap((g) => g.rows.flatMap((r) => r.stories)).map((s) => [s.id, s]));
 
 // ROADMAP.md uses **bold** and `code` inline; render just those two.
 function inline(text: string): ReactNode {
@@ -29,8 +60,12 @@ function valueTone(value: string) {
   return "rm-value rm-value-low";
 }
 
+function num(n: number) {
+  return Number.isInteger(n) ? String(n) : n.toFixed(1);
+}
+
 function days(n: number) {
-  return `${n} person-day${n === 1 ? "" : "s"}`;
+  return `${num(n)} person-day${n === 1 ? "" : "s"}`;
 }
 
 function shortId(id: string) {
@@ -43,7 +78,7 @@ function split(name: string) {
   return m ? { number: m[1], name: m[2] } : { number: "", name };
 }
 
-// A colour family per kind of wave, so a wave reads the same on the board and in the team chart.
+// A colour family per kind of wave, so a wave reads the same on the board and in the charts.
 function tone(wave: string) {
   const { number } = split(wave);
   if (number === "0") return "rm-tone-docs";
@@ -52,26 +87,26 @@ function tone(wave: string) {
   return "rm-tone-extra";
 }
 
-const plan = roadmap.plan;
-const waveOrder: string[] = roadmap.groups.flatMap((g) => g.rows.map((r) => r.name));
+function endToEnd(plan: Plan) {
+  return plan.milestones.reduce((a, b) => (b.day > a.day ? b : a), plan.milestones[0]);
+}
 
-// The months shown as columns: 1 to HORIZON, then one column for the rest.
-const columns = (() => {
+// Product work the product manager carries: their own stories plus the product share of every
+// engineering story, against the length of the plan.
+function pmLoad(plan: Plan, key: "Without" | "With") {
+  const planned = plan.stories.map((s) => storyById.get(s.id)).filter((s): s is Story => Boolean(s));
+  const work = planned.reduce((sum, s) => sum + s.estimates[`product${key}`], 0);
+  return { work, length: plan.endDay, percent: Math.round((work / Math.max(1, plan.endDay)) * 100) };
+}
+
+function columnsFor(plan: Plan) {
   const cols: { from: number; to: number; label: string }[] = [];
   for (let m = 1; m <= Math.min(HORIZON, plan.months); m += 1) cols.push({ from: m, to: m, label: `Month ${m}` });
   if (plan.months > HORIZON) cols.push({ from: HORIZON + 1, to: plan.months, label: `Month ${HORIZON + 1} and later` });
   return cols;
-})();
-
-function waveMonths(row: Row) {
-  const mine = plan.stories.filter((s) => s.wave === row.name);
-  if (!mine.length) return null;
-  const a = Math.min(...mine.map((s) => s.startMonth));
-  const b = Math.max(...mine.map((s) => s.endMonth));
-  return a === b ? `Month ${a}` : `Month ${a} to ${b}`;
 }
 
-function MonthColumn({ from, to, label }: { from: number; to: number; label: string }) {
+function MonthColumn({ plan, from, to, label }: { plan: Plan; from: number; to: number; label: string }) {
   const achieved = plan.milestones.filter((m) => m.month >= from && m.month <= to);
   const active = plan.stories.filter((s) => s.startMonth <= to && s.endMonth >= from);
   const waves = waveOrder.filter((w) => active.some((s) => s.wave === w));
@@ -119,32 +154,51 @@ function MonthColumn({ from, to, label }: { from: number; to: number; label: str
   );
 }
 
-// Who does what, day by day: a row per person, the stories placed by their working days.
-function TeamChart() {
-  const total = plan.months * plan.daysPerMonth;
+function MonthBoard({ plan }: { plan: Plan }) {
+  const cols = columnsFor(plan);
   return (
-    <div className="rm-scroll" tabIndex={0} aria-label="Team chart, scrolls sideways on small screens">
+    <div className="rm-scroll" tabIndex={0} aria-label="Monthly roadmap, scrolls sideways on small screens">
+      <div className="rm-months" style={{ gridTemplateColumns: `repeat(${cols.length}, minmax(200px, 1fr))` }}>
+        {cols.map((c) => (
+          <MonthColumn key={c.label} plan={plan} {...c} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// Who does what, day by day: a row per person, the stories placed by their working days. Both
+// plans use the same scale (`months`), so they can be compared by eye.
+function TeamChart({ plan, months, label, pm }: { plan: Plan; months: number; label: string; pm: ReturnType<typeof pmLoad> }) {
+  const total = months * plan.daysPerMonth;
+  return (
+    <div className="rm-scroll" tabIndex={0} aria-label={`${label}: team chart, scrolls sideways on small screens`}>
       <div className="rm-team">
         <div className="rm-team-row rm-team-head" aria-hidden="true">
           <span className="rm-team-name" />
           <div className="rm-team-track">
-            {Array.from({ length: plan.months }, (_, i) => (
-              <span key={i} className="rm-team-month" style={{ left: `${(i / plan.months) * 100}%`, width: `${100 / plan.months}%` }}>
+            {Array.from({ length: months }, (_, i) => (
+              <span key={i} className="rm-team-month" style={{ left: `${(i / months) * 100}%`, width: `${100 / months}%` }}>
                 Month {i + 1}
               </span>
             ))}
+            <span className="rm-team-end" style={{ left: `${(plan.endDay / total) * 100}%` }}>
+              Day {plan.endDay}
+            </span>
           </div>
         </div>
         {plan.people.map((person) => (
           <div key={person.name} className="rm-team-row">
             <span className="rm-team-name">
               {person.name}
-              <span className="rm-team-busy">{person.busyDays} days of work</span>
+              <span className="rm-team-busy">
+                {person.pm ? `${num(pm.work)} days of product work (${pm.percent}% load)` : `${num(person.busyDays)} days of work`}
+              </span>
             </span>
             <div className="rm-team-track">
               {plan.stories
                 .filter((s) => s.person === person.name)
-                .map((s: Planned) => (
+                .map((s) => (
                   <a
                     key={s.id}
                     href={s.href}
@@ -165,7 +219,23 @@ function TeamChart() {
 
 function Wave({ row, group }: { row: Row; group: Group }) {
   const { number, name } = split(row.name);
-  const when = waveMonths(row);
+  const mine = plans[0].plan.stories.filter((s) => s.wave === row.name);
+  const when = mine.length
+    ? (() => {
+        const a = Math.min(...mine.map((s) => s.startMonth));
+        const b = Math.max(...mine.map((s) => s.endMonth));
+        return a === b ? `Month ${a}` : `Month ${a} to ${b}`;
+      })()
+    : null;
+  const t = row.stories.reduce(
+    (acc, s) => ({
+      p0: acc.p0 + s.estimates.productWithout,
+      p1: acc.p1 + s.estimates.productWith,
+      d0: acc.d0 + s.estimates.devWithout,
+      d1: acc.d1 + s.estimates.devWith,
+    }),
+    { p0: 0, p1: 0, d0: 0, d1: 0 },
+  );
   return (
     <li className={`rm-entry rm-entry-${group.kind}`}>
       <div className="rm-when">{when ?? "Not planned"}</div>
@@ -181,9 +251,8 @@ function Wave({ row, group }: { row: Row; group: Group }) {
           <span className={valueTone(row.value)}>{row.value} value</span>
         </header>
         <p className="rm-meta">
-          <span className="rm-when-inline">{when ?? "Not planned"} · </span>
-          {days(row.days)}
-          {row.remainingDays !== row.days ? ` · ${row.remainingDays} left` : ""}
+          <span className="rm-when-inline">{when ?? "Not planned"} (without Claude Code) · </span>
+          {days(row.days)} · product {num(t.p0)} → {num(t.p1)}, development {num(t.d0)} → {num(t.d1)} with Claude Code
         </p>
         <p className="rm-reason">
           <span className="rm-reason-label">{group.reasonLabel}: </span>
@@ -207,6 +276,10 @@ function Wave({ row, group }: { row: Row; group: Group }) {
                     {story.size ?? "TBD"}
                   </span>
                 </span>
+                <span className="rm-story-est">
+                  Product {num(story.estimates.productWithout)} → {num(story.estimates.productWith)} · Development{" "}
+                  {num(story.estimates.devWithout)} → {num(story.estimates.devWith)} days
+                </span>
               </li>
             ))}
           </ol>
@@ -217,14 +290,14 @@ function Wave({ row, group }: { row: Row; group: Group }) {
 }
 
 export default function RoadmapView() {
-  const { totals, groups, method, risks } = roadmap;
-  const engineers = plan.people.filter((p) => !p.pm).length;
-  const pms = plan.people.length - engineers;
-  const endToEnd = plan.milestones.reduce((a, b) => (b.day > a.day ? b : a), plan.milestones[0]);
-  const notPlannedIds: readonly string[] = plan.notPlanned;
-  type StoryLink = { id: string; title: string; href: string };
-  const allStories = (groups as unknown as { rows: { stories: StoryLink[] }[] }[]).flatMap((g) => g.rows.flatMap((r) => r.stories));
-  const notPlanned = allStories.filter((s) => notPlannedIds.includes(s.id));
+  const { totals, method, risks } = roadmap;
+  const [without, withCc] = plans;
+  const engineers = without.plan.people.filter((p) => !p.pm).length;
+  const pms = without.plan.people.length - engineers;
+  const scale = Math.max(without.plan.months, withCc.plan.months);
+  const loads = { without: pmLoad(without.plan, "Without"), with: pmLoad(withCc.plan, "With") };
+  const notPlanned = without.plan.notPlanned.map((id) => storyById.get(id)).filter((s): s is Story => Boolean(s));
+  const f = model.with_claude_code_factor;
 
   return (
     <section id="roadmap">
@@ -233,10 +306,11 @@ export default function RoadmapView() {
       </h2>
       <p className="note">
         What is left to build, month by month, for a team of {engineers} engineers and {pms} product
-        manager. Each person takes the most urgent story that is ready, so whatever can run in parallel
-        does. Product documentation, from requirements to architecture, is done before the business
-        steps are built; the platform foundation is built alongside it. A month is {plan.daysPerMonth}{" "}
-        working days.
+        manager, planned twice: without Claude Code and with it. Each person takes the most urgent story
+        that is ready, so whatever can run in parallel does, and spare engineer time goes to spikes.
+        Product documentation, from requirements to architecture, is done before the business steps are
+        built; the platform foundation is built alongside it. A month is {without.plan.daysPerMonth} working
+        days.
       </p>
 
       <div className="stat-row">
@@ -247,40 +321,109 @@ export default function RoadmapView() {
           <span className="stat-label">Engineers + product manager</span>
         </div>
         <div className="stat">
-          <span className="stat-value">Month {endToEnd?.month}</span>
-          <span className="stat-label">DocFlow works end to end</span>
+          <span className="stat-value">Month {endToEnd(without.plan).month}</span>
+          <span className="stat-label">DocFlow end to end, without Claude Code</span>
         </div>
         <div className="stat">
-          <span className="stat-value">{plan.months} months</span>
-          <span className="stat-label">Everything planned</span>
+          <span className="stat-value">Month {endToEnd(withCc.plan).month}</span>
+          <span className="stat-label">DocFlow end to end, with Claude Code</span>
         </div>
         <div className="stat">
-          <span className="stat-value">{totals.days}</span>
-          <span className="stat-label">Person-days in {totals.stories} stories</span>
+          <span className="stat-value">
+            {num(estimateTotals.productWithout + estimateTotals.devWithout)} → {num(estimateTotals.productWith + estimateTotals.devWith)}
+          </span>
+          <span className="stat-label">Person-days in {totals.stories} stories, with Claude Code</span>
         </div>
       </div>
+
+      <h3 className="section-subtitle">Without and with Claude Code</h3>
+      <div className="rm-compare-wrap">
+        <table className="cost-table cost-table-text rm-compare">
+          <thead>
+            <tr>
+              <th scope="col">Milestone</th>
+              <th scope="col">Without Claude Code</th>
+              <th scope="col">With Claude Code</th>
+            </tr>
+          </thead>
+          <tbody>
+            {without.plan.milestones.map((m, i) => {
+              const c = withCc.plan.milestones[i];
+              return (
+                <tr key={m.name}>
+                  <th scope="row">{m.name}</th>
+                  <td data-label="Without Claude Code">
+                    Month {m.month} · day {m.day}
+                  </td>
+                  <td data-label="With Claude Code">
+                    Month {c.month} · day {c.day}
+                  </td>
+                </tr>
+              );
+            })}
+            <tr>
+              <th scope="row">Everything planned</th>
+              <td data-label="Without Claude Code">
+                {without.plan.months} months · day {without.plan.endDay}
+              </td>
+              <td data-label="With Claude Code">
+                {withCc.plan.months} months · day {withCc.plan.endDay}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p className="note">
+        <strong>Assumptions, not yet decided by Nikhil:</strong> with Claude Code, development takes{" "}
+        {Math.round(f.development * 100)}% of the time and product work {Math.round(f.product * 100)}%.{" "}
+        {model.with_claude_code_why} On an engineering story,{" "}
+        {Math.round(model.product_share_of_engineering_story * 100)}% of its size is product work for the
+        product manager. All of it is set in <code>docs/process/cost-model.json</code>.
+      </p>
+
+      {plans.map(({ key, label, plan }) => (
+        <Fragment key={key}>
+          <h3 className="section-subtitle">Who does what · {label}</h3>
+          <TeamChart plan={plan} months={scale} label={label} pm={loads[key as "without" | "with"]} />
+        </Fragment>
+      ))}
+      <p className="rm-legend">
+        <span className="rm-tone-docs">Documentation</span>
+        <span className="rm-tone-platform">Platform foundation and identity</span>
+        <span className="rm-tone-business">Business steps</span>
+        <span className="rm-tone-extra">Spikes, extras and hardening</span>
+      </p>
+      {loads.without.percent > 100 || loads.with.percent > 100 ? (
+        <p className="note">
+          <strong>
+            {loads.with.percent > 100 && loads.without.percent <= 100
+              ? "With Claude Code, the product manager becomes the bottleneck:"
+              : "The product manager is the bottleneck:"}
+          </strong>{" "}
+          {num(loads.without.work)} days of product work in a {loads.without.length}-day plan without Claude Code (
+          {loads.without.percent}% load), and {num(loads.with.work)} in {loads.with.length} days with it (
+          {loads.with.percent}%). Engineers speed up more than product work does. The product share of
+          engineering stories runs alongside them and is not planned day by day.
+        </p>
+      ) : null}
 
       <h3 className="section-subtitle">Month by month</h3>
       <p className="note">
         Each month: what is achieved by its end, then the stories worked on, by wave. ✓ finishes that
         month; → carries on into the next.
       </p>
-      <div className="rm-scroll" tabIndex={0} aria-label="Monthly roadmap, scrolls sideways on small screens">
-        <div className="rm-months" style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(200px, 1fr))` }}>
-          {columns.map((c) => (
-            <MonthColumn key={c.label} {...c} />
-          ))}
+      <div className="rm-switch">
+        <input type="radio" name="rm-plan" id="rm-plan-without" className="rm-switch-input" defaultChecked />
+        <label htmlFor="rm-plan-without">{without.label}</label>
+        <input type="radio" name="rm-plan" id="rm-plan-with" className="rm-switch-input" />
+        <label htmlFor="rm-plan-with">{withCc.label}</label>
+        <div className="rm-panel rm-panel-without">
+          <MonthBoard plan={without.plan} />
+        </div>
+        <div className="rm-panel rm-panel-with">
+          <MonthBoard plan={withCc.plan} />
         </div>
       </div>
-
-      <h3 className="section-subtitle">Who does what</h3>
-      <TeamChart />
-      <p className="rm-legend">
-        <span className="rm-tone-docs">Documentation</span>
-        <span className="rm-tone-platform">Platform foundation and identity</span>
-        <span className="rm-tone-business">Business steps</span>
-        <span className="rm-tone-extra">Extras and hardening</span>
-      </p>
 
       {groups.map((group) => (
         <Fragment key={group.kind}>
@@ -297,6 +440,11 @@ export default function RoadmapView() {
           </ol>
         </Fragment>
       ))}
+
+      <p className="note">
+        Every story&apos;s four estimates and planned months, for reports:{" "}
+        <a href={`${REPO}/docs/process/estimates.csv`}>docs/process/estimates.csv</a>.
+      </p>
 
       {notPlanned.length > 0 && (
         <>
@@ -331,10 +479,11 @@ export default function RoadmapView() {
       </ul>
 
       <p className="note section-footnote">
-        Generated from <a href={`${REPO}/docs/process/ROADMAP.md`}>docs/process/ROADMAP.md</a> and the
-        sizes in the epics files (S = {roadmap.personDaysPerSize.S}, M = {roadmap.personDaysPerSize.M},
-        L = {roadmap.personDaysPerSize.L} person-days). A story shows as done once its issue is closed.
-        Updated {roadmap.updated}.
+        Generated from <a href={`${REPO}/docs/process/ROADMAP.md`}>docs/process/ROADMAP.md</a>, the sizes in
+        the epics files (S = {roadmap.personDaysPerSize.S}, M = {roadmap.personDaysPerSize.M}, L ={" "}
+        {roadmap.personDaysPerSize.L} person-days, the estimate without Claude Code) and{" "}
+        <code>docs/process/cost-model.json</code>. A story shows as done once its issue is closed. Updated{" "}
+        {roadmap.updated}.
       </p>
     </section>
   );
