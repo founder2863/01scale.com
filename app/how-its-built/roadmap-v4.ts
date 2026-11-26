@@ -13,7 +13,10 @@ export const roadmap = {
       "**Joint marketing with partners (E11-03) has an open question** (what \"agent\" means), so it gets a decision session before it can be pulled."
     ],
     "gaps": [
-      "**Not reviewed yet.** v4 is the current version; reviewing it will list the gaps that v5 addresses."
+      "**One product manager is the bottleneck.** Busy 98% of the plan while engineers are about 55% busy, the product manager sets the go-live date: the business is ready months after the product works. Nikhil: add a second product manager.",
+      "**Product manager work is still missing:** legal and customer contracts, launch communications, the pricing page and billing operations, customer onboarding, product analytics, partner programme terms, responsible AI, and a voice-of-the-customer programme. Nikhil: add them.",
+      "**Joint marketing with partners was not ready** because \"agent\" was unclear. Nikhil: it is an AI agent.",
+      "**The plan has no cost.** The human cost on Total Cost prices every story's size at the engineer rate; it does not count the product manager's sprint work or the joint sessions, and does not compare the cost without and with Claude Code. Nikhil: price product days at the product manager rate and development days at the engineer rate, both $1,000 a day for now, counting all of it; no other roles yet."
     ]
   },
   "source": "docs/process/roadmap/v4/ROADMAP.md",

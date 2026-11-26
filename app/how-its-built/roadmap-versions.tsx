@@ -56,7 +56,7 @@ export const roadmapVersions: Version[] = [
     slug: "v4",
     label: "v4",
     title: "The business ready for launch, with the product manager's time filled",
-    status: "Current",
+    status: "Frozen 26 Nov 2026",
     adds: v4.version.adds,
     gaps: v4.version.gaps,
     View: RoadmapV4View,

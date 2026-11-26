@@ -1,6 +1,6 @@
 # Roadmap v4: the business ready for launch, with the product manager's time filled
 
-Started on 26 Nov 2026 from roadmap v3 (`docs/process/roadmap/v3/`, frozen), after reviewing it with Nikhil. Same stories, dependencies, team, estimate rules and sprint rules as v3, plus the changes below. v4 has its own model (`model.json`), script (`scripts/site/roadmap_v4.py`, `npm run roadmap:v4`) and page (How It's Built › Roadmap › v4).
+Started on 26 Nov 2026 from roadmap v3 (`docs/process/roadmap/v3/`, frozen), after reviewing it with Nikhil. **Frozen on 26 Nov 2026** (Nikhil): v4 is kept as it is; v5 continues from it in `docs/process/roadmap/v5/`. Same stories, dependencies, team, estimate rules and sprint rules as v3, plus the changes below. v4 has its own model (`model.json`), script (`scripts/site/roadmap_v4.py`, `npm run roadmap:v4`) and page (How It's Built › Roadmap › v4).
 
 ## What this version adds
 
@@ -20,7 +20,12 @@ Nikhil's requirements and constraints for v4 (26 Nov 2026), after reviewing v3:
 
 ## Gaps found
 
-- **Not reviewed yet.** v4 is the current version; reviewing it will list the gaps that v5 addresses.
+Reviewing v4 with Nikhil (26 Nov 2026) found these, which v5 addresses:
+
+- **One product manager is the bottleneck.** Busy 98% of the plan while engineers are about 55% busy, the product manager sets the go-live date: the business is ready months after the product works. Nikhil: add a second product manager.
+- **Product manager work is still missing:** legal and customer contracts, launch communications, the pricing page and billing operations, customer onboarding, product analytics, partner programme terms, responsible AI, and a voice-of-the-customer programme. Nikhil: add them.
+- **Joint marketing with partners was not ready** because "agent" was unclear. Nikhil: it is an AI agent.
+- **The plan has no cost.** The human cost on Total Cost prices every story's size at the engineer rate; it does not count the product manager's sprint work or the joint sessions, and does not compare the cost without and with Claude Code. Nikhil: price product days at the product manager rate and development days at the engineer rate, both $1,000 a day for now, counting all of it; no other roles yet.
 
 ## How it was worked out
 
