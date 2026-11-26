@@ -657,7 +657,7 @@ As a hiring manager, I want to see what is left to build and in what order, with
 - **API design:** No endpoints.
 - **Database design:** No tables.
 
-**Status: built (#188). `npm run roadmap` (`scripts/site/roadmap.py`) reads ROADMAP.md, the epics files and the done list in `docs/process/cost-model.json` into `app/how-its-built/roadmap.ts`, and stops if a day count typed in ROADMAP.md does not match the sizes. Issue numbers come from GitHub when online and are kept from the last run when offline.**
+**Status: built (#188). `npm run roadmap` (`scripts/site/roadmap.py`, now `roadmap:v1` and `scripts/site/roadmap_v1.py`) reads ROADMAP.md (now `docs/process/roadmap/v1/`), the epics files and the done list in `docs/process/cost-model.json` into `app/how-its-built/roadmap.ts`, and stops if a day count typed in ROADMAP.md does not match the sizes. Issue numbers come from GitHub when online and are kept from the last run when offline.**
 
 ## E1 · Accounts with AWS Cognito (MVP1 "a")
 **Goal:** users can create and manage an account securely, through OIDC so the provider can be swapped in MVP2.
@@ -1288,7 +1288,7 @@ As a visitor, I want the How It's Built item to be called "Total Cost", because 
 ### MVP1-E8-12 · Four estimates per story, and the plan without and with Claude Code — M
 As a product manager, I want every story estimated four ways (product and development work, each without and with Claude Code) and the roadmap planned both ways, so I can see what Claude Code changes and pull reports by story (Nikhil, PR #189).
 - **AC1:** Every story on the roadmap has four estimates in person-days: **product work without Claude Code**, **product work with Claude Code**, **development work without Claude Code** and **development work with Claude Code**. Without Claude Code they come from the story's size (stories the product manager owns are all product work; on an engineering story a stated share is product work); with Claude Code they are scaled by stated factors. The share and the factors live in `docs/process/cost-model.json` (`estimates`), each marked as an assumption until Nikhil decides it.
-- **AC2:** `npm run roadmap` plans the team (3 engineers and 1 product manager) twice, without and with Claude Code, and writes `docs/process/estimates.csv`: one row per story with its four estimates, owner and planned months, for reports.
+- **AC2:** `npm run roadmap` (now `roadmap:v1`) plans the team (3 engineers and 1 product manager) twice, without and with Claude Code, and writes `docs/process/estimates.csv` (now `docs/process/roadmap/v1/estimates.csv`): one row per story with its four estimates, owner and planned months, for reports.
 - **AC3:** The Roadmap tab compares the two: each milestone's month and day both ways, a team chart for each on the same scale, a month board that switches between them, the four estimates per story and per wave, the assumptions in words, and the product manager's load in each plan.
 - **AC4:** When an engineer has nothing ready, the plan gives them a spike (`MVP1-E3-10`, `MVP1-E6-05`), so spare time in month 2 goes to research on external services (Nikhil, PR #189).
 - **AC5:** Works from 320 to 1920 pixels wide, in light and dark mode; the switch works without JavaScript and by keyboard.

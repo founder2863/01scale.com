@@ -1,10 +1,11 @@
 import { Fragment, type ReactNode } from "react";
-import { roadmap } from "./roadmap";
+import { roadmap } from "./roadmap-v1";
 
 // The Roadmap tab of How It's Built (MVP1-E0-54). A monthly roadmap for a team of three
 // engineers and a product manager, with what each month achieves, planned twice: without and
 // with Claude Code (Nikhil, PR #189). Everything here comes from roadmap.ts, generated from
-// docs/process/ROADMAP.md, the epics files and docs/process/cost-model.json by `npm run roadmap`.
+// docs/process/roadmap/v1/ROADMAP.md, the epics files and docs/process/roadmap/v1/model.json by
+// `npm run roadmap:v1`. v1 is frozen: later versions get their own data, script and view.
 
 const REPO = "https://github.com/founder2863/01scale.com/blob/main";
 const HORIZON = 5; // months shown one by one; the rest share a last column
@@ -296,7 +297,7 @@ function Wave({ row, group }: { row: Row; group: Group }) {
   );
 }
 
-export default function RoadmapView() {
+export default function RoadmapV1View() {
   const { totals, method, risks } = roadmap;
   const [without, withCc] = plans;
   const engineers = without.plan.people.filter((p) => !p.pm).length;
@@ -308,9 +309,7 @@ export default function RoadmapView() {
 
   return (
     <section id="roadmap">
-      <h2 className="group-title">
-        Roadmap <span className="status">Planned</span>
-      </h2>
+      <h2 className="group-title">The plan</h2>
       <p className="note">
         What is left to build, month by month, for a team of {engineers} engineers and {pms} product
         manager, planned twice: without Claude Code and with it. Each person takes the most urgent story
@@ -386,7 +385,7 @@ export default function RoadmapView() {
         before the engineer starts. A quarter of every design story ({Math.round(model.joint_share_of_design_story * 100)}%)
         is design discussions and reviews that the product manager and an engineer do together. With Claude Code,
         product and development work both take {Math.round(f.development * 100)}% of the time (2.5 times faster):
-        people still review, test and decide. All of it is set in <code>docs/process/cost-model.json</code>.
+        people still review, test and decide. All of it is set in <code>docs/process/roadmap/v1/model.json</code>.
       </p>
 
       {plans.map(({ key, label, plan }) => (
@@ -455,7 +454,7 @@ export default function RoadmapView() {
 
       <p className="note">
         Every story&apos;s four estimates and planned months, for reports:{" "}
-        <a href={`${REPO}/docs/process/estimates.csv`}>docs/process/estimates.csv</a>.
+        <a href={`${REPO}/docs/process/roadmap/v1/estimates.csv`}>docs/process/roadmap/v1/estimates.csv</a>.
       </p>
 
       {notPlanned.length > 0 && (
@@ -491,10 +490,10 @@ export default function RoadmapView() {
       </ul>
 
       <p className="note section-footnote">
-        Generated from <a href={`${REPO}/docs/process/ROADMAP.md`}>docs/process/ROADMAP.md</a>, the sizes in
+        Generated from <a href={`${REPO}/docs/process/roadmap/v1/ROADMAP.md`}>docs/process/roadmap/v1/ROADMAP.md</a>, the sizes in
         the epics files (S = {roadmap.personDaysPerSize.S}, M = {roadmap.personDaysPerSize.M}, L ={" "}
         {roadmap.personDaysPerSize.L} person-days, the estimate without Claude Code) and{" "}
-        <code>docs/process/cost-model.json</code>. A story shows as done once its issue is closed. Updated{" "}
+        <code>docs/process/roadmap/v1/model.json</code>. A story shows as done once its issue is closed. Updated{" "}
         {roadmap.updated}.
       </p>
     </section>

@@ -1,4 +1,29 @@
-# Roadmap: open stories by dependency, size and value
+# Roadmap v1: open stories by dependency, size and value, for a team
+
+**Frozen on 26 Nov 2026** (Nikhil): v1 is kept as it is. The next version gets its own folder (`docs/process/roadmap/v2/`), script and page, so the roadmap's evolution can be compared version by version on How It's Built › Roadmap.
+
+## What this version adds
+
+Nikhil's requirements and constraints, in the order he added them (PRs #189 and #193):
+
+- **Order the open stories by dependency, size and value**, with sizes on the human scale (S ≈ 3, M ≈ 8, L ≈ 15 person-days).
+- **Product documentation first:** all product documentation, from requirements to architecture, is done before the business process steps (Upload to Delivery) are built. The platform foundation (service template, gateway, identity) does not wait for it and runs alongside.
+- **Documentation within a month** was the target; with the team below it completes in month 3 (see Gaps found).
+- **A monthly roadmap**, months side by side, showing what each month achieves (first a vertical timeline, then a Jira-style view, then months).
+- **A team of 3 engineers and 1 product manager**, starting in parallel whatever can start.
+- **Spare engineer time goes to spikes** on external services: LLM extraction options (AWS, Claude, Microsoft) and Stripe Billing.
+- **Four estimates per story** (product and development work, each without and with Claude Code), and the plan made both ways.
+- **People work together and on their own:** the product manager spends 10% of an engineering story's size on it during the sprint, before the engineer starts; a quarter of every design story is joint sessions with the product manager and an engineer; with Claude Code product and development work both take 40% of the time. Where the product manager holds a story up, the plan shows it.
+
+## Gaps found
+
+Reviewing v1 found these, which the next version addresses:
+
+- **Stories are not ready when engineers pull them.** The modules not yet designed (Extraction, Review, Payment, Delivery, DocFlow) have no design stories: their API, data model, MCP, journeys and UI are not planned, nor the engineer time they need.
+- **Stories are too big for a sprint.** An L story is 15 person-days for one engineer, three weeks; nothing limits how long a story stays open, so the dates are hard to predict.
+- **No sprints.** Engineers pick up work on any day; there is no sprint cadence, no rollover and no range for the dates.
+- **The documentation misses its one-month target** (month 3 without Claude Code): the joint sessions wait for engineers busy on the foundation.
+- **Engineers have gaps late in the plan** while the dependency chain (review, then results, then delivery) sets the end date.
 
 Built from the 68 open story issues on 25 Nov 2026, plus MVP1-E0-54 (#188) added the same day: 69 stories, 449 person-days (the eight epic issues are not counted). Linked from `docs/process/STATUS.md`. Update it in the PR that ships, adds, resizes or reorders a story. It is shown as a monthly roadmap on How It's Built › Roadmap (story `MVP1-E0-54`), planned for the team below by `npm run roadmap`.
 

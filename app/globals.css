@@ -4172,3 +4172,62 @@ section[id] {
 .rm-legend-joint::before {
   background: repeating-linear-gradient(135deg, var(--brand) 0 3px, var(--chip-bg) 3px 5px) !important;
 }
+
+/* Roadmap versions (Nikhil, 26 Nov 2026): a pill per version, then what it adds and the gaps
+   found by reviewing it. */
+.rm-versions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 20px;
+}
+
+.rm-versions a {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  max-width: 100%;
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text);
+  text-decoration: none;
+}
+
+.rm-versions a[aria-current="page"] {
+  border-color: var(--brand);
+  background: var(--brand);
+  color: #ffffff;
+}
+
+.rm-version-label {
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.rm-version-title {
+  font-size: 0.8rem;
+  opacity: 0.85;
+}
+
+.rm-version {
+  margin-bottom: 24px;
+}
+
+.rm-version-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+  gap: 16px;
+}
+
+.rm-version-gaps {
+  border-top-color: var(--warning-solid, #d97706);
+}
+
+/* Long file paths in roadmap notes wrap on narrow phones. */
+#roadmap .note a,
+#roadmap .note code,
+.rm-version code {
+  overflow-wrap: anywhere;
+}
