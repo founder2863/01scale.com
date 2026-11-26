@@ -657,7 +657,7 @@ As a hiring manager, I want to see what is left to build and in what order, with
 - **API design:** No endpoints.
 - **Database design:** No tables.
 
-**Status: built (#188). `npm run roadmap` (`scripts/site/roadmap.py`) reads ROADMAP.md, the epics files and the done list in `docs/process/cost-model.json` into `app/how-its-built/roadmap.ts`, and stops if a day count typed in ROADMAP.md does not match the sizes. Issue numbers come from GitHub when online and are kept from the last run when offline.**
+**Status: built (#188). `npm run roadmap` (`scripts/site/roadmap.py`, now `roadmap:v1` and `scripts/site/roadmap_v1.py`) reads ROADMAP.md (now `docs/process/roadmap/v1/`), the epics files and the done list in `docs/process/cost-model.json` into `app/how-its-built/roadmap.ts`, and stops if a day count typed in ROADMAP.md does not match the sizes. Issue numbers come from GitHub when online and are kept from the last run when offline.**
 
 ## E1 · Accounts with AWS Cognito (MVP1 "a")
 **Goal:** users can create and manage an account securely, through OIDC so the provider can be swapped in MVP2.
@@ -945,6 +945,16 @@ As the owner, I want a person who calls Extraction directly, not through an app,
 
 **Status: designed (#181), 23 Nov 2026 (Nikhil's decision; `docs/decisions/MVP1-E5.md`).**
 
+### MVP1-E3-10 · Spike: LLM extraction options (AWS, Claude, Microsoft) — M
+As the owner, I want to compare the ways to extract structured data from invoices before building on one, so the choice of Claude for Extraction is measured, not assumed (Nikhil, PR #189).
+- **AC1:** A timeboxed spike (8 days at most) runs the same synthetic invoice set (`evals/datasets/invoices/dev`, no real user documents) through three options: **AWS** (Textract AnalyzeExpense, and a Claude model on Bedrock), **Claude** through the Anthropic API with the structured output planned in `MVP1-E3-02`, and **Microsoft** (Azure AI Document Intelligence, prebuilt invoice model).
+- **AC2:** It compares field accuracy against ground truth, per-field confidence, cost per document, latency, data-handling terms (retention, training, region) and how each fits the Extraction contract, using the metrics in `docs/evals/EVALS.md`.
+- **AC3:** The result is a decision record in `docs/decisions/MVP1-E3.md`: options, measurements, recommendation and what would change it. Nikhil makes the decision; `MVP1-E3-02` is built on it.
+- **AC4:** Spike code stays out of the services (a `spikes/` folder or a branch), and no keys or documents are committed.
+- **Service:** Extraction (spike)
+- **API design:** No endpoints. The spike checks the options against the Extraction API already designed; any change to it is proposed in `MVP1-E3-02`.
+- **Database design:** No tables.
+
 ## E4 · Human review of low-confidence fields (MVP1 "d")
 **Goal:** a person checks only what the system is unsure about, quickly, with evidence beside each field.
 
@@ -1118,6 +1128,15 @@ As the owner, I want to refund a paid order in full, so a demo user who was char
   - DocFlow's webhook handles `payment.order.refunded`.
 - **Database design:** `payment.orders.status` adds `refund_pending` and `refunded`; the order adds `refund_reason`, `stripe_refund_id` (unique) and `refunded_at`. `docflow.documents.status` adds `refunded`.
 
+### MVP1-E6-05 · Spike: Stripe Billing APIs — S
+As the owner, I want to know how Stripe Billing would carry a paid plan beyond the free quota, before Monetization (`MVP1-E0-28`) and the quota (`MVP1-E3-09`) commit to one, so pricing is built on what Stripe supports (Nikhil, PR #189).
+- **AC1:** A timeboxed spike (3 days at most), in Stripe test mode, tries the Billing pieces a paid plan would need: Products and Prices, Subscriptions, usage-based (metered) billing with meter events, the Customer Portal, and the webhooks they send.
+- **AC2:** It states how each fits the Payment service's contract (Checkout today, `MVP1-E6-01` and `E6-02`), what would change in Payment's API and tables, and the fees.
+- **AC3:** The result is a decision record in `docs/decisions/MVP1-E6.md` with a recommendation for MVP1 and MVP2 (saved payment methods are MVP2). No keys are committed.
+- **Service:** Payment (spike)
+- **API design:** No endpoints. Proposed changes go to the Payment stories that would build them.
+- **Database design:** No tables.
+
 ---
 
 ## E7 · Success, download and email (MVP1 "g")
@@ -1266,6 +1285,437 @@ As a visitor, I want the How It's Built item to be called "Total Cost", because 
 - **Database design:** No tables.
 
 **Status: built (#171), 23 Nov 2026, at Nikhil's request.**
+### MVP1-E8-12 · Four estimates per story, and the plan without and with Claude Code — M
+As a product manager, I want every story estimated four ways (product and development work, each without and with Claude Code) and the roadmap planned both ways, so I can see what Claude Code changes and pull reports by story (Nikhil, PR #189).
+- **AC1:** Every story on the roadmap has four estimates in person-days: **product work without Claude Code**, **product work with Claude Code**, **development work without Claude Code** and **development work with Claude Code**. Without Claude Code they come from the story's size (stories the product manager owns are all product work; on an engineering story a stated share is product work); with Claude Code they are scaled by stated factors. The share and the factors live in `docs/process/cost-model.json` (`estimates`), each marked as an assumption until Nikhil decides it.
+- **AC2:** `npm run roadmap` (now `roadmap:v1`) plans the team (3 engineers and 1 product manager) twice, without and with Claude Code, and writes `docs/process/estimates.csv` (now `docs/process/roadmap/v1/estimates.csv`): one row per story with its four estimates, owner and planned months, for reports.
+- **AC3:** The Roadmap tab compares the two: each milestone's month and day both ways, a team chart for each on the same scale, a month board that switches between them, the four estimates per story and per wave, the assumptions in words, and the product manager's load in each plan.
+- **AC4:** When an engineer has nothing ready, the plan gives them a spike (`MVP1-E3-10`, `MVP1-E6-05`), so spare time in month 2 goes to research on external services (Nikhil, PR #189).
+- **AC5:** Works from 320 to 1920 pixels wide, in light and dark mode; the switch works without JavaScript and by keyboard.
+- **Service:** Site (`apps/web`) and `scripts/`
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+**Status: built (#192, PR #193). It delivers part of `MVP1-E8-03` (effort split into product and development) and of `MVP1-E8-04` (a dependency-aware timeline, here for 3 engineers and a product manager rather than 5 engineers); those stories stay open for their other criteria.**
+
+---
+
+## E9 · Go-live and operations
+**Goal:** take DocFlow and its services from "works end to end" to live in production, and run them well once they are: the work before production (strategy, environments, release pipeline, security, testing) and after it (testing in production, hypercare, support). Nikhil asked for these on PR #193 (26 Nov 2026): go-live strategy, release documentation, support documentation, post-production testing, post-production and handling support issues; the other stories are pre- and post-production work a launch also needs.
+
+**Scope:** MVP1. Payments stay in Stripe test mode; every user document in tests is synthetic. Nothing here changes a service's API or tables.
+
+### MVP1-E9-01 · Go-live strategy and go/no-go checklist — M
+As the product manager, I want a written plan for taking DocFlow live, so the launch is a decision against criteria, not a date.
+- **AC1:** A go-live document in `docs/launch/` states the launch stages (private beta with invited users, then public), who is invited, and what each stage must show before the next.
+- **AC2:** A **go/no-go checklist** lists the entry criteria: every main-path story done, the pre-production stories in this epic done, evals at their thresholds (`docs/evals/EVALS.md`), no open severity-1 or severity-2 bugs, the spend cap tested.
+- **AC3:** It states the **rollback plan** (which version each service returns to and how), the communication plan (who hears what, where) and who decides go or no-go (Nikhil).
+- **AC4:** It names the launch metrics, taken from each module's Metrics section (`MVP1-E0-27`), and the targets for the first two weeks.
+- **Service:** Product (DocFlow and its services)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E9-02 · Production environments, domains and secrets — M
+As an engineer, I want production set up the same way for every service, so the first deployment to production is routine.
+- **AC1:** Each service and app has a production Vercel project, its own Neon role and schema on the production branch, and production settings separate from preview.
+- **AC2:** AWS (S3 bucket, IAM roles), Cognito (production user pool and app client), Resend (sending domain with SPF, DKIM and DMARC) and Stripe (test mode, its own webhook endpoint) are set up for production by documented steps in `docs/infra/`.
+- **AC3:** Secrets exist only in Vercel and AWS, marked sensitive, with names in each service's `.env.example` (`MVP1-E0-26`); nothing secret is in the repository.
+- **AC4:** Budgets and spend alerts are set on AWS, Anthropic and Vercel.
+- **Service:** Platform (operations) and Site (`apps/web`)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E9-03 · Staging, release pipeline and rollback — M
+As an engineer, I want every change to pass through staging and reach production the same way, so a release is predictable and can be undone.
+- **AC1:** A staging environment mirrors production (its own database branch, bucket and keys); every merge to `main` deploys a service to staging, and promotion to production is one step.
+- **AC2:** Database migrations run in staging first and are rehearsed against a copy of production's schema; a migration that cannot be undone needs a written plan in its PR.
+- **AC3:** Rolling back a service to its previous version takes one step and does not redeploy the others (`MVP1-E0-07` AC4).
+- **AC4:** Risky changes can ship behind a flag that is off in production until turned on.
+- **Service:** Platform (operations) and Site (`apps/web`)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E9-04 · Backups and a restore drill — S
+As the owner, I want to know I can get the data back, so a mistake or an outage does not lose users' work.
+- **AC1:** Neon point-in-time restore is on for the production branch, with the retention window stated; the S3 bucket has versioning and a lifecycle rule.
+- **AC2:** A restore drill brings one service's schema back to a past point into a scratch branch and checks it; the steps and the time it took are written down.
+- **AC3:** The drill is repeated before go-live and then every quarter.
+- **Service:** Platform (operations) and Site (`apps/web`)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E9-05 · Launch security and privacy review — M
+As the owner, I want the whole platform checked against the security bar before it is public, so the first users are not the first testers.
+- **AC1:** Every service is checked against the OWASP ASVS list in the Security baseline (`MVP1-E0-26`); each gap is fixed or recorded with a decision.
+- **AC2:** Dependencies are audited, secret scanning shows nothing, and a short abuse test covers rate limits, ownership checks (other users' IDs return 404) and webhook signatures.
+- **AC3:** A privacy check confirms no document contents or personal data reach logs, events, issues or the repository, and that deleting an account deletes its data in every service.
+- **AC4:** Findings and decisions are recorded in `docs/decisions/MVP1-E9.md`.
+- **Service:** Platform (operations) and Site (`apps/web`)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E9-06 · Privacy policy, terms and cookie notice — S
+As a visitor, I want to know what happens to my data and what I agree to before I sign up, upload or pay.
+- **AC1:** 01scale.com has a privacy policy (what is collected, why, where it is stored, for how long, who processes it: AWS, Neon, Vercel, Anthropic, Stripe, Resend), terms of use for the demo, and a cookie notice if non-essential cookies are used.
+- **AC2:** Sign-up links to them, and the pages are versioned with their date.
+- **AC3:** They say plainly that this is a demo, payments are in test mode, and documents are deleted after the retention period.
+- **Service:** Product and Site (`apps/web`)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E9-07 · Load, spend-cap and failure testing — M
+As the owner, I want to see the platform under load and under failure before users do, so limits and fallbacks are proven.
+- **AC1:** A load test against staging runs the whole journey at the expected peak and twice it; p95 latencies are compared with the targets in Monitoring (`MVP1-E0-25`).
+- **AC2:** The spend cap and rate limits are tested: past the cap, extraction stops with the documented error, and no further Claude calls are made.
+- **AC3:** Failure drills: each service taken down in turn returns the documented `503` problem response to its callers, retries are safe, and nothing is left half-done (`MVP1-E0-07` AC7).
+- **AC4:** Results and fixes are written up; open issues go on the go/no-go checklist.
+- **Service:** Platform (operations) and Site (`apps/web`)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E9-08 · User acceptance testing with beta users — S
+As the product manager, I want a few real people to use DocFlow before launch, so problems in the journey are found by users, not by me.
+- **AC1:** Five to ten invited users go through the journey with synthetic invoices on staging, following a short script, and then on their own.
+- **AC2:** Their feedback and every issue found are collected in one place; severity-1 and severity-2 issues block go-live.
+- **AC3:** The journey is checked for accessibility (keyboard, screen reader basics, contrast) on phone and desktop.
+- **Service:** Product (DocFlow)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E9-09 · Release documentation — S
+As a user or a developer, I want to know what each release changed, so I can trust and plan around it.
+- **AC1:** Each service and app keeps a changelog by version; each release has release notes: what changed, what was fixed, known issues, and any action a user or an API client must take.
+- **AC2:** The site shows the latest release notes for each module, from the changelogs, never typed twice.
+- **AC3:** API changes follow the versioning rules (`docs/architecture/API-DESIGN.md`): a breaking change is a new version with a deprecation date.
+- **Service:** Product and Site (`apps/web`)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E9-10 · Support documentation: playbook and runbooks — S
+As whoever is on support, I want written steps for the common problems, so issues are handled the same way every time and quickly.
+- **AC1:** A support playbook says how issues arrive, how they are triaged by severity, the response targets (best effort; it is a demo), and when to escalate to an engineer.
+- **AC2:** Runbooks cover the likely incidents: a service down, extraction failing or slow, Stripe webhooks not arriving, emails not delivered, spend cap reached, a user locked out.
+- **AC3:** Each runbook says how to investigate without seeing a user's document or personal data (request IDs, statuses, aggregate logs), building on each module's Support section (`MVP1-E0-30`).
+- **Service:** Product and Platform (operations)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E9-11 · Post-production testing — M
+As the owner, I want production checked after every release and all the time, so a broken journey is found by a test, not a user.
+- **AC1:** After every production deploy, smoke tests run against production with a test account: health of every service, sign in, upload a synthetic invoice, extraction completes, test-mode checkout, download.
+- **AC2:** A synthetic journey runs on a schedule (for example hourly) and alerts when it fails or is slow.
+- **AC3:** Test data is clearly marked and cleaned up; it never mixes with users' data or counts in their metrics.
+- **Service:** Platform (operations) and Site (`apps/web`)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E9-12 · Hypercare and incident response — M
+As the owner, I want the first weeks after launch watched closely, and a clear way to handle incidents, so problems are fixed fast and learned from.
+- **AC1:** Two weeks of hypercare after go-live: a daily check of errors, latency, extraction quality, spend and support issues, with a short daily note.
+- **AC2:** Alerts from Monitoring (`MVP1-E0-25`) and the synthetic journey go to whoever is on call; an incident process sets severity, owner, updates and a status message for users.
+- **AC3:** Every severity-1 or severity-2 incident gets a blameless post-incident review with actions, linked to stories.
+- **AC4:** A hotfix path goes through staging and the post-production tests, like any release.
+- **Service:** Platform (operations) and Site (`apps/web`)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E9-13 · Handling support issues — S
+As a user, I want to report a problem and hear back, and as the product manager I want issues to become fixes and better documents.
+- **AC1:** Users can report a problem from the site (a form or an email address); each report gets an acknowledgement and an ID.
+- **AC2:** Issues are triaged by the playbook (`MVP1-E9-10`); a bug becomes a GitHub issue that holds no user data, only the request ID and a description.
+- **AC3:** Repeated questions update the FAQ and Support sections; the number of issues, response times and their causes are reviewed weekly during hypercare.
+- **Service:** Product and Platform (operations)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E9-14 · Post-launch review — S
+As the product manager, I want to look back after launch with data, so the next steps come from what happened.
+- **AC1:** After hypercare, a review compares the launch metrics with their targets (`MVP1-E9-01`), and covers cost per document, extraction quality, incidents and support issues.
+- **AC2:** It lists what to keep, change and build next, as stories or changes to the roadmap's next version.
+- **AC3:** It is written up in `docs/launch/` and linked from STATUS.md.
+- **Service:** Product (DocFlow and its services)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+---
+
+## E10 · CRO function enablement: sales
+**Goal:** give sales what it needs to demo, sell, price and package the platform services and apps before launch.
+
+**Owner:** the product manager, planned before go-live (Nikhil, 26 Nov 2026). Everything is written for 01scale's services and DocFlow; nothing here changes a service's API or tables.
+
+### MVP1-E10-01 · Sales demo — M
+As a seller, I want a demo I can run in ten minutes, so a buyer sees the value of DocFlow and the services behind it.
+- **AC1:** A demo script tells the story in three lengths (two, ten and thirty minutes), for a business buyer and for a developer or agent builder.
+- **AC2:** A demo environment runs on staging with synthetic invoices and a demo account, reset to a known state before each demo.
+- **AC3:** The demo shows the human review step, the API and the MCP tools, so both audiences see what is different.
+- **Service:** Business (CRO)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E10-02 · Sales training — M
+As a seller, I want to be trained on the product, so I can qualify, pitch and answer questions without an engineer.
+- **AC1:** Training covers the problem, the personas, the value of each service and app, how to qualify a lead, and the pitch, from the PRD and each module's Market Outlook and GTM sections.
+- **AC2:** Objection handling and a competitor comparison (battlecards) for each module, from Market Outlook.
+- **AC3:** A short assessment checks that a seller can run the demo (`MVP1-E10-01`) and answer the ten most likely questions.
+- **Service:** Business (CRO)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E10-03 · SKU setup — S
+As sales and finance, I want every product we sell to have a SKU, so quotes, billing and reports name the same thing.
+- **AC1:** Each sellable item has a SKU: each platform service (by API use), each app (DocFlow by document), each plan and each add-on.
+- **AC2:** SKUs follow one naming scheme, carry their unit (per document, per call, per seat, per month) and map to a Stripe Product and Price.
+- **AC3:** The SKU list lives in one place that pricing, CPQ (`MVP1-E10-04`) and finance read.
+- **Service:** Business (CRO)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E10-04 · CPQ setup — M
+As a seller, I want to configure, price and quote a deal in one place, so quotes are right and approved.
+- **AC1:** Configure: a quote is built from SKUs (`MVP1-E10-03`) and bundles (`MVP1-E10-05`), with rules for what can be combined.
+- **AC2:** Price: list prices from Monetization (`MVP1-E0-28`), volume tiers, and discount bands with who may approve each band.
+- **AC3:** Quote: a quote document with terms and validity; an approved quote becomes a Stripe subscription or invoice (test mode), using the Stripe Billing spike's findings (`MVP1-E6-05`).
+- **Service:** Business (CRO)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E10-05 · Packaging of multiple products: bundles — M
+As a buyer, I want to buy services together as a package, so I get a solution, not parts.
+- **AC1:** Bundles combine services and apps (for example DocFlow with the Extraction and Review APIs for an agent builder) with their price and what each includes.
+- **AC2:** Good, better, best packages for DocFlow, and a developer package for the platform services, each with clear limits.
+- **AC3:** Every bundle maps to SKUs and to CPQ rules, and its margin is checked with finance (`MVP1-E13-03`).
+- **Service:** Business (CRO)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+---
+
+## E11 · CMO function enablement: marketing
+**Goal:** position the platform and DocFlow in the market and agree with sales how to take them there.
+
+**Owner:** the product manager, planned before go-live (Nikhil, 26 Nov 2026). Everything is written for 01scale's services and DocFlow; nothing here changes a service's API or tables.
+
+### MVP1-E11-01 · GTM strategy with sales — M
+As the marketing and sales leads, we want one go-to-market plan we both own, so marketing creates the demand sales can close.
+- **AC1:** A joint plan, built on each module's GTM section (`MVP1-E0-29`): target segments, ideal customer profile, channels (self-serve for developers, sales-led for business buyers) and the launch sequence.
+- **AC2:** A funnel with targets from visit to paid, and who owns each stage, tied to the Metrics sections (`MVP1-E0-27`).
+- **AC3:** Sales and marketing sign off on the plan; it feeds the go-live strategy (`MVP1-E9-01`).
+- **Service:** Business (CMO and CRO)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E11-02 · Positioning document — M
+As anyone telling the story, I want one positioning document, so the website, sales deck and launch say the same thing.
+- **AC1:** For each persona: the problem, the category, the alternatives (from Market Outlook), what is different and the proof.
+- **AC2:** Messaging: a one-line, a paragraph and a page, for the platform and for DocFlow, tested with a few target users.
+- **AC3:** The website copy, the demo (`MVP1-E10-01`) and sales training (`MVP1-E10-02`) use it.
+- **Service:** Business (CMO)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E11-03 · Joint marketing with partners — M
+As the marketing lead, I want to market with partners, so the platform reaches buyers through them.
+- **AC1:** A list of partner types (cloud marketplaces, accounting software, systems integrators, AI agent platforms) and two or three first partners.
+- **AC2:** A joint marketing plan for each: shared content, events, listings and how leads are passed and credited.
+- **AC3:** Partners get a kit: positioning, demo, and how their agents can use the services through MCP.
+- **Open questions:** Nikhil wrote "Joint Marketing Agent with Partners": does "agent" mean an AI agent that partners use or that markets with them, or a joint marketing agreement with partners? The story is written for a joint marketing programme until this is answered.
+- **Service:** Business (CMO)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+---
+
+## E12 · COO function enablement: operations and support
+**Goal:** run support and releases as an operation: who does what, by when, and how issues and releases move.
+
+**Owner:** the product manager, planned before go-live (Nikhil, 26 Nov 2026). Everything is written for 01scale's services and DocFlow; nothing here changes a service's API or tables.
+
+### MVP1-E12-01 · Support SOP — S
+As a support agent, I want a standard operating procedure, so every issue is handled the same way.
+- **AC1:** The SOP takes an issue from intake to closure: log, categorize (`MVP1-E12-02`), set severity, respond, escalate (`MVP1-E12-03`), resolve, confirm with the user and close.
+- **AC2:** It builds on the support playbook and runbooks (`MVP1-E9-10`, which is the support documentation) and says which runbook applies to which category.
+- **AC3:** It names the tools and the records kept, without user data in them.
+- **Service:** Business (COO)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E12-02 · Issue categorization — S
+As support and product, we want issues sorted the same way, so we can see what goes wrong and fix the causes.
+- **AC1:** Categories by module (Identity, Upload, Extraction, Review, Payment, Delivery, DocFlow) and by type (bug, question, billing, access, extraction quality, feature request).
+- **AC2:** Severity levels 1 to 4 with examples for each.
+- **AC3:** Every issue carries one category and one severity, so weekly reports (`MVP1-E9-13`) can count them.
+- **Service:** Business (COO)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E12-03 · Issue escalation paths — S
+As a support agent, I want to know who to escalate to and when, so nothing waits on the wrong desk.
+- **AC1:** An escalation matrix by category and severity: first line (support), second line (the owning service's engineer), product manager, and the decision maker for incidents.
+- **AC2:** Triggers for escalation: severity, time open, a customer who is waiting, a security or privacy concern (straight to security, `MVP1-E15-02`).
+- **AC3:** Contact routes and an on-call rota that matches hypercare (`MVP1-E9-12`).
+- **Service:** Business (COO)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E12-04 · Issue resolution timelines — S
+As a customer and as the support lead, I want stated response and resolution times, so expectations are clear and met.
+- **AC1:** Response and resolution targets for each severity, stated honestly for a demo (best effort) and as they would be for paying customers.
+- **AC2:** How time is measured, when the clock stops, and what happens when a target is missed.
+- **AC3:** The targets appear in the support documentation, the SOP and the weekly report.
+- **Service:** Business (COO)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E12-05 · Support staff training — M
+As a support agent, I want training on the product and the procedures, so I can solve most issues without an engineer.
+- **AC1:** Training covers each module, the journey, the common issues and their runbooks, the SOP, categories, escalation and timelines.
+- **AC2:** Hands-on exercises on staging with synthetic data, including investigating by request ID without seeing a user's document.
+- **AC3:** An assessment, and a refresher with every release (`MVP1-E12-06`).
+- **Service:** Business (COO)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E12-06 · Release management: test, pilot, phase 1 and GA — M
+As the operations lead, I want every release to move through the same stages, so we widen access only when the evidence says so.
+- **AC1:** Four stages with entry and exit criteria: **Test** (staging, internal), **Pilot** (invited users), **Phase 1** (limited public, with caps) and **GA** (general availability).
+- **AC2:** For each stage: who is in, what is measured, who approves the move to the next, and how to roll back (`MVP1-E9-03`).
+- **AC3:** A release calendar and a release checklist that includes release notes (`MVP1-E9-09`) and support training (`MVP1-E12-05`). The go-live strategy (`MVP1-E9-01`) uses these stages.
+- **Service:** Business (COO)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+---
+
+## E13 · CFO function enablement: finance
+**Goal:** own the platform's numbers: the P&L, profitability, unit economics and margins, now and as the services mature.
+
+**Owner:** the product manager, planned before go-live (Nikhil, 26 Nov 2026). Everything is written for 01scale's services and DocFlow; nothing here changes a service's API or tables.
+
+### MVP1-E13-01 · P&L ownership and explanation — M
+As the product owner, I want a P&L for the platform and each product, and to explain it, so decisions are made on the numbers.
+- **AC1:** A P&L model: revenue by SKU, cost of goods (Claude tokens, AWS, Vercel, Neon, Stripe and Resend fees), operating costs (people, tools) and contribution by product.
+- **AC2:** Assumptions are stated with their source; measured costs come from the token ledger and provider bills.
+- **AC3:** A one-page explanation of what drives the P&L and what would change it.
+- **Service:** Business (CFO)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E13-02 · Profitability tracking — M
+As the product owner, I want to track profitability as we go, so problems show up early.
+- **AC1:** Monthly profitability by product and by customer segment, from billing and cost data.
+- **AC2:** Alerts when a product or a large customer goes below its target margin.
+- **AC3:** A view finance and product both use, tied to the Metrics sections (`MVP1-E0-27`).
+- **Service:** Business (CFO)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E13-03 · Unit economics — M
+As the product owner, I want the unit economics of each product, so pricing and growth are sustainable.
+- **AC1:** Cost per document, per API call and per active customer, built on each module's Monetization section (`MVP1-E0-28`).
+- **AC2:** Customer acquisition cost, lifetime value and payback for self-serve and sales-led customers.
+- **AC3:** Sensitivity: how the numbers move with the Claude model chosen, extraction volume and the review rate.
+- **Service:** Business (CFO)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E13-04 · Margin: current versus future — S
+As the product owner, I want to see today's margin against the margin as the services mature, so the path to profit is explicit.
+- **AC1:** Gross margin per product today (consuming external services) and as each service evolves to provide the capability itself (`docs/architecture/ARCHITECTURE.md`).
+- **AC2:** What changes the margin at each step: volume discounts, caching, smaller models, fewer reviews, own infrastructure.
+- **AC3:** A chart of margin over the roadmap's versions of each service.
+- **Service:** Business (CFO)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E13-05 · Margin improvement strategies — S
+As the product owner, I want a list of ways to improve margin with their size and cost, so we pick the best first.
+- **AC1:** Each strategy with its expected effect on margin, its effort and its risk: prompt caching, batch calls, model choice, confidence thresholds that cut reviews, pricing and packaging changes.
+- **AC2:** A ranked list, with the first two planned as stories.
+- **AC3:** Reviewed again after the post-launch review (`MVP1-E9-14`).
+- **Service:** Business (CFO)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+---
+
+## E14 · Chief Customer Officer function enablement: customer success
+**Goal:** prepare the teams that set customers up and keep them successful, with documents they and customers can use.
+
+**Owner:** the product manager, planned before go-live (Nikhil, 26 Nov 2026). Everything is written for 01scale's services and DocFlow; nothing here changes a service's API or tables.
+
+### MVP1-E14-01 · Configuration team training — M
+As someone who sets customers up, I want training on configuring the platform, so every customer is set up correctly.
+- **AC1:** Training on each service's settings, API keys and scopes, MCP access, extraction schemas, review thresholds, payment and delivery settings.
+- **AC2:** A configuration checklist for a new customer and for a developer integration, practised on staging.
+- **AC3:** An assessment, and a refresher with every release (`MVP1-E12-06`).
+- **Service:** Business (CCO)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E14-02 · Customer success team training — M
+As a customer success manager, I want training on the product and the customer journey, so I can help customers get value.
+- **AC1:** Training on the personas, the journey, success metrics per customer, health signals and the common reasons customers struggle.
+- **AC2:** Playbooks for onboarding, the first 30 days, a quarterly review and a customer at risk.
+- **AC3:** Hand-offs with sales (`MVP1-E10-02`) and support (`MVP1-E12-01`).
+- **Service:** Business (CCO)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E14-03 · Customer success documentation: internal and shareable — M
+As customer success, I want documents for us and documents we can share with customers, kept apart, so nothing internal reaches a customer.
+- **AC1:** Internal: account plans, health scoring, escalation notes and playbooks.
+- **AC2:** Shareable with customers: onboarding guide, admin guide, best practices, FAQ and an API and MCP quick start, consistent with each module's Read Me and Support sections.
+- **AC3:** Each document is marked internal or shareable, and shareable ones are reviewed before release.
+- **Service:** Business (CCO)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E14-04 · Upsell opportunity training — S
+As customer success and sales, we want to spot upsell opportunities and know what to offer, so customers grow with us.
+- **AC1:** Signals of an upsell: usage near a plan's limit, a second team, API or agent use, new document types.
+- **AC2:** What to offer for each signal, from the bundles (`MVP1-E10-05`), and when to bring in sales.
+- **AC3:** Tracked as part of profitability (`MVP1-E13-02`).
+- **Service:** Business (CCO)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+---
+
+## E15 · Chief Security Officer function: security requirements
+**Goal:** set how security is tested, how vulnerabilities are found and fixed, and what compliance the platform meets.
+
+**Owner:** the product manager, planned before go-live (Nikhil, 26 Nov 2026). Everything is written for 01scale's services and DocFlow; nothing here changes a service's API or tables.
+
+### MVP1-E15-01 · Security testing strategy — M
+As the security lead, I want a strategy for testing security, so every service is tested the same way and nothing is left to chance.
+- **AC1:** What is tested and how: static analysis and dependency scanning in CI, secret scanning, dynamic testing of the APIs on staging, abuse tests (rate limits, ownership checks, webhook signatures), and a penetration test before GA.
+- **AC2:** Who does each, how often, and what blocks a release.
+- **AC3:** It builds on the security baseline (`MVP1-E0-26`); the launch review (`MVP1-E9-05`) follows it.
+- **Service:** Business (CSO) and Platform
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E15-02 · Vulnerability identification and management — M
+As the security lead, I want vulnerabilities found, rated and fixed on time, so risk is managed, not guessed.
+- **AC1:** Sources: scanners, dependency alerts, tests, and a responsible disclosure page for outside reports.
+- **AC2:** Each vulnerability is rated (CVSS) and has a fix deadline by severity; security issues are tracked privately, never in public issues.
+- **AC3:** A monthly report of open vulnerabilities and their age.
+- **Service:** Business (CSO) and Platform
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E15-03 · Compliance review — M
+As the security lead, I want to know which compliance requirements apply and where we stand, so we can tell customers the truth.
+- **AC1:** Which apply and why: data protection (GDPR, CCPA) for personal data, PCI DSS scope kept minimal through Stripe Checkout, SOC 2 readiness for business customers, and AI disclosures for extraction.
+- **AC2:** A gap list against each, with what to fix before GA and what can follow.
+- **AC3:** A data processing summary (what data, where, which processors) that matches the privacy policy (`MVP1-E9-06`).
+- **Service:** Business (CSO)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+---
+
 ## Definition of done for MVP1
 - All stories pass their AC; E3 and E4 evals meet `EVALS.md` MVP1 thresholds on the holdout set.
 - The demo script in PRD §15 runs end to end on a phone in under 3 minutes.

@@ -10,7 +10,7 @@ import { CostPager, CostTabs } from "../cost-tabs";
 import { findMistake, mistakes } from "../mistakes";
 import { articleBody, articleDomains, articles, findArticle } from "../articles";
 import YieldExplainer from "../yield-explainer";
-import RoadmapView from "../roadmap-view";
+import { findRoadmapVersion, roadmapVersions, RoadmapVersion } from "../roadmap-versions";
 
 const REPO = "https://github.com/founder2863/01scale.com/blob/main";
 
@@ -45,6 +45,8 @@ export function generateStaticParams(): Params[] {
     { tab: [] },
     ...builtTabs.slice(1).map((item) => ({ tab: [item.slug] })),
     ...costTabs.slice(1).map((item) => ({ tab: ["total-projected-cost", item.slug] })),
+    // Each roadmap version has its own address; "/how-its-built/roadmap" is the latest.
+    ...roadmapVersions.map((item) => ({ tab: ["roadmap", item.slug] })),
     ...mistakes.map((item) => ({ tab: ["expensive-mistakes", item.slug] })),
     ...articles.map((item) => ({ tab: ["expensive-mistakes", item.slug] })),
   ];
@@ -56,6 +58,9 @@ function resolve(params: Params): BuiltTab | null {
   if (depth > 2 || params.tab?.[0] === "skills") return null;
   if (depth === 2) {
     const slug = params.tab?.[1] ?? "";
+    if (params.tab?.[0] === "roadmap") {
+      return findRoadmapVersion(slug) ? "roadmap" : null;
+    }
     if (params.tab?.[0] === "total-projected-cost") {
       return costTabs.slice(1).some((item) => item.slug === slug) ? "total-projected-cost" : null;
     }
@@ -742,7 +747,7 @@ export default async function HowItsBuilt({ params }: { params: Promise<Params> 
         </section>
         )}
 
-        {tab === "roadmap" && <RoadmapView />}
+        {tab === "roadmap" && <RoadmapVersion version={findRoadmapVersion(resolved.tab?.[1])!} />}
 
         {tab === "constraints" && (
         <section id="constraints">

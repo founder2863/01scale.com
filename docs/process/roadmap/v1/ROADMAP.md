@@ -1,15 +1,43 @@
-# Roadmap: open stories by dependency, size and value
+# Roadmap v1: open stories by dependency, size and value, for a team
+
+**Frozen on 26 Nov 2026** (Nikhil): v1 is kept as it is. The next version gets its own folder (`docs/process/roadmap/v2/`), script and page, so the roadmap's evolution can be compared version by version on How It's Built › Roadmap.
+
+## What this version adds
+
+Nikhil's requirements and constraints, in the order he added them (PRs #189 and #193):
+
+- **Order the open stories by dependency, size and value**, with sizes on the human scale (S ≈ 3, M ≈ 8, L ≈ 15 person-days).
+- **Product documentation first:** all product documentation, from requirements to architecture, is done before the business process steps (Upload to Delivery) are built. The platform foundation (service template, gateway, identity) does not wait for it and runs alongside.
+- **Documentation within a month** was the target; with the team below it completes in month 3 (see Gaps found).
+- **A monthly roadmap**, months side by side, showing what each month achieves (first a vertical timeline, then a Jira-style view, then months).
+- **A team of 3 engineers and 1 product manager**, starting in parallel whatever can start.
+- **Spare engineer time goes to spikes** on external services: LLM extraction options (AWS, Claude, Microsoft) and Stripe Billing.
+- **Four estimates per story** (product and development work, each without and with Claude Code), and the plan made both ways.
+- **People work together and on their own:** the product manager spends 10% of an engineering story's size on it during the sprint, before the engineer starts; a quarter of every design story is joint sessions with the product manager and an engineer; with Claude Code product and development work both take 40% of the time. Where the product manager holds a story up, the plan shows it.
+
+## Gaps found
+
+Reviewing v1 found these, which the next version addresses:
+
+- **Stories are not ready when engineers pull them.** The modules not yet designed (Extraction, Review, Payment, Delivery, DocFlow) have no design stories: their API, data model, MCP, journeys and UI are not planned, nor the engineer time they need. **Corrected on 26 Nov 2026 (Nikhil): this gap was wrong.** Every module's design documents exist in `docs/services/<service>/`, made on 17 Nov 2026; STATUS.md was out of date. v2 records the correction; the rest of v1 is unchanged.
+- **Stories are too big for a sprint.** An L story is 15 person-days for one engineer, three weeks; nothing limits how long a story stays open, so the dates are hard to predict.
+- **No sprints.** Engineers pick up work on any day; there is no sprint cadence, no rollover and no range for the dates.
+- **The documentation misses its one-month target** (month 3 without Claude Code): the joint sessions wait for engineers busy on the foundation.
+- **Engineers have gaps late in the plan** while the dependency chain (review, then results, then delivery) sets the end date.
 
 Built from the 68 open story issues on 25 Nov 2026, plus MVP1-E0-54 (#188) added the same day: 69 stories, 449 person-days (the eight epic issues are not counted). Linked from `docs/process/STATUS.md`. Update it in the PR that ships, adds, resizes or reorders a story. It is shown as a monthly roadmap on How It's Built › Roadmap (story `MVP1-E0-54`), planned for the team below by `npm run roadmap`.
 
-Nikhil's decisions on PR #189: all product documentation, from requirements to architecture (wave 0), is done before the business process steps (Upload to Delivery) are built; the platform foundation does not wait for it. Plan for a team of 3 engineers and 1 product manager, starting whatever can start in parallel, and show it month by month with what each month achieves.
+Nikhil's decisions on PR #189: all product documentation, from requirements to architecture (wave 0), is done before the business process steps (Upload to Delivery) are built; the platform foundation does not wait for it. Plan for a team of 3 engineers and 1 product manager, starting whatever can start in parallel, and show it month by month with what each month achieves; spare engineer time goes to spikes; compare the plan without and with Claude Code.
 
 ## How it was worked out
 
 - **Size:** from `docs/epics/MVP1-EPICS.md`, on the human scale (S ≈ 3, M ≈ 8, L ≈ 15 person-days, including tests, review and QA). The totals on the site are added up from the sizes by `npm run roadmap`, which also checks every day count typed in this file.
 - **Dependency:** each story's **Needs** are listed under Story dependencies below, taken from the stories a story names in its text and the build order in CLAUDE.md: service template, gateway, then the services in the order DocFlow calls them (upload → extraction → review → payment → delivery), provider before consumer.
 - **Documentation before the business steps (Nikhil, PR #189):** the first story of each business step needs all of wave 0. Foundation and Identity do not, so they start on day 1.
-- **Team plan:** each person takes the most urgent story that is ready and that their role does: the one with the longest chain of work still waiting on it. A story is done by one person from start to end. A month is 20 working days. Stories not listed under Story dependencies are not planned.
+- **Team plan:** every story is split into the tasks people do. An engineering story is the product manager's sprint work (a share of its size, before development can start), then an engineer's development. A design story (wave 0) is its owner working alone, then design discussions and reviews where the product manager and an engineer work together, at the same time. Whenever people are free, the most urgent ready task goes to whoever it needs: the one with the longest chain of work waiting on it, and sprint refinement first when it is all a story is waiting for. If the product manager is in the middle of other work, a story waits, and the plan shows it. A month is 20 working days. Stories not listed under Story dependencies are not planned.
+- **Spare time goes to spikes (Nikhil, PR #189):** when an engineer has nothing ready, they take a spike on an external service, so research is done before the stories that depend on it.
+- **Four estimates per story (Nikhil, PR #193):** product and development work, each without and with Claude Code, in person-days. The owner's work is the story's size. An engineering story adds 10% of its size in product work during the sprint; a design story adds 25% in joint sessions for the other role (engineers on product sections, the product manager on architecture and interfaces). With Claude Code both take 40% of the time. The numbers are in `docs/process/cost-model.json` (`estimates`). The plan is made twice, without and with Claude Code; `docs/process/estimates.csv` lists every story's four estimates and planned months for reports.
+- **Reports:** `docs/process/estimates.csv` has one row per story: its four estimates, owner and planned months, without and with Claude Code. On GitHub, the four estimates go in four **Number** issue fields named exactly `Product estimate without Claude Code`, `Product estimate with Claude Code`, `Dev estimate without Claude Code` and `Dev estimate with Claude Code` (person-days); once they exist, a session can fill them on every issue from this plan.
 - **Value:** how much a story moves the site's purpose: letting a hiring manager click through a working DocFlow journey that is built on real platform services. **High** is on the path to that journey, **medium** makes the platform's depth visible, **low** is useful but nobody waits for it.
 
 ## Team
@@ -39,7 +67,8 @@ Inside a wave the order matters where an arrow is shown.
 | Track | Stories | Days | Value | When |
 |---|---|---|---|---|
 | Harden and show | E0-25 Monitoring (M); close **E0-18 Try it (L)** | 23 | Medium | Monitoring once the gateway is up; it feeds live health into the Metrics section. E0-18 closes when every module has Try it. |
-| Roadmap on the site | E0-54 Roadmap tab on How It's Built (M) | 8 | Medium | Built in PR #189, so not planned. |
+| Spikes | E3-10 Spike: LLM extraction options, AWS, Claude and Microsoft (M); E6-05 Spike: Stripe Billing APIs (S) | 11 | Medium | Nikhil (PR #189): engineers who would otherwise wait for the gateway in month 2 take spikes on the external services. Nothing waits on them, so the plan gives them to whoever is free; the LLM spike reports before the Claude extraction call (E3-02) is built. |
+| Roadmap on the site | E0-54 Roadmap tab on How It's Built (M); E8-12 Four estimates per story, and the plan without and with Claude Code (M) | 16 | Medium | Built in PR #189 and the PR after it, so not planned. |
 
 ## Later (100 person-days)
 
@@ -96,7 +125,7 @@ Inside a wave the order matters where an arrow is shown.
 | E4-03 | E4-02 |
 | E4-06 | E4-01, E3-08 |
 | E4-04 | E4-03, E0-04 |
-| E5-01 | E3-03 |
+| E5-01 | E3-03, E4-03 |
 | E5-03 | E5-01 |
 | E5-05 | E5-03, E3-08, E4-06 |
 | E5-02 | E5-01 |
@@ -107,6 +136,8 @@ Inside a wave the order matters where an arrow is shown.
 | E7-01 | E6-03, E5-04, E5-05 |
 | E7-02 | E7-01 |
 | E7-03 | E7-01 |
+| E3-10 | — |
+| E6-05 | — |
 | E0-25 | E0-08 |
 | E0-18 | E7-03 |
 | E3-09 | E3-08 |

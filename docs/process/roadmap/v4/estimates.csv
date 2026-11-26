@@ -1,0 +1,113 @@
+story,title,issue,size,wave,owner,product_days_without_claude_code,product_days_with_claude_code,dev_days_without_claude_code,dev_days_with_claude_code,month_without_claude_code,month_with_claude_code
+MVP1-E0-15,PRD Reference section on every module page,85,S,0 Product documentation,product manager,3.0,1.25,0.75,0.25,1-1,1-1
+MVP1-E0-14,Market Outlook section on every module page,84,M,0 Product documentation,product manager,8.0,3.25,2.0,0.75,1-2,1-1
+MVP1-E0-27,Metrics section on every module page,104,M,0 Product documentation,product manager,8.0,3.25,2.0,0.75,1-2,1-1
+MVP1-E0-28,Monetization section on every module page,105,M,0 Product documentation,product manager,8.0,3.25,2.0,0.75,2-3,1-1
+MVP1-E0-29,GTM section on every module page,106,M,0 Product documentation,product manager,8.0,3.25,2.0,0.75,2-3,1-2
+MVP1-E0-30,Support section on every module page,107,S,0 Product documentation,product manager,3.0,1.25,0.75,0.25,2-3,1-2
+MVP1-E0-20,Architecture & System Design section for every service and app,97,M,0 Product documentation,engineer,2.0,0.75,8.0,3.25,1-3,1-1
+MVP1-E0-51,DocFlow high-level design diagram,173,S,0 Product documentation,engineer,0.75,0.25,3.0,1.25,3-3,1-2
+MVP1-E0-24,"""Built on"" panel on every service and app page",101,S,0 Product documentation,engineer,0.75,0.25,3.0,1.25,3-3,1-2
+MVP1-E0-16,MCP section on every module page,86,M,0 Product documentation,engineer,2.0,0.75,8.0,3.25,3-3,1-2
+MVP1-E0-01,Database and migrations,14,S,1 Foundation,engineer,0.25,0.25,3.0,1.25,1-1,1-1
+MVP1-E0-03,CI,17,S,1 Foundation,engineer,0.25,0.25,3.0,1.25,1-1,1-1
+MVP1-E0-07,Service template,13,L,1 Foundation,engineer,1.5,0.5,15.0,6.0,1-2,1-1
+MVP1-E0-05,API contract in every service,15,M,1 Foundation,engineer,0.75,0.25,8.0,3.25,2-2,1-1
+MVP1-E0-02,Audit log,16,S,1 Foundation,engineer,0.25,0.25,3.0,1.25,2-2,1-1
+MVP1-E0-08,Gateway,21,M,1 Foundation,engineer,0.75,0.25,8.0,3.25,2-2,1-1
+MVP1-E1-01,Cognito user pool setup,22,S,2 Identity and app shell,engineer,0.25,0.25,3.0,1.25,1-1,1-1
+MVP1-E1-02,Sign up with email verification,23,M,2 Identity and app shell,engineer,0.75,0.25,8.0,3.25,2-2,1-1
+MVP1-E1-03,Sign in and sign out,24,M,2 Identity and app shell,engineer,0.75,0.25,8.0,3.25,3-3,2-2
+MVP1-E1-06,Route protection,27,S,2 Identity and app shell,engineer,0.25,0.25,3.0,1.25,3-3,2-2
+MVP1-E1-04,Forgot and reset password,25,S,2 Identity and app shell,engineer,0.25,0.25,3.0,1.25,3-3,2-2
+MVP1-E1-05,Account page,26,M,2 Identity and app shell,engineer,0.75,0.25,8.0,3.25,4-4,2-2
+MVP1-E0-06,Agent access: API keys and MCP,18,M,2 Identity and app shell,engineer,0.75,0.25,8.0,3.25,4-4,2-2
+MVP1-E0-09,DocFlow app shell,19,M,2 Identity and app shell,engineer,0.75,0.25,8.0,3.25,4-4,2-2
+MVP1-E2-01,S3 bucket and IAM,28,S,3 Upload,engineer,0.25,0.25,3.0,1.25,4-4,2-2
+MVP1-E2-02,Presigned upload URL,29,M,3 Upload,engineer,0.75,0.25,8.0,3.25,4-4,2-2
+MVP1-E2-03,Upload confirmation and checks,30,S,3 Upload,engineer,0.25,0.25,3.0,1.25,5-5,2-2
+MVP1-E2-04,Upload page UI,31,M,3 Upload,engineer,0.75,0.25,8.0,3.25,5-5,2-2
+MVP1-E2-05,Documents list,32,S,3 Upload,engineer,0.25,0.25,3.0,1.25,5-5,2-2
+MVP1-E0-04,Eval harness skeleton,20,M,4 Extraction,engineer,0.75,0.25,8.0,3.25,3-3,1-1
+MVP1-E0-26,"Security baseline, secrets and a safe live demo",103,M,4 Extraction,engineer,0.75,0.25,8.0,3.25,5-5,2-2
+MVP1-E3-01,Extraction job lifecycle,33,M,4 Extraction,engineer,0.75,0.25,8.0,3.25,5-5,2-2
+MVP1-E3-02,Claude extraction call,34,L,4 Extraction,engineer,1.5,0.5,15.0,6.0,5-6,3-3
+MVP1-E3-03,Rule checks and final confidence,35,M,4 Extraction,engineer,0.75,0.25,8.0,3.25,6-6,3-3
+MVP1-E3-08,Hold a job's fields for the app that started it,177,S,4 Extraction,engineer,0.25,0.25,3.0,1.25,6-6,2-2
+MVP1-E3-04,Extraction page,36,M,4 Extraction,engineer,0.75,0.25,8.0,3.25,6-6,3-3
+MVP1-E3-05,Cost and latency logging,37,S,4 Extraction,engineer,0.25,0.25,3.0,1.25,6-6,3-3
+MVP1-E4-01,Review queue,38,M,5 Review,engineer,0.75,0.25,8.0,3.25,6-6,3-3
+MVP1-E4-02,"Accept, edit or mark not present",39,M,5 Review,engineer,0.75,0.25,8.0,3.25,7-7,3-3
+MVP1-E4-03,Complete review,40,S,5 Review,engineer,0.25,0.25,3.0,1.25,7-7,3-3
+MVP1-E4-06,Hold a review task's fields for the app that started it,178,S,5 Review,engineer,0.25,0.25,3.0,1.25,7-7,3-3
+MVP1-E4-04,Corrections feed the eval set,41,S,5 Review,engineer,0.25,0.25,3.0,1.25,7-7,4-4
+MVP1-E5-01,Final JSON with metadata,42,M,6 Outputs and payment,engineer,0.75,0.25,8.0,3.25,7-7,4-4
+MVP1-E5-03,Locked preview,44,S,6 Outputs and payment,engineer,0.25,0.25,3.0,1.25,7-7,4-4
+MVP1-E5-05,DocFlow holds results until payment,179,S,6 Outputs and payment,engineer,0.25,0.25,3.0,1.25,8-8,4-4
+MVP1-E5-02,CSV export,43,S,6 Outputs and payment,engineer,0.25,0.25,3.0,1.25,8-8,4-4
+MVP1-E5-04,Build outputs on demand,45,S,6 Outputs and payment,engineer,0.25,0.25,3.0,1.25,8-8,4-4
+MVP1-E6-01,Checkout session,46,M,6 Outputs and payment,engineer,0.75,0.25,8.0,3.25,7-7,2-2
+MVP1-E6-02,Webhook,47,M,6 Outputs and payment,engineer,0.75,0.25,8.0,3.25,7-7,2-2
+MVP1-E6-03,Payment page and states,48,S,6 Outputs and payment,engineer,0.25,0.25,3.0,1.25,8-8,2-2
+MVP1-E7-01,Success page,49,M,7 Delivery,engineer,0.75,0.25,8.0,3.25,8-8,4-4
+MVP1-E7-02,Secure downloads,50,S,7 Delivery,engineer,0.25,0.25,3.0,1.25,8-8,4-4
+MVP1-E7-03,Email delivery,51,M,7 Delivery,engineer,0.75,0.25,8.0,3.25,8-8,4-4
+MVP1-E11-01,GTM strategy with sales,220,M,8 Business readiness,product manager,8.0,3.25,0.0,0.0,4-4,2-2
+MVP1-E11-02,Positioning document,221,M,8 Business readiness,product manager,8.0,3.25,0.0,0.0,4-5,2-2
+MVP1-E11-03,Joint marketing with partners,222,M,8 Business readiness,product manager,8.0,3.25,0.0,0.0,7-7,3-3
+MVP1-E10-03,SKU setup,217,S,8 Business readiness,product manager,3.0,1.25,0.0,0.0,5-5,3-3
+MVP1-E10-05,Packaging of multiple products: bundles,219,M,8 Business readiness,product manager,8.0,3.25,0.0,0.0,5-6,3-3
+MVP1-E10-04,CPQ setup,218,M,8 Business readiness,product manager,8.0,3.25,0.0,0.0,7-7,3-4
+MVP1-E10-01,Sales demo,215,M,8 Business readiness,product manager,8.0,3.25,0.0,0.0,9-9,4-4
+MVP1-E10-02,Sales training,216,M,8 Business readiness,product manager,8.0,3.25,0.0,0.0,10-10,4-5
+MVP1-E12-02,Issue categorization,224,S,8 Business readiness,product manager,3.0,1.25,0.0,0.0,11-11,5-5
+MVP1-E12-03,Issue escalation paths,225,S,8 Business readiness,product manager,3.0,1.25,0.0,0.0,11-11,5-5
+MVP1-E12-04,Issue resolution timelines,226,S,8 Business readiness,product manager,3.0,1.25,0.0,0.0,11-11,5-5
+MVP1-E12-01,Support SOP,223,S,8 Business readiness,product manager,3.0,1.25,0.0,0.0,11-12,5-5
+MVP1-E12-06,"Release management: test, pilot, phase 1 and GA",228,M,8 Business readiness,product manager,8.0,3.25,0.0,0.0,9-10,3-3
+MVP1-E12-05,Support staff training,227,M,8 Business readiness,product manager,8.0,3.25,0.0,0.0,12-12,5-5
+MVP1-E13-01,P&L ownership and explanation,229,M,8 Business readiness,product manager,8.0,3.25,0.0,0.0,6-6,3-3
+MVP1-E13-03,Unit economics,231,M,8 Business readiness,product manager,8.0,3.25,0.0,0.0,6-7,3-3
+MVP1-E13-02,Profitability tracking,230,M,8 Business readiness,product manager,8.0,3.25,0.0,0.0,8-8,4-4
+MVP1-E13-04,Margin: current versus future,232,S,8 Business readiness,product manager,3.0,1.25,0.0,0.0,9-9,4-4
+MVP1-E13-05,Margin improvement strategies,233,S,8 Business readiness,product manager,3.0,1.25,0.0,0.0,11-11,4-4
+MVP1-E14-01,Configuration team training,234,M,8 Business readiness,product manager,8.0,3.25,0.0,0.0,10-10,5-5
+MVP1-E14-02,Customer success team training,235,M,8 Business readiness,product manager,8.0,3.25,0.0,0.0,12-12,5-5
+MVP1-E14-03,Customer success documentation: internal and shareable,236,M,8 Business readiness,product manager,8.0,3.25,0.0,0.0,12-13,5-6
+MVP1-E14-04,Upsell opportunity training,237,S,8 Business readiness,product manager,3.0,1.25,0.0,0.0,13-13,6-6
+MVP1-E15-01,Security testing strategy,238,M,8 Business readiness,product manager,8.0,3.25,2.0,0.75,5-6,2-3
+MVP1-E15-02,Vulnerability identification and management,239,M,8 Business readiness,product manager,8.0,3.25,2.0,0.75,8-11,4-5
+MVP1-E15-03,Compliance review,240,M,8 Business readiness,product manager,8.0,3.25,2.0,0.75,8-11,4-5
+MVP1-E9-01,Go-live strategy and go/no-go checklist,195,M,9 Go-live,product manager,8.0,3.25,2.0,0.75,13-13,6-6
+MVP1-E9-02,"Production environments, domains and secrets",196,M,9 Go-live,engineer,0.75,0.25,8.0,3.25,8-8,2-2
+MVP1-E9-03,"Staging, release pipeline and rollback",197,M,9 Go-live,engineer,0.75,0.25,8.0,3.25,9-9,3-3
+MVP1-E9-04,Backups and a restore drill,198,S,9 Go-live,engineer,0.25,0.25,3.0,1.25,9-9,3-3
+MVP1-E9-05,Launch security and privacy review,199,M,9 Go-live,engineer,0.75,0.25,8.0,3.25,9-9,4-4
+MVP1-E9-06,"Privacy policy, terms and cookie notice",200,S,9 Go-live,product manager,3.0,1.25,0.0,0.0,13-13,6-6
+MVP1-E9-07,"Load, spend-cap and failure testing",201,M,9 Go-live,engineer,0.75,0.25,8.0,3.25,9-9,4-4
+MVP1-E9-08,User acceptance testing with beta users,202,S,9 Go-live,product manager,3.0,1.25,0.75,0.25,14-14,6-6
+MVP1-E9-09,Release documentation,203,S,9 Go-live,product manager,3.0,1.25,0.0,0.0,14-14,6-6
+MVP1-E9-10,Support documentation: playbook and runbooks,204,S,9 Go-live,product manager,3.0,1.25,0.0,0.0,11-11,5-5
+MVP1-E9-11,Post-production testing,205,M,9 Go-live,engineer,0.75,0.25,8.0,3.25,10-10,4-4
+MVP1-E9-12,Hypercare and incident response,206,M,10 Live and supported,engineer,0.75,0.25,8.0,3.25,14-14,6-6
+MVP1-E9-13,Handling support issues,207,S,10 Live and supported,product manager,3.0,1.25,0.0,0.0,14-14,6-6
+MVP1-E9-14,Post-launch review,208,S,10 Live and supported,product manager,3.0,1.25,0.0,0.0,14-15,6-6
+MVP1-E0-25,Monitoring,102,M,Harden and show,engineer,0.75,0.25,8.0,3.25,9-9,3-3
+MVP1-E0-18,"A working journey on every module page (""Try it"")",95,L,Harden and show,engineer,1.5,0.5,15.0,6.0,10-10,5-5
+MVP1-E3-10,"Spike: LLM extraction options (AWS, Claude, Microsoft)",190,M,Spikes,engineer,0.75,0.25,8.0,3.25,1-1,1-1
+MVP1-E6-05,Spike: Stripe Billing APIs,191,S,Spikes,engineer,0.25,0.25,3.0,1.25,1-1,1-1
+MVP1-E0-54,Roadmap tab on How It's Built,188,M,Roadmap on the site,engineer,0.75,0.25,8.0,3.25,not planned,not planned
+MVP1-E8-12,"Four estimates per story, and the plan without and with Claude Code",192,M,Roadmap on the site,engineer,0.75,0.25,8.0,3.25,not planned,not planned
+MVP1-E3-09,A free daily quota for jobs a person starts,181,S,Product extras,engineer,0.25,0.25,3.0,1.25,6-6,3-3
+MVP1-E6-04,Refunds,92,S,Product extras,engineer,0.25,0.25,3.0,1.25,8-8,3-3
+MVP1-E1-07,Branded sign-in page and address,53,S,Product extras,engineer,0.25,0.25,3.0,1.25,4-4,2-2
+MVP1-E1-08,Sign in with Google,54,M,Product extras,engineer,0.75,0.25,8.0,3.25,10-10,3-3
+MVP1-E3-06,Ask questions about my documents (RAG),88,L,Product extras,engineer,1.5,0.5,15.0,6.0,14-15,6-6
+MVP1-E0-44,"Product names and versions in folders, documents and story IDs",133,L,Waiting for Nikhil's go,engineer,1.5,0.5,15.0,6.0,not planned,not planned
+MVP1-E8-02,The cost model's assumptions,127,S,Waiting for Nikhil's go,engineer,0.25,0.25,3.0,1.25,not planned,not planned
+MVP1-E8-03,Effort for every story,128,M,Waiting for Nikhil's go,engineer,0.75,0.25,8.0,3.25,not planned,not planned
+MVP1-E8-04,A dependency-aware timeline,129,M,Waiting for Nikhil's go,engineer,0.75,0.25,8.0,3.25,not planned,not planned
+MVP1-E8-05,"The human team's cost, per story and in total",130,M,Waiting for Nikhil's go,engineer,0.75,0.25,8.0,3.25,not planned,not planned
+MVP1-E8-06,The cost of building it with Claude Code and one product manager,131,M,Waiting for Nikhil's go,engineer,0.75,0.25,8.0,3.25,not planned,not planned
+MVP1-E8-07,The difference,132,S,Waiting for Nikhil's go,engineer,0.25,0.25,3.0,1.25,not planned,not planned
+MVP1-E8-08,"Token estimate for every V1 story, and a story for every document",135,L,Waiting for Nikhil's go,engineer,1.5,0.5,15.0,6.0,not planned,not planned

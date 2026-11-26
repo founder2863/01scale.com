@@ -1,0 +1,22 @@
+{
+  "about": "Roadmap v1's model, frozen with it on 26 Nov 2026: the sizes and the estimate rules it was planned with. Read only by scripts/site/roadmap_v1.py.",
+  "person_days_per_size": {
+    "S": 3,
+    "M": 8,
+    "L": 15
+  },
+  "estimates": {
+    "about": "Splits each story's size into product and development work, and scales both for a team that builds with Claude Code. Read by scripts/site/roadmap.py (npm run roadmap). Every value here is an assumption until Nikhil confirms it.",
+    "source": "Nikhil on PR #193 (26 Nov 2026): 10% product work during sprints, design work needs about 25% engineer time with the product manager, and product and development work speed up the same with Claude Code. The factor 0.4 is Claude Code's conservative proposal (PR #193).",
+    "product_share_of_engineering_story": 0.1,
+    "product_share_why": "During a sprint the product manager spends a tenth of an engineering story's size on it (refining it, answering questions, accepting it), before the engineer can start. If the product manager is busy, the story waits.",
+    "with_claude_code_factor": {
+      "product": 0.4,
+      "development": 0.4
+    },
+    "with_claude_code_why": "Product and development work are assumed to speed up the same: 2.5 times (0.4). People still review every pull request and document, test the work and make the decisions, so the work does not disappear.",
+    "round_to_days": 0.25,
+    "joint_share_of_design_story": 0.25,
+    "joint_share_why": "Design work (requirements, metrics, architecture, API, data model, MCP, user journeys and UI) is discussed and reviewed by the product manager and an engineer together: a quarter of a design story is joint sessions, the rest is its owner working alone."
+  }
+}

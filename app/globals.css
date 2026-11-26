@@ -4099,3 +4099,162 @@ section[id] {
     grid-row: 2;
   }
 }
+
+/* Roadmap: without / with Claude Code (PR #189). A radio switch, no script needed. */
+.rm-switch {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.rm-switch-input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.rm-switch > label {
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: var(--chip-bg);
+  color: var(--chip-text);
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.rm-switch-input:checked + label {
+  background: var(--brand);
+  color: #ffffff;
+}
+
+.rm-switch-input:focus-visible + label {
+  outline: 2px solid var(--focus, var(--link));
+  outline-offset: 2px;
+}
+
+.rm-panel {
+  display: none;
+  flex-basis: 100%;
+  min-width: 0;
+}
+
+#rm-plan-without:checked ~ .rm-panel-without,
+#rm-plan-with:checked ~ .rm-panel-with {
+  display: block;
+}
+
+.rm-compare-wrap {
+  margin-bottom: 8px;
+}
+
+.rm-team-end {
+  position: absolute;
+  top: 0;
+  padding-left: 4px;
+  border-left: 2px solid var(--success-solid, var(--brand-bright));
+  color: var(--success-text);
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.rm-story-est {
+  grid-column: 1 / -1;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+.rm-team-bar.is-joint {
+  background-image: repeating-linear-gradient(135deg, transparent 0 4px, rgb(255 255 255 / 0.35) 4px 7px);
+}
+
+.rm-legend-joint::before {
+  background: repeating-linear-gradient(135deg, var(--brand) 0 3px, var(--chip-bg) 3px 5px) !important;
+}
+
+/* Roadmap versions (Nikhil, 26 Nov 2026): a pill per version, then what it adds and the gaps
+   found by reviewing it. */
+.rm-versions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 20px;
+}
+
+.rm-versions a {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  max-width: 100%;
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text);
+  text-decoration: none;
+}
+
+.rm-versions a[aria-current="page"] {
+  border-color: var(--brand);
+  background: var(--brand);
+  color: #ffffff;
+}
+
+.rm-version-label {
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.rm-version-title {
+  font-size: 0.8rem;
+  opacity: 0.85;
+}
+
+.rm-version {
+  margin-bottom: 24px;
+}
+
+.rm-version-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+  gap: 16px;
+}
+
+.rm-version-gaps {
+  border-top-color: var(--warning-solid, #d97706);
+}
+
+/* Long file paths in roadmap notes wrap on narrow phones. */
+#roadmap .note a,
+#roadmap .note code,
+.rm-version code {
+  overflow-wrap: anywhere;
+}
+
+.rm-range {
+  color: var(--muted);
+  font-size: 0.9em;
+}
+
+/* Roadmap v4: business readiness has its own colour; the end marker sits inside the chart. */
+.rm-tone-readiness {
+  --rm-tone: var(--warning-solid, #d97706);
+}
+
+.rm-team-end.is-last {
+  padding-right: 4px;
+  padding-left: 0;
+  border-right: 2px solid var(--success-solid, var(--brand-bright));
+  border-left: none;
+  transform: translateX(-100%);
+}
+
+.rm-team-head .rm-team-track {
+  overflow: hidden;
+}
+
+.rm-team-month {
+  overflow: hidden;
+  white-space: nowrap;
+}

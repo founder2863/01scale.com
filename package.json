@@ -9,7 +9,10 @@
     "site:data": "python3 scripts/site/build_products.py",
     "costs": "python3 scripts/costs/build_costs.py",
     "human-costs": "python3 scripts/costs/human_costs.py",
-    "roadmap": "python3 scripts/site/roadmap.py",
+    "roadmap:v1": "python3 scripts/site/roadmap_v1.py",
+    "roadmap:v2": "python3 scripts/site/roadmap_v2.py",
+    "roadmap:v3": "python3 scripts/site/roadmap_v3.py",
+    "roadmap:v4": "python3 scripts/site/roadmap_v4.py",
     "test:costs": "python3 -m pytest -q scripts/costs",
     "schema:check": "node scripts/site/check_schema.mjs"
   },

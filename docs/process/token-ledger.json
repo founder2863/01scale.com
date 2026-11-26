@@ -53,7 +53,8 @@
     "MVP1-E3-09": "MVP1-E3-09 · A free daily quota for jobs a person starts (design)",
     "MVP1-E0-52": "MVP1-E0-52 · Design system page shows the components",
     "MVP1-E0-53": "MVP1-E0-53 · Hide the app flow bands on module pages",
-    "MVP1-E0-54": "MVP1-E0-54 · Roadmap tab on How It's Built"
+    "MVP1-E0-54": "MVP1-E0-54 · Roadmap tab on How It's Built",
+    "MVP1-E8-12": "MVP1-E8-12 · Four estimates per story, and the plan without and with Claude Code"
   },
   "sessions": [
     {
@@ -200,14 +201,21 @@
     },
     {
       "by_kind_usd": {
-        "input": 0.0,
-        "output": 0.0,
-        "cache_read": 0.0,
-        "cache_write": 0.0
+        "input": 0.03,
+        "output": 5.96,
+        "cache_read": 13.59,
+        "cache_write": 9.61
       },
-      "overhead_usd": 0,
-      "tool_total_usd": 3.2556,
-      "rates_usd_per_million": {},
+      "overhead_usd": -3.1627,
+      "tool_total_usd": 29.1883,
+      "rates_usd_per_million": {
+        "claude-opus-5-5": {
+          "input": 4.0,
+          "output": 20.0,
+          "cache_read": 0.2,
+          "cache_write": 8.0
+        }
+      },
       "id": "c5c5ca89-4115-59c8-af00-32ff5dda3a8b",
       "splits": []
     }
@@ -3921,7 +3929,7 @@
       ],
       "tokens": 806028,
       "output_tokens": 6741,
-      "cost_usd": 0.8964
+      "cost_usd": 0.7489
     },
     {
       "session": "c5c5ca89",
@@ -3935,7 +3943,7 @@
       ],
       "tokens": 1087619,
       "output_tokens": 7403,
-      "cost_usd": 0.4726
+      "cost_usd": 0.4625
     },
     {
       "session": "c5c5ca89",
@@ -3949,7 +3957,7 @@
       ],
       "tokens": 5083802,
       "output_tokens": 26361,
-      "cost_usd": 1.8866
+      "cost_usd": 1.9211
     },
     {
       "session": "c5c5ca89",
@@ -3963,8 +3971,7 @@
       ],
       "tokens": 2816237,
       "output_tokens": 18753,
-      "cost_usd": null,
-      "estimated_usd": 2.196
+      "cost_usd": 2.196
     },
     {
       "session": "c5c5ca89",
@@ -3978,8 +3985,7 @@
       ],
       "tokens": 2407091,
       "output_tokens": 14275,
-      "cost_usd": null,
-      "estimated_usd": 0.9055
+      "cost_usd": 0.9055
     },
     {
       "session": "c5c5ca89",
@@ -3993,8 +3999,7 @@
       ],
       "tokens": 2321802,
       "output_tokens": 11204,
-      "cost_usd": null,
-      "estimated_usd": 0.8144
+      "cost_usd": 0.8144
     },
     {
       "session": "c5c5ca89",
@@ -4006,10 +4011,107 @@
       "models": [
         "claude-opus-5-5"
       ],
-      "tokens": 5359175,
-      "output_tokens": 37960,
-      "cost_usd": null,
-      "estimated_usd": 2.2512
+      "tokens": 6333805,
+      "output_tokens": 41789,
+      "cost_usd": 2.5653
+    },
+    {
+      "session": "c5c5ca89",
+      "ts": "2026-11-26T15:12:04.325Z",
+      "area": "MVP1-E8-12",
+      "kind": "build",
+      "summary": "Spike stories for idle engineer time, four estimates per story, the plan without and with Claude Code, estimates CSV; closing comment on #188",
+      "n": 8,
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 10868292,
+      "output_tokens": 45348,
+      "cost_usd": 5.5535
+    },
+    {
+      "session": "c5c5ca89",
+      "ts": "2026-11-26T16:40:21.170Z",
+      "area": "Process",
+      "kind": "scaffolding",
+      "summary": "Questions on PR #193: explain the estimate assumptions and the PM load, and compare alternative settings",
+      "n": 9,
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 778527,
+      "output_tokens": 3052,
+      "cost_usd": 2.7276
+    },
+    {
+      "session": "c5c5ca89",
+      "ts": "2026-11-26T16:52:36.869Z",
+      "area": "MVP1-E8-12",
+      "kind": "rework",
+      "summary": "Rework from Nikhil on PR #193: explain the assumptions; 10% sprint product work, 25% joint design sessions, same Claude Code factor; plan tasks instead of stories",
+      "n": 10,
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 4965406,
+      "output_tokens": 26602,
+      "cost_usd": 1.8069
+    },
+    {
+      "session": "c5c5ca89",
+      "ts": "2026-11-26T17:01:54.249Z",
+      "area": "Process",
+      "kind": "scaffolding",
+      "summary": "Question on PR #193: was the earlier plan overwritten (yes, kept in git history)",
+      "n": 11,
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 428250,
+      "output_tokens": 172,
+      "cost_usd": 0.0893
+    },
+    {
+      "session": "c5c5ca89",
+      "ts": "2026-11-26T17:11:50.378Z",
+      "area": "MVP1-E8-12",
+      "kind": "build",
+      "summary": "Freeze the roadmap as v1: versioned folder, script, data and view, a page per version with what it adds and the gaps found",
+      "n": 12,
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 16471731,
+      "output_tokens": 57375,
+      "cost_usd": 5.0953
+    },
+    {
+      "session": "c5c5ca89",
+      "ts": "2026-11-26T18:31:26.143Z",
+      "area": "MVP1-E8-12",
+      "kind": "build",
+      "summary": "Roadmap v3: epic E9 go-live and operations (stories and issues), half-sprint rollovers, v1 correction note, v2 frozen with its gaps",
+      "n": 13,
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 10864663,
+      "output_tokens": 38693,
+      "cost_usd": 3.3335
+    },
+    {
+      "session": "c5c5ca89",
+      "ts": "2026-11-26T18:53:17.808Z",
+      "area": "MVP1-E8-12",
+      "kind": "build",
+      "summary": "Roadmap v4: six business readiness epics E10 to E15 (stories and issues), joint time beyond documentation, charts end with their plan; v3 frozen with its gaps",
+      "n": 14,
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 13379692,
+      "output_tokens": 47437,
+      "cost_usd": 4.131
     }
   ]
 }
