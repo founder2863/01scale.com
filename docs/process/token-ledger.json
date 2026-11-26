@@ -202,12 +202,12 @@
     {
       "by_kind_usd": {
         "input": 0.02,
-        "output": 3.5,
-        "cache_read": 6.72,
-        "cache_write": 8.2
+        "output": 4.44,
+        "cache_read": 9.19,
+        "cache_write": 8.7
       },
-      "overhead_usd": -3.0407,
-      "tool_total_usd": 18.4443,
+      "overhead_usd": -2.0676,
+      "tool_total_usd": 22.3608,
       "rates_usd_per_million": {
         "claude-opus-5-5": {
           "input": 4.0,
@@ -4081,9 +4081,9 @@
       "models": [
         "claude-opus-5-5"
       ],
-      "tokens": 5762441,
-      "output_tokens": 18545,
-      "cost_usd": 1.6938
+      "tokens": 14939257,
+      "output_tokens": 53135,
+      "cost_usd": 4.6373
     }
   ]
 }

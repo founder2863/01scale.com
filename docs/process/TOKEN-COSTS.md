@@ -2,7 +2,7 @@
 
 What it costs to build 01scale with Claude Code, per story. Generated from `docs/process/token-ledger.json` by `npm run costs`; do not edit by hand.
 
-Updated 2026-11-26. 275 requests across 9 session(s). Total **$415.56** for 915.9 million tokens.
+Updated 2026-11-26. 275 requests across 9 session(s). Total **$419.47** for 925.1 million tokens.
 
 ## Per story
 
@@ -61,8 +61,8 @@ Updated 2026-11-26. 275 requests across 9 session(s). Total **$415.56** for 915.
 | MVP1-E0-52 · Design system page shows the components | 1 | 7.20M | $2.98 | $0.00 | $2.98 | 100% |
 | MVP1-E0-53 · Hide the app flow bands on module pages | 1 | 1.73M | $0.00 | $0.00 | $0.00 (part pending) | 100% |
 | MVP1-E0-54 · Roadmap tab on How It's Built | 7 | 20.86M | $3.13 | $6.48 | $9.61 | 33% |
-| MVP1-E8-12 · Four estimates per story, and the plan without and with Claude Code | 3 | 21.60M | $7.25 | $1.81 | $9.05 | 77% |
-| **Total** | **169** | **705.68M** | **$190.07** | **$141.25** | **$331.32** (part pending) | **59%** |
+| MVP1-E8-12 · Four estimates per story, and the plan without and with Claude Code | 3 | 30.77M | $10.19 | $1.81 | $12.00 | 84% |
+| **Total** | **169** | **714.86M** | **$193.01** | **$141.25** | **$334.27** (part pending) | **60%** |
 
 ## Scaffolding (not tied to a story)
 
@@ -73,13 +73,13 @@ Updated 2026-11-26. 275 requests across 9 session(s). Total **$415.56** for 915.
 | Questions and explanations | 25 | 19.06M | $21.58 |
 | Product discovery | 17 | 7.28M | $15.87 |
 | Process | 55 | 174.67M | $46.04 |
-| Tool overhead (background calls) | 0 | 0.00M | $-1.87 |
-| **Total** | **106** | **210.22M** | **$84.23** |
+| Tool overhead (background calls) | 0 | 0.00M | $-0.90 |
+| **Total** | **106** | **210.22M** | **$85.20** |
 
 ## Totals
 
-- Build $190.07, rework $141.25, scaffolding $84.23.
-- Token yield across stories (build ÷ build + rework): 59%.
+- Build $193.01, rework $141.25, scaffolding $85.20.
+- Token yield across stories (build ÷ build + rework): 60%.
 - 15 pending request(s) were never priced by the tool; estimated at about $12.59 from their measured tokens at list prices (an upper bound), not included in the totals above.
 - Share of all tokens that went into kept story work: 46%.
 

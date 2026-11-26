@@ -4231,3 +4231,8 @@ section[id] {
 .rm-version code {
   overflow-wrap: anywhere;
 }
+
+.rm-range {
+  color: var(--muted);
+  font-size: 0.9em;
+}

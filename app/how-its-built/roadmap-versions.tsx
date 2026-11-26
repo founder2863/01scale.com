@@ -2,6 +2,8 @@ import Link from "next/link";
 import { Fragment, type ReactNode } from "react";
 import { roadmap as v1 } from "./roadmap-v1";
 import RoadmapV1View from "./roadmap-v1-view";
+import { roadmap as v2 } from "./roadmap-v2";
+import RoadmapV2View from "./roadmap-v2-view";
 
 // The roadmap's versions (Nikhil, 26 Nov 2026): each version is frozen once the next one starts,
 // with its own document, script, data and view, so the evolution from one to the next can be
@@ -27,6 +29,15 @@ export const roadmapVersions: Version[] = [
     adds: v1.version.adds,
     gaps: v1.version.gaps,
     View: RoadmapV1View,
+  },
+  {
+    slug: "v2",
+    label: "v2",
+    title: "Ready stories in one-week sprints, with a forecast range",
+    status: "Current",
+    adds: v2.version.adds,
+    gaps: v2.version.gaps,
+    View: RoadmapV2View,
   },
 ];
 
