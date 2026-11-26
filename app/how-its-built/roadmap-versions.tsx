@@ -8,6 +8,8 @@ import { roadmap as v3 } from "./roadmap-v3";
 import RoadmapV3View from "./roadmap-v3-view";
 import { roadmap as v4 } from "./roadmap-v4";
 import RoadmapV4View from "./roadmap-v4-view";
+import { roadmap as v5 } from "./roadmap-v5";
+import RoadmapV5View from "./roadmap-v5-view";
 
 // The roadmap's versions (Nikhil, 26 Nov 2026): each version is frozen once the next one starts,
 // with its own document, script, data and view, so the evolution from one to the next can be
@@ -60,6 +62,15 @@ export const roadmapVersions: Version[] = [
     adds: v4.version.adds,
     gaps: v4.version.gaps,
     View: RoadmapV4View,
+  },
+  {
+    slug: "v5",
+    label: "v5",
+    title: "Two product managers, and what each plan costs",
+    status: "Current",
+    adds: v5.version.adds,
+    gaps: v5.version.gaps,
+    View: RoadmapV5View,
   },
 ];
 

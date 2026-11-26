@@ -15,17 +15,17 @@ export const humanCosts = {
   },
   "scope": "MVP1 only: Platform Core, the platform services, DocFlow (E0 to E7), the cost work itself (E8; Nikhil on PR #159) and AutoRep V1 (E1 to E6). MVP2 is out.",
   "soFar": {
-    "stories": 38,
-    "personDays": 189,
-    "cost": 189000,
-    "tokenCost": 144.46,
+    "stories": 39,
+    "personDays": 197,
+    "cost": 197000,
+    "tokenCost": 164.38,
     "tbd": []
   },
   "projected": {
-    "stories": 169,
-    "personDays": 1004,
-    "cost": 1004000,
-    "tokenCost": 214.62,
+    "stories": 178,
+    "personDays": 1066,
+    "cost": 1066000,
+    "tokenCost": 219.09,
     "tbd": []
   },
   "excludedSoFar": {
@@ -191,17 +191,17 @@ export const humanCosts = {
       "epic": "MVP1-E8",
       "inScope": true,
       "projected": {
-        "stories": 12,
-        "personDays": 83,
-        "cost": 83000,
-        "tokenCost": 19.13,
+        "stories": 13,
+        "personDays": 91,
+        "cost": 91000,
+        "tokenCost": 23.6,
         "tbd": []
       },
       "soFar": {
-        "stories": 4,
-        "personDays": 22,
-        "cost": 22000,
-        "tokenCost": 3.68,
+        "stories": 5,
+        "personDays": 30,
+        "cost": 30000,
+        "tokenCost": 23.6,
         "tbd": []
       }
     },
@@ -227,9 +227,9 @@ export const humanCosts = {
       "epic": "MVP1-E10",
       "inScope": true,
       "projected": {
-        "stories": 5,
-        "personDays": 35,
-        "cost": 35000,
+        "stories": 6,
+        "personDays": 43,
+        "cost": 43000,
         "tokenCost": 0,
         "tbd": []
       },
@@ -245,9 +245,9 @@ export const humanCosts = {
       "epic": "MVP1-E11",
       "inScope": true,
       "projected": {
-        "stories": 3,
-        "personDays": 24,
-        "cost": 24000,
+        "stories": 4,
+        "personDays": 32,
+        "cost": 32000,
         "tokenCost": 0,
         "tbd": []
       },
@@ -263,9 +263,9 @@ export const humanCosts = {
       "epic": "MVP1-E12",
       "inScope": true,
       "projected": {
-        "stories": 6,
-        "personDays": 28,
-        "cost": 28000,
+        "stories": 7,
+        "personDays": 36,
+        "cost": 36000,
         "tokenCost": 0,
         "tbd": []
       },
@@ -281,9 +281,9 @@ export const humanCosts = {
       "epic": "MVP1-E13",
       "inScope": true,
       "projected": {
-        "stories": 5,
-        "personDays": 30,
-        "cost": 30000,
+        "stories": 6,
+        "personDays": 38,
+        "cost": 38000,
         "tokenCost": 0,
         "tbd": []
       },
@@ -297,6 +297,24 @@ export const humanCosts = {
     },
     {
       "epic": "MVP1-E14",
+      "inScope": true,
+      "projected": {
+        "stories": 6,
+        "personDays": 38,
+        "cost": 38000,
+        "tokenCost": 0,
+        "tbd": []
+      },
+      "soFar": {
+        "stories": 0,
+        "personDays": 0,
+        "cost": 0,
+        "tokenCost": 0,
+        "tbd": []
+      }
+    },
+    {
+      "epic": "MVP1-E15",
       "inScope": true,
       "projected": {
         "stories": 4,
@@ -314,12 +332,12 @@ export const humanCosts = {
       }
     },
     {
-      "epic": "MVP1-E15",
+      "epic": "MVP1-E16",
       "inScope": true,
       "projected": {
-        "stories": 3,
-        "personDays": 24,
-        "cost": 24000,
+        "stories": 1,
+        "personDays": 8,
+        "cost": 8000,
         "tokenCost": 0,
         "tbd": []
       },
@@ -2069,10 +2087,25 @@ export const humanCosts = {
       "size": "M",
       "personDays": 8,
       "cost": 8000,
+      "done": true,
+      "issue": 192,
+      "closed": "2026-11-26",
+      "tokenCost": 19.92,
+      "tokenCostShared": false,
+      "tokenCostPending": false
+    },
+    {
+      "id": "MVP1-E8-13",
+      "title": "Roadmap v5: a second product manager, and the cost of each plan",
+      "product": "MVP1",
+      "epic": "MVP1-E8",
+      "size": "M",
+      "personDays": 8,
+      "cost": 8000,
       "done": false,
       "issue": null,
       "closed": null,
-      "tokenCost": 15.45,
+      "tokenCost": null,
       "tokenCostShared": false,
       "tokenCostPending": false
     },
@@ -2362,6 +2395,21 @@ export const humanCosts = {
       "tokenCostPending": false
     },
     {
+      "id": "MVP1-E10-06",
+      "title": "Partner programme terms",
+      "product": "MVP1",
+      "epic": "MVP1-E10",
+      "size": "M",
+      "personDays": 8,
+      "cost": 8000,
+      "done": false,
+      "issue": null,
+      "closed": null,
+      "tokenCost": null,
+      "tokenCostShared": false,
+      "tokenCostPending": false
+    },
+    {
       "id": "MVP1-E11-01",
       "title": "GTM strategy with sales",
       "product": "MVP1",
@@ -2393,7 +2441,22 @@ export const humanCosts = {
     },
     {
       "id": "MVP1-E11-03",
-      "title": "Joint marketing with partners",
+      "title": "Joint marketing AI agent with partners",
+      "product": "MVP1",
+      "epic": "MVP1-E11",
+      "size": "M",
+      "personDays": 8,
+      "cost": 8000,
+      "done": false,
+      "issue": null,
+      "closed": null,
+      "tokenCost": null,
+      "tokenCostShared": false,
+      "tokenCostPending": false
+    },
+    {
+      "id": "MVP1-E11-04",
+      "title": "Launch communications",
       "product": "MVP1",
       "epic": "MVP1-E11",
       "size": "M",
@@ -2497,6 +2560,21 @@ export const humanCosts = {
       "tokenCostPending": false
     },
     {
+      "id": "MVP1-E12-07",
+      "title": "Product analytics",
+      "product": "MVP1",
+      "epic": "MVP1-E12",
+      "size": "M",
+      "personDays": 8,
+      "cost": 8000,
+      "done": false,
+      "issue": null,
+      "closed": null,
+      "tokenCost": null,
+      "tokenCostShared": false,
+      "tokenCostPending": false
+    },
+    {
       "id": "MVP1-E13-01",
       "title": "P&L ownership and explanation",
       "product": "MVP1",
@@ -2572,6 +2650,21 @@ export const humanCosts = {
       "tokenCostPending": false
     },
     {
+      "id": "MVP1-E13-06",
+      "title": "Pricing page and billing operations",
+      "product": "MVP1",
+      "epic": "MVP1-E13",
+      "size": "M",
+      "personDays": 8,
+      "cost": 8000,
+      "done": false,
+      "issue": null,
+      "closed": null,
+      "tokenCost": null,
+      "tokenCostShared": false,
+      "tokenCostPending": false
+    },
+    {
       "id": "MVP1-E14-01",
       "title": "Configuration team training",
       "product": "MVP1",
@@ -2632,6 +2725,36 @@ export const humanCosts = {
       "tokenCostPending": false
     },
     {
+      "id": "MVP1-E14-05",
+      "title": "Customer onboarding and in-product help",
+      "product": "MVP1",
+      "epic": "MVP1-E14",
+      "size": "M",
+      "personDays": 8,
+      "cost": 8000,
+      "done": false,
+      "issue": null,
+      "closed": null,
+      "tokenCost": null,
+      "tokenCostShared": false,
+      "tokenCostPending": false
+    },
+    {
+      "id": "MVP1-E14-06",
+      "title": "Voice of the customer",
+      "product": "MVP1",
+      "epic": "MVP1-E14",
+      "size": "S",
+      "personDays": 3,
+      "cost": 3000,
+      "done": false,
+      "issue": null,
+      "closed": null,
+      "tokenCost": null,
+      "tokenCostShared": false,
+      "tokenCostPending": false
+    },
+    {
       "id": "MVP1-E15-01",
       "title": "Security testing strategy",
       "product": "MVP1",
@@ -2666,6 +2789,36 @@ export const humanCosts = {
       "title": "Compliance review",
       "product": "MVP1",
       "epic": "MVP1-E15",
+      "size": "M",
+      "personDays": 8,
+      "cost": 8000,
+      "done": false,
+      "issue": null,
+      "closed": null,
+      "tokenCost": null,
+      "tokenCostShared": false,
+      "tokenCostPending": false
+    },
+    {
+      "id": "MVP1-E15-04",
+      "title": "Responsible AI policy and AI disclosures",
+      "product": "MVP1",
+      "epic": "MVP1-E15",
+      "size": "S",
+      "personDays": 3,
+      "cost": 3000,
+      "done": false,
+      "issue": null,
+      "closed": null,
+      "tokenCost": null,
+      "tokenCostShared": false,
+      "tokenCostPending": false
+    },
+    {
+      "id": "MVP1-E16-01",
+      "title": "Customer contracts: terms of service, data processing agreement and order form",
+      "product": "MVP1",
+      "epic": "MVP1-E16",
       "size": "M",
       "personDays": 8,
       "cost": 8000,

@@ -2,7 +2,7 @@
 
 What it costs to build 01scale with Claude Code, per story. Generated from `docs/process/token-ledger.json` by `npm run costs`; do not edit by hand.
 
-Updated 2026-11-26. 277 requests across 9 session(s). Total **$426.30** for 950.9 million tokens.
+Updated 2026-11-26. 279 requests across 9 session(s). Total **$431.44** for 964.7 million tokens.
 
 ## Per story
 
@@ -61,8 +61,9 @@ Updated 2026-11-26. 277 requests across 9 session(s). Total **$426.30** for 950.
 | MVP1-E0-52 · Design system page shows the components | 1 | 7.20M | $2.98 | $0.00 | $2.98 | 100% |
 | MVP1-E0-53 · Hide the app flow bands on module pages | 1 | 1.73M | $0.00 | $0.00 | $0.00 (part pending) | 100% |
 | MVP1-E0-54 · Roadmap tab on How It's Built | 7 | 20.86M | $3.13 | $6.48 | $9.61 | 33% |
-| MVP1-E8-12 · Four estimates per story, and the plan without and with Claude Code | 5 | 56.55M | $18.11 | $1.81 | $19.92 | 91% |
-| **Total** | **171** | **740.63M** | **$200.94** | **$141.25** | **$342.19** (part pending) | **61%** |
+| MVP1-E8-12 · Four estimates per story, and the plan without and with Claude Code | 5 | 57.82M | $18.49 | $1.81 | $20.29 | 91% |
+| MVP1-E8-13 · Roadmap v5: a second product manager, and the cost of each plan | 1 | 11.34M | $3.18 | $0.00 | $3.18 | 100% |
+| **Total** | **172** | **753.25M** | **$204.49** | **$141.25** | **$345.75** (part pending) | **62%** |
 
 ## Scaffolding (not tied to a story)
 
@@ -72,14 +73,14 @@ Updated 2026-11-26. 277 requests across 9 session(s). Total **$426.30** for 950.
 | Planning documents | 2 | 1.35M | $0.72 |
 | Questions and explanations | 25 | 19.06M | $21.58 |
 | Product discovery | 17 | 7.28M | $15.87 |
-| Process | 55 | 174.67M | $46.04 |
-| Tool overhead (background calls) | 0 | 0.00M | $-1.99 |
-| **Total** | **106** | **210.22M** | **$84.11** |
+| Process | 56 | 175.95M | $46.39 |
+| Tool overhead (background calls) | 0 | 0.00M | $-0.76 |
+| **Total** | **107** | **211.50M** | **$85.69** |
 
 ## Totals
 
-- Build $200.94, rework $141.25, scaffolding $84.11.
-- Token yield across stories (build ÷ build + rework): 61%.
+- Build $204.49, rework $141.25, scaffolding $85.69.
+- Token yield across stories (build ÷ build + rework): 62%.
 - 15 pending request(s) were never priced by the tool; estimated at about $12.59 from their measured tokens at list prices (an upper bound), not included in the totals above.
 - Share of all tokens that went into kept story work: 48%.
 

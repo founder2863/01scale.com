@@ -1,0 +1,44 @@
+{
+  "about": "Roadmap v5's model: v4's sizes, estimate rules and sprint rules, plus the day rates used to cost each plan. Read only by scripts/site/roadmap_v5.py.",
+  "person_days_per_size": {
+    "S": 3,
+    "M": 8,
+    "L": 15
+  },
+  "estimates": {
+    "about": "Splits each story's size into product and development work, and scales both for a team that builds with Claude Code. Read by scripts/site/roadmap.py (npm run roadmap). Every value here is an assumption until Nikhil confirms it.",
+    "source": "Nikhil on PR #193 (26 Nov 2026): 10% product work during sprints, design work needs about 25% engineer time with the product manager, and product and development work speed up the same with Claude Code. The factor 0.4 is Claude Code's conservative proposal (PR #193).",
+    "product_share_of_engineering_story": 0.1,
+    "product_share_why": "During a sprint the product manager spends a tenth of an engineering story's size on it (refining it, answering questions, accepting it), before the engineer can start. If the product manager is busy, the story waits.",
+    "with_claude_code_factor": {
+      "product": 0.4,
+      "development": 0.4
+    },
+    "with_claude_code_why": "Product and development work are assumed to speed up the same: 2.5 times (0.4). People still review every pull request and document, test the work and make the decisions, so the work does not disappear.",
+    "round_to_days": 0.25,
+    "joint_share_of_design_story": 0.25,
+    "joint_share_why": "Design work (requirements, metrics, architecture, API, data model, MCP, user journeys and UI) is discussed and reviewed by the product manager and an engineer together: a quarter of a design story is joint sessions, the rest is its owner working alone."
+  },
+  "sprint": {
+    "days": 5,
+    "why": "One-week sprints of 5 working days (Nikhil, 26 Nov 2026).",
+    "max_crew": 3,
+    "swarm_overhead": 0.15,
+    "swarm_why": "A story longer than a sprint gets several engineers so it fits one (up to the 3 on the team); working on one story together costs 15% more time for hand-offs and reviews (Nikhil, 26 Nov 2026).",
+    "rollover_rates": {
+      "once": 0.2,
+      "twice": 0.05
+    },
+    "rollover_why": "20% of stories roll over once and 5% twice (assumptions accepted by Nikhil, 26 Nov 2026). Each rollover costs the story's crew half a sprint more (Nikhil, 26 Nov 2026; in v2 it was a full sprint).",
+    "runs": 300,
+    "seed": 195,
+    "decision_days": 1,
+    "decision_why": "A story with an open question is not ready. Before it can be pulled, the product manager and an engineer decide it together in a session of one day (assumption).",
+    "rollover_sprint_fraction": 0.5
+  },
+  "rates": {
+    "product_manager": 1000,
+    "engineer": 1000,
+    "source": "docs/process/cost-model.json (Nikhil, 26 Nov 2026: a product manager costs the same as an engineer for now; no other roles yet)"
+  }
+}

@@ -10,6 +10,11 @@
       "rate": 1000,
       "source": "Nikhil, 22 Nov 2026: a good estimate for engineers",
       "assumption": true
+    },
+    "product_manager": {
+      "rate": 1000,
+      "source": "Nikhil, 26 Nov 2026: the same as an engineer for now",
+      "assumption": true
     }
   },
   "default_role": "engineer",
@@ -215,6 +220,11 @@
         "id": "MVP1-E8-11",
         "issue": 171,
         "closed": "2026-11-23"
+      },
+      {
+        "id": "MVP1-E8-12",
+        "issue": 192,
+        "closed": "2026-11-26"
       }
     ]
   }

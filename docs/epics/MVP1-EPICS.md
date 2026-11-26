@@ -1296,7 +1296,19 @@ As a product manager, I want every story estimated four ways (product and develo
 - **API design:** No endpoints.
 - **Database design:** No tables.
 
-**Status: built (#192, PR #193). It delivers part of `MVP1-E8-03` (effort split into product and development) and of `MVP1-E8-04` (a dependency-aware timeline, here for 3 engineers and a product manager rather than 5 engineers); those stories stay open for their other criteria.**
+**Status: built (#192, PR #193; issue closed 26 Nov 2026). Grew in review into roadmap versions v1 to v4. It delivers part of `MVP1-E8-03` (effort split into product and development) and of `MVP1-E8-04` (a dependency-aware timeline, here for 3 engineers and a product manager rather than 5 engineers); those stories stay open for their other criteria.**
+
+### MVP1-E8-13 · Roadmap v5: a second product manager, and the cost of each plan — M
+As a product leader, I want the roadmap to show what a second product manager changes and what each plan costs, without and with Claude Code, so staffing and tools are decided on numbers (Nikhil, 26 Nov 2026).
+- **AC1:** Roadmap v5 (`docs/process/roadmap/v5/`, `npm run roadmap:v5`, How It's Built › Roadmap › v5) plans 3 engineers and 2 product managers, and includes the product manager stories added on 26 Nov 2026 (`MVP1-E10-06`, `E11-04`, `E12-07`, `E13-06`, `E14-05`, `E14-06`, `E15-04`, `E16-01`) and the joint marketing AI agent (`MVP1-E11-03`).
+- **AC2:** Each plan's cost: product days at the product manager rate and development days at the engineer rate (both $1,000 a day, `docs/process/cost-model.json`), counting the sprint product work and the joint sessions; shown without and with Claude Code, as the cost of the work and the cost of the team over the plan's length.
+- **AC3:** v4 is frozen with the gaps its review found, and v5's page opens with what it adds.
+- **AC4:** Works from 320 to 1920 pixels wide, in light and dark mode.
+- **Service:** Site (`apps/web`) and `scripts/`
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+**Status: built (#242). Roadmap v5: two product managers and the cost of each plan; v4 frozen with its gaps.**
 
 ---
 
@@ -1489,6 +1501,15 @@ As a buyer, I want to buy services together as a package, so I get a solution, n
 - **API design:** No endpoints.
 - **Database design:** No tables.
 
+### MVP1-E10-06 · Partner programme terms — M
+As the sales lead, I want clear commercial terms for partners, so partners know what they earn and what they commit to.
+- **AC1:** Partner tiers (referral, reseller, integration and marketplace) with what each gets: referral fees or margin, discounts, co-marketing and support.
+- **AC2:** How deals are registered and credited, including leads from the joint marketing AI agent (`MVP1-E11-03`), and how conflicts are settled.
+- **AC3:** A partner agreement template reviewed with legal (`MVP1-E16-01`), and the terms reflected in CPQ (`MVP1-E10-04`).
+- **Service:** Business (CRO)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
 ---
 
 ## E11 · CMO function enablement: marketing
@@ -1514,12 +1535,21 @@ As anyone telling the story, I want one positioning document, so the website, sa
 - **API design:** No endpoints.
 - **Database design:** No tables.
 
-### MVP1-E11-03 · Joint marketing with partners — M
-As the marketing lead, I want to market with partners, so the platform reaches buyers through them.
-- **AC1:** A list of partner types (cloud marketplaces, accounting software, systems integrators, AI agent platforms) and two or three first partners.
-- **AC2:** A joint marketing plan for each: shared content, events, listings and how leads are passed and credited.
-- **AC3:** Partners get a kit: positioning, demo, and how their agents can use the services through MCP.
-- **Open questions:** Nikhil wrote "Joint Marketing Agent with Partners": does "agent" mean an AI agent that partners use or that markets with them, or a joint marketing agreement with partners? The story is written for a joint marketing programme until this is answered.
+### MVP1-E11-03 · Joint marketing AI agent with partners — M
+As the marketing lead, I want an AI agent that markets the platform with our partners, so partners can sell it without us in every conversation (Nikhil, 26 Nov 2026: "agent" means an AI agent).
+- **AC1:** A Claude-based agent that partners use and embed: it answers prospects' questions about the services and DocFlow from the positioning (`MVP1-E11-02`) and each module's documents, shows the demo flow, and drafts co-branded content for the partner to review.
+- **AC2:** It qualifies interested prospects and passes them to sales with the partner credited, following the joint marketing plan for each partner (partner types, first two or three partners, shared content, events and listings).
+- **AC3:** It uses only public product information, never a customer's data; every reply it gives is grounded in a cited document, and anything it cannot answer goes to a person.
+- **AC4:** Partners get a kit: positioning, demo, the agent, and how their own agents can use the services through MCP.
+- **Service:** Business (CMO), built on the platform's MCP tools
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E11-04 · Launch communications — M
+As the marketing lead, I want the launch announced well, so the right people hear about DocFlow and the platform when it goes live.
+- **AC1:** A launch plan by stage (pilot, phase 1, GA; `MVP1-E12-06`): website updates, launch post, email to the waiting list, posts for developers and for business buyers, and a short video of the demo.
+- **AC2:** Messages come from the positioning document (`MVP1-E11-02`); every claim has its proof.
+- **AC3:** Launch metrics (visits, sign-ups, activations) are set with their targets and tracked by product analytics (`MVP1-E12-07`).
 - **Service:** Business (CMO)
 - **API design:** No endpoints.
 - **Database design:** No tables.
@@ -1585,6 +1615,15 @@ As the operations lead, I want every release to move through the same stages, so
 - **API design:** No endpoints.
 - **Database design:** No tables.
 
+### MVP1-E12-07 · Product analytics — M
+As the product manager, I want to measure how people use the product, so the Metrics sections and decisions rest on data.
+- **AC1:** An instrumentation plan: the events for each step of the journey and each service (sign-up, upload, extraction finished, review done, paid, delivered, API and MCP calls), their properties, and what is never recorded (document contents, personal data).
+- **AC2:** A tool and dashboards for the north-star metric and the funnel in each Metrics section (`MVP1-E0-27`), with consent handled as the privacy policy says (`MVP1-E9-06`).
+- **AC3:** Engineers add the events with the stories that build each step; this story owns the plan and checks it is complete before go-live.
+- **Service:** Business (COO) and Platform
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
 ---
 
 ## E13 · CFO function enablement: finance
@@ -1637,6 +1676,15 @@ As the product owner, I want a list of ways to improve margin with their size an
 - **API design:** No endpoints.
 - **Database design:** No tables.
 
+### MVP1-E13-06 · Pricing page and billing operations — M
+As a buyer and as finance, I want clear public prices and billing that runs smoothly, so buying is easy and money is collected and refunded correctly.
+- **AC1:** A public pricing page for the platform services and DocFlow, from Monetization (`MVP1-E0-28`), SKUs (`MVP1-E10-03`) and bundles (`MVP1-E10-05`), with the free quota and what test mode means.
+- **AC2:** Billing operations: invoices and receipts, failed payments and retries, refunds policy (`MVP1-E6-04`), tax handling, and month-end reconciliation with Stripe (test mode).
+- **AC3:** Who owns each step, and the monthly billing report that feeds profitability tracking (`MVP1-E13-02`).
+- **Service:** Business (CFO)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
 ---
 
 ## E14 · Chief Customer Officer function enablement: customer success
@@ -1680,6 +1728,24 @@ As customer success and sales, we want to spot upsell opportunities and know wha
 - **API design:** No endpoints.
 - **Database design:** No tables.
 
+### MVP1-E14-05 · Customer onboarding and in-product help — M
+As a new user, I want to be guided to my first result, so I get value from DocFlow in minutes.
+- **AC1:** An onboarding flow from sign-up to the first delivered result: a sample synthetic invoice, a short checklist and clear empty states.
+- **AC2:** In-product help: tips at each step, links to the shareable documents (`MVP1-E14-03`) and a way to ask for help (`MVP1-E9-13`).
+- **AC3:** Activation is measured (time to first result, drop-off by step) with product analytics (`MVP1-E12-07`).
+- **Service:** Business (CCO) and the DocFlow app
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E14-06 · Voice of the customer — S
+As the product manager, I want customers' feedback gathered and acted on, so the roadmap follows what customers need.
+- **AC1:** Feedback channels: in-product feedback, interviews with beta and early users (`MVP1-E9-08`), support issues (`MVP1-E9-13`) and customer success notes.
+- **AC2:** Feedback is tagged by module and theme and reviewed monthly; the top themes become stories or changes to the next roadmap version.
+- **AC3:** Customers who gave feedback hear what changed because of it.
+- **Service:** Business (CCO)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
 ---
 
 ## E15 · Chief Security Officer function: security requirements
@@ -1711,6 +1777,33 @@ As the security lead, I want to know which compliance requirements apply and whe
 - **AC2:** A gap list against each, with what to fix before GA and what can follow.
 - **AC3:** A data processing summary (what data, where, which processors) that matches the privacy policy (`MVP1-E9-06`).
 - **Service:** Business (CSO)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E15-04 · Responsible AI policy and AI disclosures — S
+As a user and as the security lead, I want clear rules for how AI is used in the product, so people know what the AI does and can trust it.
+- **AC1:** A responsible AI policy: what Claude does in each service, human review of low-confidence results, that customer documents are not used to train models, how model and prompt changes are evaluated (`docs/evals/EVALS.md`), and who is accountable.
+- **AC2:** AI disclosures in the product and the documents: where AI extracts data, where a person reviews it, and how to report a wrong result.
+- **AC3:** The policy covers the joint marketing AI agent (`MVP1-E11-03`) and is checked in the compliance review (`MVP1-E15-03`).
+- **Service:** Business (CSO) and Platform
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+---
+
+---
+
+## E16 · General Counsel function enablement: legal
+**Goal:** have the contracts in place that customers and partners sign, before go-live.
+
+**Owner:** the product manager, planned before go-live (Nikhil, 26 Nov 2026). Nothing here changes a service's API or tables.
+
+### MVP1-E16-01 · Customer contracts: terms of service, data processing agreement and order form — M
+As a customer, I want clear contracts, so I know what I am buying, how my data is handled and what happens if something goes wrong.
+- **AC1:** Terms of service for self-serve customers and a master agreement for sales-led customers: service description, acceptable use, liability, termination and support levels (`MVP1-E12-04`).
+- **AC2:** A data processing agreement listing the processors (AWS, Neon, Vercel, Anthropic, Stripe, Resend) and the data each handles, matching the privacy policy (`MVP1-E9-06`) and the compliance review (`MVP1-E15-03`).
+- **AC3:** An order form that CPQ (`MVP1-E10-04`) fills in, and a review step with a lawyer before GA; until then the documents say they are drafts for a demo.
+- **Service:** Business (General Counsel)
 - **API design:** No endpoints.
 - **Database design:** No tables.
 
