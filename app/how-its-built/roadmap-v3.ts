@@ -13,7 +13,9 @@ export const roadmap = {
       "**Stories the product manager owns** outside the documentation wave (go-live strategy, privacy policy, user acceptance testing, release and support documentation, support issues, post-launch review) are product work only."
     ],
     "gaps": [
-      "**Not reviewed yet.** v3 is the current version; reviewing it will list the gaps that v4 addresses."
+      "**The product manager is under-used and the business is not ready.** The product manager is busy about half the plan, and nothing prepares the functions that sell, market, run, finance, grow and secure the product: no sales demo or training, SKUs, quoting or bundles; no positioning or joint GTM with sales; no support procedures, training or release stages; no P&L, unit economics or margins; no customer success training or documents; no security testing strategy, vulnerability management or compliance review. Nikhil: plan these as product manager epics before go-live.",
+      "**The go-live strategy and user acceptance testing are written alone.** Both need engineers in the room. Nikhil: give them joint time, like the design stories.",
+      "**The with-Claude Code chart is drawn on the without-Claude Code scale,** so it shows empty months after its work is finished. Nikhil: show each plan only until its work is done."
     ]
   },
   "source": "docs/process/roadmap/v3/ROADMAP.md",

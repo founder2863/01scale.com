@@ -4236,3 +4236,25 @@ section[id] {
   color: var(--muted);
   font-size: 0.9em;
 }
+
+/* Roadmap v4: business readiness has its own colour; the end marker sits inside the chart. */
+.rm-tone-readiness {
+  --rm-tone: var(--warning-solid, #d97706);
+}
+
+.rm-team-end.is-last {
+  padding-right: 4px;
+  padding-left: 0;
+  border-right: 2px solid var(--success-solid, var(--brand-bright));
+  border-left: none;
+  transform: translateX(-100%);
+}
+
+.rm-team-head .rm-team-track {
+  overflow: hidden;
+}
+
+.rm-team-month {
+  overflow: hidden;
+  white-space: nowrap;
+}

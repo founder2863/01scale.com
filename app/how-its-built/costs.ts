@@ -642,23 +642,23 @@ export const costs = {
     {
       "key": "MVP1-E8-12",
       "name": "MVP1-E8-12 · Four estimates per story, and the plan without and with Claude Code",
-      "requests": 4,
-      "buildTokens": 37075425,
+      "requests": 5,
+      "buildTokens": 51584378,
       "reworkTokens": 4965406,
-      "buildCost": 13.64,
+      "buildCost": 18.11,
       "reworkCost": 1.81,
-      "totalCost": 15.45,
-      "yield": 88,
+      "totalCost": 19.92,
+      "yield": 91,
       "pending": false
     }
   ],
   "storyTotals": {
-    "requests": 170,
-    "tokens": 726123298,
-    "buildCost": 196.46,
+    "requests": 171,
+    "tokens": 740632251,
+    "buildCost": 200.94,
     "reworkCost": 141.25,
-    "cost": 337.72,
-    "yield": 60,
+    "cost": 342.19,
+    "yield": 61,
     "pending": true
   },
   "scaffolding": [
@@ -696,32 +696,32 @@ export const costs = {
       "name": "Tool overhead (background calls)",
       "requests": 0,
       "tokens": 0,
-      "cost": -0.97
+      "cost": -1.99
     }
   ],
   "scaffoldingTotals": {
     "requests": 106,
     "tokens": 210219053,
-    "cost": 85.13
+    "cost": 84.11
   },
   "totals": {
-    "requests": 276,
-    "tokens": 936342351,
-    "cost": 422.85,
-    "buildCost": 196.46,
+    "requests": 277,
+    "tokens": 950851304,
+    "cost": 426.3,
+    "buildCost": 200.94,
     "reworkCost": 141.25,
-    "scaffoldingCost": 85.13,
-    "storyYield": 60,
-    "overallYield": 47,
+    "scaffoldingCost": 84.11,
+    "storyYield": 61,
+    "overallYield": 48,
     "pendingRequests": 21,
     "pendingEstimate": 12.59,
     "pendingEstimated": 15
   },
   "byKind": {
     "input": 0.16,
-    "output": 28.65,
-    "cache_read": 70.46,
-    "cache_write": 70.94
+    "output": 29.42,
+    "cache_read": 72.72,
+    "cache_write": 71.36
   },
   "mistakes": {
     "designRedo": {
@@ -743,8 +743,8 @@ export const costs = {
       "cost": 105.4,
       "share": 25,
       "median": 8.2,
-      "typical": 0.63,
-      "extra": 96.59
+      "typical": 0.66,
+      "extra": 96.17
     },
     "mergedTooSoon": {
       "requests": 1,

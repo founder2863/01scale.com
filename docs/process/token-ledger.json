@@ -202,12 +202,12 @@
     {
       "by_kind_usd": {
         "input": 0.03,
-        "output": 5.19,
-        "cache_read": 11.33,
-        "cache_write": 9.19
+        "output": 5.96,
+        "cache_read": 13.59,
+        "cache_write": 9.61
       },
-      "overhead_usd": -2.1441,
-      "tool_total_usd": 25.7324,
+      "overhead_usd": -3.1627,
+      "tool_total_usd": 29.1883,
       "rates_usd_per_million": {
         "claude-opus-5-5": {
           "input": 4.0,
@@ -4095,9 +4095,23 @@
       "models": [
         "claude-opus-5-5"
       ],
-      "tokens": 9735402,
-      "output_tokens": 34998,
-      "cost_usd": 2.99
+      "tokens": 10864663,
+      "output_tokens": 38693,
+      "cost_usd": 3.3335
+    },
+    {
+      "session": "c5c5ca89",
+      "ts": "2026-11-26T18:53:17.808Z",
+      "area": "MVP1-E8-12",
+      "kind": "build",
+      "summary": "Roadmap v4: six business readiness epics E10 to E15 (stories and issues), joint time beyond documentation, charts end with their plan; v3 frozen with its gaps",
+      "n": 14,
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 13379692,
+      "output_tokens": 47437,
+      "cost_usd": 4.131
     }
   ]
 }

@@ -1,6 +1,6 @@
 # Roadmap v3: to live in production and beyond, with realistic rollovers
 
-Started on 26 Nov 2026 from roadmap v2 (`docs/process/roadmap/v2/`, frozen), after reviewing it with Nikhil. Same stories, dependencies, team, estimate rules and sprint rules as v2, plus the changes below. v3 has its own model (`model.json`), script (`scripts/site/roadmap_v3.py`, `npm run roadmap:v3`) and page (How It's Built › Roadmap › v3).
+Started on 26 Nov 2026 from roadmap v2 (`docs/process/roadmap/v2/`, frozen), after reviewing it with Nikhil. **Frozen on 26 Nov 2026** (Nikhil): v3 is kept as it is; v4 continues from it in `docs/process/roadmap/v4/`. Same stories, dependencies, team, estimate rules and sprint rules as v2, plus the changes below. v3 has its own model (`model.json`), script (`scripts/site/roadmap_v3.py`, `npm run roadmap:v3`) and page (How It's Built › Roadmap › v3).
 
 ## What this version adds
 
@@ -14,7 +14,11 @@ Nikhil's requirements and constraints for v3 (26 Nov 2026), after reviewing v2:
 
 ## Gaps found
 
-- **Not reviewed yet.** v3 is the current version; reviewing it will list the gaps that v4 addresses.
+Reviewing v3 with Nikhil (26 Nov 2026) found these, which v4 addresses:
+
+- **The product manager is under-used and the business is not ready.** The product manager is busy about half the plan, and nothing prepares the functions that sell, market, run, finance, grow and secure the product: no sales demo or training, SKUs, quoting or bundles; no positioning or joint GTM with sales; no support procedures, training or release stages; no P&L, unit economics or margins; no customer success training or documents; no security testing strategy, vulnerability management or compliance review. Nikhil: plan these as product manager epics before go-live.
+- **The go-live strategy and user acceptance testing are written alone.** Both need engineers in the room. Nikhil: give them joint time, like the design stories.
+- **The with-Claude Code chart is drawn on the without-Claude Code scale,** so it shows empty months after its work is finished. Nikhil: show each plan only until its work is done.
 
 ## How it was worked out
 
