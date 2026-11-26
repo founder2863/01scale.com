@@ -19,7 +19,7 @@ Nikhil's requirements and constraints, in the order he added them (PRs #189 and 
 
 Reviewing v1 found these, which the next version addresses:
 
-- **Stories are not ready when engineers pull them.** The modules not yet designed (Extraction, Review, Payment, Delivery, DocFlow) have no design stories: their API, data model, MCP, journeys and UI are not planned, nor the engineer time they need.
+- **Stories are not ready when engineers pull them.** The modules not yet designed (Extraction, Review, Payment, Delivery, DocFlow) have no design stories: their API, data model, MCP, journeys and UI are not planned, nor the engineer time they need. **Corrected on 26 Nov 2026 (Nikhil): this gap was wrong.** Every module's design documents exist in `docs/services/<service>/`, made on 17 Nov 2026; STATUS.md was out of date. v2 records the correction; the rest of v1 is unchanged.
 - **Stories are too big for a sprint.** An L story is 15 person-days for one engineer, three weeks; nothing limits how long a story stays open, so the dates are hard to predict.
 - **No sprints.** Engineers pick up work on any day; there is no sprint cadence, no rollover and no range for the dates.
 - **The documentation misses its one-month target** (month 3 without Claude Code): the joint sessions wait for engineers busy on the foundation.

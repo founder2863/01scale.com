@@ -16,7 +16,7 @@ export const roadmap = {
       "**People work together and on their own:** the product manager spends 10% of an engineering story's size on it during the sprint, before the engineer starts; a quarter of every design story is joint sessions with the product manager and an engineer; with Claude Code product and development work both take 40% of the time. Where the product manager holds a story up, the plan shows it."
     ],
     "gaps": [
-      "**Stories are not ready when engineers pull them.** The modules not yet designed (Extraction, Review, Payment, Delivery, DocFlow) have no design stories: their API, data model, MCP, journeys and UI are not planned, nor the engineer time they need.",
+      "**Stories are not ready when engineers pull them.** The modules not yet designed (Extraction, Review, Payment, Delivery, DocFlow) have no design stories: their API, data model, MCP, journeys and UI are not planned, nor the engineer time they need. **Corrected on 26 Nov 2026 (Nikhil): this gap was wrong.** Every module's design documents exist in `docs/services/<service>/`, made on 17 Nov 2026; STATUS.md was out of date. v2 records the correction; the rest of v1 is unchanged.",
       "**Stories are too big for a sprint.** An L story is 15 person-days for one engineer, three weeks; nothing limits how long a story stays open, so the dates are hard to predict.",
       "**No sprints.** Engineers pick up work on any day; there is no sprint cadence, no rollover and no range for the dates.",
       "**The documentation misses its one-month target** (month 3 without Claude Code): the joint sessions wait for engineers busy on the foundation.",

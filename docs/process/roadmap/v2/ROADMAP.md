@@ -2,6 +2,8 @@
 
 Started on 26 Nov 2026 from roadmap v1 (`docs/process/roadmap/v1/`, frozen). Same stories, dependencies, team and estimate rules as v1, plus the constraints below. v2 has its own model (`model.json`), script (`scripts/site/roadmap_v2.py`, `npm run roadmap:v2`) and page (How It's Built › Roadmap › v2). Goal (Nikhil): a monthly roadmap that is more predictable.
 
+**Frozen on 26 Nov 2026** (Nikhil): v2 is kept as it is; v3 continues from it in `docs/process/roadmap/v3/`.
+
 ## What this version adds
 
 Nikhil's requirements and constraints for v2 (26 Nov 2026), after reviewing v1:
@@ -17,7 +19,11 @@ Nikhil's requirements and constraints for v2 (26 Nov 2026), after reviewing v1:
 
 ## Gaps found
 
-- **Not reviewed yet.** v2 is the current version; reviewing it will list the gaps that v3 addresses.
+Reviewing v2 with Nikhil (26 Nov 2026) found these, which v3 addresses:
+
+- **Rollovers are modelled too harshly.** A rollover keeps the whole crew on the story for one more full sprint, so a story with three engineers costs fifteen more engineer-days; the likely end-to-end date lands three months after the no-rollover date. Nikhil: count a rollover as half a sprint.
+- **The plan ends at "works end to end", not at live in production.** There is no go-live strategy, no production or staging environments, no release pipeline or rollback, no backups, no launch security review, no privacy policy, no load or failure testing, no user acceptance testing, and no release or support documentation; nor any work after launch: testing in production, hypercare and handling support issues.
+- **Engineers still have gaps late in the plan.** Nikhil: fill them with extras.
 
 ## How it was worked out
 

@@ -201,13 +201,13 @@
     },
     {
       "by_kind_usd": {
-        "input": 0.02,
-        "output": 4.44,
-        "cache_read": 9.19,
-        "cache_write": 8.7
+        "input": 0.03,
+        "output": 5.19,
+        "cache_read": 11.33,
+        "cache_write": 9.19
       },
-      "overhead_usd": -2.0676,
-      "tool_total_usd": 22.3608,
+      "overhead_usd": -2.1441,
+      "tool_total_usd": 25.7324,
       "rates_usd_per_million": {
         "claude-opus-5-5": {
           "input": 4.0,
@@ -4081,9 +4081,23 @@
       "models": [
         "claude-opus-5-5"
       ],
-      "tokens": 14939257,
-      "output_tokens": 53135,
-      "cost_usd": 4.6373
+      "tokens": 16471731,
+      "output_tokens": 57375,
+      "cost_usd": 5.0953
+    },
+    {
+      "session": "c5c5ca89",
+      "ts": "2026-11-26T18:31:26.143Z",
+      "area": "MVP1-E8-12",
+      "kind": "build",
+      "summary": "Roadmap v3: epic E9 go-live and operations (stories and issues), half-sprint rollovers, v1 correction note, v2 frozen with its gaps",
+      "n": 13,
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 9735402,
+      "output_tokens": 34998,
+      "cost_usd": 2.99
     }
   ]
 }

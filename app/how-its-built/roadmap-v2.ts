@@ -16,7 +16,9 @@ export const roadmap = {
       "**Correction to v1:** v1's first gap was wrong. Every module's design documents exist (`docs/services/<service>/`, made with the design skills from 17 Nov 2026); STATUS.md was out of date. What has no story yet is the documents themselves: `MVP1-E8-08` (a story for every document) waits for Nikhil's go."
     ],
     "gaps": [
-      "**Not reviewed yet.** v2 is the current version; reviewing it will list the gaps that v3 addresses."
+      "**Rollovers are modelled too harshly.** A rollover keeps the whole crew on the story for one more full sprint, so a story with three engineers costs fifteen more engineer-days; the likely end-to-end date lands three months after the no-rollover date. Nikhil: count a rollover as half a sprint.",
+      "**The plan ends at \"works end to end\", not at live in production.** There is no go-live strategy, no production or staging environments, no release pipeline or rollback, no backups, no launch security review, no privacy policy, no load or failure testing, no user acceptance testing, and no release or support documentation; nor any work after launch: testing in production, hypercare and handling support issues.",
+      "**Engineers still have gaps late in the plan.** Nikhil: fill them with extras."
     ]
   },
   "source": "docs/process/roadmap/v2/ROADMAP.md",

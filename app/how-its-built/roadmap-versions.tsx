@@ -4,6 +4,8 @@ import { roadmap as v1 } from "./roadmap-v1";
 import RoadmapV1View from "./roadmap-v1-view";
 import { roadmap as v2 } from "./roadmap-v2";
 import RoadmapV2View from "./roadmap-v2-view";
+import { roadmap as v3 } from "./roadmap-v3";
+import RoadmapV3View from "./roadmap-v3-view";
 
 // The roadmap's versions (Nikhil, 26 Nov 2026): each version is frozen once the next one starts,
 // with its own document, script, data and view, so the evolution from one to the next can be
@@ -34,10 +36,19 @@ export const roadmapVersions: Version[] = [
     slug: "v2",
     label: "v2",
     title: "Ready stories in one-week sprints, with a forecast range",
-    status: "Current",
+    status: "Frozen 26 Nov 2026",
     adds: v2.version.adds,
     gaps: v2.version.gaps,
     View: RoadmapV2View,
+  },
+  {
+    slug: "v3",
+    label: "v3",
+    title: "To live in production and beyond, with realistic rollovers",
+    status: "Current",
+    adds: v3.version.adds,
+    gaps: v3.version.gaps,
+    View: RoadmapV3View,
   },
 ];
 

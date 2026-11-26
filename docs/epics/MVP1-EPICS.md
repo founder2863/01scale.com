@@ -1298,6 +1298,145 @@ As a product manager, I want every story estimated four ways (product and develo
 
 **Status: built (#192, PR #193). It delivers part of `MVP1-E8-03` (effort split into product and development) and of `MVP1-E8-04` (a dependency-aware timeline, here for 3 engineers and a product manager rather than 5 engineers); those stories stay open for their other criteria.**
 
+---
+
+## E9 · Go-live and operations
+**Goal:** take DocFlow and its services from "works end to end" to live in production, and run them well once they are: the work before production (strategy, environments, release pipeline, security, testing) and after it (testing in production, hypercare, support). Nikhil asked for these on PR #193 (26 Nov 2026): go-live strategy, release documentation, support documentation, post-production testing, post-production and handling support issues; the other stories are pre- and post-production work a launch also needs.
+
+**Scope:** MVP1. Payments stay in Stripe test mode; every user document in tests is synthetic. Nothing here changes a service's API or tables.
+
+### MVP1-E9-01 · Go-live strategy and go/no-go checklist — M
+As the product manager, I want a written plan for taking DocFlow live, so the launch is a decision against criteria, not a date.
+- **AC1:** A go-live document in `docs/launch/` states the launch stages (private beta with invited users, then public), who is invited, and what each stage must show before the next.
+- **AC2:** A **go/no-go checklist** lists the entry criteria: every main-path story done, the pre-production stories in this epic done, evals at their thresholds (`docs/evals/EVALS.md`), no open severity-1 or severity-2 bugs, the spend cap tested.
+- **AC3:** It states the **rollback plan** (which version each service returns to and how), the communication plan (who hears what, where) and who decides go or no-go (Nikhil).
+- **AC4:** It names the launch metrics, taken from each module's Metrics section (`MVP1-E0-27`), and the targets for the first two weeks.
+- **Service:** Product (DocFlow and its services)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E9-02 · Production environments, domains and secrets — M
+As an engineer, I want production set up the same way for every service, so the first deployment to production is routine.
+- **AC1:** Each service and app has a production Vercel project, its own Neon role and schema on the production branch, and production settings separate from preview.
+- **AC2:** AWS (S3 bucket, IAM roles), Cognito (production user pool and app client), Resend (sending domain with SPF, DKIM and DMARC) and Stripe (test mode, its own webhook endpoint) are set up for production by documented steps in `docs/infra/`.
+- **AC3:** Secrets exist only in Vercel and AWS, marked sensitive, with names in each service's `.env.example` (`MVP1-E0-26`); nothing secret is in the repository.
+- **AC4:** Budgets and spend alerts are set on AWS, Anthropic and Vercel.
+- **Service:** Platform (operations) and Site (`apps/web`)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E9-03 · Staging, release pipeline and rollback — M
+As an engineer, I want every change to pass through staging and reach production the same way, so a release is predictable and can be undone.
+- **AC1:** A staging environment mirrors production (its own database branch, bucket and keys); every merge to `main` deploys a service to staging, and promotion to production is one step.
+- **AC2:** Database migrations run in staging first and are rehearsed against a copy of production's schema; a migration that cannot be undone needs a written plan in its PR.
+- **AC3:** Rolling back a service to its previous version takes one step and does not redeploy the others (`MVP1-E0-07` AC4).
+- **AC4:** Risky changes can ship behind a flag that is off in production until turned on.
+- **Service:** Platform (operations) and Site (`apps/web`)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E9-04 · Backups and a restore drill — S
+As the owner, I want to know I can get the data back, so a mistake or an outage does not lose users' work.
+- **AC1:** Neon point-in-time restore is on for the production branch, with the retention window stated; the S3 bucket has versioning and a lifecycle rule.
+- **AC2:** A restore drill brings one service's schema back to a past point into a scratch branch and checks it; the steps and the time it took are written down.
+- **AC3:** The drill is repeated before go-live and then every quarter.
+- **Service:** Platform (operations) and Site (`apps/web`)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E9-05 · Launch security and privacy review — M
+As the owner, I want the whole platform checked against the security bar before it is public, so the first users are not the first testers.
+- **AC1:** Every service is checked against the OWASP ASVS list in the Security baseline (`MVP1-E0-26`); each gap is fixed or recorded with a decision.
+- **AC2:** Dependencies are audited, secret scanning shows nothing, and a short abuse test covers rate limits, ownership checks (other users' IDs return 404) and webhook signatures.
+- **AC3:** A privacy check confirms no document contents or personal data reach logs, events, issues or the repository, and that deleting an account deletes its data in every service.
+- **AC4:** Findings and decisions are recorded in `docs/decisions/MVP1-E9.md`.
+- **Service:** Platform (operations) and Site (`apps/web`)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E9-06 · Privacy policy, terms and cookie notice — S
+As a visitor, I want to know what happens to my data and what I agree to before I sign up, upload or pay.
+- **AC1:** 01scale.com has a privacy policy (what is collected, why, where it is stored, for how long, who processes it: AWS, Neon, Vercel, Anthropic, Stripe, Resend), terms of use for the demo, and a cookie notice if non-essential cookies are used.
+- **AC2:** Sign-up links to them, and the pages are versioned with their date.
+- **AC3:** They say plainly that this is a demo, payments are in test mode, and documents are deleted after the retention period.
+- **Service:** Product and Site (`apps/web`)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E9-07 · Load, spend-cap and failure testing — M
+As the owner, I want to see the platform under load and under failure before users do, so limits and fallbacks are proven.
+- **AC1:** A load test against staging runs the whole journey at the expected peak and twice it; p95 latencies are compared with the targets in Monitoring (`MVP1-E0-25`).
+- **AC2:** The spend cap and rate limits are tested: past the cap, extraction stops with the documented error, and no further Claude calls are made.
+- **AC3:** Failure drills: each service taken down in turn returns the documented `503` problem response to its callers, retries are safe, and nothing is left half-done (`MVP1-E0-07` AC7).
+- **AC4:** Results and fixes are written up; open issues go on the go/no-go checklist.
+- **Service:** Platform (operations) and Site (`apps/web`)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E9-08 · User acceptance testing with beta users — S
+As the product manager, I want a few real people to use DocFlow before launch, so problems in the journey are found by users, not by me.
+- **AC1:** Five to ten invited users go through the journey with synthetic invoices on staging, following a short script, and then on their own.
+- **AC2:** Their feedback and every issue found are collected in one place; severity-1 and severity-2 issues block go-live.
+- **AC3:** The journey is checked for accessibility (keyboard, screen reader basics, contrast) on phone and desktop.
+- **Service:** Product (DocFlow)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E9-09 · Release documentation — S
+As a user or a developer, I want to know what each release changed, so I can trust and plan around it.
+- **AC1:** Each service and app keeps a changelog by version; each release has release notes: what changed, what was fixed, known issues, and any action a user or an API client must take.
+- **AC2:** The site shows the latest release notes for each module, from the changelogs, never typed twice.
+- **AC3:** API changes follow the versioning rules (`docs/architecture/API-DESIGN.md`): a breaking change is a new version with a deprecation date.
+- **Service:** Product and Site (`apps/web`)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E9-10 · Support documentation: playbook and runbooks — S
+As whoever is on support, I want written steps for the common problems, so issues are handled the same way every time and quickly.
+- **AC1:** A support playbook says how issues arrive, how they are triaged by severity, the response targets (best effort; it is a demo), and when to escalate to an engineer.
+- **AC2:** Runbooks cover the likely incidents: a service down, extraction failing or slow, Stripe webhooks not arriving, emails not delivered, spend cap reached, a user locked out.
+- **AC3:** Each runbook says how to investigate without seeing a user's document or personal data (request IDs, statuses, aggregate logs), building on each module's Support section (`MVP1-E0-30`).
+- **Service:** Product and Platform (operations)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E9-11 · Post-production testing — M
+As the owner, I want production checked after every release and all the time, so a broken journey is found by a test, not a user.
+- **AC1:** After every production deploy, smoke tests run against production with a test account: health of every service, sign in, upload a synthetic invoice, extraction completes, test-mode checkout, download.
+- **AC2:** A synthetic journey runs on a schedule (for example hourly) and alerts when it fails or is slow.
+- **AC3:** Test data is clearly marked and cleaned up; it never mixes with users' data or counts in their metrics.
+- **Service:** Platform (operations) and Site (`apps/web`)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E9-12 · Hypercare and incident response — M
+As the owner, I want the first weeks after launch watched closely, and a clear way to handle incidents, so problems are fixed fast and learned from.
+- **AC1:** Two weeks of hypercare after go-live: a daily check of errors, latency, extraction quality, spend and support issues, with a short daily note.
+- **AC2:** Alerts from Monitoring (`MVP1-E0-25`) and the synthetic journey go to whoever is on call; an incident process sets severity, owner, updates and a status message for users.
+- **AC3:** Every severity-1 or severity-2 incident gets a blameless post-incident review with actions, linked to stories.
+- **AC4:** A hotfix path goes through staging and the post-production tests, like any release.
+- **Service:** Platform (operations) and Site (`apps/web`)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E9-13 · Handling support issues — S
+As a user, I want to report a problem and hear back, and as the product manager I want issues to become fixes and better documents.
+- **AC1:** Users can report a problem from the site (a form or an email address); each report gets an acknowledgement and an ID.
+- **AC2:** Issues are triaged by the playbook (`MVP1-E9-10`); a bug becomes a GitHub issue that holds no user data, only the request ID and a description.
+- **AC3:** Repeated questions update the FAQ and Support sections; the number of issues, response times and their causes are reviewed weekly during hypercare.
+- **Service:** Product and Platform (operations)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+### MVP1-E9-14 · Post-launch review — S
+As the product manager, I want to look back after launch with data, so the next steps come from what happened.
+- **AC1:** After hypercare, a review compares the launch metrics with their targets (`MVP1-E9-01`), and covers cost per document, extraction quality, incidents and support issues.
+- **AC2:** It lists what to keep, change and build next, as stories or changes to the roadmap's next version.
+- **AC3:** It is written up in `docs/launch/` and linked from STATUS.md.
+- **Service:** Product (DocFlow and its services)
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
 ## Definition of done for MVP1
 - All stories pass their AC; E3 and E4 evals meet `EVALS.md` MVP1 thresholds on the holdout set.
 - The demo script in PRD §15 runs end to end on a phone in under 3 minutes.
