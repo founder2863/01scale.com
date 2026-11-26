@@ -1296,7 +1296,7 @@ As a product manager, I want every story estimated four ways (product and develo
 - **API design:** No endpoints.
 - **Database design:** No tables.
 
-**Status: built (PR to follow #189). It delivers part of `MVP1-E8-03` (effort split into product and development) and of `MVP1-E8-04` (a dependency-aware timeline, here for 3 engineers and a product manager rather than 5 engineers); those stories stay open for their other criteria.**
+**Status: built (#192, PR #193). It delivers part of `MVP1-E8-03` (effort split into product and development) and of `MVP1-E8-04` (a dependency-aware timeline, here for 3 engineers and a product manager rather than 5 engineers); those stories stay open for their other criteria.**
 
 ## Definition of done for MVP1
 - All stories pass their AC; E3 and E4 evals meet `EVALS.md` MVP1 thresholds on the holdout set.
