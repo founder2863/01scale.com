@@ -10,6 +10,7 @@ import { CostPager, CostTabs } from "../cost-tabs";
 import { findMistake, mistakes } from "../mistakes";
 import { articleBody, articleDomains, articles, findArticle } from "../articles";
 import YieldExplainer from "../yield-explainer";
+import { TokenGrid } from "../token-grid";
 import { findRoadmapVersion, roadmapVersions, RoadmapVersion } from "../roadmap-versions";
 
 const REPO = "https://github.com/founder2863/01scale.com/blob/main";
@@ -199,10 +200,13 @@ export default async function HowItsBuilt({ params }: { params: Promise<Params> 
             Token Costs <span className="status">Updated {costs.updated}</span>
           </h2>
           <p className="note">
-            A running total of what each story cost to build with Claude Code,
-            split into build, rework and scaffolding. The numbers are measured
-            from the session record, using the cost Claude Code computes
-            itself; only the assignment of each request to a story is mine.
+            What building with Claude Code has cost so far and what the rest
+            will cost, by epic, read the way a product leader reads it:
+            Product and Engineering, each actual and projected, then the
+            total. The numbers so far are measured from the
+            session record, using the cost Claude Code computes itself; only
+            the assignment of each request to a story, and to Product or
+            Engineering, is mine.
           </p>
 
           <div className="card cost-baseline">
@@ -261,82 +265,7 @@ export default async function HowItsBuilt({ params }: { params: Promise<Params> 
 
           <YieldExplainer />
 
-          <h3 className="section-subtitle">Per story</h3>
-          <table className="cost-table">
-            <thead>
-              <tr>
-                <th scope="col">Story</th>
-                <th scope="col">Tokens</th>
-                <th scope="col">Build cost</th>
-                <th scope="col">Rework cost</th>
-                <th scope="col">Total</th>
-                <th scope="col">Token yield</th>
-              </tr>
-            </thead>
-            <tbody>
-              {costs.stories.map((story) => (
-                <tr key={story.key}>
-                  <th scope="row">{story.name}</th>
-                  <td data-label="Tokens">{mtok(story.buildTokens + story.reworkTokens)}</td>
-                  <td data-label="Build cost">{usd(story.buildCost)}</td>
-                  <td data-label="Rework cost">{usd(story.reworkCost)}</td>
-                  <td data-label="Total">
-                    {usd(story.totalCost)}
-                    {story.pending && <span className="cost-pending"> + pending</span>}
-                  </td>
-                  <td data-label="Token yield">
-                    <span className="yield">
-                      <span className="yield-bar" style={{ width: `${story.yield ?? 0}%` }} />
-                    </span>
-                    {story.yield}%
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-            <tfoot>
-              <tr>
-                <th scope="row">Total</th>
-                <td data-label="Tokens">{mtok(costs.storyTotals.tokens)}</td>
-                <td data-label="Build cost">{usd(costs.storyTotals.buildCost)}</td>
-                <td data-label="Rework cost">{usd(costs.storyTotals.reworkCost)}</td>
-                <td data-label="Total">
-                  {usd(costs.storyTotals.cost)}
-                  {costs.storyTotals.pending && <span className="cost-pending"> + pending</span>}
-                </td>
-                <td data-label="Token yield">{costs.storyTotals.yield}%</td>
-              </tr>
-            </tfoot>
-          </table>
-
-          <h3 className="section-subtitle">Scaffolding, not tied to a story</h3>
-          <table className="cost-table cost-table-small">
-            <thead>
-              <tr>
-                <th scope="col">Area</th>
-                <th scope="col">Requests</th>
-                <th scope="col">Tokens</th>
-                <th scope="col">Cost</th>
-              </tr>
-            </thead>
-            <tbody>
-              {costs.scaffolding.map((area) => (
-                <tr key={area.name}>
-                  <th scope="row">{area.name}</th>
-                  <td data-label="Requests">{area.requests}</td>
-                  <td data-label="Tokens">{mtok(area.tokens)}</td>
-                  <td data-label="Cost">{usd(area.cost)}</td>
-                </tr>
-              ))}
-            </tbody>
-            <tfoot>
-              <tr>
-                <th scope="row">Total</th>
-                <td data-label="Requests">{costs.scaffoldingTotals.requests}</td>
-                <td data-label="Tokens">{mtok(costs.scaffoldingTotals.tokens)}</td>
-                <td data-label="Cost">{usd(costs.scaffoldingTotals.cost)}</td>
-              </tr>
-            </tfoot>
-          </table>
+          <TokenGrid />
 
           <h3 className="section-subtitle">What the numbers show</h3>
           <div className="cards">
@@ -381,8 +310,30 @@ export default async function HowItsBuilt({ params }: { params: Promise<Params> 
               </dd>
             </div>
             <div>
-              <dt>Scaffolding</dt>
-              <dd>Work tied to no story: questions, discovery, tooling and process.</dd>
+              <dt>Pre-requisites</dt>
+              <dd>
+                Work tied to no story (scaffolding): questions, discovery,
+                tooling and process, split by subject: product topics to
+                Product, scripts and site set-up to Engineering.
+              </dd>
+            </div>
+            <div>
+              <dt>Product and Engineering</dt>
+              <dd>
+                Product: PRDs, epics and stories, business functions, cost and
+                roadmap work, non-technical documents and UX design.
+                Engineering: code, architecture and sequence diagrams. API
+                specs, data models and schemas count 75% Product, 25%
+                Engineering.
+              </dd>
+            </div>
+            <div>
+              <dt>Projected</dt>
+              <dd>
+                The remaining stories of the latest roadmap, each on the side
+                of its owner there (product manager or engineer), priced by the
+                roadmap&apos;s token rule.
+              </dd>
             </div>
             <div>
               <dt>Token yield</dt>

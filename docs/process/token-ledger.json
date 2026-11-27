@@ -57,7 +57,8 @@
     "MVP1-E8-12": "MVP1-E8-12 · Four estimates per story, and the plan without and with Claude Code",
     "MVP1-E8-13": "MVP1-E8-13 · Roadmap v5: a second product manager, and the cost of each plan",
     "MVP1-E8-14": "MVP1-E8-14 · Roadmap v6: product work two sprints ahead, environments early, and tokens in the cost",
-    "MVP1-E8-15": "MVP1-E8-15 · Total Cost from the latest roadmap: so far and projected"
+    "MVP1-E8-15": "MVP1-E8-15 · Total Cost from the latest roadmap: so far and projected",
+    "MVP1-E8-16": "MVP1-E8-16 · Token Costs by Product and Engineering, so far and projected"
   },
   "sessions": [
     {
@@ -220,6 +221,19 @@
         }
       },
       "id": "c5c5ca89-4115-59c8-af00-32ff5dda3a8b",
+      "splits": []
+    },
+    {
+      "by_kind_usd": {
+        "input": 0.0,
+        "output": 0.0,
+        "cache_read": 0.0,
+        "cache_write": 0.0
+      },
+      "overhead_usd": 0,
+      "tool_total_usd": 4.3961,
+      "rates_usd_per_million": {},
+      "id": "bca467e6-6c9f-5e93-b12b-7c5143f68008",
       "splits": []
     }
   ],
@@ -4297,6 +4311,65 @@
       "tokens": 1707419,
       "output_tokens": 2569,
       "cost_usd": 0.4063
+    },
+    {
+      "session": "bca467e6",
+      "n": 1,
+      "ts": "2026-11-27T19:43:16.714Z",
+      "area": "MVP1-E8-16",
+      "kind": "build",
+      "summary": "Token Costs tab by Product and Engineering: classification file, split in the cost script, tab sections, story #256, decision log, tests, checks at eight widths",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 10946977,
+      "output_tokens": 49494,
+      "cost_usd": 4.3961
+    },
+    {
+      "session": "bca467e6",
+      "n": 2,
+      "ts": "2026-11-27T20:14:29.112Z",
+      "area": "MVP1-E8-16",
+      "kind": "rework",
+      "summary": "Rework from Nikhil's review on PR #257: weigh in on a table by epic (diagram, where the data lives), no build",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 448903,
+      "output_tokens": 3435,
+      "cost_usd": null,
+      "estimated_usd": 0.1772
+    },
+    {
+      "session": "bca467e6",
+      "n": 3,
+      "ts": "2026-11-27T20:31:27.201Z",
+      "area": "MVP1-E8-16",
+      "kind": "rework",
+      "summary": "Rework from Nikhil's review on PR #257: answer whether pre-requisite work has stories; plan the table by epic",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 454866,
+      "output_tokens": 2184,
+      "cost_usd": null,
+      "estimated_usd": 0.1444
+    },
+    {
+      "session": "bca467e6",
+      "n": 4,
+      "ts": "2026-11-27T20:40:47.269Z",
+      "area": "MVP1-E8-16",
+      "kind": "rework",
+      "summary": "Rework from Nikhil's review on PR #257: one row per epic, actuals and projected by side, wide screens only; story MVP1-E8-17 (#258)",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 3918260,
+      "output_tokens": 19878,
+      "cost_usd": null,
+      "estimated_usd": 1.3981
     }
   ]
 }

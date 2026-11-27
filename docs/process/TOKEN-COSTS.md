@@ -2,7 +2,7 @@
 
 What it costs to build 01scale with Claude Code, per story. Generated from `docs/process/token-ledger.json` by `npm run costs`; do not edit by hand.
 
-Updated 2026-11-27. 290 requests across 9 session(s). Total **$463.12** for 1,031.1 million tokens.
+Updated 2026-11-27. 294 requests across 10 session(s). Total **$467.52** for 1,046.8 million tokens.
 
 ## Per story
 
@@ -65,7 +65,8 @@ Updated 2026-11-27. 290 requests across 9 session(s). Total **$463.12** for 1,03
 | MVP1-E8-13 · Roadmap v5: a second product manager, and the cost of each plan | 1 | 13.40M | $3.72 | $0.00 | $3.72 | 100% |
 | MVP1-E8-14 · Roadmap v6: product work two sprints ahead, environments early, and tokens in the cost | 1 | 13.82M | $3.70 | $0.00 | $3.70 | 100% |
 | MVP1-E8-15 · Total Cost from the latest roadmap: so far and projected | 3 | 35.44M | $3.41 | $5.49 | $8.90 | 37% |
-| **Total** | **176** | **804.56M** | **$212.15** | **$146.75** | **$358.89** (part pending) | **61%** |
+| MVP1-E8-16 · Token Costs by Product and Engineering, so far and projected | 4 | 15.77M | $4.40 | $0.00 | $4.40 (part pending) | 69% |
+| **Total** | **180** | **820.33M** | **$216.54** | **$146.75** | **$363.29** (part pending) | **62%** |
 
 ## Scaffolding (not tied to a story)
 
@@ -79,11 +80,39 @@ Updated 2026-11-27. 290 requests across 9 session(s). Total **$463.12** for 1,03
 | Tool overhead (background calls) | 0 | 0.00M | $3.62 |
 | **Total** | **114** | **226.50M** | **$104.23** |
 
+## By epic: Product and Engineering
+
+Each ledger row counts toward Product, Engineering or both (`docs/process/token-classes.json`; rules in `docs/decisions/MVP1-E8.md`). Projected: the remaining stories of the latest roadmap, by owner; the roadmap gives one figure per story, so projected tokens, build and rework show —.
+
+| Epic | Product tokens | Product build | Product rework | Product actual | Product projected | Engineering tokens | Engineering build | Engineering rework | Engineering actual | Engineering projected | Actual | Projected | Total |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| E0 · Foundation | 152.6M | $43.17 | $33.94 | $77.11 | $58.50 | 278.2M | $71.79 | $55.39 | $127.18 | $387.40 | $204.29 | $445.90 | $650.19 |
+| E1 · Accounts with AWS Cognito | 17.0M | $8.75 | $19.15 | $27.90 | — | 25.5M | $8.38 | $6.38 | $14.76 | $145.68 | $42.66 | $145.68 | $188.34 |
+| E2 · Document upload to S3 | 25.1M | $3.75 | $1.67 | $5.43 | — | 8.4M | $1.25 | $0.56 | $1.81 | $82.77 | $7.24 | $82.77 | $90.01 |
+| E3 · Extraction with Claude | 48.7M | $11.66 | $0.00 | $11.66 | — | 14.8M | $3.61 | $0.00 | $3.61 | $235.09 | $15.27 | $235.09 | $250.36 |
+| E4 · Human review of low-confidence fields | 15.6M | $1.30 | $1.89 | $3.19 | — | 5.2M | $0.43 | $0.63 | $1.06 | $82.77 | $4.25 | $82.77 | $87.02 |
+| E5 · JSON review, metadata and CSV | 2.0M | $0.71 | $0.00 | $0.71 | — | 0.7M | $0.24 | $0.00 | $0.24 | $66.21 | $0.95 | $66.21 | $67.16 |
+| E6 · Payment | 7.3M | $1.13 | $6.01 | $7.14 | — | 2.4M | $0.38 | $2.00 | $2.38 | $82.77 | $9.52 | $82.77 | $92.29 |
+| E7 · Success, download and email | 11.0M | $0.65 | $1.46 | $2.11 | — | 3.7M | $0.22 | $0.49 | $0.70 | $62.91 | $2.81 | $62.91 | $65.72 |
+| E8 · Total projected cost: a human team versus Claude Code | 180.3M | $47.78 | $16.26 | $64.05 | $76.16 | — | — | — | — | — | $64.05 | $76.16 | $140.21 |
+| E9 · Go-live and operations | — | — | — | — | $28.69 | — | — | — | — | $168.87 | — | $197.56 | $197.56 |
+| E10 · CRO function enablement: sales | — | — | — | — | $47.46 | — | — | — | — | — | — | $47.46 | $47.46 |
+| E11 · CMO function enablement: marketing | — | — | — | — | $35.32 | — | — | — | — | — | — | $35.32 | $35.32 |
+| E12 · COO function enablement: operations and support | — | — | — | — | $39.73 | — | — | — | — | — | — | $39.73 | $39.73 |
+| E13 · CFO function enablement: finance | — | — | — | — | $41.94 | — | — | — | — | — | — | $41.94 | $41.94 |
+| E14 · Chief Customer Officer function enablement: customer success | — | — | — | — | $41.94 | — | — | — | — | — | — | $41.94 | $41.94 |
+| E15 · Chief Security Officer function: security requirements | — | — | — | — | $29.80 | — | — | — | — | — | — | $29.80 | $29.80 |
+| E16 · General Counsel function enablement: legal | — | — | — | — | $8.83 | — | — | — | — | — | — | $8.83 | $8.83 |
+| AutoRep V1 | 7.6M | $1.60 | $0.92 | $2.52 | — | 8.6M | $1.75 | $0.00 | $1.75 | — | $4.27 | — | $4.27 |
+| MVP2 stories | 5.6M | $7.99 | $0.00 | $7.99 | — | — | — | — | — | — | $7.99 | — | $7.99 |
+| Pre-requisites | 130.4M | — | — | $64.84 | — | 96.1M | — | — | $39.39 | — | $104.23 | — | $104.23 |
+| **Total** | 603.2M | $128.48 | $81.30 | $274.64 | $408.37 | 443.6M | $88.06 | $65.46 | $192.88 | $1,314.47 | $467.52 | $1,722.84 | $2,190.36 |
+
 ## Totals
 
-- Build $212.15, rework $146.75, scaffolding $104.23.
-- Token yield across stories (build ÷ build + rework): 61%.
-- 15 pending request(s) were never priced by the tool; estimated at about $12.59 from their measured tokens at list prices (an upper bound), not included in the totals above.
+- Build $216.54, rework $146.75, scaffolding $104.23.
+- Token yield across stories (build ÷ build + rework): 62%.
+- 18 pending request(s) were never priced by the tool; estimated at about $14.31 from their measured tokens at list prices (an upper bound), not included in the totals above.
 - Share of all tokens that went into kept story work: 48%.
 
 ## Definitions

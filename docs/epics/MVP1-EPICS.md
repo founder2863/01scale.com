@@ -1336,6 +1336,32 @@ As a product leader, I want Total Cost to show what has been spent and what the 
 
 **Status: built.**
 
+### MVP1-E8-16 · Token Costs: Product and Engineering, so far and projected — M
+As a product leader, I want token spend shown as Product versus Engineering, each spent so far and projected for the rest, so I can read it the way I read a team's budget, with nothing Claude did left out (Nikhil, 27 Nov 2026).
+- **AC1:** The Token Costs tab keeps its cost baselines, its row of totals (order of `MVP1-E0-45`) and the token yield formula, then shows one table, **one row per epic** (Nikhil's layout, 27 Nov 2026), then a **Pre-requisites** row and a **Total** row. Columns: **Product** and **Engineering**, each with **Actuals** and **Projected**, each of those with **Tokens, Build cost, Rework cost and Total**; then a **Grand total** of Actuals, Projected and Total. No story-level view. It replaces the story and scaffolding tables of `MVP1-E0-13` AC3.
+- **AC2:** Every ledger row is classified by Nikhil's rules (recorded in `docs/decisions/MVP1-E8.md`): Product for PRDs, epics and stories, business functions, cost and roadmap work, non-technical documents and UX design; Engineering for code, architecture and sequence diagrams; API spec, data model and schema 75% Product, 25% Engineering; pre-requisites split by subject. Each story area goes to the first epic its ID names, or to the epic given for it. The classification and the epic of each area are one data file, `docs/process/token-classes.json`; `npm run costs` stops on a row or area it does not cover.
+- **AC3:** Projected comes from the latest roadmap version (its cost by story, through `app/how-its-built/total-cost.ts`): each remaining story on the side of its owner there (product manager → Product, engineer → Engineering), priced by the roadmap's token rule. The roadmap gives one figure per story, so projected Tokens, Build and Rework show "—". Any cell with no data shows "—". Pre-requisites are one row with no build/rework split and no projection (turning them into an epic is `MVP1-E8-17`); tool overhead is in that row.
+- **AC4:** The Total row equals the tab's total so far; its projected equals the token cost on Total Cost's Projected tab. No figure is typed by hand.
+- **AC5:** The table is for wide screens (1280 pixels and up), in light and dark mode. Below that it is replaced by a short message: "Open on a laptop or desktop to see this report." The rest of the tab works from 320 pixels.
+- **Service:** Site (`apps/web`) and `scripts/costs/`
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+**Status: built.**
+
+### MVP1-E8-17 · Pre-requisite work as an epic with stories and a projection — M
+As a product leader, I want the work tied to no story (product discovery, questions, git and merges, cost recording and handoffs, access and tooling) to be an epic with stories, so it is documented, estimated and projected, and shows on the Token Costs table like every other epic (Nikhil, 27 Nov 2026: for now it stays one Pre-requisites row; this story is for later). Issue #258.
+- **AC1:** A new epic (working name "Ways of working") has a sized story for each kind of pre-requisite work: product discovery and vision; questions and learning; git, pull requests and merges; cost recording, issue closing and handoffs; access and tooling.
+- **AC2:** Every pre-requisite row in the token ledger is assigned to one of these stories; the Product and Engineering classification still applies.
+- **AC3:** The Token Costs table shows the epic in place of the Pre-requisites row: actuals from the ledger (build and rework "—"); projected from the roadmap's allowance for questions and process (today 25% on top of each remaining story), moved out of the story figures into this row, so the grand total does not change.
+- **AC4:** The roadmap and Total Cost read the same allowance, so the tabs agree.
+- **AC5:** The tab's definitions and the `record-token-costs` skill say how new pre-requisite work is assigned.
+- **Service:** Site (`apps/web`) and `scripts/costs/`
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+**Status: not started.**
+
 ---
 
 ## E9 · Go-live and operations
