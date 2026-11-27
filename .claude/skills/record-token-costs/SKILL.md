@@ -25,7 +25,7 @@ Keeps a running ledger of what each story cost to build with Claude Code, and sp
    - `area`: a story key from `stories` (add a new key with its name if needed), or a scaffolding area name;
    - `kind`: `build`, `rework` or `scaffolding`;
    - `summary`: a neutral one-line description of the request. Never copy the person's words.
-5. Classify each new row as Product, Engineering or both in `docs/process/token-classes.json` (Nikhil's rules, `docs/decisions/MVP1-E8.md`, MVP1-E8-16): a new story area under `stories`; a scaffolding row under `requests` as `"<session>#<n>"` unless its area has a default under `prerequisiteDefaults` (Process and Questions and explanations have none). `product` is the Product share: 1, 0, 0.75 for API spec, data model and schema work, or 0.5 for a request with no clear subject. `npm run costs` stops on a row that is not classified.
+5. Classify each new row as Product, Engineering or both in `docs/process/token-classes.json` (Nikhil's rules, `docs/decisions/MVP1-E8.md`, MVP1-E8-16): a new story area under `stories`; a scaffolding row under `requests` as `"<session>#<n>"` unless its area has a default under `prerequisiteDefaults` (Process and Questions and explanations have none). `product` is the Product share: 1, 0, 0.75 for API spec, data model and schema work, or 0.5 for a request with no clear subject. A new story area whose key names no MVP1 epic also needs its row on the table under `epics`. `npm run costs` stops on a row or area that is not classified.
 6. Run `npm run costs`, then `npm run build`.
 7. In the pull request, state the totals, with Product and Engineering so far, and anything unusual (for example a large context reload).
 

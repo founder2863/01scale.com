@@ -66,3 +66,26 @@ def test_classes_cover_the_real_ledger():
     classes = json.load(open(os.path.join(root, bc.CLASSES), encoding="utf-8"))
     for r in ledger["requests"]:
         assert 0 <= bc.product_share(r, classes) <= 1
+
+
+def test_epic_grid_rows_and_dashes():
+    classes = {**CLASSES, "stories": {"MVP1-E1-09-E4-05": {"product": 0, "why": "code"},
+                                      "P0-SITE": {"product": 0, "why": "code"}},
+               "epics": {"P0-SITE": {"epic": "MVP1-E0", "why": "site"}}}
+    rows = [row(1, "MVP1-E1-09-E4-05", "build", 100, 2.0), row(2, "P0-SITE", "rework", 50, 1.0),
+            row(3, "Planning", "scaffolding", 10, 0.5)]
+    proj = [{"id": "MVP1-E2-01", "title": "t", "size": "S", "issue": 1, "epic": "MVP1-E2", "owner": "product", "tokens": 5.0}]
+    sides = bc.by_side(rows, {"MVP1-E1-09-E4-05": "x", "P0-SITE": "y"}, classes, 0, proj)
+    grid = bc.by_epic(rows, classes, sides, proj, {"MVP1-E1": "Identity"})
+    by_key = {r["key"]: r for r in grid["rows"]}
+    assert list(by_key) == ["MVP1-E0", "MVP1-E1", "MVP1-E2"]          # a two-epic area goes to the first epic
+    assert by_key["MVP1-E1"]["product"]["actual"] is None             # no data: "—" on the page
+    assert by_key["MVP1-E0"]["engineering"]["actual"]["rework"] == 1.0
+    assert by_key["MVP1-E2"]["product"]["projected"] == 5.0
+    assert grid["prereq"]["product"]["actual"]["build"] is None       # pre-requisites have no build/rework split
+    assert grid["total"]["grand"] == {"actual": 3.5, "projected": 5.0, "total": 8.5}
+
+
+def test_area_without_epic_stops_the_build():
+    with pytest.raises(SystemExit):
+        bc.epic_of("SOMETHING-NEW", {"epics": {}})

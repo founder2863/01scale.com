@@ -1990,26 +1990,6 @@ section[id] {
   vertical-align: middle;
 }
 
-/* The bar and its percentage stay on one line (MVP1-E8-16: the Share column narrows the table). */
-@media (min-width: 1024px) {
-  .cost-table td[data-label="Token yield"] {
-    white-space: nowrap;
-  }
-}
-
-/* Seven columns fit a tablet with tighter cells (MVP1-E8-16). */
-@media (min-width: 720px) and (max-width: 1023px) {
-  .cost-table-wide th,
-  .cost-table-wide td {
-    padding: 8px 6px;
-  }
-
-  .cost-table-wide .yield {
-    width: 36px;
-    margin-right: 4px;
-  }
-}
-
 .yield-bar {
   display: block;
   height: 100%;
@@ -4426,4 +4406,103 @@ section[id] {
 .cost-more-title {
   margin: 12px 0 6px;
   font-size: 0.95rem;
+}
+
+/* Token Costs by epic (MVP1-E8-16): a wide grid, shown on wide screens only (Nikhil, 27 Nov 2026). */
+.token-grid-narrow {
+  display: none;
+  padding: 12px 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--muted);
+}
+
+.token-grid-wrap {
+  overflow-x: auto;
+  margin: 0 0 12px;
+}
+
+.token-grid {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.token-grid th,
+.token-grid td {
+  padding: 6px 5px;
+  border-bottom: 1px solid var(--border);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.token-grid thead th {
+  color: var(--link);
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.token-grid thead tr:last-child th {
+  text-align: right;
+}
+
+.token-grid .grid-epic {
+  text-align: left;
+  white-space: normal;
+  min-width: 9rem;
+  font-weight: 600;
+}
+
+.token-grid .grid-start {
+  border-left: 1px solid var(--border);
+}
+
+.token-grid .grid-sum {
+  font-weight: 600;
+}
+
+.token-grid tbody tr:hover {
+  background: var(--surface);
+}
+
+.token-grid tfoot th,
+.token-grid tfoot td {
+  font-weight: 700;
+  border-top: 2px solid var(--border);
+}
+
+@media (max-width: 1439px) {
+  .token-grid {
+    font-size: 0.72rem;
+  }
+
+  .token-grid thead th {
+    font-size: 0.62rem;
+    letter-spacing: 0.02em;
+  }
+
+  .token-grid .grid-epic {
+    min-width: 7rem;
+  }
+
+  .token-grid th,
+  .token-grid td {
+    padding: 5px 4px;
+  }
+}
+
+/* Too many columns for a narrower screen: a short message instead (Nikhil, 27 Nov 2026). */
+@media (max-width: 1279px) {
+  .token-grid-narrow {
+    display: block;
+  }
+
+  .token-grid-wrap,
+  .token-grid-note {
+    display: none;
+  }
 }

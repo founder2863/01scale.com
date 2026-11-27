@@ -54,3 +54,18 @@
 | A request with no clear subject, or two (an unclear message; a merge conflict plus cost recording), is split evenly. | Neither side is more right. | Give it to one side. |
 | Tool overhead (background calls) is shared in proportion to what each side measured. | It belongs to no request. | Leave it outside both sides. |
 | Projected comes from Total Cost's cost by story, so both tabs show the same projection. | One number, one source: the roadmap's token rule. | Compute it again in `build_costs.py`. |
+
+## 2026-11-27 · Token Costs table by epic (MVP1-E8-16, review on PR #257)
+
+**Decided by:** Nikhil, after the first version of PR #257 ("too many data points").
+
+| Question | Decision |
+|---|---|
+| Rows | One row per epic, once; then Pre-requisites (one row) and the total. No story-level view. |
+| Columns | Product and Engineering, each Actuals and Projected, each Tokens, Build cost, Rework cost, Total; then a grand total of Actuals, Projected and Total (three columns, not four). |
+| No data | "—". The roadmap projects one figure per story, so projected Tokens, Build and Rework are always "—". |
+| Areas with no epic ID | A simple rule that keeps the structure: the first epic an area's ID names; site launch, design for every story, architecture, the architecture review, the 17 Nov decisions and analytics go to E0; AutoRep and MVP2 work get one row each. Recorded under `epics` in `docs/process/token-classes.json`. |
+| Pre-requisites | One row for now. Making them an epic with stories, estimates and a projection is a future story, `MVP1-E8-17` (#258). |
+| Phones | Not supported for this table: below 1280 pixels it shows "Open on a laptop or desktop to see this report." |
+
+**Options not chosen.** A sticky first column with sideways scrolling, or one card per epic, on phones (Nikhil: no phone support for this report); projecting build and rework from the measured rework share (show "—" instead).

@@ -22,6 +22,7 @@ Run from the repo root:  npm run costs   (after `npm run total-cost` when the ro
 """
 import json
 import os
+import re
 
 LEDGER = "docs/process/token-ledger.json"
 CLASSES = "docs/process/token-classes.json"
@@ -110,6 +111,101 @@ def by_side(rows, names, classes, overhead, projected):
         o["projectedStories"] = len(remaining)
         o["total"] = money(story_cost + prereq_cost + sum(b["tokens"] for b in remaining))
     return out
+
+
+EXTRA_ROWS = {"AUTOREP": "AutoRep V1", "MVP2": "MVP2 stories"}
+
+
+def epic_of(area, classes):
+    """The Token Costs row of a story area: the first MVP1 epic its key names, else the 'epics' map."""
+    m = re.match(r"MVP1-E(\d+)", area)
+    if m:
+        return f"MVP1-E{int(m.group(1))}"
+    entry = classes.get("epics", {}).get(area)
+    if entry is None:
+        raise SystemExit(f"costs: story area {area!r} names no epic; add it under 'epics' in {CLASSES}")
+    return entry["epic"]
+
+
+def by_epic(rows, classes, sides, projected, epic_names):
+    """One row per epic (MVP1-E8-16, Nikhil's layout of 27 Nov 2026): for Product and Engineering,
+    actuals (tokens, build, rework, total) and projected (total only: the roadmap prices a story,
+    it does not split it), then a grand total. A cell with no data is None ("—" on the page). The
+    pre-requisites are one row, with no build/rework split and no projection. Pure."""
+    def blank():
+        return {"tokens": 0.0, "build": 0.0, "rework": 0.0, "any": False}
+
+    acc, proj = {}, {}
+    for r in rows:
+        if r["kind"] == "scaffolding":
+            continue
+        epic, p = epic_of(r["area"], classes), product_share(r, classes)
+        for side, w in (("product", p), ("engineering", 1 - p)):
+            if w == 0:
+                continue
+            a = acc.setdefault((epic, side), blank())
+            a["tokens"] += r["tokens"] * w
+            a[r["kind"]] += (r["cost_usd"] or 0) * w
+            a["any"] = True
+    for b in projected:
+        key = (b["epic"], b["owner"])
+        proj[key] = proj.get(key, 0) + b["tokens"]
+
+    def cell(epic, side):
+        a = acc.get((epic, side))
+        actual = None if not a else {"tokens": round(a["tokens"]), "build": money(a["build"]),
+                                     "rework": money(a["rework"]), "total": money(a["build"] + a["rework"])}
+        projected_total = money(proj[(epic, side)]) if (epic, side) in proj else None
+        return {"actual": actual, "projected": projected_total}
+
+    def grand(row):
+        actual = [row[s]["actual"]["total"] for s in SIDES if row[s]["actual"]]
+        projected_ = [row[s]["projected"] for s in SIDES if row[s]["projected"] is not None]
+        a = money(sum(actual)) if actual else None
+        p = money(sum(projected_)) if projected_ else None
+        return {"actual": a, "projected": p, "total": money((a or 0) + (p or 0))}
+
+    keys = {e for e, _ in acc} | {e for e, _ in proj}
+    order = sorted((k for k in keys if k.startswith("MVP1-E")), key=lambda k: int(k.split("-E")[1]))
+    order += [k for k in EXTRA_ROWS if k in keys]
+    out = []
+    for epic in order:
+        row = {"key": epic, "name": EXTRA_ROWS.get(epic) or f"{epic.replace('MVP1-', '')} · {epic_names.get(epic, '')}".rstrip(" ·")}
+        for side in SIDES:
+            row[side] = cell(epic, side)
+        row["grand"] = grand(row)
+        out.append(row)
+
+    prereq = {"key": "PREREQ", "name": "Pre-requisites"}
+    for side in SIDES:
+        t = sides[side]["prereqTotals"]
+        prereq[side] = {"actual": {"tokens": t["tokens"], "build": None, "rework": None, "total": t["cost"]},
+                        "projected": None}
+    prereq["grand"] = grand(prereq)
+
+    total = {"key": "TOTAL", "name": "Total"}
+    for side in SIDES:
+        rows_ = out + [prereq]
+        acts = [x[side]["actual"] for x in rows_ if x[side]["actual"]]
+        projs = [x[side]["projected"] for x in rows_ if x[side]["projected"] is not None]
+        st = sides[side]
+        # From the unrounded side totals, so the line adds up to the cent.
+        total[side] = {"actual": {"tokens": sum(a["tokens"] for a in acts),
+                                  "build": st["storyTotals"]["buildCost"],
+                                  "rework": st["storyTotals"]["reworkCost"],
+                                  "total": st["soFar"]},
+                       "projected": money(sum(projs)) if projs else None}
+    total["grand"] = grand(total)
+    return {"rows": out, "prereq": prereq, "total": total}
+
+
+def epic_names_from(paths):
+    names = {}
+    for path in paths:
+        if os.path.exists(path):
+            for m in re.finditer(r"^## (E\d+) · (.+)$", open(path, encoding="utf-8").read(), re.M):
+                names[f"MVP1-{m.group(1)}"] = re.sub(r'\s*\(MVP1 "[a-z]"\)|\s*—\s*`llm`', "", m.group(2)).strip()
+    return names
 
 
 def read_ts(path):
@@ -241,14 +337,11 @@ def main():
     total_cost = read_ts(TOTAL_COST) if os.path.exists(TOTAL_COST) else None
     projected = total_cost["projected"]["byStory"] if total_cost else []
     sides = by_side(rows, names, classes, overhead, projected)
+    grid = by_epic(rows, classes, sides, projected, epic_names_from(["docs/epics/MVP1-EPICS.md"]))
     split = {
-        **sides,
+        **grid,
         "roadmap": total_cost["version"] if total_cost else None,
-        "tokenRate": total_cost["projected"]["tokenRate"] if total_cost else None,
         "tokensWhy": total_cost["projected"]["tokensWhy"] if total_cost else "",
-        "soFar": money(all_c + overhead),
-        "projectedCost": money(sum(sides[x]["projectedCost"] for x in SIDES)),
-        "total": money(all_c + overhead + sum(b["tokens"] for b in projected)),
     }
 
     data = {
@@ -292,21 +385,25 @@ def main():
         lines.append(f"| {a['name']} | {a['requests']} | {a['tokens'] / 1e6:.2f}M | {m(a['cost'])} |")
     sc = scaffolding_totals
     lines.append(f"| **Total** | **{sc['requests']}** | **{sc['tokens'] / 1e6:.2f}M** | **{m(sc['cost'])}** |")
-    lines += ["", "## Product and Engineering", "",
-              "Every ledger row counts toward Product, Engineering or both (`docs/process/token-classes.json`; rules in `docs/decisions/MVP1-E8.md`). Projected: the remaining stories of the latest roadmap, by owner.", "",
-              "| | So far | Projected | Total |", "|---|---|---|---|"]
-    for side in SIDES:
-        o = split[side]
-        lines.append(f"| {side.capitalize()} | {m(o['soFar'])} | {m(o['projectedCost'])} ({o['projectedStories']} stories) | {m(o['total'])} |")
-    lines.append(f"| **Total token cost** | **{m(split['soFar'])}** | **{m(split['projectedCost'])}** | **{m(split['total'])}** |")
-    for side in SIDES:
-        o = split[side]
-        lines += ["", f"### {side.capitalize()}: stories so far", "", "| Story | Share | Tokens | Build cost | Rework cost | Total | Token yield |", "|---|---|---|---|---|---|---|"]
-        for s in o["stories"]:
-            lines.append(f"| {s['name']} | {s['share']}% | {s['tokens'] / 1e6:.2f}M | {m(s['buildCost'])} | {m(s['reworkCost'])} | {m(s['totalCost'])}{' (part pending)' if s['pending'] else ''} | {s['yield']}% |")
-        lines += ["", f"### {side.capitalize()}: pre-requisites so far", "", "| Area | Requests | Tokens | Cost |", "|---|---|---|---|"]
-        for a in o["prereq"]:
-            lines.append(f"| {a['name']} | {a['requests']} | {a['tokens'] / 1e6:.2f}M | {m(a['cost'])} |")
+    def d(x):
+        return "—" if x is None else m(x)
+
+    def tk(x):
+        return "—" if x is None else f"{x / 1e6:.1f}M"
+
+    lines += ["", "## By epic: Product and Engineering", "",
+              "Each ledger row counts toward Product, Engineering or both (`docs/process/token-classes.json`; rules in `docs/decisions/MVP1-E8.md`). Projected: the remaining stories of the latest roadmap, by owner; the roadmap gives one figure per story, so projected tokens, build and rework show —.", "",
+              "| Epic | Product tokens | Product build | Product rework | Product actual | Product projected | Engineering tokens | Engineering build | Engineering rework | Engineering actual | Engineering projected | Actual | Projected | Total |",
+              "|---|---|---|---|---|---|---|---|---|---|---|---|---|---|"]
+    for r in grid["rows"] + [grid["prereq"], grid["total"]]:
+        cells = []
+        for side in SIDES:
+            a = r[side]["actual"] or {}
+            cells += [tk(a.get("tokens")), d(a.get("build")), d(a.get("rework")), d(a.get("total")), d(r[side]["projected"])]
+        g = r["grand"]
+        cells += [d(g["actual"]), d(g["projected"]), d(g["total"])]
+        name = f"**{r['name']}**" if r["key"] == "TOTAL" else r["name"]
+        lines.append(f"| {name} | " + " | ".join(cells) + " |")
     lines += [
         "",
         "## Totals",

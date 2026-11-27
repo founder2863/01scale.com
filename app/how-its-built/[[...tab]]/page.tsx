@@ -10,7 +10,7 @@ import { CostPager, CostTabs } from "../cost-tabs";
 import { findMistake, mistakes } from "../mistakes";
 import { articleBody, articleDomains, articles, findArticle } from "../articles";
 import YieldExplainer from "../yield-explainer";
-import { TokenSide, TokenTotal } from "../token-side";
+import { TokenGrid } from "../token-grid";
 import { findRoadmapVersion, roadmapVersions, RoadmapVersion } from "../roadmap-versions";
 
 const REPO = "https://github.com/founder2863/01scale.com/blob/main";
@@ -201,9 +201,9 @@ export default async function HowItsBuilt({ params }: { params: Promise<Params> 
           </h2>
           <p className="note">
             What building with Claude Code has cost so far and what the rest
-            will cost, read the way a product leader reads it: Product and
-            Engineering, each consumed so far and projected for the remaining
-            stories, then the total. The numbers so far are measured from the
+            will cost, by epic, read the way a product leader reads it:
+            Product and Engineering, each actual and projected, then the
+            total. The numbers so far are measured from the
             session record, using the cost Claude Code computes itself; only
             the assignment of each request to a story, and to Product or
             Engineering, is mine.
@@ -265,9 +265,7 @@ export default async function HowItsBuilt({ params }: { params: Promise<Params> 
 
           <YieldExplainer />
 
-          <TokenSide side="product" letter="a" />
-          <TokenSide side="engineering" letter="b" />
-          <TokenTotal />
+          <TokenGrid />
 
           <h3 className="section-subtitle">What the numbers show</h3>
           <div className="cards">
@@ -326,7 +324,7 @@ export default async function HowItsBuilt({ params }: { params: Promise<Params> 
                 roadmap work, non-technical documents and UX design.
                 Engineering: code, architecture and sequence diagrams. API
                 specs, data models and schemas count 75% Product, 25%
-                Engineering. The Share column shows a story&apos;s part.
+                Engineering.
               </dd>
             </div>
             <div>

@@ -690,22 +690,22 @@ export const costs = {
     {
       "key": "MVP1-E8-16",
       "name": "MVP1-E8-16 · Token Costs by Product and Engineering, so far and projected",
-      "requests": 1,
-      "buildTokens": 9200936,
-      "reworkTokens": 0,
-      "buildCost": 0,
+      "requests": 4,
+      "buildTokens": 10946977,
+      "reworkTokens": 4822029,
+      "buildCost": 4.4,
       "reworkCost": 0,
-      "totalCost": 0,
-      "yield": 100,
+      "totalCost": 4.4,
+      "yield": 69,
       "pending": true
     }
   ],
   "storyTotals": {
-    "requests": 177,
-    "tokens": 813763795,
-    "buildCost": 212.15,
+    "requests": 180,
+    "tokens": 820331865,
+    "buildCost": 216.54,
     "reworkCost": 146.75,
-    "cost": 358.89,
+    "cost": 363.29,
     "yield": 62,
     "pending": true
   },
@@ -753,17 +753,17 @@ export const costs = {
     "cost": 104.23
   },
   "totals": {
-    "requests": 291,
-    "tokens": 1040259237,
-    "cost": 463.12,
-    "buildCost": 212.15,
+    "requests": 294,
+    "tokens": 1046827307,
+    "cost": 467.52,
+    "buildCost": 216.54,
     "reworkCost": 146.75,
     "scaffoldingCost": 104.23,
     "storyYield": 62,
     "overallYield": 48,
-    "pendingRequests": 22,
-    "pendingEstimate": 16.51,
-    "pendingEstimated": 16
+    "pendingRequests": 24,
+    "pendingEstimate": 14.31,
+    "pendingEstimated": 18
   },
   "byKind": {
     "input": 0.18,
@@ -792,7 +792,7 @@ export const costs = {
       "share": 23,
       "median": 8.2,
       "typical": 0.7,
-      "extra": 95.61
+      "extra": 95.6
     },
     "mergedTooSoon": {
       "requests": 1,
@@ -800,1805 +800,484 @@ export const costs = {
     }
   },
   "split": {
-    "product": {
-      "stories": [
-        {
-          "key": "DESIGN-ALL",
-          "name": "Design · API and database for every story",
-          "share": 75,
-          "why": "API and database design in every story",
-          "tokens": 7352046,
-          "buildCost": 2.31,
-          "reworkCost": 6.07,
-          "totalCost": 8.38,
-          "yield": 22,
-          "pending": false
+    "rows": [
+      {
+        "key": "MVP1-E0",
+        "name": "E0 · Foundation",
+        "product": {
+          "actual": {
+            "tokens": 152569431,
+            "build": 43.17,
+            "rework": 33.94,
+            "total": 77.11
+          },
+          "projected": 58.5
         },
-        {
-          "key": "MVP1-E1",
-          "name": "MVP1-E1 · Login design (Identity, version 1)",
-          "share": 75,
-          "why": "Module design documents: API spec, data model, schema, journeys, components",
-          "tokens": 10232529,
-          "buildCost": 7.42,
-          "reworkCost": 6.78,
-          "totalCost": 14.21,
-          "yield": 38,
-          "pending": false
+        "engineering": {
+          "actual": {
+            "tokens": 278238625,
+            "build": 71.79,
+            "rework": 55.39,
+            "total": 127.18
+          },
+          "projected": 387.4
         },
-        {
-          "key": "MVP1-E0-13",
-          "name": "MVP1-E0-13 · Token cost tracking",
-          "share": 100,
-          "why": "Cost work",
-          "tokens": 36860904,
-          "buildCost": 8.44,
-          "reworkCost": 5.53,
-          "totalCost": 13.97,
-          "yield": 26,
-          "pending": false
-        },
-        {
-          "key": "MVP1-E2",
-          "name": "MVP1-E2 · Upload design",
-          "share": 75,
-          "why": "Module design documents",
-          "tokens": 25129190,
-          "buildCost": 3.75,
-          "reworkCost": 1.67,
-          "totalCost": 5.43,
-          "yield": 62,
-          "pending": false
-        },
-        {
-          "key": "MVP1-E3",
-          "name": "MVP1-E3 · Extraction design",
-          "share": 75,
-          "why": "Module design documents",
-          "tokens": 11740130,
-          "buildCost": 3.02,
-          "reworkCost": 0.0,
-          "totalCost": 3.02,
-          "yield": 100,
-          "pending": false
-        },
-        {
-          "key": "MVP1-E4",
-          "name": "MVP1-E4 · Human Review design",
-          "share": 75,
-          "why": "Module design documents",
-          "tokens": 15559762,
-          "buildCost": 1.3,
-          "reworkCost": 1.89,
-          "totalCost": 3.19,
-          "yield": 28,
-          "pending": false
-        },
-        {
-          "key": "MVP1-E5",
-          "name": "MVP1-E5 · DocFlow app design (JSON and CSV output)",
-          "share": 75,
-          "why": "Module design documents",
-          "tokens": 2001352,
-          "buildCost": 0.71,
-          "reworkCost": 0.0,
-          "totalCost": 0.71,
-          "yield": 100,
-          "pending": false
-        },
-        {
-          "key": "MVP1-E6",
-          "name": "MVP1-E6 · Payment design",
-          "share": 75,
-          "why": "Module design documents",
-          "tokens": 7272251,
-          "buildCost": 1.13,
-          "reworkCost": 6.01,
-          "totalCost": 7.14,
-          "yield": 53,
-          "pending": false
-        },
-        {
-          "key": "MVP1-E7",
-          "name": "MVP1-E7 · Delivery design",
-          "share": 75,
-          "why": "Module design documents",
-          "tokens": 11014420,
-          "buildCost": 0.65,
-          "reworkCost": 1.46,
-          "totalCost": 2.11,
-          "yield": 24,
-          "pending": false
-        },
-        {
-          "key": "MVP1-E1-05",
-          "name": "MVP1-E1-05, E0-06 · Account management design",
-          "share": 75,
-          "why": "Module design documents",
-          "tokens": 6780465,
-          "buildCost": 1.33,
-          "reworkCost": 12.36,
-          "totalCost": 13.69,
-          "yield": 21,
-          "pending": false
-        },
-        {
-          "key": "MVP1-E0-07",
-          "name": "MVP1-E0-07, E0-08 · Service template and gateway design",
-          "share": 75,
-          "why": "Module design documents (service template and gateway)",
-          "tokens": 1043394,
-          "buildCost": 0.71,
-          "reworkCost": 0.0,
-          "totalCost": 0.71,
-          "yield": 100,
-          "pending": false
-        },
-        {
-          "key": "DECISIONS-1117",
-          "name": "Founder decisions on MVP1 design questions (17 Nov)",
-          "share": 75,
-          "why": "Design decisions recorded in the API and database designs",
-          "tokens": 35755464,
-          "buildCost": 0.0,
-          "reworkCost": 14.69,
-          "totalCost": 14.69,
-          "yield": 0,
-          "pending": false
-        },
-        {
-          "key": "MVP1-E0-14-16",
-          "name": "MVP1-E0-14 to E0-16 · Market Outlook, PRD Reference and MCP (stories)",
-          "share": 100,
-          "why": "Stories",
-          "tokens": 4072016,
-          "buildCost": 0.91,
-          "reworkCost": 0.0,
-          "totalCost": 0.91,
-          "yield": 100,
-          "pending": false
-        },
-        {
-          "key": "MVP1-E0-17",
-          "name": "MVP1-E0-17 · Token yield explained on Token Costs",
-          "share": 100,
-          "why": "Cost work",
-          "tokens": 11774013,
-          "buildCost": 2.19,
-          "reworkCost": 0.0,
-          "totalCost": 2.19,
-          "yield": 100,
-          "pending": false
-        },
-        {
-          "key": "MVP1-E3-06",
-          "name": "MVP1-E3-06 · Ask questions about my documents, RAG (story)",
-          "share": 100,
-          "why": "Story",
-          "tokens": 4213259,
-          "buildCost": 0.84,
-          "reworkCost": 0.0,
-          "totalCost": 0.84,
-          "yield": 100,
-          "pending": false
-        },
-        {
-          "key": "MVP2-STORIES",
-          "name": "MVP2 stories: agents, roles and groups; scheduled payments; deactivation",
-          "share": 100,
-          "why": "Stories",
-          "tokens": 5614053,
-          "buildCost": 7.99,
-          "reworkCost": 0.0,
-          "totalCost": 7.99,
-          "yield": 100,
-          "pending": false
-        },
-        {
-          "key": "MVP1-E0-18-21",
-          "name": "MVP1-E0-18 to E0-21 · Try it, design system, architecture section, section order (stories)",
-          "share": 100,
-          "why": "Stories",
-          "tokens": 4054132,
-          "buildCost": 1.55,
-          "reworkCost": 0.0,
-          "totalCost": 1.55,
-          "yield": 100,
-          "pending": false
-        },
-        {
-          "key": "MVP1-E0-22-30",
-          "name": "MVP1-E0-22 to E0-30 · Platform Core, monitoring, security, product sections (stories)",
-          "share": 100,
-          "why": "Stories",
-          "tokens": 2574193,
-          "buildCost": 1.11,
-          "reworkCost": 0.87,
-          "totalCost": 1.99,
-          "yield": 67,
-          "pending": false
-        },
-        {
-          "key": "MVP1-E0-31",
-          "name": "MVP1-E0-31 · Costs tab and the Claude demo budget",
-          "share": 100,
-          "why": "Cost work",
-          "tokens": 5076346,
-          "buildCost": 1.66,
-          "reworkCost": 0.0,
-          "totalCost": 1.66,
-          "yield": 100,
-          "pending": false
-        },
-        {
-          "key": "APPS-AUTOREP",
-          "name": "Apps by version, and AutoRep V1 PRD and epics (stories)",
-          "share": 100,
-          "why": "PRD, epics and stories",
-          "tokens": 7630454,
-          "buildCost": 1.6,
-          "reworkCost": 0.92,
-          "totalCost": 2.52,
-          "yield": 54,
-          "pending": false
-        },
-        {
-          "key": "MVP1-E8",
-          "name": "MVP1-E8 · Total projected cost (tab and stories)",
-          "share": 100,
-          "why": "Cost work: epic and stories",
-          "tokens": 20034324,
-          "buildCost": 10.38,
-          "reworkCost": 8.96,
-          "totalCost": 19.34,
-          "yield": 75,
-          "pending": true
-        },
-        {
-          "key": "MVP1-E0-44",
-          "name": "MVP1-E0-44 · Product names and versions (story)",
-          "share": 100,
-          "why": "Product names and versions",
-          "tokens": 8033369,
-          "buildCost": 17.89,
-          "reworkCost": 0.08,
-          "totalCost": 17.97,
-          "yield": 96,
-          "pending": false
-        },
-        {
-          "key": "MVP1-E0-47",
-          "name": "MVP1-E0-47 · Payments article on Expensive Mistakes",
-          "share": 100,
-          "why": "Non-technical document (article)",
-          "tokens": 8834158,
-          "buildCost": 1.51,
-          "reworkCost": 0.0,
-          "totalCost": 1.51,
-          "yield": 75,
-          "pending": true
-        },
-        {
-          "key": "MVP1-E0-45",
-          "name": "MVP1-E0-45 · Total tokens so far on the Token Costs tab",
-          "share": 100,
-          "why": "Cost work",
-          "tokens": 2839788,
-          "buildCost": 0.48,
-          "reworkCost": 0.23,
-          "totalCost": 0.71,
-          "yield": 68,
-          "pending": false
-        },
-        {
-          "key": "MVP1-E0-46",
-          "name": "MVP1-E0-46 · Expensive Mistakes tab and four lessons",
-          "share": 100,
-          "why": "Non-technical documents (lessons)",
-          "tokens": 3443224,
-          "buildCost": 1.27,
-          "reworkCost": 0.0,
-          "totalCost": 1.27,
-          "yield": 100,
-          "pending": false
-        },
-        {
-          "key": "MVP1-E8-09",
-          "name": "MVP1-E8-09 · Human cost script and skill",
-          "share": 100,
-          "why": "Cost work",
-          "tokens": 4910615,
-          "buildCost": 0.0,
-          "reworkCost": 0.0,
-          "totalCost": 0.0,
-          "yield": 73,
-          "pending": true
-        },
-        {
-          "key": "MVP1-E8-10",
-          "name": "MVP1-E8-10 · Total Projected Cost page, four tabs",
-          "share": 100,
-          "why": "Cost work",
-          "tokens": 3386558,
-          "buildCost": 0.0,
-          "reworkCost": 0.0,
-          "totalCost": 0.0,
-          "yield": 100,
-          "pending": true
-        },
-        {
-          "key": "MVP1-E8-11",
-          "name": "MVP1-E8-11 · Name the navigation item \"Total Cost\"",
-          "share": 100,
-          "why": "Cost work",
-          "tokens": 15732229,
-          "buildCost": 3.68,
-          "reworkCost": 0.0,
-          "totalCost": 3.68,
-          "yield": 100,
-          "pending": false
-        },
-        {
-          "key": "MVP1-E3-08-E5-05",
-          "name": "MVP1-E3-08, E4-06, E5-05 · Results held for the app until it releases them (design)",
-          "share": 75,
-          "why": "Stories with API and data designs",
-          "tokens": 22599013,
-          "buildCost": 5.4,
-          "reworkCost": 0.0,
-          "totalCost": 5.4,
-          "yield": 100,
-          "pending": false
-        },
-        {
-          "key": "MVP1-E3-09",
-          "name": "MVP1-E3-09 · A free daily quota for jobs a person starts (design)",
-          "share": 75,
-          "why": "Story with API and data designs",
-          "tokens": 10155964,
-          "buildCost": 2.4,
-          "reworkCost": 0.0,
-          "totalCost": 2.4,
-          "yield": 100,
-          "pending": false
-        },
-        {
-          "key": "MVP1-E0-54",
-          "name": "MVP1-E0-54 · Roadmap tab on How It's Built",
-          "share": 100,
-          "why": "Roadmap work",
-          "tokens": 20856384,
-          "buildCost": 3.13,
-          "reworkCost": 6.48,
-          "totalCost": 9.61,
-          "yield": 33,
-          "pending": false
-        },
-        {
-          "key": "MVP1-E8-12",
-          "name": "MVP1-E8-12 · Four estimates per story, and the plan without and with Claude Code",
-          "share": 100,
-          "why": "Cost and roadmap work",
-          "tokens": 57824498,
-          "buildCost": 18.49,
-          "reworkCost": 1.81,
-          "totalCost": 20.29,
-          "yield": 91,
-          "pending": false
-        },
-        {
-          "key": "MVP1-E8-13",
-          "name": "MVP1-E8-13 · Roadmap v5: a second product manager, and the cost of each plan",
-          "share": 100,
-          "why": "Roadmap work",
-          "tokens": 13399399,
-          "buildCost": 3.72,
-          "reworkCost": 0.0,
-          "totalCost": 3.72,
-          "yield": 100,
-          "pending": false
-        },
-        {
-          "key": "MVP1-E8-14",
-          "name": "MVP1-E8-14 · Roadmap v6: product work two sprints ahead, environments early, and tokens in the cost",
-          "share": 100,
-          "why": "Roadmap work",
-          "tokens": 13820535,
-          "buildCost": 3.7,
-          "reworkCost": 0.0,
-          "totalCost": 3.7,
-          "yield": 100,
-          "pending": false
-        },
-        {
-          "key": "MVP1-E8-15",
-          "name": "MVP1-E8-15 · Total Cost from the latest roadmap: so far and projected",
-          "share": 100,
-          "why": "Cost work",
-          "tokens": 35435960,
-          "buildCost": 3.41,
-          "reworkCost": 5.49,
-          "totalCost": 8.9,
-          "yield": 37,
-          "pending": false
-        },
-        {
-          "key": "MVP1-E8-16",
-          "name": "MVP1-E8-16 · Token Costs by Product and Engineering, so far and projected",
-          "share": 100,
-          "why": "Cost work",
-          "tokens": 9200936,
-          "buildCost": 0.0,
-          "reworkCost": 0.0,
-          "totalCost": 0.0,
-          "yield": 100,
-          "pending": true
+        "grand": {
+          "actual": 204.29,
+          "projected": 445.9,
+          "total": 650.19
         }
-      ],
-      "prereq": [
-        {
-          "name": "Planning documents",
-          "requests": 2,
-          "tokens": 1348496,
-          "cost": 0.72
-        },
-        {
-          "name": "Questions and explanations",
-          "requests": 11,
-          "tokens": 6934636,
-          "cost": 12.65
-        },
-        {
-          "name": "Product discovery",
-          "requests": 13,
-          "tokens": 6107161,
-          "cost": 12.55
-        },
-        {
-          "name": "Process",
-          "requests": 32,
-          "tokens": 115962760,
-          "cost": 36.8
-        },
-        {
-          "name": "Tool overhead (background calls), shared in proportion",
-          "requests": 0,
-          "tokens": 0,
-          "cost": 2.11
-        }
-      ],
-      "storyTotals": {
-        "tokens": 466257327,
-        "cost": 205.4,
-        "buildCost": 124.08,
-        "reworkCost": 81.3,
-        "pending": true
       },
-      "prereqTotals": {
-        "requests": 58,
-        "tokens": 130353053,
-        "cost": 64.82
-      },
-      "projected": [
-        {
-          "id": "MVP1-E0-14",
-          "title": "Market Outlook section on every module page",
-          "size": "M",
-          "issue": 84,
-          "cost": 8.83
+      {
+        "key": "MVP1-E1",
+        "name": "E1 · Accounts with AWS Cognito",
+        "product": {
+          "actual": {
+            "tokens": 17012994,
+            "build": 8.75,
+            "rework": 19.15,
+            "total": 27.9
+          },
+          "projected": null
         },
-        {
-          "id": "MVP1-E0-15",
-          "title": "PRD Reference section on every module page",
-          "size": "S",
-          "issue": 85,
-          "cost": 3.31
+        "engineering": {
+          "actual": {
+            "tokens": 25519386,
+            "build": 8.38,
+            "rework": 6.38,
+            "total": 14.76
+          },
+          "projected": 145.68
         },
-        {
-          "id": "MVP1-E0-27",
-          "title": "Metrics section on every module page",
-          "size": "M",
-          "issue": 104,
-          "cost": 8.83
-        },
-        {
-          "id": "MVP1-E0-28",
-          "title": "Monetization section on every module page",
-          "size": "M",
-          "issue": 105,
-          "cost": 8.83
-        },
-        {
-          "id": "MVP1-E0-29",
-          "title": "GTM section on every module page",
-          "size": "M",
-          "issue": 106,
-          "cost": 8.83
-        },
-        {
-          "id": "MVP1-E0-30",
-          "title": "Support section on every module page",
-          "size": "S",
-          "issue": 107,
-          "cost": 3.31
-        },
-        {
-          "id": "MVP1-E0-44",
-          "title": "Product names and versions in folders, documents and story IDs",
-          "size": "L",
-          "issue": 133,
-          "cost": 16.56
-        },
-        {
-          "id": "MVP1-E10-01",
-          "title": "Sales demo",
-          "size": "M",
-          "issue": 215,
-          "cost": 8.83
-        },
-        {
-          "id": "MVP1-E10-02",
-          "title": "Sales training",
-          "size": "M",
-          "issue": 216,
-          "cost": 8.83
-        },
-        {
-          "id": "MVP1-E10-03",
-          "title": "SKU setup",
-          "size": "S",
-          "issue": 217,
-          "cost": 3.31
-        },
-        {
-          "id": "MVP1-E10-04",
-          "title": "CPQ setup",
-          "size": "M",
-          "issue": 218,
-          "cost": 8.83
-        },
-        {
-          "id": "MVP1-E10-05",
-          "title": "Packaging of multiple products: bundles",
-          "size": "M",
-          "issue": 219,
-          "cost": 8.83
-        },
-        {
-          "id": "MVP1-E10-06",
-          "title": "Partner programme terms",
-          "size": "M",
-          "issue": 243,
-          "cost": 8.83
-        },
-        {
-          "id": "MVP1-E11-01",
-          "title": "GTM strategy with sales",
-          "size": "M",
-          "issue": 220,
-          "cost": 8.83
-        },
-        {
-          "id": "MVP1-E11-02",
-          "title": "Positioning document",
-          "size": "M",
-          "issue": 221,
-          "cost": 8.83
-        },
-        {
-          "id": "MVP1-E11-03",
-          "title": "Joint marketing AI agent with partners",
-          "size": "M",
-          "issue": 222,
-          "cost": 8.83
-        },
-        {
-          "id": "MVP1-E11-04",
-          "title": "Launch communications",
-          "size": "M",
-          "issue": 244,
-          "cost": 8.83
-        },
-        {
-          "id": "MVP1-E12-01",
-          "title": "Support SOP",
-          "size": "S",
-          "issue": 223,
-          "cost": 3.31
-        },
-        {
-          "id": "MVP1-E12-02",
-          "title": "Issue categorization",
-          "size": "S",
-          "issue": 224,
-          "cost": 3.31
-        },
-        {
-          "id": "MVP1-E12-03",
-          "title": "Issue escalation paths",
-          "size": "S",
-          "issue": 225,
-          "cost": 3.31
-        },
-        {
-          "id": "MVP1-E12-04",
-          "title": "Issue resolution timelines",
-          "size": "S",
-          "issue": 226,
-          "cost": 3.31
-        },
-        {
-          "id": "MVP1-E12-05",
-          "title": "Support staff training",
-          "size": "M",
-          "issue": 227,
-          "cost": 8.83
-        },
-        {
-          "id": "MVP1-E12-06",
-          "title": "Release management: test, pilot, phase 1 and GA",
-          "size": "M",
-          "issue": 228,
-          "cost": 8.83
-        },
-        {
-          "id": "MVP1-E12-07",
-          "title": "Product analytics",
-          "size": "M",
-          "issue": 245,
-          "cost": 8.83
-        },
-        {
-          "id": "MVP1-E13-01",
-          "title": "P&L ownership and explanation",
-          "size": "M",
-          "issue": 229,
-          "cost": 8.83
-        },
-        {
-          "id": "MVP1-E13-02",
-          "title": "Profitability tracking",
-          "size": "M",
-          "issue": 230,
-          "cost": 8.83
-        },
-        {
-          "id": "MVP1-E13-03",
-          "title": "Unit economics",
-          "size": "M",
-          "issue": 231,
-          "cost": 8.83
-        },
-        {
-          "id": "MVP1-E13-04",
-          "title": "Margin: current versus future",
-          "size": "S",
-          "issue": 232,
-          "cost": 3.31
-        },
-        {
-          "id": "MVP1-E13-05",
-          "title": "Margin improvement strategies",
-          "size": "S",
-          "issue": 233,
-          "cost": 3.31
-        },
-        {
-          "id": "MVP1-E13-06",
-          "title": "Pricing page and billing operations",
-          "size": "M",
-          "issue": 246,
-          "cost": 8.83
-        },
-        {
-          "id": "MVP1-E14-01",
-          "title": "Configuration team training",
-          "size": "M",
-          "issue": 234,
-          "cost": 8.83
-        },
-        {
-          "id": "MVP1-E14-02",
-          "title": "Customer success team training",
-          "size": "M",
-          "issue": 235,
-          "cost": 8.83
-        },
-        {
-          "id": "MVP1-E14-03",
-          "title": "Customer success documentation: internal and shareable",
-          "size": "M",
-          "issue": 236,
-          "cost": 8.83
-        },
-        {
-          "id": "MVP1-E14-04",
-          "title": "Upsell opportunity training",
-          "size": "S",
-          "issue": 237,
-          "cost": 3.31
-        },
-        {
-          "id": "MVP1-E14-05",
-          "title": "Customer onboarding and in-product help",
-          "size": "M",
-          "issue": 247,
-          "cost": 8.83
-        },
-        {
-          "id": "MVP1-E14-06",
-          "title": "Voice of the customer",
-          "size": "S",
-          "issue": 248,
-          "cost": 3.31
-        },
-        {
-          "id": "MVP1-E15-01",
-          "title": "Security testing strategy",
-          "size": "M",
-          "issue": 238,
-          "cost": 8.83
-        },
-        {
-          "id": "MVP1-E15-02",
-          "title": "Vulnerability identification and management",
-          "size": "M",
-          "issue": 239,
-          "cost": 8.83
-        },
-        {
-          "id": "MVP1-E15-03",
-          "title": "Compliance review",
-          "size": "M",
-          "issue": 240,
-          "cost": 8.83
-        },
-        {
-          "id": "MVP1-E15-04",
-          "title": "Responsible AI policy and AI disclosures",
-          "size": "S",
-          "issue": 249,
-          "cost": 3.31
-        },
-        {
-          "id": "MVP1-E16-01",
-          "title": "Customer contracts: terms of service, data processing agreement and order form",
-          "size": "M",
-          "issue": 250,
-          "cost": 8.83
-        },
-        {
-          "id": "MVP1-E8-02",
-          "title": "The cost model's assumptions",
-          "size": "S",
-          "issue": 127,
-          "cost": 3.31
-        },
-        {
-          "id": "MVP1-E8-03",
-          "title": "Effort for every story",
-          "size": "M",
-          "issue": 128,
-          "cost": 8.83
-        },
-        {
-          "id": "MVP1-E8-04",
-          "title": "A dependency-aware timeline",
-          "size": "M",
-          "issue": 129,
-          "cost": 8.83
-        },
-        {
-          "id": "MVP1-E8-05",
-          "title": "The human team's cost, per story and in total",
-          "size": "M",
-          "issue": 130,
-          "cost": 8.83
-        },
-        {
-          "id": "MVP1-E8-06",
-          "title": "The cost of building it with Claude Code and one product manager",
-          "size": "M",
-          "issue": 131,
-          "cost": 8.83
-        },
-        {
-          "id": "MVP1-E8-07",
-          "title": "The difference",
-          "size": "S",
-          "issue": 132,
-          "cost": 3.31
-        },
-        {
-          "id": "MVP1-E8-08",
-          "title": "Token estimate for every V1 story, and a story for every document",
-          "size": "L",
-          "issue": 135,
-          "cost": 16.56
-        },
-        {
-          "id": "MVP1-E8-14",
-          "title": "Roadmap v6: product work two sprints ahead, environments early, and tokens in the cost",
-          "size": "M",
-          "issue": 252,
-          "cost": 8.83
-        },
-        {
-          "id": "MVP1-E8-15",
-          "title": "Total Cost from the latest roadmap: so far and projected",
-          "size": "M",
-          "issue": 254,
-          "cost": 8.83
-        },
-        {
-          "id": "MVP1-E9-01",
-          "title": "Go-live strategy and go/no-go checklist",
-          "size": "M",
-          "issue": 195,
-          "cost": 8.83
-        },
-        {
-          "id": "MVP1-E9-06",
-          "title": "Privacy policy, terms and cookie notice",
-          "size": "S",
-          "issue": 200,
-          "cost": 3.31
-        },
-        {
-          "id": "MVP1-E9-08",
-          "title": "User acceptance testing with beta users",
-          "size": "S",
-          "issue": 202,
-          "cost": 3.31
-        },
-        {
-          "id": "MVP1-E9-09",
-          "title": "Release documentation",
-          "size": "S",
-          "issue": 203,
-          "cost": 3.31
-        },
-        {
-          "id": "MVP1-E9-10",
-          "title": "Support documentation: playbook and runbooks",
-          "size": "S",
-          "issue": 204,
-          "cost": 3.31
-        },
-        {
-          "id": "MVP1-E9-13",
-          "title": "Handling support issues",
-          "size": "S",
-          "issue": 207,
-          "cost": 3.31
-        },
-        {
-          "id": "MVP1-E9-14",
-          "title": "Post-launch review",
-          "size": "S",
-          "issue": 208,
-          "cost": 3.31
+        "grand": {
+          "actual": 42.66,
+          "projected": 145.68,
+          "total": 188.34
         }
-      ],
-      "soFar": 270.22,
-      "projectedCost": 408.37,
-      "projectedStories": 57,
-      "total": 678.59
+      },
+      {
+        "key": "MVP1-E2",
+        "name": "E2 · Document upload to S3",
+        "product": {
+          "actual": {
+            "tokens": 25129190,
+            "build": 3.75,
+            "rework": 1.67,
+            "total": 5.43
+          },
+          "projected": null
+        },
+        "engineering": {
+          "actual": {
+            "tokens": 8376396,
+            "build": 1.25,
+            "rework": 0.56,
+            "total": 1.81
+          },
+          "projected": 82.77
+        },
+        "grand": {
+          "actual": 7.24,
+          "projected": 82.77,
+          "total": 90.01
+        }
+      },
+      {
+        "key": "MVP1-E3",
+        "name": "E3 · Extraction with Claude",
+        "product": {
+          "actual": {
+            "tokens": 48708366,
+            "build": 11.66,
+            "rework": 0.0,
+            "total": 11.66
+          },
+          "projected": null
+        },
+        "engineering": {
+          "actual": {
+            "tokens": 14831702,
+            "build": 3.61,
+            "rework": 0.0,
+            "total": 3.61
+          },
+          "projected": 235.09
+        },
+        "grand": {
+          "actual": 15.27,
+          "projected": 235.09,
+          "total": 250.36
+        }
+      },
+      {
+        "key": "MVP1-E4",
+        "name": "E4 · Human review of low-confidence fields",
+        "product": {
+          "actual": {
+            "tokens": 15559762,
+            "build": 1.3,
+            "rework": 1.89,
+            "total": 3.19
+          },
+          "projected": null
+        },
+        "engineering": {
+          "actual": {
+            "tokens": 5186588,
+            "build": 0.43,
+            "rework": 0.63,
+            "total": 1.06
+          },
+          "projected": 82.77
+        },
+        "grand": {
+          "actual": 4.25,
+          "projected": 82.77,
+          "total": 87.02
+        }
+      },
+      {
+        "key": "MVP1-E5",
+        "name": "E5 · JSON review, metadata and CSV",
+        "product": {
+          "actual": {
+            "tokens": 2001352,
+            "build": 0.71,
+            "rework": 0.0,
+            "total": 0.71
+          },
+          "projected": null
+        },
+        "engineering": {
+          "actual": {
+            "tokens": 667118,
+            "build": 0.24,
+            "rework": 0.0,
+            "total": 0.24
+          },
+          "projected": 66.21
+        },
+        "grand": {
+          "actual": 0.95,
+          "projected": 66.21,
+          "total": 67.16
+        }
+      },
+      {
+        "key": "MVP1-E6",
+        "name": "E6 · Payment",
+        "product": {
+          "actual": {
+            "tokens": 7272251,
+            "build": 1.13,
+            "rework": 6.01,
+            "total": 7.14
+          },
+          "projected": null
+        },
+        "engineering": {
+          "actual": {
+            "tokens": 2424084,
+            "build": 0.38,
+            "rework": 2.0,
+            "total": 2.38
+          },
+          "projected": 82.77
+        },
+        "grand": {
+          "actual": 9.52,
+          "projected": 82.77,
+          "total": 92.29
+        }
+      },
+      {
+        "key": "MVP1-E7",
+        "name": "E7 · Success, download and email",
+        "product": {
+          "actual": {
+            "tokens": 11014420,
+            "build": 0.65,
+            "rework": 1.46,
+            "total": 2.11
+          },
+          "projected": null
+        },
+        "engineering": {
+          "actual": {
+            "tokens": 3671474,
+            "build": 0.22,
+            "rework": 0.49,
+            "total": 0.7
+          },
+          "projected": 62.91
+        },
+        "grand": {
+          "actual": 2.81,
+          "projected": 62.91,
+          "total": 65.72
+        }
+      },
+      {
+        "key": "MVP1-E8",
+        "name": "E8 · Total projected cost: a human team versus Claude Code",
+        "product": {
+          "actual": {
+            "tokens": 180313124,
+            "build": 47.78,
+            "rework": 16.26,
+            "total": 64.05
+          },
+          "projected": 76.16
+        },
+        "engineering": {
+          "actual": null,
+          "projected": null
+        },
+        "grand": {
+          "actual": 64.05,
+          "projected": 76.16,
+          "total": 140.21
+        }
+      },
+      {
+        "key": "MVP1-E9",
+        "name": "E9 · Go-live and operations",
+        "product": {
+          "actual": null,
+          "projected": 28.69
+        },
+        "engineering": {
+          "actual": null,
+          "projected": 168.87
+        },
+        "grand": {
+          "actual": null,
+          "projected": 197.56,
+          "total": 197.56
+        }
+      },
+      {
+        "key": "MVP1-E10",
+        "name": "E10 · CRO function enablement: sales",
+        "product": {
+          "actual": null,
+          "projected": 47.46
+        },
+        "engineering": {
+          "actual": null,
+          "projected": null
+        },
+        "grand": {
+          "actual": null,
+          "projected": 47.46,
+          "total": 47.46
+        }
+      },
+      {
+        "key": "MVP1-E11",
+        "name": "E11 · CMO function enablement: marketing",
+        "product": {
+          "actual": null,
+          "projected": 35.32
+        },
+        "engineering": {
+          "actual": null,
+          "projected": null
+        },
+        "grand": {
+          "actual": null,
+          "projected": 35.32,
+          "total": 35.32
+        }
+      },
+      {
+        "key": "MVP1-E12",
+        "name": "E12 · COO function enablement: operations and support",
+        "product": {
+          "actual": null,
+          "projected": 39.73
+        },
+        "engineering": {
+          "actual": null,
+          "projected": null
+        },
+        "grand": {
+          "actual": null,
+          "projected": 39.73,
+          "total": 39.73
+        }
+      },
+      {
+        "key": "MVP1-E13",
+        "name": "E13 · CFO function enablement: finance",
+        "product": {
+          "actual": null,
+          "projected": 41.94
+        },
+        "engineering": {
+          "actual": null,
+          "projected": null
+        },
+        "grand": {
+          "actual": null,
+          "projected": 41.94,
+          "total": 41.94
+        }
+      },
+      {
+        "key": "MVP1-E14",
+        "name": "E14 · Chief Customer Officer function enablement: customer success",
+        "product": {
+          "actual": null,
+          "projected": 41.94
+        },
+        "engineering": {
+          "actual": null,
+          "projected": null
+        },
+        "grand": {
+          "actual": null,
+          "projected": 41.94,
+          "total": 41.94
+        }
+      },
+      {
+        "key": "MVP1-E15",
+        "name": "E15 · Chief Security Officer function: security requirements",
+        "product": {
+          "actual": null,
+          "projected": 29.8
+        },
+        "engineering": {
+          "actual": null,
+          "projected": null
+        },
+        "grand": {
+          "actual": null,
+          "projected": 29.8,
+          "total": 29.8
+        }
+      },
+      {
+        "key": "MVP1-E16",
+        "name": "E16 · General Counsel function enablement: legal",
+        "product": {
+          "actual": null,
+          "projected": 8.83
+        },
+        "engineering": {
+          "actual": null,
+          "projected": null
+        },
+        "grand": {
+          "actual": null,
+          "projected": 8.83,
+          "total": 8.83
+        }
+      },
+      {
+        "key": "AUTOREP",
+        "name": "AutoRep V1",
+        "product": {
+          "actual": {
+            "tokens": 7630454,
+            "build": 1.6,
+            "rework": 0.92,
+            "total": 2.52
+          },
+          "projected": null
+        },
+        "engineering": {
+          "actual": {
+            "tokens": 8591095,
+            "build": 1.75,
+            "rework": 0.0,
+            "total": 1.75
+          },
+          "projected": null
+        },
+        "grand": {
+          "actual": 4.27,
+          "projected": null,
+          "total": 4.27
+        }
+      },
+      {
+        "key": "MVP2",
+        "name": "MVP2 stories",
+        "product": {
+          "actual": {
+            "tokens": 5614053,
+            "build": 7.99,
+            "rework": 0.0,
+            "total": 7.99
+          },
+          "projected": null
+        },
+        "engineering": {
+          "actual": null,
+          "projected": null
+        },
+        "grand": {
+          "actual": 7.99,
+          "projected": null,
+          "total": 7.99
+        }
+      }
+    ],
+    "prereq": {
+      "key": "PREREQ",
+      "name": "Pre-requisites",
+      "product": {
+        "actual": {
+          "tokens": 130353053,
+          "build": null,
+          "rework": null,
+          "total": 64.84
+        },
+        "projected": null
+      },
+      "engineering": {
+        "actual": {
+          "tokens": 96142389,
+          "build": null,
+          "rework": null,
+          "total": 39.39
+        },
+        "projected": null
+      },
+      "grand": {
+        "actual": 104.23,
+        "projected": null,
+        "total": 104.23
+      }
     },
-    "engineering": {
-      "stories": [
-        {
-          "key": "P0-SITE",
-          "name": "Phase 0 · Site launch (home page, demos, theme)",
-          "share": 100,
-          "why": "Site code",
-          "tokens": 5086767,
-          "buildCost": 2.65,
-          "reworkCost": 0.7,
-          "totalCost": 3.35,
-          "yield": 78,
-          "pending": false
+    "total": {
+      "key": "TOTAL",
+      "name": "Total",
+      "product": {
+        "actual": {
+          "tokens": 603178450,
+          "build": 128.48,
+          "rework": 81.3,
+          "total": 274.64
         },
-        {
-          "key": "DESIGN-ALL",
-          "name": "Design · API and database for every story",
-          "share": 25,
-          "why": "API and database design in every story",
-          "tokens": 2450682,
-          "buildCost": 0.77,
-          "reworkCost": 2.02,
-          "totalCost": 2.79,
-          "yield": 22,
-          "pending": false
-        },
-        {
-          "key": "ARCH",
-          "name": "Architecture decision and Architecture page",
-          "share": 100,
-          "why": "Architecture",
-          "tokens": 6786941,
-          "buildCost": 3.07,
-          "reworkCost": 0.0,
-          "totalCost": 3.07,
-          "yield": 100,
-          "pending": false
-        },
-        {
-          "key": "MVP1-E1",
-          "name": "MVP1-E1 · Login design (Identity, version 1)",
-          "share": 25,
-          "why": "Module design documents: API spec, data model, schema, journeys, components",
-          "tokens": 3410843,
-          "buildCost": 2.47,
-          "reworkCost": 2.26,
-          "totalCost": 4.74,
-          "yield": 38,
-          "pending": false
-        },
-        {
-          "key": "MVP1-E1-01",
-          "name": "MVP1-E1-01 · Cognito setup guidance",
-          "share": 100,
-          "why": "Cloud set-up (AWS)",
-          "tokens": 3170067,
-          "buildCost": 1.0,
-          "reworkCost": 0.0,
-          "totalCost": 1.0,
-          "yield": 100,
-          "pending": false
-        },
-        {
-          "key": "MVP1-E0-10",
-          "name": "MVP1-E0-10 · Products pages and navigation",
-          "share": 100,
-          "why": "Site code",
-          "tokens": 7750409,
-          "buildCost": 4.87,
-          "reworkCost": 0.0,
-          "totalCost": 4.87,
-          "yield": 100,
-          "pending": false
-        },
-        {
-          "key": "MVP1-E0-11",
-          "name": "MVP1-E0-11 · Product vision page",
-          "share": 100,
-          "why": "Site code (vision page and flow diagram)",
-          "tokens": 9077860,
-          "buildCost": 2.45,
-          "reworkCost": 0.95,
-          "totalCost": 3.4,
-          "yield": 66,
-          "pending": false
-        },
-        {
-          "key": "MVP1-E0-12",
-          "name": "MVP1-E0-12 · Design skills and How It's Built",
-          "share": 100,
-          "why": "Skills (scripts) and site code",
-          "tokens": 16062771,
-          "buildCost": 20.66,
-          "reworkCost": 2.19,
-          "totalCost": 22.85,
-          "yield": 32,
-          "pending": false
-        },
-        {
-          "key": "MVP1-E2",
-          "name": "MVP1-E2 · Upload design",
-          "share": 25,
-          "why": "Module design documents",
-          "tokens": 8376396,
-          "buildCost": 1.25,
-          "reworkCost": 0.56,
-          "totalCost": 1.81,
-          "yield": 62,
-          "pending": false
-        },
-        {
-          "key": "MVP1-E3",
-          "name": "MVP1-E3 · Extraction design",
-          "share": 25,
-          "why": "Module design documents",
-          "tokens": 3913376,
-          "buildCost": 1.01,
-          "reworkCost": 0.0,
-          "totalCost": 1.01,
-          "yield": 100,
-          "pending": false
-        },
-        {
-          "key": "MVP1-E4",
-          "name": "MVP1-E4 · Human Review design",
-          "share": 25,
-          "why": "Module design documents",
-          "tokens": 5186588,
-          "buildCost": 0.43,
-          "reworkCost": 0.63,
-          "totalCost": 1.06,
-          "yield": 28,
-          "pending": false
-        },
-        {
-          "key": "MVP1-E5",
-          "name": "MVP1-E5 · DocFlow app design (JSON and CSV output)",
-          "share": 25,
-          "why": "Module design documents",
-          "tokens": 667118,
-          "buildCost": 0.24,
-          "reworkCost": 0.0,
-          "totalCost": 0.24,
-          "yield": 100,
-          "pending": false
-        },
-        {
-          "key": "MVP1-E6",
-          "name": "MVP1-E6 · Payment design",
-          "share": 25,
-          "why": "Module design documents",
-          "tokens": 2424084,
-          "buildCost": 0.38,
-          "reworkCost": 2.0,
-          "totalCost": 2.38,
-          "yield": 53,
-          "pending": false
-        },
-        {
-          "key": "MVP1-E7",
-          "name": "MVP1-E7 · Delivery design",
-          "share": 25,
-          "why": "Module design documents",
-          "tokens": 3671474,
-          "buildCost": 0.22,
-          "reworkCost": 0.49,
-          "totalCost": 0.7,
-          "yield": 24,
-          "pending": false
-        },
-        {
-          "key": "MVP1-E1-05",
-          "name": "MVP1-E1-05, E0-06 · Account management design",
-          "share": 25,
-          "why": "Module design documents",
-          "tokens": 2260155,
-          "buildCost": 0.44,
-          "reworkCost": 4.12,
-          "totalCost": 4.56,
-          "yield": 21,
-          "pending": false
-        },
-        {
-          "key": "MVP1-E0-07",
-          "name": "MVP1-E0-07, E0-08 · Service template and gateway design",
-          "share": 25,
-          "why": "Module design documents (service template and gateway)",
-          "tokens": 347798,
-          "buildCost": 0.24,
-          "reworkCost": 0.0,
-          "totalCost": 0.24,
-          "yield": 100,
-          "pending": false
-        },
-        {
-          "key": "ARCH-REVIEW",
-          "name": "Architect skill and MVP1 architecture review",
-          "share": 100,
-          "why": "Architecture review",
-          "tokens": 19690626,
-          "buildCost": 3.31,
-          "reworkCost": 4.09,
-          "totalCost": 7.4,
-          "yield": 29,
-          "pending": false
-        },
-        {
-          "key": "DECISIONS-1117",
-          "name": "Founder decisions on MVP1 design questions (17 Nov)",
-          "share": 25,
-          "why": "Design decisions recorded in the API and database designs",
-          "tokens": 11918488,
-          "buildCost": 0.0,
-          "reworkCost": 4.9,
-          "totalCost": 4.9,
-          "yield": 0,
-          "pending": false
-        },
-        {
-          "key": "SITE-ANALYTICS",
-          "name": "Vercel Web Analytics on the site",
-          "share": 100,
-          "why": "Site set-up",
-          "tokens": 5814557,
-          "buildCost": 0.94,
-          "reworkCost": 0.0,
-          "totalCost": 0.94,
-          "yield": 100,
-          "pending": false
-        },
-        {
-          "key": "MVP1-E0-22-23",
-          "name": "MVP1-E0-22, E0-23 · Platform menu, Core and architecture pages",
-          "share": 100,
-          "why": "Site code and architecture pages",
-          "tokens": 7335722,
-          "buildCost": 2.21,
-          "reworkCost": 0.0,
-          "totalCost": 2.21,
-          "yield": 100,
-          "pending": false
-        },
-        {
-          "key": "MVP1-E0-21",
-          "name": "MVP1-E0-21 · Module page sections and two entry pages",
-          "share": 100,
-          "why": "Site code",
-          "tokens": 8789671,
-          "buildCost": 1.19,
-          "reworkCost": 1.04,
-          "totalCost": 2.23,
-          "yield": 54,
-          "pending": false
-        },
-        {
-          "key": "MVP1-E0-32-35",
-          "name": "MVP1-E0-32 to E0-35 · Products menu, app and service pages, a flow per app",
-          "share": 100,
-          "why": "Site code",
-          "tokens": 28980673,
-          "buildCost": 2.58,
-          "reworkCost": 4.19,
-          "totalCost": 6.77,
-          "yield": 36,
-          "pending": false
-        },
-        {
-          "key": "MVP1-E0-36-42",
-          "name": "MVP1-E0-36 to E0-42 · Home page: cover, numbers, companies, academics, recommendations",
-          "share": 100,
-          "why": "Site code (home page)",
-          "tokens": 54130169,
-          "buildCost": 4.37,
-          "reworkCost": 28.93,
-          "totalCost": 33.3,
-          "yield": 30,
-          "pending": false
-        },
-        {
-          "key": "MVP1-E0-43",
-          "name": "MVP1-E0-43 · Platform Architecture diagram",
-          "share": 100,
-          "why": "Architecture diagram",
-          "tokens": 5288446,
-          "buildCost": 0.95,
-          "reworkCost": 0.0,
-          "totalCost": 0.95,
-          "yield": 100,
-          "pending": false
-        },
-        {
-          "key": "AUTOREP-E6-03",
-          "name": "AUTOREP-E6-03 · AutoRep overview diagram",
-          "share": 100,
-          "why": "Architecture diagram",
-          "tokens": 8591095,
-          "buildCost": 1.75,
-          "reworkCost": 0.0,
-          "totalCost": 1.75,
-          "yield": 100,
-          "pending": false
-        },
-        {
-          "key": "MVP1-E0-48",
-          "name": "MVP1-E0-48 · App pages with the module side menu",
-          "share": 100,
-          "why": "Site code",
-          "tokens": 3804863,
-          "buildCost": 1.29,
-          "reworkCost": 0.0,
-          "totalCost": 1.29,
-          "yield": 100,
-          "pending": false
-        },
-        {
-          "key": "MVP1-E0-49",
-          "name": "MVP1-E0-49 · Section menu on phones, and Previous / Next",
-          "share": 100,
-          "why": "Site code",
-          "tokens": 4572178,
-          "buildCost": 1.19,
-          "reworkCost": 0.0,
-          "totalCost": 1.19,
-          "yield": 100,
-          "pending": false
-        },
-        {
-          "key": "MVP1-E0-19",
-          "name": "MVP1-E0-19 · Design system (packages/ui-core), service UI packages (E0-07 AC6) and the DocFlow V1 clickable prototype (E0-18 for DocFlow)",
-          "share": 100,
-          "why": "Code: design system, UI packages, prototype",
-          "tokens": 61080992,
-          "buildCost": 13.62,
-          "reworkCost": 6.39,
-          "totalCost": 20.02,
-          "yield": 60,
-          "pending": false
-        },
-        {
-          "key": "MVP1-E1-09-E4-05",
-          "name": "MVP1-E1-09, E3-07, E4-05 · Account and admin UI components (ui-identity, ui-extraction, ui-review)",
-          "share": 100,
-          "why": "Code: UI components",
-          "tokens": 16678321,
-          "buildCost": 4.46,
-          "reworkCost": 0.0,
-          "totalCost": 4.46,
-          "yield": 100,
-          "pending": false
-        },
-        {
-          "key": "MVP1-E0-50",
-          "name": "MVP1-E0-50 · One Overview for every app (with the E0-51 story written alongside)",
-          "share": 100,
-          "why": "Site code (app Overview)",
-          "tokens": 4972444,
-          "buildCost": 2.47,
-          "reworkCost": 0.0,
-          "totalCost": 2.47,
-          "yield": 100,
-          "pending": false
-        },
-        {
-          "key": "MVP1-E0-51",
-          "name": "MVP1-E0-51 · DocFlow high-level design diagram",
-          "share": 100,
-          "why": "Architecture diagram",
-          "tokens": 5368106,
-          "buildCost": 0.0,
-          "reworkCost": 0.0,
-          "totalCost": 0.0,
-          "yield": 100,
-          "pending": true
-        },
-        {
-          "key": "MVP1-E3-08-E5-05",
-          "name": "MVP1-E3-08, E4-06, E5-05 · Results held for the app until it releases them (design)",
-          "share": 25,
-          "why": "Stories with API and data designs",
-          "tokens": 7533004,
-          "buildCost": 1.8,
-          "reworkCost": 0.0,
-          "totalCost": 1.8,
-          "yield": 100,
-          "pending": false
-        },
-        {
-          "key": "MVP1-E3-09",
-          "name": "MVP1-E3-09 · A free daily quota for jobs a person starts (design)",
-          "share": 25,
-          "why": "Story with API and data designs",
-          "tokens": 3385322,
-          "buildCost": 0.8,
-          "reworkCost": 0.0,
-          "totalCost": 0.8,
-          "yield": 100,
-          "pending": false
-        },
-        {
-          "key": "MVP1-E0-52",
-          "name": "MVP1-E0-52 · Design system page shows the components",
-          "share": 100,
-          "why": "Site code",
-          "tokens": 7202246,
-          "buildCost": 2.98,
-          "reworkCost": 0.0,
-          "totalCost": 2.98,
-          "yield": 100,
-          "pending": false
-        },
-        {
-          "key": "MVP1-E0-53",
-          "name": "MVP1-E0-53 · Hide the app flow bands on module pages",
-          "share": 100,
-          "why": "Site code",
-          "tokens": 1726216,
-          "buildCost": 0.0,
-          "reworkCost": 0.0,
-          "totalCost": 0.0,
-          "yield": 100,
-          "pending": true
-        }
-      ],
-      "prereq": [
-        {
-          "name": "Access and tooling",
-          "requests": 7,
-          "tokens": 7863317,
-          "cost": 1.9
-        },
-        {
-          "name": "Questions and explanations",
-          "requests": 17,
-          "tokens": 12129732,
-          "cost": 8.93
-        },
-        {
-          "name": "Product discovery",
-          "requests": 4,
-          "tokens": 1167906,
-          "cost": 3.32
-        },
-        {
-          "name": "Process",
-          "requests": 34,
-          "tokens": 74981434,
-          "cost": 23.74
-        },
-        {
-          "name": "Tool overhead (background calls), shared in proportion",
-          "requests": 0,
-          "tokens": 0,
-          "cost": 1.51
-        }
-      ],
-      "storyTotals": {
-        "tokens": 347506468,
-        "cost": 153.49,
-        "buildCost": 88.06,
-        "reworkCost": 65.46,
-        "pending": true
+        "projected": 408.37
       },
-      "prereqTotals": {
-        "requests": 62,
-        "tokens": 96142389,
-        "cost": 39.4
+      "engineering": {
+        "actual": {
+          "tokens": 443648857,
+          "build": 88.06,
+          "rework": 65.46,
+          "total": 192.88
+        },
+        "projected": 1314.47
       },
-      "projected": [
-        {
-          "id": "MVP1-E0-01",
-          "title": "Database and migrations",
-          "size": "S",
-          "issue": 14,
-          "cost": 9.93
-        },
-        {
-          "id": "MVP1-E0-02",
-          "title": "Audit log",
-          "size": "S",
-          "issue": 16,
-          "cost": 9.93
-        },
-        {
-          "id": "MVP1-E0-03",
-          "title": "CI",
-          "size": "S",
-          "issue": 17,
-          "cost": 9.93
-        },
-        {
-          "id": "MVP1-E0-04",
-          "title": "Eval harness skeleton",
-          "size": "M",
-          "issue": 20,
-          "cost": 26.49
-        },
-        {
-          "id": "MVP1-E0-05",
-          "title": "API contract in every service",
-          "size": "M",
-          "issue": 15,
-          "cost": 26.49
-        },
-        {
-          "id": "MVP1-E0-06",
-          "title": "Agent access: API keys and MCP",
-          "size": "M",
-          "issue": 18,
-          "cost": 26.49
-        },
-        {
-          "id": "MVP1-E0-07",
-          "title": "Service template",
-          "size": "L",
-          "issue": 13,
-          "cost": 49.67
-        },
-        {
-          "id": "MVP1-E0-08",
-          "title": "Gateway",
-          "size": "M",
-          "issue": 21,
-          "cost": 26.49
-        },
-        {
-          "id": "MVP1-E0-09",
-          "title": "DocFlow app shell",
-          "size": "M",
-          "issue": 19,
-          "cost": 26.49
-        },
-        {
-          "id": "MVP1-E0-16",
-          "title": "MCP section on every module page",
-          "size": "M",
-          "issue": 86,
-          "cost": 26.49
-        },
-        {
-          "id": "MVP1-E0-18",
-          "title": "A working journey on every module page (\"Try it\")",
-          "size": "L",
-          "issue": 95,
-          "cost": 49.67
-        },
-        {
-          "id": "MVP1-E0-20",
-          "title": "Architecture & System Design section for every service and app",
-          "size": "M",
-          "issue": 97,
-          "cost": 26.49
-        },
-        {
-          "id": "MVP1-E0-24",
-          "title": "\"Built on\" panel on every service and app page",
-          "size": "S",
-          "issue": 101,
-          "cost": 9.93
-        },
-        {
-          "id": "MVP1-E0-25",
-          "title": "Monitoring",
-          "size": "M",
-          "issue": 102,
-          "cost": 26.49
-        },
-        {
-          "id": "MVP1-E0-26",
-          "title": "Security baseline, secrets and a safe live demo",
-          "size": "M",
-          "issue": 103,
-          "cost": 26.49
-        },
-        {
-          "id": "MVP1-E0-51",
-          "title": "DocFlow high-level design diagram",
-          "size": "S",
-          "issue": 173,
-          "cost": 9.93
-        },
-        {
-          "id": "MVP1-E1-01",
-          "title": "Cognito user pool setup",
-          "size": "S",
-          "issue": 22,
-          "cost": 9.93
-        },
-        {
-          "id": "MVP1-E1-02",
-          "title": "Sign up with email verification",
-          "size": "M",
-          "issue": 23,
-          "cost": 26.49
-        },
-        {
-          "id": "MVP1-E1-03",
-          "title": "Sign in and sign out",
-          "size": "M",
-          "issue": 24,
-          "cost": 26.49
-        },
-        {
-          "id": "MVP1-E1-04",
-          "title": "Forgot and reset password",
-          "size": "S",
-          "issue": 25,
-          "cost": 9.93
-        },
-        {
-          "id": "MVP1-E1-05",
-          "title": "Account page",
-          "size": "M",
-          "issue": 26,
-          "cost": 26.49
-        },
-        {
-          "id": "MVP1-E1-06",
-          "title": "Route protection",
-          "size": "S",
-          "issue": 27,
-          "cost": 9.93
-        },
-        {
-          "id": "MVP1-E1-07",
-          "title": "Branded sign-in page and address",
-          "size": "S",
-          "issue": 53,
-          "cost": 9.93
-        },
-        {
-          "id": "MVP1-E1-08",
-          "title": "Sign in with Google",
-          "size": "M",
-          "issue": 54,
-          "cost": 26.49
-        },
-        {
-          "id": "MVP1-E2-01",
-          "title": "S3 bucket and IAM",
-          "size": "S",
-          "issue": 28,
-          "cost": 9.93
-        },
-        {
-          "id": "MVP1-E2-02",
-          "title": "Presigned upload URL",
-          "size": "M",
-          "issue": 29,
-          "cost": 26.49
-        },
-        {
-          "id": "MVP1-E2-03",
-          "title": "Upload confirmation and checks",
-          "size": "S",
-          "issue": 30,
-          "cost": 9.93
-        },
-        {
-          "id": "MVP1-E2-04",
-          "title": "Upload page UI",
-          "size": "M",
-          "issue": 31,
-          "cost": 26.49
-        },
-        {
-          "id": "MVP1-E2-05",
-          "title": "Documents list",
-          "size": "S",
-          "issue": 32,
-          "cost": 9.93
-        },
-        {
-          "id": "MVP1-E3-01",
-          "title": "Extraction job lifecycle",
-          "size": "M",
-          "issue": 33,
-          "cost": 26.49
-        },
-        {
-          "id": "MVP1-E3-02",
-          "title": "Claude extraction call",
-          "size": "L",
-          "issue": 34,
-          "cost": 49.67
-        },
-        {
-          "id": "MVP1-E3-03",
-          "title": "Rule checks and final confidence",
-          "size": "M",
-          "issue": 35,
-          "cost": 26.49
-        },
-        {
-          "id": "MVP1-E3-04",
-          "title": "Extraction page",
-          "size": "M",
-          "issue": 36,
-          "cost": 26.49
-        },
-        {
-          "id": "MVP1-E3-05",
-          "title": "Cost and latency logging",
-          "size": "S",
-          "issue": 37,
-          "cost": 9.93
-        },
-        {
-          "id": "MVP1-E3-06",
-          "title": "Ask questions about my documents (RAG)",
-          "size": "L",
-          "issue": 88,
-          "cost": 49.67
-        },
-        {
-          "id": "MVP1-E3-08",
-          "title": "Hold a job's fields for the app that started it",
-          "size": "S",
-          "issue": 177,
-          "cost": 9.93
-        },
-        {
-          "id": "MVP1-E3-09",
-          "title": "A free daily quota for jobs a person starts",
-          "size": "S",
-          "issue": 181,
-          "cost": 9.93
-        },
-        {
-          "id": "MVP1-E3-10",
-          "title": "Spike: LLM extraction options (AWS, Claude, Microsoft)",
-          "size": "M",
-          "issue": 190,
-          "cost": 26.49
-        },
-        {
-          "id": "MVP1-E4-01",
-          "title": "Review queue",
-          "size": "M",
-          "issue": 38,
-          "cost": 26.49
-        },
-        {
-          "id": "MVP1-E4-02",
-          "title": "Accept, edit or mark not present",
-          "size": "M",
-          "issue": 39,
-          "cost": 26.49
-        },
-        {
-          "id": "MVP1-E4-03",
-          "title": "Complete review",
-          "size": "S",
-          "issue": 40,
-          "cost": 9.93
-        },
-        {
-          "id": "MVP1-E4-04",
-          "title": "Corrections feed the eval set",
-          "size": "S",
-          "issue": 41,
-          "cost": 9.93
-        },
-        {
-          "id": "MVP1-E4-06",
-          "title": "Hold a review task's fields for the app that started it",
-          "size": "S",
-          "issue": 178,
-          "cost": 9.93
-        },
-        {
-          "id": "MVP1-E5-01",
-          "title": "Final JSON with metadata",
-          "size": "M",
-          "issue": 42,
-          "cost": 26.49
-        },
-        {
-          "id": "MVP1-E5-02",
-          "title": "CSV export",
-          "size": "S",
-          "issue": 43,
-          "cost": 9.93
-        },
-        {
-          "id": "MVP1-E5-03",
-          "title": "Locked preview",
-          "size": "S",
-          "issue": 44,
-          "cost": 9.93
-        },
-        {
-          "id": "MVP1-E5-04",
-          "title": "Build outputs on demand",
-          "size": "S",
-          "issue": 45,
-          "cost": 9.93
-        },
-        {
-          "id": "MVP1-E5-05",
-          "title": "DocFlow holds results until payment",
-          "size": "S",
-          "issue": 179,
-          "cost": 9.93
-        },
-        {
-          "id": "MVP1-E6-01",
-          "title": "Checkout session",
-          "size": "M",
-          "issue": 46,
-          "cost": 26.49
-        },
-        {
-          "id": "MVP1-E6-02",
-          "title": "Webhook",
-          "size": "M",
-          "issue": 47,
-          "cost": 26.49
-        },
-        {
-          "id": "MVP1-E6-03",
-          "title": "Payment page and states",
-          "size": "S",
-          "issue": 48,
-          "cost": 9.93
-        },
-        {
-          "id": "MVP1-E6-04",
-          "title": "Refunds",
-          "size": "S",
-          "issue": 92,
-          "cost": 9.93
-        },
-        {
-          "id": "MVP1-E6-05",
-          "title": "Spike: Stripe Billing APIs",
-          "size": "S",
-          "issue": 191,
-          "cost": 9.93
-        },
-        {
-          "id": "MVP1-E7-01",
-          "title": "Success page",
-          "size": "M",
-          "issue": 49,
-          "cost": 26.49
-        },
-        {
-          "id": "MVP1-E7-02",
-          "title": "Secure downloads",
-          "size": "S",
-          "issue": 50,
-          "cost": 9.93
-        },
-        {
-          "id": "MVP1-E7-03",
-          "title": "Email delivery",
-          "size": "M",
-          "issue": 51,
-          "cost": 26.49
-        },
-        {
-          "id": "MVP1-E9-02",
-          "title": "Production environments, domains and secrets",
-          "size": "M",
-          "issue": 196,
-          "cost": 26.49
-        },
-        {
-          "id": "MVP1-E9-03",
-          "title": "Staging, release pipeline and rollback",
-          "size": "M",
-          "issue": 197,
-          "cost": 26.49
-        },
-        {
-          "id": "MVP1-E9-04",
-          "title": "Backups and a restore drill",
-          "size": "S",
-          "issue": 198,
-          "cost": 9.93
-        },
-        {
-          "id": "MVP1-E9-05",
-          "title": "Launch security and privacy review",
-          "size": "M",
-          "issue": 199,
-          "cost": 26.49
-        },
-        {
-          "id": "MVP1-E9-07",
-          "title": "Load, spend-cap and failure testing",
-          "size": "M",
-          "issue": 201,
-          "cost": 26.49
-        },
-        {
-          "id": "MVP1-E9-11",
-          "title": "Post-production testing",
-          "size": "M",
-          "issue": 205,
-          "cost": 26.49
-        },
-        {
-          "id": "MVP1-E9-12",
-          "title": "Hypercare and incident response",
-          "size": "M",
-          "issue": 206,
-          "cost": 26.49
-        }
-      ],
-      "soFar": 192.9,
-      "projectedCost": 1314.47,
-      "projectedStories": 63,
-      "total": 1507.37
+      "grand": {
+        "actual": 467.52,
+        "projected": 1722.84,
+        "total": 2190.36
+      }
     },
     "roadmap": {
       "slug": "v6",
@@ -2606,11 +1285,7 @@ export const costs = {
       "document": "https://github.com/founder2863/01scale.com/blob/main/docs/process/roadmap/v6/ROADMAP.md",
       "title": "product work ready two sprints ahead, and no idle months"
     },
-    "tokenRate": 0.883,
-    "tokensWhy": "Projected token cost when working with Claude Code: each remaining story's size in person-days times the measured cost per person-day of the stories built so far (from the token ledger), times 3 for engineering stories (code, tests and fixes cost more than the design and site work measured so far) and 1 for product stories, plus 25% for questions and process, the measured share of scaffolding (Nikhil, 27 Nov 2026: x3 for engineering).",
-    "soFar": 463.12,
-    "projectedCost": 1722.84,
-    "total": 2185.96
+    "tokensWhy": "Projected token cost when working with Claude Code: each remaining story's size in person-days times the measured cost per person-day of the stories built so far (from the token ledger), times 3 for engineering stories (code, tests and fixes cost more than the design and site work measured so far) and 1 for product stories, plus 25% for questions and process, the measured share of scaffolding (Nikhil, 27 Nov 2026: x3 for engineering)."
   },
   "mostExpensive": [
     {

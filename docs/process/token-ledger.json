@@ -231,7 +231,7 @@
         "cache_write": 0.0
       },
       "overhead_usd": 0,
-      "tool_total_usd": 0,
+      "tool_total_usd": 4.3961,
       "rates_usd_per_million": {},
       "id": "bca467e6-6c9f-5e93-b12b-7c5143f68008",
       "splits": []
@@ -4322,10 +4322,54 @@
       "models": [
         "claude-opus-5-5"
       ],
-      "tokens": 9200936,
-      "output_tokens": 44503,
+      "tokens": 10946977,
+      "output_tokens": 49494,
+      "cost_usd": 4.3961
+    },
+    {
+      "session": "bca467e6",
+      "n": 2,
+      "ts": "2026-11-27T20:14:29.112Z",
+      "area": "MVP1-E8-16",
+      "kind": "rework",
+      "summary": "Rework from Nikhil's review on PR #257: weigh in on a table by epic (diagram, where the data lives), no build",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 448903,
+      "output_tokens": 3435,
       "cost_usd": null,
-      "estimated_usd": 3.9173
+      "estimated_usd": 0.1772
+    },
+    {
+      "session": "bca467e6",
+      "n": 3,
+      "ts": "2026-11-27T20:31:27.201Z",
+      "area": "MVP1-E8-16",
+      "kind": "rework",
+      "summary": "Rework from Nikhil's review on PR #257: answer whether pre-requisite work has stories; plan the table by epic",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 454866,
+      "output_tokens": 2184,
+      "cost_usd": null,
+      "estimated_usd": 0.1444
+    },
+    {
+      "session": "bca467e6",
+      "n": 4,
+      "ts": "2026-11-27T20:40:47.269Z",
+      "area": "MVP1-E8-16",
+      "kind": "rework",
+      "summary": "Rework from Nikhil's review on PR #257: one row per epic, actuals and projected by side, wide screens only; story MVP1-E8-17 (#258)",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 3918260,
+      "output_tokens": 19878,
+      "cost_usd": null,
+      "estimated_usd": 1.3981
     }
   ]
 }

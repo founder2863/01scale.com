@@ -1,5 +1,5 @@
 {
-  "about": "How each ledger row counts toward Product or Engineering on the Token Costs tab (MVP1-E8-16). 'product' is the Product share (0 to 1); Engineering gets the rest. Rules: Nikhil, 27 Nov 2026, recorded in docs/decisions/MVP1-E8.md. Every story area and every pre-requisite row must be classified: `npm run costs` stops on one that is not. A pre-requisite row uses its own entry under 'requests' (key 'session#n') if it has one, else its area's default; Process and Questions and explanations have no default.",
+  "about": "How each ledger row counts toward Product or Engineering on the Token Costs tab (MVP1-E8-16). 'product' is the Product share (0 to 1); Engineering gets the rest. Rules: Nikhil, 27 Nov 2026, recorded in docs/decisions/MVP1-E8.md. Every story area and every pre-requisite row must be classified: `npm run costs` stops on one that is not. A pre-requisite row uses its own entry under 'requests' (key 'session#n') if it has one, else its area's default; Process and Questions and explanations have no default. 'epics' places each ledger area that carries no MVP1 epic ID on a row of the Token Costs table (an area with one, such as MVP1-E1-09-E4-05, goes to the first epic it names).",
   "stories": {
     "P0-SITE": {
       "product": 0.0,
@@ -616,6 +616,44 @@
     "c5c5ca89#27": {
       "product": 1.0,
       "why": "Issues, status and handoff"
+    }
+  },
+  "epics": {
+    "P0-SITE": {
+      "epic": "MVP1-E0",
+      "why": "Site launch: foundation"
+    },
+    "DESIGN-ALL": {
+      "epic": "MVP1-E0",
+      "why": "Design for every story: foundation"
+    },
+    "ARCH": {
+      "epic": "MVP1-E0",
+      "why": "Architecture: foundation"
+    },
+    "ARCH-REVIEW": {
+      "epic": "MVP1-E0",
+      "why": "Architecture review: foundation"
+    },
+    "DECISIONS-1117": {
+      "epic": "MVP1-E0",
+      "why": "Design decisions across services: foundation"
+    },
+    "SITE-ANALYTICS": {
+      "epic": "MVP1-E0",
+      "why": "Site set-up: foundation"
+    },
+    "APPS-AUTOREP": {
+      "epic": "AUTOREP",
+      "why": "AutoRep V1 PRD and epics"
+    },
+    "AUTOREP-E6-03": {
+      "epic": "AUTOREP",
+      "why": "AutoRep V1 story"
+    },
+    "MVP2-STORIES": {
+      "epic": "MVP2",
+      "why": "MVP2 stories"
     }
   }
 }
