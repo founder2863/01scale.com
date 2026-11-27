@@ -1308,7 +1308,20 @@ As a product leader, I want the roadmap to show what a second product manager ch
 - **API design:** No endpoints.
 - **Database design:** No tables.
 
-**Status: built (#242). Roadmap v5: two product managers and the cost of each plan; v4 frozen with its gaps.**
+**Status: built (#242, PR #251; issue closed 27 Nov 2026). Roadmap v5: two product managers and the cost of each plan; v4 frozen with its gaps.**
+
+### MVP1-E8-14 · Roadmap v6: product work two sprints ahead, environments early, and tokens in the cost — M
+As a product leader, I want the roadmap to act on my review of v5, so that no one sits idle for months, engineers never wait for product work, and the cost includes Claude Code's tokens (Nikhil, 27 Nov 2026).
+- **AC1:** Roadmap v6 (`docs/process/roadmap/v6/`, `npm run roadmap:v6`, How It's Built › Roadmap › v6) opens with Nikhil's observations on v5 and the decision for each.
+- **AC2:** The environments, staging and backups (`MVP1-E9-02` to `E9-04`) are planned with the foundation; the sales demo and the support and configuration trainings need staging and the steps they show, not the whole journey.
+- **AC3:** Product manager work runs in sprints and is ready ten working days before the engineering work that needs it; product manager stories can roll over without a limit in the forecast.
+- **AC4:** Each plan's cost is the team for its length plus, with Claude Code, the projected token cost of the remaining stories (measured cost per person-day, three times for engineering stories, plus 25% for questions and process).
+- **AC5:** v5 is frozen with Nikhil's observations as its gaps. Works from 320 to 1920 pixels wide, in light and dark mode.
+- **Service:** Site (`apps/web`) and `scripts/`
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+**Status: built. Roadmap v6.**
 
 ---
 

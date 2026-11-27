@@ -10,6 +10,8 @@ import { roadmap as v4 } from "./roadmap-v4";
 import RoadmapV4View from "./roadmap-v4-view";
 import { roadmap as v5 } from "./roadmap-v5";
 import RoadmapV5View from "./roadmap-v5-view";
+import { roadmap as v6 } from "./roadmap-v6";
+import RoadmapV6View from "./roadmap-v6-view";
 
 // The roadmap's versions (Nikhil, 26 Nov 2026): each version is frozen once the next one starts,
 // with its own document, script, data and view, so the evolution from one to the next can be
@@ -71,6 +73,15 @@ export const roadmapVersions: Version[] = [
     adds: v5.version.adds,
     gaps: v5.version.gaps,
     View: RoadmapV5View,
+  },
+  {
+    slug: "v6",
+    label: "v6",
+    title: "Product work ready two sprints ahead, and no idle months",
+    status: "Current",
+    adds: v6.version.adds,
+    gaps: v6.version.gaps,
+    View: RoadmapV6View,
   },
 ];
 

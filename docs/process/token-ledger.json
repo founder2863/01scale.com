@@ -55,7 +55,8 @@
     "MVP1-E0-53": "MVP1-E0-53 · Hide the app flow bands on module pages",
     "MVP1-E0-54": "MVP1-E0-54 · Roadmap tab on How It's Built",
     "MVP1-E8-12": "MVP1-E8-12 · Four estimates per story, and the plan without and with Claude Code",
-    "MVP1-E8-13": "MVP1-E8-13 · Roadmap v5: a second product manager, and the cost of each plan"
+    "MVP1-E8-13": "MVP1-E8-13 · Roadmap v5: a second product manager, and the cost of each plan",
+    "MVP1-E8-14": "MVP1-E8-14 · Roadmap v6: product work two sprints ahead, environments early, and tokens in the cost"
   },
   "sessions": [
     {
@@ -202,13 +203,13 @@
     },
     {
       "by_kind_usd": {
-        "input": 0.03,
-        "output": 7.04,
-        "cache_read": 17.01,
-        "cache_write": 10.24
+        "input": 0.04,
+        "output": 8.0,
+        "cache_read": 21.21,
+        "cache_write": 15.69
       },
-      "overhead_usd": -1.9318,
-      "tool_total_usd": 34.3251,
+      "overhead_usd": -1.0747,
+      "tool_total_usd": 44.9395,
       "rates_usd_per_million": {
         "claude-opus-5-5": {
           "input": 4.0,
@@ -4138,9 +4139,65 @@
       "models": [
         "claude-opus-5-5"
       ],
-      "tokens": 11338767,
-      "output_tokens": 31800,
-      "cost_usd": 3.1823
+      "tokens": 13399399,
+      "output_tokens": 35659,
+      "cost_usd": 3.7235
+    },
+    {
+      "session": "c5c5ca89",
+      "ts": "2026-11-27T11:37:28.642Z",
+      "n": 17,
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 1379088,
+      "output_tokens": 820,
+      "cost_usd": 5.149,
+      "area": "Process",
+      "kind": "scaffolding",
+      "summary": "Questions after PR #251: whether the session was stuck, the token and cost model questions, and why v5 left people idle"
+    },
+    {
+      "session": "c5c5ca89",
+      "ts": "2026-11-27T12:02:15.807Z",
+      "n": 18,
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 2782664,
+      "output_tokens": 7723,
+      "cost_usd": 0.7706,
+      "area": "Process",
+      "kind": "scaffolding",
+      "summary": "Questions after PR #251: whether the session was stuck, the token and cost model questions, and why v5 left people idle"
+    },
+    {
+      "session": "c5c5ca89",
+      "ts": "2026-11-27T12:38:24.355Z",
+      "n": 19,
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 1402418,
+      "output_tokens": 3647,
+      "cost_usd": 0.3725,
+      "area": "Process",
+      "kind": "scaffolding",
+      "summary": "Questions after PR #251: whether the session was stuck, the token and cost model questions, and why v5 left people idle"
+    },
+    {
+      "session": "c5c5ca89",
+      "ts": "2026-11-27T12:47:56.283Z",
+      "n": 20,
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 10850506,
+      "output_tokens": 24982,
+      "cost_usd": 2.9241,
+      "area": "MVP1-E8-14",
+      "kind": "build",
+      "summary": "Roadmap v6: PM work two sprints ahead, environments early, business readiness on staging, PM rollovers, tokens in the cost; v5 frozen with Nikhil's observations"
     }
   ]
 }
