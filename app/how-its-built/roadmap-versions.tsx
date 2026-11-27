@@ -25,6 +25,8 @@ type Version = {
   status: string;
   adds: readonly string[];
   gaps: readonly string[];
+  // Nikhil's decisions and changes that made this version, in brief, for the versions table.
+  decisions: readonly string[];
   View: () => ReactNode;
 };
 
@@ -36,6 +38,7 @@ export const roadmapVersions: Version[] = [
     status: "Frozen 26 Nov 2026",
     adds: v1.version.adds,
     gaps: v1.version.gaps,
+    decisions: ["Order the open stories by dependency, size and value.", "Product documentation first; the platform foundation runs alongside.", "A team of 3 engineers and 1 product manager, shown month by month.", "Four estimates per story: product and development work, each without and with Claude Code.", "Spare engineer time goes to spikes on external services."],
     View: RoadmapV1View,
   },
   {
@@ -45,6 +48,7 @@ export const roadmapVersions: Version[] = [
     status: "Frozen 26 Nov 2026",
     adds: v2.version.adds,
     gaps: v2.version.gaps,
+    decisions: ["Correction: every module's design documents already exist (v1's first gap was wrong).", "A Definition of Ready: engineers pull only complete stories.", "One-week sprints; a story must fit a sprint, with engineers working on it together.", "At most two rollovers, and dates shown as a likely and a worst-case month.", "The main path of the journey goes first."],
     View: RoadmapV2View,
   },
   {
@@ -54,6 +58,7 @@ export const roadmapVersions: Version[] = [
     status: "Frozen 26 Nov 2026",
     adds: v3.version.adds,
     gaps: v3.version.gaps,
+    decisions: ["A rollover costs half a sprint, not a full one.", "The plan runs to live in production and beyond: a new Go-live and operations epic (E9).", "Engineers' spare time goes to go-live work and extras."],
     View: RoadmapV3View,
   },
   {
@@ -63,6 +68,7 @@ export const roadmapVersions: Version[] = [
     status: "Frozen 26 Nov 2026",
     adds: v4.version.adds,
     gaps: v4.version.gaps,
+    decisions: ["The business is ready before go-live: six product manager epics.", "Go-live strategy, user acceptance testing and security get joint sessions with an engineer.", "Each plan's chart ends when its work does."],
     View: RoadmapV4View,
   },
   {
@@ -72,6 +78,7 @@ export const roadmapVersions: Version[] = [
     status: "Frozen 27 Nov 2026",
     adds: v5.version.adds,
     gaps: v5.version.gaps,
+    decisions: ["A second product manager.", "The missing product manager work becomes stories, with a General Counsel epic (E16).", "\"Agent\" means an AI agent.", "Each plan is costed: product and engineering days at $1,000 a day for now."],
     View: RoadmapV5View,
   },
   {
@@ -81,6 +88,7 @@ export const roadmapVersions: Version[] = [
     status: "Current",
     adds: v6.version.adds,
     gaps: v6.version.gaps,
+    decisions: ["Environments and staging are planned with the foundation, not last.", "Business readiness is prepared on staging, not on the finished product.", "Product manager work is ready two sprints ahead; product stories run in sprints and can roll over without limit.", "The cost of a plan adds tokens.", "Product management and cost tooling is part of the plan."],
     View: RoadmapV6View,
   },
 ];
@@ -104,18 +112,36 @@ export function RoadmapVersion({ version }: { version: Version }) {
   const View = version.View;
   return (
     <>
-      <nav className="rm-versions" aria-label="Roadmap versions">
-        {roadmapVersions.map((v) => (
-          <Link
-            key={v.slug}
-            href={`/how-its-built/roadmap/${v.slug}`}
-            aria-current={v.slug === version.slug ? "page" : undefined}
-          >
-            <span className="rm-version-label">{v.label}</span>
-            <span className="rm-version-title">{v.title}</span>
-          </Link>
-        ))}
-      </nav>
+      <div className="rm-versions-table">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Version</th>
+              <th scope="col">Decisions and changes by Nikhil</th>
+            </tr>
+          </thead>
+          <tbody>
+            {[...roadmapVersions].reverse().map((v) => (
+              <tr key={v.slug} aria-current={v.slug === version.slug ? "page" : undefined}>
+                <th scope="row">
+                  <Link href={`/how-its-built/roadmap/${v.slug}`}>
+                    <span className="rm-version-label">{v.label}</span>
+                    <span className="rm-version-title">{v.title}</span>
+                  </Link>
+                  <span className="status">{v.status}</span>
+                </th>
+                <td>
+                  <ul className="rm-list">
+                    {v.decisions.map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       <section className="rm-version" aria-labelledby="rm-version-title">
         <h2 className="group-title" id="rm-version-title">

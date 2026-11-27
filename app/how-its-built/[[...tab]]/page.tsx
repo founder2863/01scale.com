@@ -39,7 +39,7 @@ const RATES = [
   { model: "Claude Fable 5.2", input: "$8", output: "$40", cacheRead: "$0.20", cacheWrite: "$16" },
 ];
 
-// One address per tab (Skills, the default, is /how-its-built), plus one per expensive mistake
+// One address per tab (Roadmap, the default, is /how-its-built), plus one per expensive mistake
 // and one per published article (MVP1-E0-47).
 export const dynamicParams = false;
 
@@ -48,7 +48,7 @@ export const dynamicParams = false;
 export function generateStaticParams(): Params[] {
   return [
     { tab: [] },
-    ...builtTabs.filter((item) => item.slug !== "skills").map((item) => ({ tab: [item.slug] })),
+    ...builtTabs.map((item) => ({ tab: [item.slug] })),
     ...costTabs.slice(1).map((item) => ({ tab: ["total-projected-cost", item.slug] })),
     ...Object.keys(costTabAliases).map((slug) => ({ tab: ["total-projected-cost", slug] })),
     // Each roadmap version has its own address; "/how-its-built/roadmap" is the latest.
@@ -59,9 +59,9 @@ export function generateStaticParams(): Params[] {
 }
 
 function resolve(params: Params): BuiltTab | null {
-  // "/how-its-built/skills" is not a real address: Skills lives at "/how-its-built".
+  // "/how-its-built" opens Roadmap (the latest version); "/how-its-built/roadmap" is the same page.
   const depth = params.tab?.length ?? 0;
-  if (depth > 2 || params.tab?.[0] === "skills") return null;
+  if (depth > 2) return null;
   if (depth === 2) {
     const slug = params.tab?.[1] ?? "";
     if (params.tab?.[0] === "roadmap") {
@@ -72,7 +72,7 @@ function resolve(params: Params): BuiltTab | null {
     }
     return params.tab?.[0] === "expensive-mistakes" && (findMistake(slug) || findArticle(slug)) ? "expensive-mistakes" : null;
   }
-  const found = builtTabs.find((item) => item.slug === (params.tab?.[0] ?? "skills"));
+  const found = builtTabs.find((item) => item.slug === (params.tab?.[0] ?? "roadmap"));
   return found ? found.slug : null;
 }
 
@@ -84,7 +84,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   const costLabel = tab === "total-projected-cost" && costSlug ? costTabs.find((item) => item.slug === costSlug)?.label : undefined;
   const label = article?.title ?? costLabel ?? builtTabs.find((item) => item.slug === tab)?.label;
   return {
-    title: tab === "skills" ? "How It's Built — 01scale" : `How It's Built · ${label} — 01scale`,
+    title: !resolved.tab?.length ? "How It's Built — 01scale" : `How It's Built · ${label} — 01scale`,
     description:
       "The skills and agents I use to build 01scale with Claude Code: repeatable work written down, kept in the repository and run the same way every time.",
   };
