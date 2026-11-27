@@ -1336,6 +1336,19 @@ As a product leader, I want Total Cost to show what has been spent and what the 
 
 **Status: built.**
 
+### MVP1-E8-16 · Token Costs: Product and Engineering, so far and projected — M
+As a product leader, I want token spend shown as Product versus Engineering, each spent so far and projected for the rest, so I can read it the way I read a team's budget, with nothing Claude did left out (Nikhil, 27 Nov 2026).
+- **AC1:** The Token Costs tab keeps its cost baselines, its row of totals (order of `MVP1-E0-45`) and the token yield formula, then shows **(a) Product** and **(b) Engineering**, each with: consumed so far, projected and its total; the stories so far with the existing per-story columns plus a **Share** column; the pre-requisites so far (scaffolding) by area; and, folded, the remaining stories projected. **(d) Total token cost** closes it: Product, Engineering and the total, each actual so far, projected and total. It replaces the single story and scaffolding tables of `MVP1-E0-13` AC3.
+- **AC2:** Every ledger row is classified by Nikhil's rules (recorded in `docs/decisions/MVP1-E8.md`): Product for PRDs, epics and stories, business functions, cost and roadmap work, non-technical documents and UX design; Engineering for code, architecture and sequence diagrams; API spec, data model and schema 75% Product, 25% Engineering; pre-requisites split by subject (product topics to Product, scripts and site set-up to Engineering). The classification is one data file, `docs/process/token-classes.json`; `npm run costs` stops on a row it does not cover.
+- **AC3:** Projected comes from the latest roadmap version (its cost by story, through `app/how-its-built/total-cost.ts`): each remaining story on the side of its owner there (product manager → Product, engineer → Engineering), priced by the roadmap's token rule. Tool overhead, which belongs to no request, is shared in proportion to what each side measured.
+- **AC4:** So far, Product plus Engineering equals the total so far on the tab; projected equals the token cost on Total Cost's Projected tab. No figure is typed by hand.
+- **AC5:** Works from 320 to 1920 pixels wide, in light and dark mode.
+- **Service:** Site (`apps/web`) and `scripts/costs/`
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+**Status: built.**
+
 ---
 
 ## E9 · Go-live and operations

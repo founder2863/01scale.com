@@ -1990,6 +1990,26 @@ section[id] {
   vertical-align: middle;
 }
 
+/* The bar and its percentage stay on one line (MVP1-E8-16: the Share column narrows the table). */
+@media (min-width: 1024px) {
+  .cost-table td[data-label="Token yield"] {
+    white-space: nowrap;
+  }
+}
+
+/* Seven columns fit a tablet with tighter cells (MVP1-E8-16). */
+@media (min-width: 720px) and (max-width: 1023px) {
+  .cost-table-wide th,
+  .cost-table-wide td {
+    padding: 8px 6px;
+  }
+
+  .cost-table-wide .yield {
+    width: 36px;
+    margin-right: 4px;
+  }
+}
+
 .yield-bar {
   display: block;
   height: 100%;

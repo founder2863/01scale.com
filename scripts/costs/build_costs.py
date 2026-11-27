@@ -12,15 +12,111 @@ Definitions
 - Token yield (per story): build tokens divided by build plus rework tokens.
   100% means everything spent on the story was kept the first time.
 
-Run from the repo root:  npm run costs
+Product and Engineering (MVP1-E8-16, Nikhil's rules of 27 Nov 2026): every ledger row is counted
+toward Product, Engineering or both, by docs/process/token-classes.json. So far comes from the
+ledger; projected comes from the latest roadmap's cost by story, read from
+app/how-its-built/total-cost.ts (each remaining story follows the roadmap's owner).
+Scaffolding is shown as "pre-requisites" under each side.
+
+Run from the repo root:  npm run costs   (after `npm run total-cost` when the roadmap changes)
 """
 import json
+import os
 
 LEDGER = "docs/process/token-ledger.json"
+CLASSES = "docs/process/token-classes.json"
+TOTAL_COST = "app/how-its-built/total-cost.ts"
+SIDES = ("product", "engineering")
 
 
 def money(x):
     return None if x is None else round(x, 2)
+
+
+def product_share(row, classes):
+    """The Product share (0 to 1) of a ledger row; Engineering gets the rest. Stops on a row no rule covers."""
+    if row["kind"] != "scaffolding":
+        entry = classes["stories"].get(row["area"])
+        if entry is None:
+            raise SystemExit(f"costs: story area {row['area']!r} is not classified in {CLASSES}")
+        return entry["product"]
+    entry = classes["requests"].get(f"{row['session']}#{row['n']}") or classes["prerequisiteDefaults"].get(row["area"])
+    if entry is None:
+        raise SystemExit(f"costs: pre-requisite row {row['session']}#{row['n']} ({row['area']}) is not classified in {CLASSES}")
+    return entry["product"]
+
+
+def by_side(rows, names, classes, overhead, projected):
+    """Product and Engineering, each so far (stories and pre-requisites) and projected. Pure."""
+    out = {}
+    for side in SIDES:
+        def part(r):
+            p = product_share(r, classes)
+            return p if side == "product" else 1 - p
+
+        stories = []
+        for key, name in names.items():
+            mine = [r for r in rows if r["area"] == key and r["kind"] != "scaffolding"]
+            share = part(mine[0]) if mine else 0
+            if not mine or share == 0:
+                continue
+            bt = sum(r["tokens"] for r in mine if r["kind"] == "build")
+            rt = sum(r["tokens"] for r in mine if r["kind"] == "rework")
+            bc = sum(r["cost_usd"] or 0 for r in mine if r["kind"] == "build")
+            rc = sum(r["cost_usd"] or 0 for r in mine if r["kind"] == "rework")
+            stories.append({
+                "key": key, "name": name, "share": round(100 * share),
+                "why": classes["stories"][key]["why"],
+                "tokens": round((bt + rt) * share), "buildCost": money(bc * share),
+                "reworkCost": money(rc * share), "totalCost": money((bc + rc) * share),
+                "yield": round(100 * bt / (bt + rt)) if bt + rt else None,
+                "pending": any(r["cost_usd"] is None for r in mine),
+                "raw": (bc + rc) * share,
+            })
+        prereq = []
+        for area in dict.fromkeys(r["area"] for r in rows if r["kind"] == "scaffolding"):
+            mine = [(r, part(r)) for r in rows if r["area"] == area and r["kind"] == "scaffolding"]
+            mine = [(r, w) for r, w in mine if w > 0]
+            if mine:
+                prereq.append({"name": area, "requests": len(mine),
+                               "tokens": round(sum(r["tokens"] * w for r, w in mine)),
+                               "cost": sum((r["cost_usd"] or 0) * w for r, w in mine)})
+        out[side] = {"stories": stories, "prereq": prereq}
+
+    # Tool overhead belongs to no request: it is shared in proportion to what each side measured.
+    measured = {side: sum(s["raw"] for s in out[side]["stories"]) + sum(a["cost"] for a in out[side]["prereq"])
+                for side in SIDES}
+    whole = sum(measured.values())
+    for side in SIDES:
+        o = out[side]
+        if overhead:
+            o["prereq"].append({"name": "Tool overhead (background calls), shared in proportion", "requests": 0,
+                                "tokens": 0, "cost": overhead * measured[side] / whole if whole else 0})
+        story_cost = sum(s.pop("raw") for s in o["stories"])
+        prereq_cost = sum(a["cost"] for a in o["prereq"])
+        for a in o["prereq"]:
+            a["cost"] = money(a["cost"])
+        remaining = sorted((b for b in projected if b["owner"] == side), key=lambda b: b["id"])
+        o["storyTotals"] = {"tokens": sum(s["tokens"] for s in o["stories"]), "cost": money(story_cost),
+                            "buildCost": money(sum(s["buildCost"] for s in o["stories"])),
+                            "reworkCost": money(sum(s["reworkCost"] for s in o["stories"])),
+                            "pending": any(s["pending"] for s in o["stories"])}
+        o["prereqTotals"] = {"requests": sum(a["requests"] for a in o["prereq"]),
+                             "tokens": sum(a["tokens"] for a in o["prereq"]), "cost": money(prereq_cost)}
+        o["projected"] = [{"id": b["id"], "title": b["title"], "size": b["size"], "issue": b["issue"],
+                           "cost": b["tokens"]} for b in remaining]
+        o["soFar"] = money(story_cost + prereq_cost)
+        o["projectedCost"] = money(sum(b["tokens"] for b in remaining))
+        o["projectedStories"] = len(remaining)
+        o["total"] = money(story_cost + prereq_cost + sum(b["tokens"] for b in remaining))
+    return out
+
+
+def read_ts(path):
+    """The JSON object in a generated TypeScript data file."""
+    text = open(path, encoding="utf-8").read()
+    body = text[text.index("= ") + 2:]
+    return json.loads(body[: body.rindex("}") + 1])
 
 
 def main():
@@ -140,6 +236,21 @@ def main():
         "mergedTooSoon": {"requests": len(late), "cost": money(sum(r["cost_usd"] or 0 for r in late))},
     }
 
+    # Product and Engineering, so far and projected (MVP1-E8-16).
+    classes = json.load(open(CLASSES, encoding="utf-8"))
+    total_cost = read_ts(TOTAL_COST) if os.path.exists(TOTAL_COST) else None
+    projected = total_cost["projected"]["byStory"] if total_cost else []
+    sides = by_side(rows, names, classes, overhead, projected)
+    split = {
+        **sides,
+        "roadmap": total_cost["version"] if total_cost else None,
+        "tokenRate": total_cost["projected"]["tokenRate"] if total_cost else None,
+        "tokensWhy": total_cost["projected"]["tokensWhy"] if total_cost else "",
+        "soFar": money(all_c + overhead),
+        "projectedCost": money(sum(sides[x]["projectedCost"] for x in SIDES)),
+        "total": money(all_c + overhead + sum(b["tokens"] for b in projected)),
+    }
+
     data = {
         "updated": max(r["ts"] for r in rows)[:10],
         "sessions": len(ledger["sessions"]),
@@ -150,6 +261,7 @@ def main():
         "totals": totals,
         "byKind": by_kind,
         "mistakes": mistakes,
+        "split": split,
         "mostExpensive": [{"summary": r["summary"], "cost": money(r["cost_usd"]), "tokens": r["tokens"], "outputTokens": r["output_tokens"]} for r in expensive],
     }
     with open("app/how-its-built/costs.ts", "w") as f:
@@ -180,6 +292,21 @@ def main():
         lines.append(f"| {a['name']} | {a['requests']} | {a['tokens'] / 1e6:.2f}M | {m(a['cost'])} |")
     sc = scaffolding_totals
     lines.append(f"| **Total** | **{sc['requests']}** | **{sc['tokens'] / 1e6:.2f}M** | **{m(sc['cost'])}** |")
+    lines += ["", "## Product and Engineering", "",
+              "Every ledger row counts toward Product, Engineering or both (`docs/process/token-classes.json`; rules in `docs/decisions/MVP1-E8.md`). Projected: the remaining stories of the latest roadmap, by owner.", "",
+              "| | So far | Projected | Total |", "|---|---|---|---|"]
+    for side in SIDES:
+        o = split[side]
+        lines.append(f"| {side.capitalize()} | {m(o['soFar'])} | {m(o['projectedCost'])} ({o['projectedStories']} stories) | {m(o['total'])} |")
+    lines.append(f"| **Total token cost** | **{m(split['soFar'])}** | **{m(split['projectedCost'])}** | **{m(split['total'])}** |")
+    for side in SIDES:
+        o = split[side]
+        lines += ["", f"### {side.capitalize()}: stories so far", "", "| Story | Share | Tokens | Build cost | Rework cost | Total | Token yield |", "|---|---|---|---|---|---|---|"]
+        for s in o["stories"]:
+            lines.append(f"| {s['name']} | {s['share']}% | {s['tokens'] / 1e6:.2f}M | {m(s['buildCost'])} | {m(s['reworkCost'])} | {m(s['totalCost'])}{' (part pending)' if s['pending'] else ''} | {s['yield']}% |")
+        lines += ["", f"### {side.capitalize()}: pre-requisites so far", "", "| Area | Requests | Tokens | Cost |", "|---|---|---|---|"]
+        for a in o["prereq"]:
+            lines.append(f"| {a['name']} | {a['requests']} | {a['tokens'] / 1e6:.2f}M | {m(a['cost'])} |")
     lines += [
         "",
         "## Totals",

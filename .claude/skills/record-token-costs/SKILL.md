@@ -13,6 +13,7 @@ Keeps a running ledger of what each story cost to build with Claude Code, and sp
 |---|---|
 | `scripts/costs/extract_session.py` | Measures tokens and cost per request from a session transcript |
 | `docs/process/token-ledger.json` | The ledger: one row per request, with the story and kind assigned by hand |
+| `docs/process/token-classes.json` | Each story area and pre-requisite row as Product, Engineering or both (MVP1-E8-16) |
 | `scripts/costs/build_costs.py` (`npm run costs`) | Rolls the ledger up into `app/how-its-built/costs.ts` and `docs/process/TOKEN-COSTS.md` |
 
 ## Steps
@@ -24,8 +25,9 @@ Keeps a running ledger of what each story cost to build with Claude Code, and sp
    - `area`: a story key from `stories` (add a new key with its name if needed), or a scaffolding area name;
    - `kind`: `build`, `rework` or `scaffolding`;
    - `summary`: a neutral one-line description of the request. Never copy the person's words.
-5. Run `npm run costs`, then `npm run build`.
-6. In the pull request, state the totals and anything unusual (for example a large context reload).
+5. Classify each new row as Product, Engineering or both in `docs/process/token-classes.json` (Nikhil's rules, `docs/decisions/MVP1-E8.md`, MVP1-E8-16): a new story area under `stories`; a scaffolding row under `requests` as `"<session>#<n>"` unless its area has a default under `prerequisiteDefaults` (Process and Questions and explanations have none). `product` is the Product share: 1, 0, 0.75 for API spec, data model and schema work, or 0.5 for a request with no clear subject. `npm run costs` stops on a row that is not classified.
+6. Run `npm run costs`, then `npm run build`.
+7. In the pull request, state the totals, with Product and Engineering so far, and anything unusual (for example a large context reload).
 
 ## How to classify
 
@@ -38,7 +40,7 @@ Keeps a running ledger of what each story cost to build with Claude Code, and sp
 
 - Never enter a cost by hand. If the extractor reports `null`, the tool had not priced it yet: leave it `null` and it shows as pending. Re-run at the next update; earlier rows are refreshed by timestamp, so pending rows fill in.
 - If the session is ending and some rows are still `null`, they will never be priced. Run `python3 scripts/costs/estimate_pending.py <transcript> <requests.json>` and put each result in that row's `estimated_usd`, never in `cost_usd`. It is an upper bound shown apart from the measured totals (Nikhil's request on PR #158).
-- Record the session's `overhead_usd` (what the tool charged beyond the recorded responses). It is shown once, under scaffolding, never spread over stories.
+- Record the session's `overhead_usd` (what the tool charged beyond the recorded responses). It is shown under scaffolding, never spread over stories; on the Product and Engineering split it is shared in proportion to what each side measured.
 - Do not change past classifications without saying so in the pull request.
 - Tokens include context re-read from the cache. They are most of the volume but the cheapest part; the cost column is what matters for money.
 - A request sent after a break of more than an hour carries the cost of reloading the whole conversation. That is real cost and stays with that request.

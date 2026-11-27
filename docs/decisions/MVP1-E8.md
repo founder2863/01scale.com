@@ -30,3 +30,27 @@
 | A ledger entry that covers several stories ("MVP1-E0-36 to E0-42") | Split by the stories' person-days, marked shared, as the issue comments did. | Equal split; leave it unassigned. |
 | A ledger entry for a whole epic's design ("MVP1-E2 · Upload design") or no story | Listed as unassigned, not spread over the epic's stories, so no story shows a cost it was not measured against. | Spread over the epic's stories by size. |
 | Measured token cost | Build + rework, the same figure as the Token Costs table; scaffolding stays out. | Include scaffolding. |
+
+## 2026-11-27 · Token Costs by Product and Engineering (MVP1-E8-16)
+
+**Decided by:** Nikhil (the structure and the rules, 27 Nov 2026); the build session applied them row by row, open to his review on the PR.
+
+| Question | Decision |
+|---|---|
+| Structure | (a) Product: consumed so far, with the existing per-story columns, and projected for the remaining stories; (b) Engineering: the same two parts; (d) Total token cost: actual so far and projected. |
+| Product | PRDs, epics and stories; business-function work (sales, marketing, operations, finance, customer success, legal); cost and roadmap work; non-technical documents; UX design (user journeys, UI flows). |
+| Engineering | Code, architecture and sequence diagrams. |
+| API spec, data model and schema | 75% Product, 25% Engineering (the engineering share is the discussions). |
+| Pre-requisites (scaffolding) | Counted, split by subject: product topics to Product, scripts and site set-up to Engineering. |
+| Future stories | The latest roadmap version's owner: product manager → Product, engineer → Engineering. |
+
+**How the session applied them** (every row is in `docs/process/token-classes.json`, with a reason):
+
+| Choice | Why | Alternative |
+|---|---|---|
+| A module design (API spec, data model, schema, journeys, components, read me) counts 75% / 25%, as a whole. | The API, data and schema documents are most of the work; journeys and components would raise the Product share. | Split each design request by document (not recorded in the ledger). |
+| Site pages are code, so Engineering, unless the subject is cost or roadmap (E0-13, E0-17, E0-31, E0-45, E0-54, E8) or a non-technical document (the Expensive Mistakes articles, E0-46, E0-47). | The rule names code as Engineering and cost and roadmap work as Product. | Count the home page and app Overview text as Product (open question on the PR). |
+| Merge conflicts, pull requests, deployments and architecture decisions are Engineering pre-requisites; status, issue closing, cost recording and handoffs are Product. | Split by subject, as the rule says. | — |
+| A request with no clear subject, or two (an unclear message; a merge conflict plus cost recording), is split evenly. | Neither side is more right. | Give it to one side. |
+| Tool overhead (background calls) is shared in proportion to what each side measured. | It belongs to no request. | Leave it outside both sides. |
+| Projected comes from Total Cost's cost by story, so both tabs show the same projection. | One number, one source: the roadmap's token rule. | Compute it again in `build_costs.py`. |
