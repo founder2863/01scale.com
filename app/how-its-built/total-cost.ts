@@ -14,7 +14,7 @@ export const totalCost = {
   },
   "productShare": 0.1,
   "soFar": {
-    "tokensSpent": 446.42,
+    "tokensSpent": 453.24,
     "tokensPending": 21,
     "stories": 40,
     "productDays": 18.5,
