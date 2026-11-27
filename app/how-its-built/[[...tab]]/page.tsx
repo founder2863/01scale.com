@@ -48,7 +48,7 @@ export const dynamicParams = false;
 export function generateStaticParams(): Params[] {
   return [
     { tab: [] },
-    ...builtTabs.slice(1).map((item) => ({ tab: [item.slug] })),
+    ...builtTabs.filter((item) => item.slug !== "skills").map((item) => ({ tab: [item.slug] })),
     ...costTabs.slice(1).map((item) => ({ tab: ["total-projected-cost", item.slug] })),
     ...Object.keys(costTabAliases).map((slug) => ({ tab: ["total-projected-cost", slug] })),
     // Each roadmap version has its own address; "/how-its-built/roadmap" is the latest.
