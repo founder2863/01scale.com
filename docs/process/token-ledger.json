@@ -55,7 +55,9 @@
     "MVP1-E0-53": "MVP1-E0-53 · Hide the app flow bands on module pages",
     "MVP1-E0-54": "MVP1-E0-54 · Roadmap tab on How It's Built",
     "MVP1-E8-12": "MVP1-E8-12 · Four estimates per story, and the plan without and with Claude Code",
-    "MVP1-E8-13": "MVP1-E8-13 · Roadmap v5: a second product manager, and the cost of each plan"
+    "MVP1-E8-13": "MVP1-E8-13 · Roadmap v5: a second product manager, and the cost of each plan",
+    "MVP1-E8-14": "MVP1-E8-14 · Roadmap v6: product work two sprints ahead, environments early, and tokens in the cost",
+    "MVP1-E8-15": "MVP1-E8-15 · Total Cost from the latest roadmap: so far and projected"
   },
   "sessions": [
     {
@@ -202,13 +204,13 @@
     },
     {
       "by_kind_usd": {
-        "input": 0.03,
-        "output": 7.04,
-        "cache_read": 17.01,
-        "cache_write": 10.24
+        "input": 0.05,
+        "output": 9.62,
+        "cache_read": 31.36,
+        "cache_write": 22.47
       },
-      "overhead_usd": -1.9318,
-      "tool_total_usd": 34.3251,
+      "overhead_usd": 0.7812,
+      "tool_total_usd": 63.4931,
       "rates_usd_per_million": {
         "claude-opus-5-5": {
           "input": 4.0,
@@ -4138,9 +4140,149 @@
       "models": [
         "claude-opus-5-5"
       ],
-      "tokens": 11338767,
-      "output_tokens": 31800,
-      "cost_usd": 3.1823
+      "tokens": 13399399,
+      "output_tokens": 35659,
+      "cost_usd": 3.7235
+    },
+    {
+      "session": "c5c5ca89",
+      "ts": "2026-11-27T11:37:28.642Z",
+      "n": 17,
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 1379088,
+      "output_tokens": 820,
+      "cost_usd": 5.149,
+      "area": "Process",
+      "kind": "scaffolding",
+      "summary": "Questions after PR #251: whether the session was stuck, the token and cost model questions, and why v5 left people idle"
+    },
+    {
+      "session": "c5c5ca89",
+      "ts": "2026-11-27T12:02:15.807Z",
+      "n": 18,
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 2782664,
+      "output_tokens": 7723,
+      "cost_usd": 0.7706,
+      "area": "Process",
+      "kind": "scaffolding",
+      "summary": "Questions after PR #251: whether the session was stuck, the token and cost model questions, and why v5 left people idle"
+    },
+    {
+      "session": "c5c5ca89",
+      "ts": "2026-11-27T12:38:24.355Z",
+      "n": 19,
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 1402418,
+      "output_tokens": 3647,
+      "cost_usd": 0.3725,
+      "area": "Process",
+      "kind": "scaffolding",
+      "summary": "Questions after PR #251: whether the session was stuck, the token and cost model questions, and why v5 left people idle"
+    },
+    {
+      "session": "c5c5ca89",
+      "ts": "2026-11-27T12:47:56.283Z",
+      "n": 20,
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 13820535,
+      "output_tokens": 31480,
+      "cost_usd": 3.7032,
+      "area": "MVP1-E8-14",
+      "kind": "build",
+      "summary": "Roadmap v6: PM work two sprints ahead, environments early, business readiness on staging, PM rollovers, tokens in the cost; v5 frozen with Nikhil's observations"
+    },
+    {
+      "session": "c5c5ca89",
+      "ts": "2026-11-27T13:10:25.285Z",
+      "n": 21,
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 3746468,
+      "output_tokens": 4050,
+      "cost_usd": 0.8767,
+      "area": "Process",
+      "kind": "scaffolding",
+      "summary": "Questions on the Total Cost tab: scope, tabs, version, pricing of built stories; whether AutoRep stories are written"
+    },
+    {
+      "session": "c5c5ca89",
+      "ts": "2026-11-27T13:15:09.245Z",
+      "n": 22,
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 13160360,
+      "output_tokens": 24871,
+      "cost_usd": 3.4106,
+      "area": "MVP1-E8-15",
+      "kind": "build",
+      "summary": "Total Cost tab: So Far and Projected from the latest roadmap version; generator scripts/costs/total_cost.py"
+    },
+    {
+      "session": "c5c5ca89",
+      "ts": "2026-11-27T18:40:33.784Z",
+      "area": "Process",
+      "kind": "scaffolding",
+      "summary": "Questions on the Token Costs tab redesign: how to classify product, engineering and pre-requisite work",
+      "n": 23,
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 791515,
+      "output_tokens": 1300,
+      "cost_usd": 5.826
+    },
+    {
+      "session": "c5c5ca89",
+      "ts": "2026-11-27T18:42:37.911Z",
+      "area": "Process",
+      "kind": "scaffolding",
+      "summary": "Questions on the Token Costs tab redesign: how to classify product, engineering and pre-requisite work",
+      "n": 24,
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 3182807,
+      "output_tokens": 3071,
+      "cost_usd": 0.7536
+    },
+    {
+      "session": "c5c5ca89",
+      "ts": "2026-11-27T19:02:12.860Z",
+      "area": "MVP1-E8-15",
+      "kind": "rework",
+      "summary": "Rework from Nikhil's review on PR #253: cost by story on the Projected tab, a chart by epic and a table of every story",
+      "n": 25,
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 13016662,
+      "output_tokens": 16303,
+      "cost_usd": 3.156
+    },
+    {
+      "session": "c5c5ca89",
+      "ts": "2026-11-27T19:23:36.500Z",
+      "area": "MVP1-E8-15",
+      "kind": "rework",
+      "summary": "Rework from Nikhil's second review on PR #253: product management and cost tooling planned and priced (roadmap v6), So Far renamed Actuals (so far), four cards, story lists folded",
+      "n": 26,
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 7556550,
+      "output_tokens": 12175,
+      "cost_usd": 1.8956
     }
   ]
 }

@@ -29,7 +29,7 @@
   "done": {
     "source": "Closed GitHub issues with state_reason completed, titled [ID] Title",
     "repo": "founder2863/01scale.com",
-    "fetched": "2026-11-26",
+    "fetched": "2026-11-27",
     "stories": [
       {
         "id": "MVP1-E0-10",
@@ -225,6 +225,11 @@
         "id": "MVP1-E8-12",
         "issue": 192,
         "closed": "2026-11-26"
+      },
+      {
+        "id": "MVP1-E8-13",
+        "issue": 242,
+        "closed": "2026-11-27"
       }
     ]
   }

@@ -4258,3 +4258,152 @@ section[id] {
   overflow: hidden;
   white-space: nowrap;
 }
+
+/* Total Cost (MVP1-E8-15): detail tables folded under a summary. */
+.cost-more {
+  margin: 8px 0 16px;
+}
+
+.cost-more > summary {
+  cursor: pointer;
+  color: var(--link);
+  font-weight: 600;
+}
+
+.cost-more[open] > summary {
+  margin-bottom: 8px;
+}
+
+
+/* Cost by epic chart (MVP1-E8-15). Series colours: the dataviz palette's slots 1 and 2,
+   validated against this site's light and dark surfaces. */
+:root {
+  --cbe-without: #257de0;
+  --cbe-with: #f47230;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --cbe-without: #338ced;
+    --cbe-with: #e76624;
+  }
+}
+
+[data-theme="dark"] {
+  --cbe-without: #338ced;
+  --cbe-with: #e76624;
+}
+
+.cbe {
+  margin: 8px 0 16px;
+}
+
+.cbe-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  margin-bottom: 10px;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.cbe-key::before {
+  content: "";
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: 6px;
+  border-radius: 3px;
+  vertical-align: -1px;
+}
+
+.cbe-key.cbe-without::before {
+  background: var(--cbe-without);
+}
+
+.cbe-key.cbe-with::before {
+  background: var(--cbe-with);
+}
+
+.cbe-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cbe-row {
+  display: grid;
+  grid-template-columns: minmax(180px, 32%) 1fr;
+  gap: 4px 16px;
+  align-items: center;
+}
+
+.cbe-name {
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.cbe-id {
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 0.8rem;
+}
+
+.cbe-count {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.cbe-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.cbe-bar {
+  position: relative;
+  display: block;
+  height: 14px;
+  min-width: 2px;
+  border-radius: 0 4px 4px 0;
+}
+
+.cbe-bar.cbe-without {
+  background: var(--cbe-without);
+}
+
+.cbe-bar.cbe-with {
+  background: var(--cbe-with);
+}
+
+/* The value sits just past the end of its bar, in the text colour. */
+.cbe-value {
+  position: absolute;
+  top: 50%;
+  left: calc(100% + 6px);
+  color: var(--text);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  white-space: nowrap;
+  transform: translateY(-50%);
+}
+
+/* Leave room for the label after the longest bar. */
+.cbe-bars {
+  padding-right: 84px;
+}
+
+@media (max-width: 640px) {
+  .cbe-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cost-more-title {
+  margin: 12px 0 6px;
+  font-size: 0.95rem;
+}

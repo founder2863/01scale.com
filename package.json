@@ -9,11 +9,13 @@
     "site:data": "python3 scripts/site/build_products.py",
     "costs": "python3 scripts/costs/build_costs.py",
     "human-costs": "python3 scripts/costs/human_costs.py",
+    "total-cost": "python3 scripts/costs/total_cost.py",
     "roadmap:v1": "python3 scripts/site/roadmap_v1.py",
     "roadmap:v2": "python3 scripts/site/roadmap_v2.py",
     "roadmap:v3": "python3 scripts/site/roadmap_v3.py",
     "roadmap:v4": "python3 scripts/site/roadmap_v4.py",
     "roadmap:v5": "python3 scripts/site/roadmap_v5.py",
+    "roadmap:v6": "python3 scripts/site/roadmap_v6.py",
     "test:costs": "python3 -m pytest -q scripts/costs",
     "schema:check": "node scripts/site/check_schema.mjs"
   },
