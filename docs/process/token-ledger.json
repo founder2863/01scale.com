@@ -226,14 +226,21 @@
     },
     {
       "by_kind_usd": {
-        "input": 0.0,
-        "output": 0.0,
-        "cache_read": 0.0,
-        "cache_write": 0.0
+        "input": 0.02,
+        "output": 1.93,
+        "cache_read": 4.98,
+        "cache_write": 1.74
       },
-      "overhead_usd": 0,
-      "tool_total_usd": 7.4264,
-      "rates_usd_per_million": {},
+      "overhead_usd": 0.1386,
+      "tool_total_usd": 8.6658,
+      "rates_usd_per_million": {
+        "claude-opus-5-5": {
+          "input": 4.0,
+          "output": 20.0,
+          "cache_read": 0.2,
+          "cache_write": 8.0
+        }
+      },
       "id": "bca467e6-6c9f-5e93-b12b-7c5143f68008",
       "splits": []
     }
@@ -4325,7 +4332,7 @@
       ],
       "tokens": 10946977,
       "output_tokens": 49494,
-      "cost_usd": 4.7384
+      "cost_usd": 4.3421
     },
     {
       "session": "bca467e6",
@@ -4339,7 +4346,7 @@
       ],
       "tokens": 448903,
       "output_tokens": 3435,
-      "cost_usd": 0.1927
+      "cost_usd": 0.1772
     },
     {
       "session": "bca467e6",
@@ -4353,7 +4360,7 @@
       ],
       "tokens": 454866,
       "output_tokens": 2184,
-      "cost_usd": 0.1439
+      "cost_usd": 0.1444
     },
     {
       "session": "bca467e6",
@@ -4367,7 +4374,7 @@
       ],
       "tokens": 5755372,
       "output_tokens": 25469,
-      "cost_usd": 1.985
+      "cost_usd": 1.9381
     },
     {
       "session": "bca467e6",
@@ -4381,7 +4388,7 @@
       ],
       "tokens": 532300,
       "output_tokens": 856,
-      "cost_usd": 0.1095
+      "cost_usd": 0.1286
     },
     {
       "session": "bca467e6",
@@ -4395,7 +4402,7 @@
       ],
       "tokens": 537545,
       "output_tokens": 1992,
-      "cost_usd": 0.1594
+      "cost_usd": 0.1633
     },
     {
       "session": "bca467e6",
@@ -4409,7 +4416,7 @@
       ],
       "tokens": 272253,
       "output_tokens": 1945,
-      "cost_usd": 0.0974
+      "cost_usd": 0.0941
     },
     {
       "session": "bca467e6",
@@ -4421,10 +4428,23 @@
       "models": [
         "claude-opus-5-5"
       ],
-      "tokens": 2212045,
-      "output_tokens": 6594,
-      "cost_usd": null,
-      "estimated_usd": 0.6347
+      "tokens": 4204613,
+      "output_tokens": 11112,
+      "cost_usd": 1.1742
+    },
+    {
+      "session": "bca467e6",
+      "n": 9,
+      "ts": "2026-11-27T21:51:50.597Z",
+      "area": "MVP1-E8-18",
+      "kind": "build",
+      "summary": "Plan the E8-18 size proposal; ask about an XS size and stories whose design is already done",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 1169927,
+      "output_tokens": 4323,
+      "cost_usd": 0.3652
     }
   ]
 }
