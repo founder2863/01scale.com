@@ -14,13 +14,13 @@ export const totalCost = {
   },
   "productShare": 0.1,
   "soFar": {
-    "tokensSpent": 458.65,
+    "tokensSpent": 459.5,
     "tokensPending": 21,
-    "stories": 40,
-    "productDays": 18.5,
-    "devDays": 205.0,
-    "humanCost": 223500,
-    "storyTokenCost": 168.47,
+    "stories": 42,
+    "productDays": 34.5,
+    "devDays": 209.0,
+    "humanCost": 243500,
+    "storyTokenCost": 180.63,
     "built": [
       {
         "id": "MVP1-E0-10",
@@ -461,6 +461,28 @@ export const totalCost = {
         "cost": 8750,
         "tokenCost": 3.72,
         "basis": "engineering, size plus sprint product work"
+      },
+      {
+        "id": "MVP1-E8-14",
+        "title": "Roadmap v6: product work two sprints ahead, environments early, and tokens in the cost",
+        "size": "M",
+        "issue": 252,
+        "productDays": 8.0,
+        "devDays": 2.0,
+        "cost": 10000,
+        "tokenCost": 3.7,
+        "basis": "roadmap v6"
+      },
+      {
+        "id": "MVP1-E8-15",
+        "title": "Total Cost from the latest roadmap: so far and projected",
+        "size": "M",
+        "issue": 254,
+        "productDays": 8.0,
+        "devDays": 2.0,
+        "cost": 10000,
+        "tokenCost": 8.46,
+        "basis": "roadmap v6"
       }
     ]
   },

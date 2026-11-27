@@ -205,12 +205,12 @@
     {
       "by_kind_usd": {
         "input": 0.05,
-        "output": 9.62,
-        "cache_read": 31.36,
-        "cache_write": 22.47
+        "output": 9.93,
+        "cache_read": 33.37,
+        "cache_write": 22.66
       },
-      "overhead_usd": 0.7812,
-      "tool_total_usd": 63.4931,
+      "overhead_usd": 2.4479,
+      "tool_total_usd": 66.0082,
       "rates_usd_per_million": {
         "claude-opus-5-5": {
           "input": 4.0,
@@ -4280,9 +4280,23 @@
       "models": [
         "claude-opus-5-5"
       ],
-      "tokens": 7556550,
-      "output_tokens": 12175,
-      "cost_usd": 1.8956
+      "tokens": 9258938,
+      "output_tokens": 15367,
+      "cost_usd": 2.3377
+    },
+    {
+      "session": "c5c5ca89",
+      "ts": "2026-11-27T19:32:36.599Z",
+      "area": "Process",
+      "kind": "scaffolding",
+      "summary": "Process: close #252 and #254 with their costs, session summary and handoff of remaining actions in STATUS.md",
+      "n": 27,
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 1707419,
+      "output_tokens": 2569,
+      "cost_usd": 0.4063
     }
   ]
 }
