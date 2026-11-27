@@ -67,7 +67,7 @@ export const roadmapVersions: Version[] = [
     slug: "v5",
     label: "v5",
     title: "Two product managers, and what each plan costs",
-    status: "Current",
+    status: "Frozen 27 Nov 2026",
     adds: v5.version.adds,
     gaps: v5.version.gaps,
     View: RoadmapV5View,

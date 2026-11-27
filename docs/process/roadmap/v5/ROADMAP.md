@@ -1,6 +1,6 @@
 # Roadmap v5: two product managers, and what each plan costs
 
-Started on 26 Nov 2026 from roadmap v4 (`docs/process/roadmap/v4/`, frozen), after reviewing it with Nikhil. Same stories, dependencies, estimate rules and sprint rules as v4, plus the changes below. v5 has its own model (`model.json`), script (`scripts/site/roadmap_v5.py`, `npm run roadmap:v5`) and page (How It's Built › Roadmap › v5). Story `MVP1-E8-13` (#242).
+Started on 26 Nov 2026 from roadmap v4 (`docs/process/roadmap/v4/`, frozen), after reviewing it with Nikhil. **Frozen on 27 Nov 2026** (Nikhil): v5 is kept as it is; v6 continues from it in `docs/process/roadmap/v6/`. Same stories, dependencies, estimate rules and sprint rules as v4, plus the changes below. v5 has its own model (`model.json`), script (`scripts/site/roadmap_v5.py`, `npm run roadmap:v5`) and page (How It's Built › Roadmap › v5). Story `MVP1-E8-13` (#242).
 
 ## What this version adds
 
@@ -14,7 +14,13 @@ Nikhil's requirements and constraints for v5 (26 Nov 2026), after reviewing v4:
 
 ## Gaps found
 
-- **Not reviewed yet.** v5 is the current version; reviewing it will list the gaps that v6 addresses.
+Nikhil's observations on v5 (26 and 27 Nov 2026), which v6 addresses:
+
+- **Without Claude Code, both product managers are idle in months 6 to 8.** Their remaining business stories (the sales demo, sales, support and configuration training, release management, and through it CPQ and the pricing page) wait for the finished journey and for staging, and staging and the production environments are planned last.
+- **With Claude Code, the whole team is idle in month 4.** Everyone waits on the last steps of the journey (results, then delivery), and the short stories leave gaps between sprints; nothing early was left to fill them because the environments had been pushed to the end.
+- **With two product managers, stories are still held up by a product manager.** The plan starts with nothing refined, and a product manager in the middle of a long document cannot refine the next story. Nikhil: with two product managers every story should be ready in time.
+- **Product manager stories are not in sprints and cannot roll over.** Nikhil: product manager stories run in sprints too and must be ready at least two sprints (ten working days) before the engineering sprint that pulls the work; they can roll over without a limit, and engineers wait on them.
+- **The cost leaves out tokens.** Nikhil: the cost of a plan is the product managers and engineers for its length, plus the projected token cost when working with Claude Code.
 
 ## How it was worked out
 

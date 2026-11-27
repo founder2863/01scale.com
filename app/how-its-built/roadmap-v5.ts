@@ -2,7 +2,7 @@
 // Do not edit: change ROADMAP.md or the epics files, then run `npm run roadmap:v5`.
 
 export const roadmap = {
-  "updated": "2026-11-26",
+  "updated": "2026-11-27",
   "version": {
     "id": "v5",
     "adds": [
@@ -13,7 +13,11 @@ export const roadmap = {
       "**What each plan costs:** product days at the product manager rate and development days at the engineer rate, both $1,000 a day for now (Nikhil), counting the sprint product work and the joint sessions; shown without and with Claude Code, as the cost of the work and as the cost of the team for the plan's length. No other roles yet (Nikhil)."
     ],
     "gaps": [
-      "**Not reviewed yet.** v5 is the current version; reviewing it will list the gaps that v6 addresses."
+      "**Without Claude Code, both product managers are idle in months 6 to 8.** Their remaining business stories (the sales demo, sales, support and configuration training, release management, and through it CPQ and the pricing page) wait for the finished journey and for staging, and staging and the production environments are planned last.",
+      "**With Claude Code, the whole team is idle in month 4.** Everyone waits on the last steps of the journey (results, then delivery), and the short stories leave gaps between sprints; nothing early was left to fill them because the environments had been pushed to the end.",
+      "**With two product managers, stories are still held up by a product manager.** The plan starts with nothing refined, and a product manager in the middle of a long document cannot refine the next story. Nikhil: with two product managers every story should be ready in time.",
+      "**Product manager stories are not in sprints and cannot roll over.** Nikhil: product manager stories run in sprints too and must be ready at least two sprints (ten working days) before the engineering sprint that pulls the work; they can roll over without a limit, and engineers wait on them.",
+      "**The cost leaves out tokens.** Nikhil: the cost of a plan is the product managers and engineers for its length, plus the projected token cost when working with Claude Code."
     ]
   },
   "source": "docs/process/roadmap/v5/ROADMAP.md",
@@ -9471,7 +9475,7 @@ export const roadmap = {
           "value": "Medium",
           "reason": "Built in PR #189 and the PR after it, so not planned.",
           "days": 16,
-          "remainingDays": 8,
+          "remainingDays": 0,
           "stories": [
             {
               "id": "MVP1-E0-54",
@@ -9494,7 +9498,7 @@ export const roadmap = {
               "title": "Four estimates per story, and the plan without and with Claude Code",
               "size": "M",
               "days": 8,
-              "done": false,
+              "done": true,
               "issue": 192,
               "href": "https://github.com/founder2863/01scale.com/issues/192",
               "estimates": {
@@ -9509,7 +9513,7 @@ export const roadmap = {
         }
       ],
       "days": 50,
-      "remainingDays": 42,
+      "remainingDays": 34,
       "storyCount": 6
     },
     {
@@ -9752,7 +9756,7 @@ export const roadmap = {
   "totals": {
     "stories": 120,
     "days": 767,
-    "doneStories": 1,
-    "remainingDays": 759
+    "doneStories": 2,
+    "remainingDays": 751
   }
 } as const;
