@@ -11,7 +11,8 @@ export const roadmap = {
       "**Observation: with Claude Code, the whole team is idle in month 4,** waiting on the last steps of the journey with nothing early left to do. Decisions A and B fill it: the environments, staging and business preparation no longer wait for delivery.",
       "**Observation: with two product managers, stories are still held up by a product manager. Decision (C): product manager work is ready two sprints ahead.** An engineering story's refinement, and any product manager story an engineering task needs, is done at least ten working days before the engineering sprint that pulls the work. Product managers use their spare time to refine ahead, so engineers do not wait.",
       "**Product manager stories run in sprints** and are pulled at sprint planning like engineering work. **They can roll over without a limit** (Nikhil): in the forecast, a product manager story still open at a sprint's end rolls over with a 20% chance, half a sprint each time, again and again; engineering keeps at most two rollovers.",
-      "**The cost adds tokens** (Nikhil): the cost of a plan is the product managers and engineers for its length, plus, with Claude Code, the projected token cost of the remaining stories: each story's size times the measured cost per person-day so far, three times that for engineering stories, plus 25% for questions and process."
+      "**The cost adds tokens** (Nikhil): the cost of a plan is the product managers and engineers for its length, plus, with Claude Code, the projected token cost of the remaining stories: each story's size times the measured cost per person-day so far, three times that for engineering stories, plus 25% for questions and process.",
+      "**Product management and cost tooling is in the plan** (Nikhil on PR #253): the cost model, effort, timeline, human and Claude Code cost pages (E8-02 to E8-08), this roadmap and Total Cost (E8-14, E8-15) and product names and versions (E0-44) are foundation product management and roadmap work with scripts. A product manager owns them, with joint time with an engineer, and they are priced in the total cost."
     ],
     "gaps": [
       "**Not reviewed yet.** v6 is the current version; reviewing it will list the gaps that v7 addresses."
@@ -73,31 +74,31 @@ export const roadmap = {
       {
         "name": "Product manager 1",
         "pm": true,
-        "busyDays": 166.8
+        "busyDays": 202.8
       },
       {
         "name": "Product manager 2",
         "pm": true,
-        "busyDays": 161.5
+        "busyDays": 209.5
       },
       {
         "name": "Engineer 1",
         "pm": false,
-        "busyDays": 173.0
+        "busyDays": 179.4
       },
       {
         "name": "Engineer 2",
         "pm": false,
-        "busyDays": 150.2
+        "busyDays": 161.1
       },
       {
         "name": "Engineer 3",
         "pm": false,
-        "busyDays": 143.5
+        "busyDays": 147.3
       }
     ],
-    "endDay": 223,
-    "months": 12,
+    "endDay": 245,
+    "months": 13,
     "stories": [
       {
         "id": "MVP1-E0-20",
@@ -1062,6 +1063,19 @@ export const roadmap = {
         "endMonth": 7
       },
       {
+        "id": "MVP1-E8-02",
+        "title": "The cost model's assumptions",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/127",
+        "issue": 127,
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 1",
+        "start": 137,
+        "end": 146,
+        "startMonth": 7,
+        "endMonth": 8
+      },
+      {
         "id": "MVP1-E6-02",
         "title": "Webhook",
         "size": "M",
@@ -1071,6 +1085,19 @@ export const roadmap = {
         "person": "Engineer 3",
         "start": 141,
         "end": 145,
+        "startMonth": 8,
+        "endMonth": 8
+      },
+      {
+        "id": "MVP1-E8-08",
+        "title": "Token estimate for every V1 story, and a story for every document",
+        "size": "L",
+        "href": "https://github.com/founder2863/01scale.com/issues/135",
+        "issue": 135,
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 2",
+        "start": 141,
+        "end": 157,
         "startMonth": 8,
         "endMonth": 8
       },
@@ -1107,7 +1134,7 @@ export const roadmap = {
         "href": "https://github.com/founder2863/01scale.com/issues/179",
         "issue": 179,
         "wave": "6 Outputs and payment",
-        "person": "Engineer 2",
+        "person": "Engineer 3",
         "start": 146,
         "end": 148,
         "startMonth": 8,
@@ -1120,7 +1147,7 @@ export const roadmap = {
         "href": "https://github.com/founder2863/01scale.com/issues/43",
         "issue": 43,
         "wave": "6 Outputs and payment",
-        "person": "Engineer 1",
+        "person": "Engineer 2",
         "start": 146,
         "end": 148,
         "startMonth": 8,
@@ -1133,22 +1160,9 @@ export const roadmap = {
         "href": "https://github.com/founder2863/01scale.com/issues/48",
         "issue": 48,
         "wave": "6 Outputs and payment",
-        "person": "Engineer 3",
+        "person": "Engineer 1",
         "start": 146,
-        "end": 148,
-        "startMonth": 8,
-        "endMonth": 8
-      },
-      {
-        "id": "MVP1-E16-01",
-        "title": "Customer contracts: terms of service, data processing agreement and order form",
-        "size": "M",
-        "href": "https://github.com/founder2863/01scale.com/issues/250",
-        "issue": 250,
-        "wave": "8 Business readiness",
-        "person": "Product manager 2",
-        "start": 146,
-        "end": 153,
+        "end": 149,
         "startMonth": 8,
         "endMonth": 8
       },
@@ -1159,9 +1173,22 @@ export const roadmap = {
         "href": "https://github.com/founder2863/01scale.com/issues/45",
         "issue": 45,
         "wave": "6 Outputs and payment",
-        "person": "Engineer 1",
+        "person": "Engineer 2",
         "start": 151,
         "end": 153,
+        "startMonth": 8,
+        "endMonth": 8
+      },
+      {
+        "id": "MVP1-E16-01",
+        "title": "Customer contracts: terms of service, data processing agreement and order form",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/250",
+        "issue": 250,
+        "wave": "8 Business readiness",
+        "person": "Product manager 1",
+        "start": 151,
+        "end": 158,
         "startMonth": 8,
         "endMonth": 8
       },
@@ -1172,7 +1199,7 @@ export const roadmap = {
         "href": "https://github.com/founder2863/01scale.com/issues/102",
         "issue": 102,
         "wave": "Harden and show",
-        "person": "Engineer 2",
+        "person": "Engineer 3",
         "start": 151,
         "end": 155,
         "startMonth": 8,
@@ -1192,19 +1219,6 @@ export const roadmap = {
         "endMonth": 8
       },
       {
-        "id": "MVP1-E12-07",
-        "title": "Product analytics",
-        "size": "M",
-        "href": "https://github.com/founder2863/01scale.com/issues/245",
-        "issue": 245,
-        "wave": "8 Business readiness",
-        "person": "Product manager 1",
-        "start": 156,
-        "end": 165,
-        "startMonth": 8,
-        "endMonth": 9
-      },
-      {
         "id": "MVP1-E9-10",
         "title": "Support documentation: playbook and runbooks",
         "size": "S",
@@ -1212,8 +1226,8 @@ export const roadmap = {
         "issue": 204,
         "wave": "9 Go-live",
         "person": "Product manager 2",
-        "start": 156,
-        "end": 158,
+        "start": 157,
+        "end": 160,
         "startMonth": 8,
         "endMonth": 8
       },
@@ -1224,9 +1238,9 @@ export const roadmap = {
         "href": "https://github.com/founder2863/01scale.com/issues/92",
         "issue": 92,
         "wave": "Product extras",
-        "person": "Engineer 3",
-        "start": 156,
-        "end": 158,
+        "person": "Engineer 2",
+        "start": 157,
+        "end": 160,
         "startMonth": 8,
         "endMonth": 8
       },
@@ -1250,7 +1264,7 @@ export const roadmap = {
         "href": "https://github.com/founder2863/01scale.com/issues/51",
         "issue": 51,
         "wave": "7 Delivery",
-        "person": "Engineer 3",
+        "person": "Engineer 1",
         "start": 161,
         "end": 165,
         "startMonth": 9,
@@ -1263,9 +1277,22 @@ export const roadmap = {
         "href": "https://github.com/founder2863/01scale.com/issues/224",
         "issue": 224,
         "wave": "8 Business readiness",
-        "person": "Product manager 2",
+        "person": "Product manager 1",
         "start": 161,
         "end": 163,
+        "startMonth": 9,
+        "endMonth": 9
+      },
+      {
+        "id": "MVP1-E12-07",
+        "title": "Product analytics",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/245",
+        "issue": 245,
+        "wave": "8 Business readiness",
+        "person": "Product manager 2",
+        "start": 161,
+        "end": 170,
         "startMonth": 9,
         "endMonth": 9
       },
@@ -1275,19 +1302,6 @@ export const roadmap = {
         "size": "S",
         "href": "https://github.com/founder2863/01scale.com/issues/225",
         "issue": 225,
-        "wave": "8 Business readiness",
-        "person": "Product manager 2",
-        "start": 166,
-        "end": 168,
-        "startMonth": 9,
-        "endMonth": 9
-      },
-      {
-        "id": "MVP1-E12-04",
-        "title": "Issue resolution timelines",
-        "size": "S",
-        "href": "https://github.com/founder2863/01scale.com/issues/226",
-        "issue": 226,
         "wave": "8 Business readiness",
         "person": "Product manager 1",
         "start": 166,
@@ -1302,9 +1316,22 @@ export const roadmap = {
         "href": "https://github.com/founder2863/01scale.com/issues/199",
         "issue": 199,
         "wave": "9 Go-live",
-        "person": "Engineer 1",
+        "person": "Engineer 2",
         "start": 166,
         "end": 170,
+        "startMonth": 9,
+        "endMonth": 9
+      },
+      {
+        "id": "MVP1-E12-04",
+        "title": "Issue resolution timelines",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/226",
+        "issue": 226,
+        "wave": "8 Business readiness",
+        "person": "Product manager 2",
+        "start": 167,
+        "end": 169,
         "startMonth": 9,
         "endMonth": 9
       },
@@ -1315,7 +1342,7 @@ export const roadmap = {
         "href": "https://github.com/founder2863/01scale.com/issues/223",
         "issue": 223,
         "wave": "8 Business readiness",
-        "person": "Product manager 1",
+        "person": "Product manager 2",
         "start": 171,
         "end": 173,
         "startMonth": 9,
@@ -1328,7 +1355,7 @@ export const roadmap = {
         "href": "https://github.com/founder2863/01scale.com/issues/201",
         "issue": 201,
         "wave": "9 Go-live",
-        "person": "Engineer 2",
+        "person": "Engineer 1",
         "start": 171,
         "end": 175,
         "startMonth": 9,
@@ -1341,7 +1368,7 @@ export const roadmap = {
         "href": "https://github.com/founder2863/01scale.com/issues/202",
         "issue": 202,
         "wave": "9 Go-live",
-        "person": "Product manager 2",
+        "person": "Product manager 1",
         "start": 171,
         "end": 173,
         "startMonth": 9,
@@ -1478,6 +1505,32 @@ export const roadmap = {
         "endMonth": 10
       },
       {
+        "id": "MVP1-E8-03",
+        "title": "Effort for every story",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/128",
+        "issue": 128,
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 2",
+        "start": 201,
+        "end": 208,
+        "startMonth": 11,
+        "endMonth": 11
+      },
+      {
+        "id": "MVP1-E8-14",
+        "title": "Roadmap v6: product work two sprints ahead, environments early, and tokens in the cost",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/252",
+        "issue": 252,
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 1",
+        "start": 206,
+        "end": 213,
+        "startMonth": 11,
+        "endMonth": 11
+      },
+      {
         "id": "MVP1-E1-08",
         "title": "Sign in with Google",
         "size": "M",
@@ -1504,13 +1557,26 @@ export const roadmap = {
         "endMonth": 11
       },
       {
+        "id": "MVP1-E0-44",
+        "title": "Product names and versions in folders, documents and story IDs",
+        "size": "L",
+        "href": "https://github.com/founder2863/01scale.com/issues/133",
+        "issue": 133,
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 2",
+        "start": 211,
+        "end": 225,
+        "startMonth": 11,
+        "endMonth": 12
+      },
+      {
         "id": "MVP1-E9-13",
         "title": "Handling support issues",
         "size": "S",
         "href": "https://github.com/founder2863/01scale.com/issues/207",
         "issue": 207,
         "wave": "10 Live and supported",
-        "person": "Product manager 2",
+        "person": "Product manager 1",
         "start": 216,
         "end": 218,
         "startMonth": 11,
@@ -1528,6 +1594,71 @@ export const roadmap = {
         "end": 223,
         "startMonth": 12,
         "endMonth": 12
+      },
+      {
+        "id": "MVP1-E8-05",
+        "title": "The human team's cost, per story and in total",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/130",
+        "issue": 130,
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 1",
+        "start": 226,
+        "end": 233,
+        "startMonth": 12,
+        "endMonth": 12
+      },
+      {
+        "id": "MVP1-E8-06",
+        "title": "The cost of building it with Claude Code and one product manager",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/131",
+        "issue": 131,
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 2",
+        "start": 226,
+        "end": 233,
+        "startMonth": 12,
+        "endMonth": 12
+      },
+      {
+        "id": "MVP1-E8-04",
+        "title": "A dependency-aware timeline",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/129",
+        "issue": 129,
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 1",
+        "start": 236,
+        "end": 243,
+        "startMonth": 12,
+        "endMonth": 13
+      },
+      {
+        "id": "MVP1-E8-15",
+        "title": "Total Cost from the latest roadmap: so far and projected",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/254",
+        "issue": 254,
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 2",
+        "start": 236,
+        "end": 245,
+        "startMonth": 12,
+        "endMonth": 13
+      },
+      {
+        "id": "MVP1-E8-07",
+        "title": "The difference",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/132",
+        "issue": 132,
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 1",
+        "start": 242,
+        "end": 244,
+        "startMonth": 13,
+        "endMonth": 13
       }
     ],
     "tasks": [
@@ -3036,10 +3167,18 @@ export const roadmap = {
         "end": 139.6
       },
       {
+        "story": "MVP1-E8-02",
+        "kind": "product",
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 1",
+        "start": 136.0,
+        "end": 138.25
+      },
+      {
         "story": "MVP1-E15-02",
         "kind": "joint",
         "wave": "8 Business readiness",
-        "person": "Product manager 1",
+        "person": "Product manager 2",
         "start": 138.0,
         "end": 140.0
       },
@@ -3055,7 +3194,7 @@ export const roadmap = {
         "story": "MVP1-E9-01",
         "kind": "joint",
         "wave": "9 Go-live",
-        "person": "Product manager 2",
+        "person": "Product manager 1",
         "start": 139.6,
         "end": 141.6
       },
@@ -3082,6 +3221,14 @@ export const roadmap = {
         "person": "Engineer 1",
         "start": 140.0,
         "end": 144.6
+      },
+      {
+        "story": "MVP1-E8-08",
+        "kind": "product",
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 2",
+        "start": 140.0,
+        "end": 151.25
       },
       {
         "story": "MVP1-E5-03",
@@ -3100,10 +3247,26 @@ export const roadmap = {
         "end": 144.6
       },
       {
+        "story": "MVP1-E8-02",
+        "kind": "joint",
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 1",
+        "start": 144.6,
+        "end": 145.35
+      },
+      {
+        "story": "MVP1-E8-02",
+        "kind": "joint",
+        "wave": "Product management and cost tooling",
+        "person": "Engineer 1",
+        "start": 144.6,
+        "end": 145.35
+      },
+      {
         "story": "MVP1-E5-05",
         "kind": "dev",
         "wave": "6 Outputs and payment",
-        "person": "Engineer 2",
+        "person": "Engineer 3",
         "start": 145,
         "end": 148.0
       },
@@ -3111,7 +3274,7 @@ export const roadmap = {
         "story": "MVP1-E5-02",
         "kind": "dev",
         "wave": "6 Outputs and payment",
-        "person": "Engineer 1",
+        "person": "Engineer 2",
         "start": 145,
         "end": 148.0
       },
@@ -3119,33 +3282,25 @@ export const roadmap = {
         "story": "MVP1-E6-03",
         "kind": "dev",
         "wave": "6 Outputs and payment",
-        "person": "Engineer 3",
-        "start": 145,
-        "end": 148.0
-      },
-      {
-        "story": "MVP1-E16-01",
-        "kind": "product",
-        "wave": "8 Business readiness",
-        "person": "Product manager 2",
-        "start": 145,
-        "end": 153.0
+        "person": "Engineer 1",
+        "start": 145.35,
+        "end": 148.35
       },
       {
         "story": "MVP1-E5-04",
         "kind": "dev",
         "wave": "6 Outputs and payment",
-        "person": "Engineer 1",
+        "person": "Engineer 2",
         "start": 150,
         "end": 153.0
       },
       {
-        "story": "MVP1-E0-25",
-        "kind": "dev",
-        "wave": "Harden and show",
-        "person": "Engineer 2",
+        "story": "MVP1-E16-01",
+        "kind": "product",
+        "wave": "8 Business readiness",
+        "person": "Product manager 1",
         "start": 150,
-        "end": 154.6
+        "end": 158.0
       },
       {
         "story": "MVP1-E0-25",
@@ -3156,6 +3311,30 @@ export const roadmap = {
         "end": 154.6
       },
       {
+        "story": "MVP1-E0-25",
+        "kind": "dev",
+        "wave": "Harden and show",
+        "person": "Engineer 1",
+        "start": 150,
+        "end": 154.6
+      },
+      {
+        "story": "MVP1-E8-08",
+        "kind": "joint",
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 2",
+        "start": 153.0,
+        "end": 156.75
+      },
+      {
+        "story": "MVP1-E8-08",
+        "kind": "joint",
+        "wave": "Product management and cost tooling",
+        "person": "Engineer 2",
+        "start": 153.0,
+        "end": 156.75
+      },
+      {
         "story": "MVP1-E7-01",
         "kind": "dev",
         "wave": "7 Delivery",
@@ -3167,33 +3346,25 @@ export const roadmap = {
         "story": "MVP1-E7-01",
         "kind": "dev",
         "wave": "7 Delivery",
-        "person": "Engineer 2",
+        "person": "Engineer 3",
         "start": 155,
         "end": 159.6
-      },
-      {
-        "story": "MVP1-E12-07",
-        "kind": "product",
-        "wave": "8 Business readiness",
-        "person": "Product manager 1",
-        "start": 155,
-        "end": 161.0
       },
       {
         "story": "MVP1-E9-10",
         "kind": "product",
         "wave": "9 Go-live",
         "person": "Product manager 2",
-        "start": 155,
-        "end": 158.0
+        "start": 156.75,
+        "end": 159.75
       },
       {
         "story": "MVP1-E6-04",
         "kind": "dev",
         "wave": "Product extras",
-        "person": "Engineer 3",
-        "start": 155,
-        "end": 158.0
+        "person": "Engineer 2",
+        "start": 156.75,
+        "end": 159.75
       },
       {
         "story": "MVP1-E7-02",
@@ -3207,7 +3378,7 @@ export const roadmap = {
         "story": "MVP1-E7-03",
         "kind": "dev",
         "wave": "7 Delivery",
-        "person": "Engineer 3",
+        "person": "Engineer 1",
         "start": 160,
         "end": 164.6
       },
@@ -3215,7 +3386,7 @@ export const roadmap = {
         "story": "MVP1-E7-03",
         "kind": "dev",
         "wave": "7 Delivery",
-        "person": "Engineer 1",
+        "person": "Engineer 3",
         "start": 160,
         "end": 164.6
       },
@@ -3223,95 +3394,103 @@ export const roadmap = {
         "story": "MVP1-E12-02",
         "kind": "product",
         "wave": "8 Business readiness",
-        "person": "Product manager 2",
+        "person": "Product manager 1",
         "start": 160,
         "end": 163.0
       },
       {
         "story": "MVP1-E12-07",
-        "kind": "joint",
+        "kind": "product",
         "wave": "8 Business readiness",
-        "person": "Product manager 1",
-        "start": 163.0,
-        "end": 165.0
-      },
-      {
-        "story": "MVP1-E12-07",
-        "kind": "joint",
-        "wave": "8 Business readiness",
-        "person": "Engineer 2",
-        "start": 163.0,
-        "end": 165.0
+        "person": "Product manager 2",
+        "start": 160,
+        "end": 166.0
       },
       {
         "story": "MVP1-E12-03",
         "kind": "product",
         "wave": "8 Business readiness",
-        "person": "Product manager 2",
-        "start": 165.0,
+        "person": "Product manager 1",
+        "start": 165,
         "end": 168.0
       },
       {
-        "story": "MVP1-E12-04",
-        "kind": "product",
-        "wave": "8 Business readiness",
-        "person": "Product manager 1",
-        "start": 165.0,
-        "end": 168.0
+        "story": "MVP1-E9-05",
+        "kind": "dev",
+        "wave": "9 Go-live",
+        "person": "Engineer 2",
+        "start": 165,
+        "end": 169.6
       },
       {
         "story": "MVP1-E9-05",
         "kind": "dev",
         "wave": "9 Go-live",
         "person": "Engineer 1",
-        "start": 165.0,
+        "start": 165,
         "end": 169.6
       },
       {
-        "story": "MVP1-E9-05",
-        "kind": "dev",
-        "wave": "9 Go-live",
+        "story": "MVP1-E12-04",
+        "kind": "product",
+        "wave": "8 Business readiness",
+        "person": "Product manager 2",
+        "start": 166.0,
+        "end": 169.0
+      },
+      {
+        "story": "MVP1-E12-07",
+        "kind": "joint",
+        "wave": "8 Business readiness",
+        "person": "Product manager 1",
+        "start": 168.0,
+        "end": 170.0
+      },
+      {
+        "story": "MVP1-E12-07",
+        "kind": "joint",
+        "wave": "8 Business readiness",
         "person": "Engineer 3",
-        "start": 165.0,
-        "end": 169.6
+        "start": 168.0,
+        "end": 170.0
       },
       {
         "story": "MVP1-E12-01",
         "kind": "product",
         "wave": "8 Business readiness",
-        "person": "Product manager 1",
-        "start": 170,
+        "person": "Product manager 2",
+        "start": 170.0,
         "end": 173.0
       },
       {
         "story": "MVP1-E9-07",
         "kind": "dev",
         "wave": "9 Go-live",
-        "person": "Engineer 2",
-        "start": 170,
+        "person": "Engineer 1",
+        "start": 170.0,
         "end": 174.6
       },
       {
         "story": "MVP1-E9-07",
         "kind": "dev",
         "wave": "9 Go-live",
-        "person": "Engineer 1",
-        "start": 170,
+        "person": "Engineer 2",
+        "start": 170.0,
         "end": 174.6
       },
       {
         "story": "MVP1-E9-08",
         "kind": "product",
         "wave": "9 Go-live",
-        "person": "Product manager 2",
-        "start": 170,
+        "person": "Product manager 1",
+        "start": 170.0,
         "end": 172.25
       },
       {
         "story": "MVP1-E9-08",
         "kind": "joint",
         "wave": "9 Go-live",
-        "person": "Product manager 2",
+        "person": "Product manager 1",
         "start": 172.25,
         "end": 173.0
       },
@@ -3460,6 +3639,22 @@ export const roadmap = {
         "end": 200.75
       },
       {
+        "story": "MVP1-E8-03",
+        "kind": "product",
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 2",
+        "start": 200,
+        "end": 206.0
+      },
+      {
+        "story": "MVP1-E8-14",
+        "kind": "product",
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 1",
+        "start": 205,
+        "end": 211.0
+      },
+      {
         "story": "MVP1-E1-08",
         "kind": "dev",
         "wave": "Product extras",
@@ -3474,6 +3669,22 @@ export const roadmap = {
         "person": "Engineer 2",
         "start": 205,
         "end": 209.6
+      },
+      {
+        "story": "MVP1-E8-03",
+        "kind": "joint",
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 2",
+        "start": 206.0,
+        "end": 208.0
+      },
+      {
+        "story": "MVP1-E8-03",
+        "kind": "joint",
+        "wave": "Product management and cost tooling",
+        "person": "Engineer 3",
+        "start": 206.0,
+        "end": 208.0
       },
       {
         "story": "MVP1-E9-12",
@@ -3492,10 +3703,34 @@ export const roadmap = {
         "end": 214.6
       },
       {
+        "story": "MVP1-E0-44",
+        "kind": "product",
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 2",
+        "start": 210,
+        "end": 221.25
+      },
+      {
+        "story": "MVP1-E8-14",
+        "kind": "joint",
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 1",
+        "start": 211.0,
+        "end": 213.0
+      },
+      {
+        "story": "MVP1-E8-14",
+        "kind": "joint",
+        "wave": "Product management and cost tooling",
+        "person": "Engineer 2",
+        "start": 211.0,
+        "end": 213.0
+      },
+      {
         "story": "MVP1-E9-13",
         "kind": "product",
         "wave": "10 Live and supported",
-        "person": "Product manager 2",
+        "person": "Product manager 1",
         "start": 215,
         "end": 218.0
       },
@@ -3506,6 +3741,142 @@ export const roadmap = {
         "person": "Product manager 1",
         "start": 220,
         "end": 223.0
+      },
+      {
+        "story": "MVP1-E0-44",
+        "kind": "joint",
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 2",
+        "start": 221.25,
+        "end": 225.0
+      },
+      {
+        "story": "MVP1-E0-44",
+        "kind": "joint",
+        "wave": "Product management and cost tooling",
+        "person": "Engineer 2",
+        "start": 221.25,
+        "end": 225.0
+      },
+      {
+        "story": "MVP1-E8-05",
+        "kind": "product",
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 1",
+        "start": 225.0,
+        "end": 231.0
+      },
+      {
+        "story": "MVP1-E8-06",
+        "kind": "product",
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 2",
+        "start": 225.0,
+        "end": 231.0
+      },
+      {
+        "story": "MVP1-E8-05",
+        "kind": "joint",
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 1",
+        "start": 231.0,
+        "end": 233.0
+      },
+      {
+        "story": "MVP1-E8-05",
+        "kind": "joint",
+        "wave": "Product management and cost tooling",
+        "person": "Engineer 1",
+        "start": 231.0,
+        "end": 233.0
+      },
+      {
+        "story": "MVP1-E8-06",
+        "kind": "joint",
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 2",
+        "start": 231.0,
+        "end": 233.0
+      },
+      {
+        "story": "MVP1-E8-06",
+        "kind": "joint",
+        "wave": "Product management and cost tooling",
+        "person": "Engineer 3",
+        "start": 231.0,
+        "end": 233.0
+      },
+      {
+        "story": "MVP1-E8-04",
+        "kind": "product",
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 1",
+        "start": 235,
+        "end": 241.0
+      },
+      {
+        "story": "MVP1-E8-15",
+        "kind": "product",
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 2",
+        "start": 235,
+        "end": 241.0
+      },
+      {
+        "story": "MVP1-E8-04",
+        "kind": "joint",
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 2",
+        "start": 241.0,
+        "end": 243.0
+      },
+      {
+        "story": "MVP1-E8-04",
+        "kind": "joint",
+        "wave": "Product management and cost tooling",
+        "person": "Engineer 2",
+        "start": 241.0,
+        "end": 243.0
+      },
+      {
+        "story": "MVP1-E8-07",
+        "kind": "product",
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 1",
+        "start": 241.0,
+        "end": 243.25
+      },
+      {
+        "story": "MVP1-E8-15",
+        "kind": "joint",
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 2",
+        "start": 243.0,
+        "end": 245.0
+      },
+      {
+        "story": "MVP1-E8-15",
+        "kind": "joint",
+        "wave": "Product management and cost tooling",
+        "person": "Engineer 1",
+        "start": 243.0,
+        "end": 245.0
+      },
+      {
+        "story": "MVP1-E8-07",
+        "kind": "joint",
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 1",
+        "start": 243.25,
+        "end": 244.0
+      },
+      {
+        "story": "MVP1-E8-07",
+        "kind": "joint",
+        "wave": "Product management and cost tooling",
+        "person": "Engineer 3",
+        "start": 243.25,
+        "end": 244.0
       }
     ],
     "crews": [
@@ -3920,6 +4291,54 @@ export const roadmap = {
         "sprints": 2
       },
       {
+        "id": "MVP1-E8-03",
+        "who": "engineers",
+        "days": 6.0,
+        "sprints": 2
+      },
+      {
+        "id": "MVP1-E8-04",
+        "who": "engineers",
+        "days": 6.0,
+        "sprints": 2
+      },
+      {
+        "id": "MVP1-E8-05",
+        "who": "engineers",
+        "days": 6.0,
+        "sprints": 2
+      },
+      {
+        "id": "MVP1-E8-06",
+        "who": "engineers",
+        "days": 6.0,
+        "sprints": 2
+      },
+      {
+        "id": "MVP1-E8-08",
+        "who": "engineers",
+        "days": 11.25,
+        "sprints": 3
+      },
+      {
+        "id": "MVP1-E8-14",
+        "who": "engineers",
+        "days": 6.0,
+        "sprints": 2
+      },
+      {
+        "id": "MVP1-E8-15",
+        "who": "engineers",
+        "days": 6.0,
+        "sprints": 2
+      },
+      {
+        "id": "MVP1-E0-44",
+        "who": "engineers",
+        "days": 11.25,
+        "sprints": 3
+      },
+      {
         "id": "MVP1-E3-06",
         "who": "engineers",
         "days": 5.75,
@@ -4005,7 +4424,7 @@ export const roadmap = {
       },
       {
         "name": "Pay with Stripe (test mode)",
-        "day": 148,
+        "day": 149,
         "month": 8
       },
       {
@@ -4031,15 +4450,7 @@ export const roadmap = {
     ],
     "notPlanned": [
       "MVP1-E0-54",
-      "MVP1-E8-12",
-      "MVP1-E0-44",
-      "MVP1-E8-02",
-      "MVP1-E8-03",
-      "MVP1-E8-04",
-      "MVP1-E8-05",
-      "MVP1-E8-06",
-      "MVP1-E8-07",
-      "MVP1-E8-08"
+      "MVP1-E8-12"
     ]
   },
   "planWithClaudeCode": {
@@ -4048,27 +4459,27 @@ export const roadmap = {
       {
         "name": "Product manager 1",
         "pm": true,
-        "busyDays": 68.3
+        "busyDays": 88.1
       },
       {
         "name": "Product manager 2",
         "pm": true,
-        "busyDays": 67.0
+        "busyDays": 81.2
       },
       {
         "name": "Engineer 1",
         "pm": false,
-        "busyDays": 63.2
+        "busyDays": 65.7
       },
       {
         "name": "Engineer 2",
         "pm": false,
-        "busyDays": 57.3
+        "busyDays": 58.0
       },
       {
         "name": "Engineer 3",
         "pm": false,
-        "busyDays": 53.5
+        "busyDays": 58.2
       }
     ],
     "endDay": 107,
@@ -4348,6 +4759,19 @@ export const roadmap = {
         "endMonth": 2
       },
       {
+        "id": "MVP1-E8-02",
+        "title": "The cost model's assumptions",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/127",
+        "issue": 127,
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 2",
+        "start": 24,
+        "end": 25,
+        "startMonth": 2,
+        "endMonth": 2
+      },
+      {
         "id": "MVP1-E0-02",
         "title": "Audit log",
         "size": "S",
@@ -4419,7 +4843,7 @@ export const roadmap = {
         "href": "https://github.com/founder2863/01scale.com/issues/222",
         "issue": 222,
         "wave": "8 Business readiness",
-        "person": "Product manager 1",
+        "person": "Product manager 2",
         "start": 26,
         "end": 29,
         "startMonth": 2,
@@ -4432,7 +4856,7 @@ export const roadmap = {
         "href": "https://github.com/founder2863/01scale.com/issues/229",
         "issue": 229,
         "wave": "8 Business readiness",
-        "person": "Product manager 2",
+        "person": "Product manager 1",
         "start": 26,
         "end": 29,
         "startMonth": 2,
@@ -4660,6 +5084,19 @@ export const roadmap = {
         "endMonth": 3
       },
       {
+        "id": "MVP1-E8-08",
+        "title": "Token estimate for every V1 story, and a story for every document",
+        "size": "L",
+        "href": "https://github.com/founder2863/01scale.com/issues/135",
+        "issue": 135,
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 1",
+        "start": 41,
+        "end": 46,
+        "startMonth": 3,
+        "endMonth": 3
+      },
+      {
         "id": "MVP1-E2-03",
         "title": "Upload confirmation and checks",
         "size": "S",
@@ -4692,7 +5129,7 @@ export const roadmap = {
         "href": "https://github.com/founder2863/01scale.com/issues/18",
         "issue": 18,
         "wave": "2 Identity and app shell",
-        "person": "Engineer 3",
+        "person": "Engineer 1",
         "start": 46,
         "end": 49,
         "startMonth": 3,
@@ -4705,19 +5142,6 @@ export const roadmap = {
         "href": "https://github.com/founder2863/01scale.com/issues/31",
         "issue": 31,
         "wave": "3 Upload",
-        "person": "Engineer 1",
-        "start": 46,
-        "end": 49,
-        "startMonth": 3,
-        "endMonth": 3
-      },
-      {
-        "id": "MVP1-E0-26",
-        "title": "Security baseline, secrets and a safe live demo",
-        "size": "M",
-        "href": "https://github.com/founder2863/01scale.com/issues/103",
-        "issue": 103,
-        "wave": "4 Extraction",
         "person": "Engineer 2",
         "start": 46,
         "end": 49,
@@ -4734,6 +5158,32 @@ export const roadmap = {
         "person": "Product manager 1",
         "start": 46,
         "end": 49,
+        "startMonth": 3,
+        "endMonth": 3
+      },
+      {
+        "id": "MVP1-E0-26",
+        "title": "Security baseline, secrets and a safe live demo",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/103",
+        "issue": 103,
+        "wave": "4 Extraction",
+        "person": "Engineer 3",
+        "start": 47,
+        "end": 50,
+        "startMonth": 3,
+        "endMonth": 3
+      },
+      {
+        "id": "MVP1-E8-03",
+        "title": "Effort for every story",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/128",
+        "issue": 128,
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 2",
+        "start": 47,
+        "end": 50,
         "startMonth": 3,
         "endMonth": 3
       },
@@ -5271,6 +5721,32 @@ export const roadmap = {
         "endMonth": 4
       },
       {
+        "id": "MVP1-E8-14",
+        "title": "Roadmap v6: product work two sprints ahead, environments early, and tokens in the cost",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/252",
+        "issue": 252,
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 1",
+        "start": 76,
+        "end": 79,
+        "startMonth": 4,
+        "endMonth": 4
+      },
+      {
+        "id": "MVP1-E8-05",
+        "title": "The human team's cost, per story and in total",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/130",
+        "issue": 130,
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 1",
+        "start": 78,
+        "end": 86,
+        "startMonth": 4,
+        "endMonth": 5
+      },
+      {
         "id": "MVP1-E5-03",
         "title": "Locked preview",
         "size": "S",
@@ -5323,6 +5799,32 @@ export const roadmap = {
         "endMonth": 5
       },
       {
+        "id": "MVP1-E8-06",
+        "title": "The cost of building it with Claude Code and one product manager",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/131",
+        "issue": 131,
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 1",
+        "start": 81,
+        "end": 86,
+        "startMonth": 5,
+        "endMonth": 5
+      },
+      {
+        "id": "MVP1-E0-44",
+        "title": "Product names and versions in folders, documents and story IDs",
+        "size": "L",
+        "href": "https://github.com/founder2863/01scale.com/issues/133",
+        "issue": 133,
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 2",
+        "start": 81,
+        "end": 88,
+        "startMonth": 5,
+        "endMonth": 5
+      },
+      {
         "id": "MVP1-E7-01",
         "title": "Success page",
         "size": "M",
@@ -5336,13 +5838,26 @@ export const roadmap = {
         "endMonth": 5
       },
       {
+        "id": "MVP1-E8-04",
+        "title": "A dependency-aware timeline",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/129",
+        "issue": 129,
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 1",
+        "start": 83,
+        "end": 89,
+        "startMonth": 5,
+        "endMonth": 5
+      },
+      {
         "id": "MVP1-E7-02",
         "title": "Secure downloads",
         "size": "S",
         "href": "https://github.com/founder2863/01scale.com/issues/50",
         "issue": 50,
         "wave": "7 Delivery",
-        "person": "Engineer 1",
+        "person": "Engineer 3",
         "start": 86,
         "end": 87,
         "startMonth": 5,
@@ -5355,9 +5870,35 @@ export const roadmap = {
         "href": "https://github.com/founder2863/01scale.com/issues/51",
         "issue": 51,
         "wave": "7 Delivery",
-        "person": "Engineer 2",
+        "person": "Engineer 1",
         "start": 86,
         "end": 89,
+        "startMonth": 5,
+        "endMonth": 5
+      },
+      {
+        "id": "MVP1-E8-15",
+        "title": "Total Cost from the latest roadmap: so far and projected",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/254",
+        "issue": 254,
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 1",
+        "start": 86,
+        "end": 91,
+        "startMonth": 5,
+        "endMonth": 5
+      },
+      {
+        "id": "MVP1-E8-07",
+        "title": "The difference",
+        "size": "S",
+        "href": "https://github.com/founder2863/01scale.com/issues/132",
+        "issue": 132,
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 1",
+        "start": 88,
+        "end": 90,
         "startMonth": 5,
         "endMonth": 5
       },
@@ -5368,7 +5909,7 @@ export const roadmap = {
         "href": "https://github.com/founder2863/01scale.com/issues/202",
         "issue": 202,
         "wave": "9 Go-live",
-        "person": "Product manager 1",
+        "person": "Product manager 2",
         "start": 89,
         "end": 90,
         "startMonth": 5,
@@ -5381,7 +5922,7 @@ export const roadmap = {
         "href": "https://github.com/founder2863/01scale.com/issues/203",
         "issue": 203,
         "wave": "9 Go-live",
-        "person": "Product manager 2",
+        "person": "Product manager 1",
         "start": 89,
         "end": 90,
         "startMonth": 5,
@@ -5401,6 +5942,32 @@ export const roadmap = {
         "endMonth": 5
       },
       {
+        "id": "MVP1-E9-05",
+        "title": "Launch security and privacy review",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/199",
+        "issue": 199,
+        "wave": "9 Go-live",
+        "person": "Engineer 2",
+        "start": 91,
+        "end": 94,
+        "startMonth": 5,
+        "endMonth": 5
+      },
+      {
+        "id": "MVP1-E9-07",
+        "title": "Load, spend-cap and failure testing",
+        "size": "M",
+        "href": "https://github.com/founder2863/01scale.com/issues/201",
+        "issue": 201,
+        "wave": "9 Go-live",
+        "person": "Engineer 3",
+        "start": 91,
+        "end": 94,
+        "startMonth": 5,
+        "endMonth": 5
+      },
+      {
         "id": "MVP1-E14-06",
         "title": "Voice of the customer",
         "size": "S",
@@ -5414,39 +5981,13 @@ export const roadmap = {
         "endMonth": 5
       },
       {
-        "id": "MVP1-E9-05",
-        "title": "Launch security and privacy review",
-        "size": "M",
-        "href": "https://github.com/founder2863/01scale.com/issues/199",
-        "issue": 199,
-        "wave": "9 Go-live",
-        "person": "Engineer 1",
-        "start": 91,
-        "end": 94,
-        "startMonth": 5,
-        "endMonth": 5
-      },
-      {
-        "id": "MVP1-E9-07",
-        "title": "Load, spend-cap and failure testing",
-        "size": "M",
-        "href": "https://github.com/founder2863/01scale.com/issues/201",
-        "issue": 201,
-        "wave": "9 Go-live",
-        "person": "Engineer 2",
-        "start": 91,
-        "end": 94,
-        "startMonth": 5,
-        "endMonth": 5
-      },
-      {
         "id": "MVP1-E9-11",
         "title": "Post-production testing",
         "size": "M",
         "href": "https://github.com/founder2863/01scale.com/issues/205",
         "issue": 205,
         "wave": "9 Go-live",
-        "person": "Engineer 3",
+        "person": "Engineer 1",
         "start": 91,
         "end": 94,
         "startMonth": 5,
@@ -5459,7 +6000,7 @@ export const roadmap = {
         "href": "https://github.com/founder2863/01scale.com/issues/95",
         "issue": 95,
         "wave": "Harden and show",
-        "person": "Engineer 1",
+        "person": "Engineer 2",
         "start": 96,
         "end": 99,
         "startMonth": 5,
@@ -5472,7 +6013,7 @@ export const roadmap = {
         "href": "https://github.com/founder2863/01scale.com/issues/206",
         "issue": 206,
         "wave": "10 Live and supported",
-        "person": "Engineer 3",
+        "person": "Engineer 1",
         "start": 101,
         "end": 104,
         "startMonth": 6,
@@ -6307,12 +6848,12 @@ export const roadmap = {
         "end": 23.75
       },
       {
-        "story": "MVP1-E6-04",
+        "story": "MVP1-E8-02",
         "kind": "product",
-        "wave": "Product extras",
+        "wave": "Product management and cost tooling",
         "person": "Product manager 2",
         "start": 23.25,
-        "end": 23.5
+        "end": 24.25
       },
       {
         "story": "MVP1-E0-02",
@@ -6331,12 +6872,36 @@ export const roadmap = {
         "end": 24.7
       },
       {
+        "story": "MVP1-E6-04",
+        "kind": "product",
+        "wave": "Product extras",
+        "person": "Product manager 1",
+        "start": 23.75,
+        "end": 24.0
+      },
+      {
         "story": "MVP1-E1-07",
         "kind": "product",
         "wave": "Product extras",
-        "person": "Product manager 2",
-        "start": 23.5,
-        "end": 23.75
+        "person": "Product manager 1",
+        "start": 24.0,
+        "end": 24.25
+      },
+      {
+        "story": "MVP1-E8-02",
+        "kind": "joint",
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 1",
+        "start": 24.25,
+        "end": 24.5
+      },
+      {
+        "story": "MVP1-E8-02",
+        "kind": "joint",
+        "wave": "Product management and cost tooling",
+        "person": "Engineer 3",
+        "start": 24.25,
+        "end": 24.5
       },
       {
         "story": "MVP1-E0-05",
@@ -6366,7 +6931,7 @@ export const roadmap = {
         "story": "MVP1-E11-03",
         "kind": "product",
         "wave": "8 Business readiness",
-        "person": "Product manager 1",
+        "person": "Product manager 2",
         "start": 25.0,
         "end": 28.25
       },
@@ -6374,7 +6939,7 @@ export const roadmap = {
         "story": "MVP1-E13-01",
         "kind": "product",
         "wave": "8 Business readiness",
-        "person": "Product manager 2",
+        "person": "Product manager 1",
         "start": 25.0,
         "end": 28.25
       },
@@ -6515,6 +7080,14 @@ export const roadmap = {
         "end": 43.25
       },
       {
+        "story": "MVP1-E8-08",
+        "kind": "product",
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 1",
+        "start": 40,
+        "end": 44.5
+      },
+      {
         "story": "MVP1-E2-03",
         "kind": "dev",
         "wave": "3 Upload",
@@ -6531,10 +7104,26 @@ export const roadmap = {
         "end": 44.5
       },
       {
+        "story": "MVP1-E8-08",
+        "kind": "joint",
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 2",
+        "start": 44.5,
+        "end": 46.0
+      },
+      {
+        "story": "MVP1-E8-08",
+        "kind": "joint",
+        "wave": "Product management and cost tooling",
+        "person": "Engineer 3",
+        "start": 44.5,
+        "end": 46.0
+      },
+      {
         "story": "MVP1-E0-06",
         "kind": "dev",
         "wave": "2 Identity and app shell",
-        "person": "Engineer 3",
+        "person": "Engineer 1",
         "start": 45,
         "end": 48.25
       },
@@ -6542,14 +7131,6 @@ export const roadmap = {
         "story": "MVP1-E2-04",
         "kind": "dev",
         "wave": "3 Upload",
-        "person": "Engineer 1",
-        "start": 45,
-        "end": 48.25
-      },
-      {
-        "story": "MVP1-E0-26",
-        "kind": "dev",
-        "wave": "4 Extraction",
         "person": "Engineer 2",
         "start": 45,
         "end": 48.25
@@ -6563,12 +7144,44 @@ export const roadmap = {
         "end": 48.25
       },
       {
+        "story": "MVP1-E0-26",
+        "kind": "dev",
+        "wave": "4 Extraction",
+        "person": "Engineer 3",
+        "start": 46.0,
+        "end": 49.25
+      },
+      {
+        "story": "MVP1-E8-03",
+        "kind": "product",
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 2",
+        "start": 46.0,
+        "end": 48.5
+      },
+      {
         "story": "MVP1-E2-05",
         "kind": "dev",
         "wave": "3 Upload",
         "person": "Engineer 1",
         "start": 48.25,
         "end": 49.5
+      },
+      {
+        "story": "MVP1-E8-03",
+        "kind": "joint",
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 1",
+        "start": 48.5,
+        "end": 49.25
+      },
+      {
+        "story": "MVP1-E8-03",
+        "kind": "joint",
+        "wave": "Product management and cost tooling",
+        "person": "Engineer 2",
+        "start": 48.5,
+        "end": 49.25
       },
       {
         "story": "MVP1-E3-01",
@@ -7011,6 +7624,22 @@ export const roadmap = {
         "end": 78.25
       },
       {
+        "story": "MVP1-E8-14",
+        "kind": "product",
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 1",
+        "start": 75,
+        "end": 77.5
+      },
+      {
+        "story": "MVP1-E8-05",
+        "kind": "product",
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 1",
+        "start": 77.5,
+        "end": 80.0
+      },
+      {
         "story": "MVP1-E5-03",
         "kind": "dev",
         "wave": "6 Outputs and payment",
@@ -7027,11 +7656,27 @@ export const roadmap = {
         "end": 79.5
       },
       {
+        "story": "MVP1-E8-14",
+        "kind": "joint",
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 2",
+        "start": 78.25,
+        "end": 79.0
+      },
+      {
+        "story": "MVP1-E8-14",
+        "kind": "joint",
+        "wave": "Product management and cost tooling",
+        "person": "Engineer 3",
+        "start": 78.25,
+        "end": 79.0
+      },
+      {
         "story": "MVP1-E5-05",
         "kind": "dev",
         "wave": "6 Outputs and payment",
         "person": "Engineer 3",
-        "start": 80,
+        "start": 80.0,
         "end": 81.25
       },
       {
@@ -7039,8 +7684,24 @@ export const roadmap = {
         "kind": "dev",
         "wave": "6 Outputs and payment",
         "person": "Engineer 1",
-        "start": 80,
+        "start": 80.0,
         "end": 81.25
+      },
+      {
+        "story": "MVP1-E8-06",
+        "kind": "product",
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 1",
+        "start": 80.0,
+        "end": 82.5
+      },
+      {
+        "story": "MVP1-E0-44",
+        "kind": "product",
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 2",
+        "start": 80.0,
+        "end": 84.5
       },
       {
         "story": "MVP1-E7-01",
@@ -7067,26 +7728,114 @@ export const roadmap = {
         "end": 84.7
       },
       {
+        "story": "MVP1-E8-04",
+        "kind": "product",
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 1",
+        "start": 82.5,
+        "end": 85.0
+      },
+      {
+        "story": "MVP1-E8-05",
+        "kind": "joint",
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 2",
+        "start": 84.5,
+        "end": 85.25
+      },
+      {
+        "story": "MVP1-E8-05",
+        "kind": "joint",
+        "wave": "Product management and cost tooling",
+        "person": "Engineer 2",
+        "start": 84.5,
+        "end": 85.25
+      },
+      {
         "story": "MVP1-E7-02",
         "kind": "dev",
         "wave": "7 Delivery",
-        "person": "Engineer 1",
-        "start": 85,
+        "person": "Engineer 3",
+        "start": 85.0,
         "end": 86.25
       },
       {
         "story": "MVP1-E7-03",
         "kind": "dev",
         "wave": "7 Delivery",
-        "person": "Engineer 2",
-        "start": 85,
+        "person": "Engineer 1",
+        "start": 85.0,
         "end": 88.25
+      },
+      {
+        "story": "MVP1-E8-15",
+        "kind": "product",
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 1",
+        "start": 85.0,
+        "end": 87.5
+      },
+      {
+        "story": "MVP1-E8-06",
+        "kind": "joint",
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 2",
+        "start": 85.25,
+        "end": 86.0
+      },
+      {
+        "story": "MVP1-E8-06",
+        "kind": "joint",
+        "wave": "Product management and cost tooling",
+        "person": "Engineer 2",
+        "start": 85.25,
+        "end": 86.0
+      },
+      {
+        "story": "MVP1-E0-44",
+        "kind": "joint",
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 2",
+        "start": 86.0,
+        "end": 87.5
+      },
+      {
+        "story": "MVP1-E0-44",
+        "kind": "joint",
+        "wave": "Product management and cost tooling",
+        "person": "Engineer 2",
+        "start": 86.0,
+        "end": 87.5
+      },
+      {
+        "story": "MVP1-E8-04",
+        "kind": "joint",
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 2",
+        "start": 87.5,
+        "end": 88.25
+      },
+      {
+        "story": "MVP1-E8-04",
+        "kind": "joint",
+        "wave": "Product management and cost tooling",
+        "person": "Engineer 3",
+        "start": 87.5,
+        "end": 88.25
+      },
+      {
+        "story": "MVP1-E8-07",
+        "kind": "product",
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 1",
+        "start": 87.5,
+        "end": 88.5
       },
       {
         "story": "MVP1-E9-08",
         "kind": "product",
         "wave": "9 Go-live",
-        "person": "Product manager 1",
+        "person": "Product manager 2",
         "start": 88.25,
         "end": 89.25
       },
@@ -7094,15 +7843,15 @@ export const roadmap = {
         "story": "MVP1-E9-09",
         "kind": "product",
         "wave": "9 Go-live",
-        "person": "Product manager 2",
-        "start": 88.25,
-        "end": 89.5
-      },
-      {
-        "story": "MVP1-E9-08",
-        "kind": "joint",
-        "wave": "9 Go-live",
         "person": "Product manager 1",
+        "start": 88.5,
+        "end": 89.75
+      },
+      {
+        "story": "MVP1-E9-08",
+        "kind": "joint",
+        "wave": "9 Go-live",
+        "person": "Product manager 2",
         "start": 89.25,
         "end": 89.5
       },
@@ -7110,16 +7859,64 @@ export const roadmap = {
         "story": "MVP1-E9-08",
         "kind": "joint",
         "wave": "9 Go-live",
-        "person": "Engineer 3",
+        "person": "Engineer 2",
         "start": 89.25,
         "end": 89.5
+      },
+      {
+        "story": "MVP1-E8-15",
+        "kind": "joint",
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 2",
+        "start": 89.5,
+        "end": 90.25
+      },
+      {
+        "story": "MVP1-E8-15",
+        "kind": "joint",
+        "wave": "Product management and cost tooling",
+        "person": "Engineer 1",
+        "start": 89.5,
+        "end": 90.25
+      },
+      {
+        "story": "MVP1-E8-07",
+        "kind": "joint",
+        "wave": "Product management and cost tooling",
+        "person": "Product manager 1",
+        "start": 89.75,
+        "end": 90.0
+      },
+      {
+        "story": "MVP1-E8-07",
+        "kind": "joint",
+        "wave": "Product management and cost tooling",
+        "person": "Engineer 3",
+        "start": 89.75,
+        "end": 90.0
       },
       {
         "story": "MVP1-E14-05",
         "kind": "product",
         "wave": "8 Business readiness",
         "person": "Product manager 1",
-        "start": 90,
+        "start": 90.0,
+        "end": 93.25
+      },
+      {
+        "story": "MVP1-E9-05",
+        "kind": "dev",
+        "wave": "9 Go-live",
+        "person": "Engineer 2",
+        "start": 90.0,
+        "end": 93.25
+      },
+      {
+        "story": "MVP1-E9-07",
+        "kind": "dev",
+        "wave": "9 Go-live",
+        "person": "Engineer 3",
+        "start": 90.0,
         "end": 93.25
       },
       {
@@ -7127,38 +7924,22 @@ export const roadmap = {
         "kind": "product",
         "wave": "8 Business readiness",
         "person": "Product manager 2",
-        "start": 90,
-        "end": 91.25
-      },
-      {
-        "story": "MVP1-E9-05",
-        "kind": "dev",
-        "wave": "9 Go-live",
-        "person": "Engineer 1",
-        "start": 90,
-        "end": 93.25
-      },
-      {
-        "story": "MVP1-E9-07",
-        "kind": "dev",
-        "wave": "9 Go-live",
-        "person": "Engineer 2",
-        "start": 90,
-        "end": 93.25
+        "start": 90.25,
+        "end": 91.5
       },
       {
         "story": "MVP1-E9-11",
         "kind": "dev",
         "wave": "9 Go-live",
-        "person": "Engineer 3",
-        "start": 90,
-        "end": 93.25
+        "person": "Engineer 1",
+        "start": 90.25,
+        "end": 93.5
       },
       {
         "story": "MVP1-E0-18",
         "kind": "dev",
         "wave": "Harden and show",
-        "person": "Engineer 1",
+        "person": "Engineer 2",
         "start": 95,
         "end": 98.45
       },
@@ -7166,7 +7947,7 @@ export const roadmap = {
         "story": "MVP1-E0-18",
         "kind": "dev",
         "wave": "Harden and show",
-        "person": "Engineer 2",
+        "person": "Engineer 3",
         "start": 95,
         "end": 98.45
       },
@@ -7174,7 +7955,7 @@ export const roadmap = {
         "story": "MVP1-E9-12",
         "kind": "dev",
         "wave": "10 Live and supported",
-        "person": "Engineer 3",
+        "person": "Engineer 1",
         "start": 100,
         "end": 103.25
       },
@@ -7315,15 +8096,7 @@ export const roadmap = {
     ],
     "notPlanned": [
       "MVP1-E0-54",
-      "MVP1-E8-12",
-      "MVP1-E0-44",
-      "MVP1-E8-02",
-      "MVP1-E8-03",
-      "MVP1-E8-04",
-      "MVP1-E8-05",
-      "MVP1-E8-06",
-      "MVP1-E8-07",
-      "MVP1-E8-08"
+      "MVP1-E8-12"
     ]
   },
   "forecast": {
@@ -7344,7 +8117,7 @@ export const roadmap = {
           "month": 2,
           "p50": 50,
           "p50Month": 3,
-          "p90": 60,
+          "p90": 58,
           "p90Month": 3
         },
         {
@@ -7353,7 +8126,7 @@ export const roadmap = {
           "month": 4,
           "p50": 78,
           "p50Month": 4,
-          "p90": 91,
+          "p90": 88,
           "p90Month": 5
         },
         {
@@ -7362,16 +8135,16 @@ export const roadmap = {
           "month": 5,
           "p50": 115,
           "p50Month": 6,
-          "p90": 130,
+          "p90": 128,
           "p90Month": 7
         },
         {
           "name": "Claude extracts the fields, checked by rules and evals",
           "day": 115,
           "month": 6,
-          "p50": 143,
+          "p50": 145,
           "p50Month": 8,
-          "p90": 155,
+          "p90": 158,
           "p90Month": 8
         },
         {
@@ -7385,18 +8158,18 @@ export const roadmap = {
         },
         {
           "name": "Pay with Stripe (test mode)",
-          "day": 148,
+          "day": 149,
           "month": 8,
-          "p50": 188,
+          "p50": 191,
           "p50Month": 10,
-          "p90": 203,
+          "p90": 206,
           "p90Month": 11
         },
         {
           "name": "DocFlow works end to end: results by download and email",
           "day": 165,
           "month": 9,
-          "p50": 205,
+          "p50": 210,
           "p50Month": 11,
           "p90": 225,
           "p90Month": 12
@@ -7405,36 +8178,36 @@ export const roadmap = {
           "name": "The business is ready: sales, marketing, operations, finance, customer success and security",
           "day": 203,
           "month": 11,
-          "p50": 268,
+          "p50": 276,
           "p50Month": 14,
-          "p90": 293,
+          "p90": 298,
           "p90Month": 15
         },
         {
           "name": "DocFlow is live in production",
           "day": 203,
           "month": 11,
-          "p50": 268,
+          "p50": 276,
           "p50Month": 14,
-          "p90": 293,
+          "p90": 298,
           "p90Month": 15
         },
         {
           "name": "Hypercare done and first post-launch review",
           "day": 223,
           "month": 12,
-          "p50": 266,
+          "p50": 273,
           "p50Month": 14,
-          "p90": 286,
+          "p90": 289,
           "p90Month": 15
         }
       ],
       "end": {
-        "day": 223,
-        "p50": 273,
-        "p90": 293,
-        "month": 12,
-        "p50Month": 14,
+        "day": 245,
+        "p50": 283,
+        "p90": 299,
+        "month": 13,
+        "p50Month": 15,
         "p90Month": 15
       },
       "runs": 300
@@ -7456,8 +8229,8 @@ export const roadmap = {
           "month": 2,
           "p50": 34,
           "p50Month": 2,
-          "p90": 41,
-          "p90Month": 3
+          "p90": 39,
+          "p90Month": 2
         },
         {
           "name": "People can sign up and sign in",
@@ -7474,7 +8247,7 @@ export const roadmap = {
           "month": 3,
           "p50": 54,
           "p50Month": 3,
-          "p90": 61,
+          "p90": 64,
           "p90Month": 4
         },
         {
@@ -7490,8 +8263,8 @@ export const roadmap = {
           "name": "A person reviews low-confidence fields",
           "day": 75,
           "month": 4,
-          "p50": 80,
-          "p50Month": 4,
+          "p50": 82,
+          "p50Month": 5,
           "p90": 92,
           "p90Month": 5
         },
@@ -7501,7 +8274,7 @@ export const roadmap = {
           "month": 3,
           "p50": 67,
           "p50Month": 4,
-          "p90": 77,
+          "p90": 80,
           "p90Month": 4
         },
         {
@@ -7510,41 +8283,41 @@ export const roadmap = {
           "month": 5,
           "p50": 104,
           "p50Month": 6,
-          "p90": 114,
+          "p90": 116,
           "p90Month": 6
         },
         {
           "name": "The business is ready: sales, marketing, operations, finance, customer success and security",
           "day": 94,
           "month": 5,
-          "p50": 110,
+          "p50": 112,
           "p50Month": 6,
-          "p90": 120,
-          "p90Month": 6
+          "p90": 124,
+          "p90Month": 7
         },
         {
           "name": "DocFlow is live in production",
           "day": 94,
           "month": 5,
-          "p50": 111,
+          "p50": 114,
           "p50Month": 6,
-          "p90": 124,
+          "p90": 126,
           "p90Month": 7
         },
         {
           "name": "Hypercare done and first post-launch review",
           "day": 107,
           "month": 6,
-          "p50": 128,
+          "p50": 127,
           "p50Month": 7,
-          "p90": 139,
+          "p90": 140,
           "p90Month": 7
         }
       ],
       "end": {
         "day": 107,
-        "p50": 128,
-        "p90": 139,
+        "p50": 129,
+        "p90": 140,
         "month": 6,
         "p50Month": 7,
         "p90Month": 7
@@ -7558,33 +8331,33 @@ export const roadmap = {
       "engineer": 1000
     },
     "tokens": {
-      "ratePerPersonDay": 0.903,
-      "measuredStories": 31,
-      "measuredDays": 189,
-      "soFar": 432.2,
-      "projectedProduct": 322.66,
-      "projectedEngineering": 1343.66,
-      "projected": 1666.32
+      "ratePerPersonDay": 0.883,
+      "measuredStories": 33,
+      "measuredDays": 205,
+      "soFar": 456.33,
+      "projectedProduct": 408.27,
+      "projectedEngineering": 1314.2,
+      "projected": 1722.47
     },
     "Without": {
-      "productDays": 326.25,
-      "devDays": 418.0,
-      "work": 744250,
-      "team": 1115000,
-      "teamDays": 223,
+      "productDays": 410.25,
+      "devDays": 439.0,
+      "work": 849250,
+      "team": 1225000,
+      "teamDays": 245,
       "productManagers": 2,
       "engineers": 3,
-      "total": 1115000
+      "total": 1225000
     },
     "With": {
-      "productDays": 134.5,
-      "devDays": 169.5,
-      "work": 304000,
+      "productDays": 168.5,
+      "devDays": 177.5,
+      "work": 346000,
       "team": 535000,
       "teamDays": 107,
       "productManagers": 2,
       "engineers": 3,
-      "total": 536666
+      "total": 536722
     }
   },
   "sprint": {
@@ -7644,10 +8417,10 @@ export const roadmap = {
     "with_claude_code_why": "Product and development work are assumed to speed up the same: 2.5 times (0.4). People still review every pull request and document, test the work and make the decisions, so the work does not disappear."
   },
   "estimateTotals": {
-    "productWithout": 334.25,
-    "productWith": 137.5,
-    "devWithout": 502.0,
-    "devWith": 203.5
+    "productWithout": 411.75,
+    "productWith": 169.0,
+    "devWithout": 455.0,
+    "devWith": 184.0
   },
   "groups": [
     {
@@ -9502,11 +10275,180 @@ export const roadmap = {
               }
             }
           ]
+        },
+        {
+          "name": "Product management and cost tooling",
+          "value": "Medium",
+          "reason": "Nikhil on PR #253 (27 Nov 2026): this is foundation product management and roadmap work with scripts, so it is planned and priced in the total cost. A product manager owns it, with joint time with an engineer for the scripts.",
+          "days": 84,
+          "remainingDays": 84,
+          "stories": [
+            {
+              "id": "MVP1-E8-02",
+              "title": "The cost model's assumptions",
+              "size": "S",
+              "days": 3,
+              "done": false,
+              "issue": 127,
+              "href": "https://github.com/founder2863/01scale.com/issues/127",
+              "estimates": {
+                "productWithout": 3.0,
+                "productWith": 1.25,
+                "devWithout": 0.75,
+                "devWith": 0.25,
+                "joint": true
+              }
+            },
+            {
+              "id": "MVP1-E8-03",
+              "title": "Effort for every story",
+              "size": "M",
+              "days": 8,
+              "done": false,
+              "issue": 128,
+              "href": "https://github.com/founder2863/01scale.com/issues/128",
+              "estimates": {
+                "productWithout": 8.0,
+                "productWith": 3.25,
+                "devWithout": 2.0,
+                "devWith": 0.75,
+                "joint": true
+              }
+            },
+            {
+              "id": "MVP1-E8-04",
+              "title": "A dependency-aware timeline",
+              "size": "M",
+              "days": 8,
+              "done": false,
+              "issue": 129,
+              "href": "https://github.com/founder2863/01scale.com/issues/129",
+              "estimates": {
+                "productWithout": 8.0,
+                "productWith": 3.25,
+                "devWithout": 2.0,
+                "devWith": 0.75,
+                "joint": true
+              }
+            },
+            {
+              "id": "MVP1-E8-05",
+              "title": "The human team's cost, per story and in total",
+              "size": "M",
+              "days": 8,
+              "done": false,
+              "issue": 130,
+              "href": "https://github.com/founder2863/01scale.com/issues/130",
+              "estimates": {
+                "productWithout": 8.0,
+                "productWith": 3.25,
+                "devWithout": 2.0,
+                "devWith": 0.75,
+                "joint": true
+              }
+            },
+            {
+              "id": "MVP1-E8-06",
+              "title": "The cost of building it with Claude Code and one product manager",
+              "size": "M",
+              "days": 8,
+              "done": false,
+              "issue": 131,
+              "href": "https://github.com/founder2863/01scale.com/issues/131",
+              "estimates": {
+                "productWithout": 8.0,
+                "productWith": 3.25,
+                "devWithout": 2.0,
+                "devWith": 0.75,
+                "joint": true
+              }
+            },
+            {
+              "id": "MVP1-E8-07",
+              "title": "The difference",
+              "size": "S",
+              "days": 3,
+              "done": false,
+              "issue": 132,
+              "href": "https://github.com/founder2863/01scale.com/issues/132",
+              "estimates": {
+                "productWithout": 3.0,
+                "productWith": 1.25,
+                "devWithout": 0.75,
+                "devWith": 0.25,
+                "joint": true
+              }
+            },
+            {
+              "id": "MVP1-E8-08",
+              "title": "Token estimate for every V1 story, and a story for every document",
+              "size": "L",
+              "days": 15,
+              "done": false,
+              "issue": 135,
+              "href": "https://github.com/founder2863/01scale.com/issues/135",
+              "estimates": {
+                "productWithout": 15.0,
+                "productWith": 6.0,
+                "devWithout": 3.75,
+                "devWith": 1.5,
+                "joint": true
+              }
+            },
+            {
+              "id": "MVP1-E8-14",
+              "title": "Roadmap v6: product work two sprints ahead, environments early, and tokens in the cost",
+              "size": "M",
+              "days": 8,
+              "done": false,
+              "issue": 252,
+              "href": "https://github.com/founder2863/01scale.com/issues/252",
+              "estimates": {
+                "productWithout": 8.0,
+                "productWith": 3.25,
+                "devWithout": 2.0,
+                "devWith": 0.75,
+                "joint": true
+              }
+            },
+            {
+              "id": "MVP1-E8-15",
+              "title": "Total Cost from the latest roadmap: so far and projected",
+              "size": "M",
+              "days": 8,
+              "done": false,
+              "issue": 254,
+              "href": "https://github.com/founder2863/01scale.com/issues/254",
+              "estimates": {
+                "productWithout": 8.0,
+                "productWith": 3.25,
+                "devWithout": 2.0,
+                "devWith": 0.75,
+                "joint": true
+              }
+            },
+            {
+              "id": "MVP1-E0-44",
+              "title": "Product names and versions in folders, documents and story IDs",
+              "size": "L",
+              "days": 15,
+              "done": false,
+              "issue": 133,
+              "href": "https://github.com/founder2863/01scale.com/issues/133",
+              "estimates": {
+                "productWithout": 15.0,
+                "productWith": 6.0,
+                "devWithout": 3.75,
+                "devWith": 1.5,
+                "joint": true
+              }
+            }
+          ]
         }
       ],
-      "days": 50,
-      "remainingDays": 34,
-      "storyCount": 6
+      "days": 134,
+      "remainingDays": 118,
+      "storyCount": 16
     },
     {
       "kind": "later",
@@ -9601,154 +10543,17 @@ export const roadmap = {
               }
             }
           ]
-        },
-        {
-          "name": "Waiting for Nikhil's go",
-          "value": "Low",
-          "reason": "Built when Nikhil says go, so not planned. E8-04 (a dependency-aware timeline for a human team) can take its plan from this file.",
-          "days": 68,
-          "remainingDays": 68,
-          "stories": [
-            {
-              "id": "MVP1-E0-44",
-              "title": "Product names and versions in folders, documents and story IDs",
-              "size": "L",
-              "days": 15,
-              "done": false,
-              "issue": 133,
-              "href": "https://github.com/founder2863/01scale.com/issues/133",
-              "estimates": {
-                "productWithout": 1.5,
-                "productWith": 0.5,
-                "devWithout": 15.0,
-                "devWith": 6.0,
-                "joint": false
-              }
-            },
-            {
-              "id": "MVP1-E8-02",
-              "title": "The cost model's assumptions",
-              "size": "S",
-              "days": 3,
-              "done": false,
-              "issue": 127,
-              "href": "https://github.com/founder2863/01scale.com/issues/127",
-              "estimates": {
-                "productWithout": 0.25,
-                "productWith": 0.25,
-                "devWithout": 3.0,
-                "devWith": 1.25,
-                "joint": false
-              }
-            },
-            {
-              "id": "MVP1-E8-03",
-              "title": "Effort for every story",
-              "size": "M",
-              "days": 8,
-              "done": false,
-              "issue": 128,
-              "href": "https://github.com/founder2863/01scale.com/issues/128",
-              "estimates": {
-                "productWithout": 0.75,
-                "productWith": 0.25,
-                "devWithout": 8.0,
-                "devWith": 3.25,
-                "joint": false
-              }
-            },
-            {
-              "id": "MVP1-E8-04",
-              "title": "A dependency-aware timeline",
-              "size": "M",
-              "days": 8,
-              "done": false,
-              "issue": 129,
-              "href": "https://github.com/founder2863/01scale.com/issues/129",
-              "estimates": {
-                "productWithout": 0.75,
-                "productWith": 0.25,
-                "devWithout": 8.0,
-                "devWith": 3.25,
-                "joint": false
-              }
-            },
-            {
-              "id": "MVP1-E8-05",
-              "title": "The human team's cost, per story and in total",
-              "size": "M",
-              "days": 8,
-              "done": false,
-              "issue": 130,
-              "href": "https://github.com/founder2863/01scale.com/issues/130",
-              "estimates": {
-                "productWithout": 0.75,
-                "productWith": 0.25,
-                "devWithout": 8.0,
-                "devWith": 3.25,
-                "joint": false
-              }
-            },
-            {
-              "id": "MVP1-E8-06",
-              "title": "The cost of building it with Claude Code and one product manager",
-              "size": "M",
-              "days": 8,
-              "done": false,
-              "issue": 131,
-              "href": "https://github.com/founder2863/01scale.com/issues/131",
-              "estimates": {
-                "productWithout": 0.75,
-                "productWith": 0.25,
-                "devWithout": 8.0,
-                "devWith": 3.25,
-                "joint": false
-              }
-            },
-            {
-              "id": "MVP1-E8-07",
-              "title": "The difference",
-              "size": "S",
-              "days": 3,
-              "done": false,
-              "issue": 132,
-              "href": "https://github.com/founder2863/01scale.com/issues/132",
-              "estimates": {
-                "productWithout": 0.25,
-                "productWith": 0.25,
-                "devWithout": 3.0,
-                "devWith": 1.25,
-                "joint": false
-              }
-            },
-            {
-              "id": "MVP1-E8-08",
-              "title": "Token estimate for every V1 story, and a story for every document",
-              "size": "L",
-              "days": 15,
-              "done": false,
-              "issue": 135,
-              "href": "https://github.com/founder2863/01scale.com/issues/135",
-              "estimates": {
-                "productWithout": 1.5,
-                "productWith": 0.5,
-                "devWithout": 15.0,
-                "devWith": 6.0,
-                "joint": false
-              }
-            }
-          ]
         }
       ],
-      "days": 100,
-      "remainingDays": 100,
-      "storyCount": 13
+      "days": 32,
+      "remainingDays": 32,
+      "storyCount": 5
     }
   ],
   "totals": {
-    "stories": 120,
-    "days": 767,
+    "stories": 122,
+    "days": 783,
     "doneStories": 2,
-    "remainingDays": 751
+    "remainingDays": 767
   }
 } as const;

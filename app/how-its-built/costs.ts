@@ -678,22 +678,22 @@ export const costs = {
     {
       "key": "MVP1-E8-15",
       "name": "MVP1-E8-15 · Total Cost from the latest roadmap: so far and projected",
-      "requests": 2,
+      "requests": 3,
       "buildTokens": 13160360,
-      "reworkTokens": 11361886,
+      "reworkTokens": 20573212,
       "buildCost": 3.41,
-      "reworkCost": 2.73,
-      "totalCost": 6.14,
-      "yield": 54,
+      "reworkCost": 5.05,
+      "totalCost": 8.46,
+      "yield": 39,
       "pending": false
     }
   ],
   "storyTotals": {
-    "requests": 175,
-    "tokens": 793649145,
+    "requests": 176,
+    "tokens": 802860471,
     "buildCost": 212.15,
-    "reworkCost": 143.98,
-    "cost": 356.13,
+    "reworkCost": 146.31,
+    "cost": 358.45,
     "yield": 62,
     "pending": true
   },
@@ -732,21 +732,21 @@ export const costs = {
       "name": "Tool overhead (background calls)",
       "requests": 0,
       "tokens": 0,
-      "cost": 0.95
+      "cost": 1.95
     }
   ],
   "scaffoldingTotals": {
     "requests": 113,
     "tokens": 224788023,
-    "cost": 101.15
+    "cost": 102.15
   },
   "totals": {
-    "requests": 288,
-    "tokens": 1018437168,
-    "cost": 457.28,
+    "requests": 289,
+    "tokens": 1027648494,
+    "cost": 460.6,
     "buildCost": 212.15,
-    "reworkCost": 143.98,
-    "scaffoldingCost": 101.15,
+    "reworkCost": 146.31,
+    "scaffoldingCost": 102.15,
     "storyYield": 62,
     "overallYield": 48,
     "pendingRequests": 21,
@@ -755,9 +755,9 @@ export const costs = {
   },
   "byKind": {
     "input": 0.18,
-    "output": 32.75,
-    "cache_read": 87.73,
-    "cache_write": 83.98
+    "output": 33.08,
+    "cache_read": 90.49,
+    "cache_write": 84.22
   },
   "mistakes": {
     "designRedo": {
@@ -780,7 +780,7 @@ export const costs = {
       "share": 23,
       "median": 8.2,
       "typical": 0.7,
-      "extra": 95.61
+      "extra": 95.6
     },
     "mergedTooSoon": {
       "requests": 1,

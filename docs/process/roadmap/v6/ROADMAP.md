@@ -13,6 +13,8 @@ Nikhil's observations on v5 and the decision for each (26 and 27 Nov 2026):
 - **Product manager stories run in sprints** and are pulled at sprint planning like engineering work. **They can roll over without a limit** (Nikhil): in the forecast, a product manager story still open at a sprint's end rolls over with a 20% chance, half a sprint each time, again and again; engineering keeps at most two rollovers.
 - **The cost adds tokens** (Nikhil): the cost of a plan is the product managers and engineers for its length, plus, with Claude Code, the projected token cost of the remaining stories: each story's size times the measured cost per person-day so far, three times that for engineering stories, plus 25% for questions and process.
 
+- **Product management and cost tooling is in the plan** (Nikhil on PR #253): the cost model, effort, timeline, human and Claude Code cost pages (E8-02 to E8-08), this roadmap and Total Cost (E8-14, E8-15) and product names and versions (E0-44) are foundation product management and roadmap work with scripts. A product manager owns them, with joint time with an engineer, and they are priced in the total cost.
+
 ## Gaps found
 
 - **Not reviewed yet.** v6 is the current version; reviewing it will list the gaps that v7 addresses.
@@ -33,7 +35,7 @@ Nikhil's observations on v5 and the decision for each (26 and 27 Nov 2026):
 
 | Role | People | Does |
 |---|---|---|
-| Product manager | 2 | The business readiness epics: E10-01 to E10-06, E11-01 to E11-04, E12-01 to E12-07, E13-01 to E13-06, E14-01 to E14-06, E15-01 to E15-04, E16-01; the product sections of the documentation: E0-15 PRD Reference, E0-14 Market Outlook, E0-27 Metrics, E0-28 Monetization, E0-29 GTM, E0-30 Support; and the product stories of going live: E9-01 Go-live strategy, E9-06 Privacy policy and terms, E9-08 User acceptance testing, E9-09 Release documentation, E9-10 Support documentation, E9-13 Handling support issues, E9-14 Post-launch review |
+| Product manager | 2 | The business readiness epics: E10-01 to E10-06, E11-01 to E11-04, E12-01 to E12-07, E13-01 to E13-06, E14-01 to E14-06, E15-01 to E15-04, E16-01; product management and cost tooling: E8-02 to E8-08, E8-14, E8-15, E0-44; the product sections of the documentation: E0-15 PRD Reference, E0-14 Market Outlook, E0-27 Metrics, E0-28 Monetization, E0-29 GTM, E0-30 Support; and the product stories of going live: E9-01 Go-live strategy, E9-06 Privacy policy and terms, E9-08 User acceptance testing, E9-09 Release documentation, E9-10 Support documentation, E9-13 Handling support issues, E9-14 Post-launch review |
 | Engineer | 3 | Everything else, including the architecture and interface documentation |
 
 ## Main path: DocFlow live and supported, with the business ready (waves 0 to 10, 617 person-days)
@@ -61,13 +63,13 @@ Inside a wave the order matters where an arrow is shown.
 | Harden and show | E0-25 Monitoring (M); close **E0-18 Try it (L)** | 23 | Medium | Monitoring once the gateway is up; it feeds live health into the Metrics section. E0-18 closes when every module has Try it. |
 | Spikes | E3-10 Spike: LLM extraction options, AWS, Claude and Microsoft (M); E6-05 Spike: Stripe Billing APIs (S) | 11 | Medium | Nikhil (PR #189): engineers who would otherwise wait for the gateway in month 2 take spikes on the external services. Nothing waits on them, so the plan gives them to whoever is free; the LLM spike reports before the Claude extraction call (E3-02) is built. |
 | Roadmap on the site | E0-54 Roadmap tab on How It's Built (M); E8-12 Four estimates per story, and the plan without and with Claude Code (M) | 16 | Medium | Built in PR #189 and the PR after it, so not planned. |
+| Product management and cost tooling | E8-02 The cost model's assumptions (S), E8-03 Effort for every story (M), E8-04 A dependency-aware timeline (M), E8-05 The human team's cost (M), E8-06 The cost with Claude Code (M), E8-07 The difference (S), E8-08 Token estimate for every story (L), E8-14 Roadmap v6 (M), E8-15 Total Cost from the latest roadmap (M); E0-44 Product names and versions (L) | 84 | Medium | Nikhil on PR #253 (27 Nov 2026): this is foundation product management and roadmap work with scripts, so it is planned and priced in the total cost. A product manager owns it, with joint time with an engineer for the scripts. |
 
-## Later (100 person-days)
+## Later (32 person-days)
 
 | Group | Stories | Days | Value | Why later |
 |---|---|---|---|---|
 | Product extras | E3-09 Free daily quota (S), E6-04 Refunds (S), E1-07 Branded sign-in (S), E1-08 Sign in with Google (M), E3-06 Ask questions about my documents, RAG (L) | 32 | Medium | Not on the path to the journey; planned when an engineer has nothing more urgent. E3-09 builds the free tier that Monetization (E0-28) designs. RAG needs extraction first. |
-| Waiting for Nikhil's go | E0-44 Product names and versions (L); E8-02 to E8-08, the human versus Claude Code cost pages (53 days) | 68 | Low | Built when Nikhil says go, so not planned. E8-04 (a dependency-aware timeline for a human team) can take its plan from this file. |
 
 ## Early platform work
 
@@ -82,6 +84,7 @@ Stories outside the documentation wave that also have a quarter of their size as
 - E9-01 Go-live strategy, E9-08 User acceptance testing
 - E15-01 Security testing strategy, E15-02 Vulnerability management, E15-03 Compliance review, E15-04 Responsible AI policy
 - E12-07 Product analytics (v5)
+- E8-02 to E8-08, E8-14, E8-15 and E0-44: product management and cost tooling with scripts (v6, Nikhil on PR #253)
 
 ## Story dependencies
 
@@ -194,6 +197,16 @@ Stories outside the documentation wave that also have a quarter of their size as
 | E9-12 | E9-01, E9-04, E9-05, E9-06, E9-07, E9-08, E9-09, E9-10, E9-11 |
 | E9-13 | E9-10, E9-12 |
 | E9-14 | E9-12, E9-13 |
+| E8-02 | — |
+| E8-03 | E8-02 |
+| E8-04 | E8-03 |
+| E8-05 | E8-02, E8-03 |
+| E8-06 | E8-08 |
+| E8-07 | E8-05, E8-06 |
+| E8-08 | — |
+| E8-14 | — |
+| E8-15 | E8-14 |
+| E0-44 | — |
 | E3-09 | E3-08 |
 | E6-04 | E6-02 |
 | E1-07 | E1-03 |

@@ -14,7 +14,7 @@ export const totalCost = {
   },
   "productShare": 0.1,
   "soFar": {
-    "tokensSpent": 456.33,
+    "tokensSpent": 458.65,
     "tokensPending": 21,
     "stories": 40,
     "productDays": 18.5,
@@ -466,28 +466,28 @@ export const totalCost = {
   },
   "projected": {
     "without": {
-      "team": 1115000,
-      "days": 223,
-      "work": 744250,
-      "productDays": 326.25,
-      "devDays": 418.0,
+      "team": 1225000,
+      "days": 245,
+      "work": 849250,
+      "productDays": 410.25,
+      "devDays": 439.0,
       "productManagers": 2,
       "engineers": 3,
-      "total": 1115000
+      "total": 1225000
     },
     "with": {
       "team": 535000,
       "days": 107,
-      "work": 304000,
-      "productDays": 134.5,
-      "devDays": 169.5,
-      "tokens": 1666.32,
-      "tokensProduct": 322.66,
-      "tokensEngineering": 1343.66,
-      "total": 536666
+      "work": 346000,
+      "productDays": 168.5,
+      "devDays": 177.5,
+      "tokens": 1722.47,
+      "tokensProduct": 408.27,
+      "tokensEngineering": 1314.2,
+      "total": 536722
     },
-    "saved": 578334,
-    "tokenRate": 0.903,
+    "saved": 688278,
+    "tokenRate": 0.883,
     "tokensWhy": "Projected token cost when working with Claude Code: each remaining story's size in person-days times the measured cost per person-day of the stories built so far (from the token ledger), times 3 for engineering stories (code, tests and fixes cost more than the design and site work measured so far) and 1 for product stories, plus 25% for questions and process, the measured share of scaffolding (Nikhil, 27 Nov 2026: x3 for engineering).",
     "milestones": [
       {
@@ -496,18 +496,18 @@ export const totalCost = {
           "name": "DocFlow is live in production",
           "day": 203,
           "month": 11,
-          "p50": 268,
+          "p50": 276,
           "p50Month": 14,
-          "p90": 293,
+          "p90": 298,
           "p90Month": 15
         },
         "with": {
           "name": "DocFlow is live in production",
           "day": 94,
           "month": 5,
-          "p50": 111,
+          "p50": 114,
           "p50Month": 6,
-          "p90": 124,
+          "p90": 126,
           "p90Month": 7
         }
       }
@@ -516,74 +516,82 @@ export const totalCost = {
       {
         "epic": "MVP1-E0",
         "name": "Foundation",
-        "stories": 22,
-        "without": 179000,
-        "with": 72437,
-        "tokens": 439.09
+        "stories": 23,
+        "without": 197750,
+        "with": 79943,
+        "tokens": 445.9
       },
       {
         "epic": "MVP1-E1",
         "name": "Accounts with AWS Cognito",
         "stories": 8,
         "without": 48000,
-        "with": 20148,
-        "tokens": 149.0
+        "with": 20144,
+        "tokens": 145.68
       },
       {
         "epic": "MVP1-E2",
         "name": "Document upload to S3",
         "stories": 5,
         "without": 27250,
-        "with": 11584,
-        "tokens": 84.66
+        "with": 11582,
+        "tokens": 82.77
       },
       {
         "epic": "MVP1-E3",
         "name": "Extraction with Claude",
         "stories": 9,
         "without": 77750,
-        "with": 31740,
-        "tokens": 240.42
+        "with": 31734,
+        "tokens": 235.09
       },
       {
         "epic": "MVP1-E4",
         "name": "Human review of low-confidence fields",
         "stories": 5,
         "without": 27250,
-        "with": 11584,
-        "tokens": 84.66
+        "with": 11582,
+        "tokens": 82.77
       },
       {
         "epic": "MVP1-E5",
         "name": "JSON review, metadata and CSV",
         "stories": 5,
         "without": 21750,
-        "with": 9567,
-        "tokens": 67.73
+        "with": 9566,
+        "tokens": 66.21
       },
       {
         "epic": "MVP1-E6",
         "name": "Payment",
         "stories": 5,
         "without": 27250,
-        "with": 11584,
-        "tokens": 84.66
+        "with": 11582,
+        "tokens": 82.77
       },
       {
         "epic": "MVP1-E7",
         "name": "Success, download and email",
         "stories": 3,
         "without": 20750,
-        "with": 8564,
-        "tokens": 64.34
+        "with": 8562,
+        "tokens": 62.91
+      },
+      {
+        "epic": "MVP1-E8",
+        "name": "Total projected cost: a human team versus Claude Code",
+        "stories": 9,
+        "without": 86250,
+        "with": 34577,
+        "tokens": 76.16
       },
       {
         "epic": "MVP1-E9",
         "name": "Go-live and operations",
         "stories": 14,
         "without": 84500,
-        "with": 34449,
-        "tokens": 202.07
+        "with": 34443,
+        "tokens": 197.56
       },
       {
         "epic": "MVP1-E10",
@@ -591,7 +599,7 @@ export const totalCost = {
         "stories": 6,
         "without": 43000,
         "with": 17548,
-        "tokens": 48.54
+        "tokens": 47.46
       },
       {
         "epic": "MVP1-E11",
@@ -599,7 +607,7 @@ export const totalCost = {
         "stories": 4,
         "without": 32000,
         "with": 13036,
-        "tokens": 36.12
+        "tokens": 35.32
       },
       {
         "epic": "MVP1-E12",
@@ -607,7 +615,7 @@ export const totalCost = {
         "stories": 7,
         "without": 38000,
         "with": 15539,
-        "tokens": 40.65
+        "tokens": 39.73
       },
       {
         "epic": "MVP1-E13",
@@ -615,7 +623,7 @@ export const totalCost = {
         "stories": 6,
         "without": 38000,
         "with": 15542,
-        "tokens": 42.9
+        "tokens": 41.94
       },
       {
         "epic": "MVP1-E14",
@@ -623,7 +631,7 @@ export const totalCost = {
         "stories": 6,
         "without": 38000,
         "with": 15542,
-        "tokens": 42.9
+        "tokens": 41.94
       },
       {
         "epic": "MVP1-E15",
@@ -631,7 +639,7 @@ export const totalCost = {
         "stories": 4,
         "without": 33750,
         "with": 13530,
-        "tokens": 30.48
+        "tokens": 29.8
       },
       {
         "epic": "MVP1-E16",
@@ -639,7 +647,7 @@ export const totalCost = {
         "stories": 1,
         "without": 8000,
         "with": 3259,
-        "tokens": 9.03
+        "tokens": 8.83
       }
     ],
     "byStory": [
@@ -652,7 +660,7 @@ export const totalCost = {
         "owner": "engineering",
         "without": 3250,
         "with": 1510,
-        "tokens": 10.16,
+        "tokens": 9.93,
         "daysWithout": 3.25,
         "daysWith": 1.5
       },
@@ -665,7 +673,7 @@ export const totalCost = {
         "owner": "engineering",
         "without": 3250,
         "with": 1510,
-        "tokens": 10.16,
+        "tokens": 9.93,
         "daysWithout": 3.25,
         "daysWith": 1.5
       },
@@ -678,7 +686,7 @@ export const totalCost = {
         "owner": "engineering",
         "without": 3250,
         "with": 1510,
-        "tokens": 10.16,
+        "tokens": 9.93,
         "daysWithout": 3.25,
         "daysWith": 1.5
       },
@@ -690,8 +698,8 @@ export const totalCost = {
         "epic": "MVP1-E0",
         "owner": "engineering",
         "without": 8750,
-        "with": 3527,
-        "tokens": 27.09,
+        "with": 3526,
+        "tokens": 26.49,
         "daysWithout": 8.75,
         "daysWith": 3.5
       },
@@ -703,8 +711,8 @@ export const totalCost = {
         "epic": "MVP1-E0",
         "owner": "engineering",
         "without": 8750,
-        "with": 3527,
-        "tokens": 27.09,
+        "with": 3526,
+        "tokens": 26.49,
         "daysWithout": 8.75,
         "daysWith": 3.5
       },
@@ -716,8 +724,8 @@ export const totalCost = {
         "epic": "MVP1-E0",
         "owner": "engineering",
         "without": 8750,
-        "with": 3527,
-        "tokens": 27.09,
+        "with": 3526,
+        "tokens": 26.49,
         "daysWithout": 8.75,
         "daysWith": 3.5
       },
@@ -729,8 +737,8 @@ export const totalCost = {
         "epic": "MVP1-E0",
         "owner": "engineering",
         "without": 16500,
-        "with": 6551,
-        "tokens": 50.79,
+        "with": 6550,
+        "tokens": 49.67,
         "daysWithout": 16.5,
         "daysWith": 6.5
       },
@@ -742,8 +750,8 @@ export const totalCost = {
         "epic": "MVP1-E0",
         "owner": "engineering",
         "without": 8750,
-        "with": 3527,
-        "tokens": 27.09,
+        "with": 3526,
+        "tokens": 26.49,
         "daysWithout": 8.75,
         "daysWith": 3.5
       },
@@ -755,8 +763,8 @@ export const totalCost = {
         "epic": "MVP1-E0",
         "owner": "engineering",
         "without": 8750,
-        "with": 3527,
-        "tokens": 27.09,
+        "with": 3526,
+        "tokens": 26.49,
         "daysWithout": 8.75,
         "daysWith": 3.5
       },
@@ -769,7 +777,7 @@ export const totalCost = {
         "owner": "product",
         "without": 10000,
         "with": 4009,
-        "tokens": 9.03,
+        "tokens": 8.83,
         "daysWithout": 10.0,
         "daysWith": 4.0
       },
@@ -782,7 +790,7 @@ export const totalCost = {
         "owner": "product",
         "without": 3750,
         "with": 1503,
-        "tokens": 3.39,
+        "tokens": 3.31,
         "daysWithout": 3.75,
         "daysWith": 1.5
       },
@@ -794,8 +802,8 @@ export const totalCost = {
         "epic": "MVP1-E0",
         "owner": "engineering",
         "without": 10000,
-        "with": 4027,
-        "tokens": 27.09,
+        "with": 4026,
+        "tokens": 26.49,
         "daysWithout": 10.0,
         "daysWith": 4.0
       },
@@ -807,8 +815,8 @@ export const totalCost = {
         "epic": "MVP1-E0",
         "owner": "engineering",
         "without": 16500,
-        "with": 6551,
-        "tokens": 50.79,
+        "with": 6550,
+        "tokens": 49.67,
         "daysWithout": 16.5,
         "daysWith": 6.5
       },
@@ -820,8 +828,8 @@ export const totalCost = {
         "epic": "MVP1-E0",
         "owner": "engineering",
         "without": 10000,
-        "with": 4027,
-        "tokens": 27.09,
+        "with": 4026,
+        "tokens": 26.49,
         "daysWithout": 10.0,
         "daysWith": 4.0
       },
@@ -834,7 +842,7 @@ export const totalCost = {
         "owner": "engineering",
         "without": 3750,
         "with": 1510,
-        "tokens": 10.16,
+        "tokens": 9.93,
         "daysWithout": 3.75,
         "daysWith": 1.5
       },
@@ -846,8 +854,8 @@ export const totalCost = {
         "epic": "MVP1-E0",
         "owner": "engineering",
         "without": 8750,
-        "with": 3527,
-        "tokens": 27.09,
+        "with": 3526,
+        "tokens": 26.49,
         "daysWithout": 8.75,
         "daysWith": 3.5
       },
@@ -859,8 +867,8 @@ export const totalCost = {
         "epic": "MVP1-E0",
         "owner": "engineering",
         "without": 8750,
-        "with": 3527,
-        "tokens": 27.09,
+        "with": 3526,
+        "tokens": 26.49,
         "daysWithout": 8.75,
         "daysWith": 3.5
       },
@@ -873,7 +881,7 @@ export const totalCost = {
         "owner": "product",
         "without": 10000,
         "with": 4009,
-        "tokens": 9.03,
+        "tokens": 8.83,
         "daysWithout": 10.0,
         "daysWith": 4.0
       },
@@ -886,7 +894,7 @@ export const totalCost = {
         "owner": "product",
         "without": 10000,
         "with": 4009,
-        "tokens": 9.03,
+        "tokens": 8.83,
         "daysWithout": 10.0,
         "daysWith": 4.0
       },
@@ -899,7 +907,7 @@ export const totalCost = {
         "owner": "product",
         "without": 10000,
         "with": 4009,
-        "tokens": 9.03,
+        "tokens": 8.83,
         "daysWithout": 10.0,
         "daysWith": 4.0
       },
@@ -912,9 +920,22 @@ export const totalCost = {
         "owner": "product",
         "without": 3750,
         "with": 1503,
-        "tokens": 3.39,
+        "tokens": 3.31,
         "daysWithout": 3.75,
         "daysWith": 1.5
+      },
+      {
+        "id": "MVP1-E0-44",
+        "title": "Product names and versions in folders, documents and story IDs",
+        "size": "L",
+        "issue": 133,
+        "epic": "MVP1-E0",
+        "owner": "product",
+        "without": 18750,
+        "with": 7517,
+        "tokens": 16.56,
+        "daysWithout": 18.75,
+        "daysWith": 7.5
       },
       {
         "id": "MVP1-E0-51",
@@ -925,7 +946,7 @@ export const totalCost = {
         "owner": "engineering",
         "without": 3750,
         "with": 1510,
-        "tokens": 10.16,
+        "tokens": 9.93,
         "daysWithout": 3.75,
         "daysWith": 1.5
       },
@@ -938,7 +959,7 @@ export const totalCost = {
         "owner": "engineering",
         "without": 3250,
         "with": 1510,
-        "tokens": 10.16,
+        "tokens": 9.93,
         "daysWithout": 3.25,
         "daysWith": 1.5
       },
@@ -950,8 +971,8 @@ export const totalCost = {
         "epic": "MVP1-E1",
         "owner": "engineering",
         "without": 8750,
-        "with": 3527,
-        "tokens": 27.09,
+        "with": 3526,
+        "tokens": 26.49,
         "daysWithout": 8.75,
         "daysWith": 3.5
       },
@@ -963,8 +984,8 @@ export const totalCost = {
         "epic": "MVP1-E1",
         "owner": "engineering",
         "without": 8750,
-        "with": 3527,
-        "tokens": 27.09,
+        "with": 3526,
+        "tokens": 26.49,
         "daysWithout": 8.75,
         "daysWith": 3.5
       },
@@ -977,7 +998,7 @@ export const totalCost = {
         "owner": "engineering",
         "without": 3250,
         "with": 1510,
-        "tokens": 10.16,
+        "tokens": 9.93,
         "daysWithout": 3.25,
         "daysWith": 1.5
       },
@@ -989,8 +1010,8 @@ export const totalCost = {
         "epic": "MVP1-E1",
         "owner": "engineering",
         "without": 8750,
-        "with": 3527,
-        "tokens": 27.09,
+        "with": 3526,
+        "tokens": 26.49,
         "daysWithout": 8.75,
         "daysWith": 3.5
       },
@@ -1003,7 +1024,7 @@ export const totalCost = {
         "owner": "engineering",
         "without": 3250,
         "with": 1510,
-        "tokens": 10.16,
+        "tokens": 9.93,
         "daysWithout": 3.25,
         "daysWith": 1.5
       },
@@ -1016,7 +1037,7 @@ export const totalCost = {
         "owner": "engineering",
         "without": 3250,
         "with": 1510,
-        "tokens": 10.16,
+        "tokens": 9.93,
         "daysWithout": 3.25,
         "daysWith": 1.5
       },
@@ -1028,8 +1049,8 @@ export const totalCost = {
         "epic": "MVP1-E1",
         "owner": "engineering",
         "without": 8750,
-        "with": 3527,
-        "tokens": 27.09,
+        "with": 3526,
+        "tokens": 26.49,
         "daysWithout": 8.75,
         "daysWith": 3.5
       },
@@ -1042,7 +1063,7 @@ export const totalCost = {
         "owner": "product",
         "without": 8000,
         "with": 3259,
-        "tokens": 9.03,
+        "tokens": 8.83,
         "daysWithout": 8.0,
         "daysWith": 3.25
       },
@@ -1055,7 +1076,7 @@ export const totalCost = {
         "owner": "product",
         "without": 8000,
         "with": 3259,
-        "tokens": 9.03,
+        "tokens": 8.83,
         "daysWithout": 8.0,
         "daysWith": 3.25
       },
@@ -1068,7 +1089,7 @@ export const totalCost = {
         "owner": "product",
         "without": 3000,
         "with": 1253,
-        "tokens": 3.39,
+        "tokens": 3.31,
         "daysWithout": 3.0,
         "daysWith": 1.25
       },
@@ -1081,7 +1102,7 @@ export const totalCost = {
         "owner": "product",
         "without": 8000,
         "with": 3259,
-        "tokens": 9.03,
+        "tokens": 8.83,
         "daysWithout": 8.0,
         "daysWith": 3.25
       },
@@ -1094,7 +1115,7 @@ export const totalCost = {
         "owner": "product",
         "without": 8000,
         "with": 3259,
-        "tokens": 9.03,
+        "tokens": 8.83,
         "daysWithout": 8.0,
         "daysWith": 3.25
       },
@@ -1107,7 +1128,7 @@ export const totalCost = {
         "owner": "product",
         "without": 8000,
         "with": 3259,
-        "tokens": 9.03,
+        "tokens": 8.83,
         "daysWithout": 8.0,
         "daysWith": 3.25
       },
@@ -1120,7 +1141,7 @@ export const totalCost = {
         "owner": "product",
         "without": 8000,
         "with": 3259,
-        "tokens": 9.03,
+        "tokens": 8.83,
         "daysWithout": 8.0,
         "daysWith": 3.25
       },
@@ -1133,7 +1154,7 @@ export const totalCost = {
         "owner": "product",
         "without": 8000,
         "with": 3259,
-        "tokens": 9.03,
+        "tokens": 8.83,
         "daysWithout": 8.0,
         "daysWith": 3.25
       },
@@ -1146,7 +1167,7 @@ export const totalCost = {
         "owner": "product",
         "without": 8000,
         "with": 3259,
-        "tokens": 9.03,
+        "tokens": 8.83,
         "daysWithout": 8.0,
         "daysWith": 3.25
       },
@@ -1159,7 +1180,7 @@ export const totalCost = {
         "owner": "product",
         "without": 8000,
         "with": 3259,
-        "tokens": 9.03,
+        "tokens": 8.83,
         "daysWithout": 8.0,
         "daysWith": 3.25
       },
@@ -1172,7 +1193,7 @@ export const totalCost = {
         "owner": "product",
         "without": 3000,
         "with": 1253,
-        "tokens": 3.39,
+        "tokens": 3.31,
         "daysWithout": 3.0,
         "daysWith": 1.25
       },
@@ -1185,7 +1206,7 @@ export const totalCost = {
         "owner": "product",
         "without": 3000,
         "with": 1253,
-        "tokens": 3.39,
+        "tokens": 3.31,
         "daysWithout": 3.0,
         "daysWith": 1.25
       },
@@ -1198,7 +1219,7 @@ export const totalCost = {
         "owner": "product",
         "without": 3000,
         "with": 1253,
-        "tokens": 3.39,
+        "tokens": 3.31,
         "daysWithout": 3.0,
         "daysWith": 1.25
       },
@@ -1211,7 +1232,7 @@ export const totalCost = {
         "owner": "product",
         "without": 3000,
         "with": 1253,
-        "tokens": 3.39,
+        "tokens": 3.31,
         "daysWithout": 3.0,
         "daysWith": 1.25
       },
@@ -1224,7 +1245,7 @@ export const totalCost = {
         "owner": "product",
         "without": 8000,
         "with": 3259,
-        "tokens": 9.03,
+        "tokens": 8.83,
         "daysWithout": 8.0,
         "daysWith": 3.25
       },
@@ -1237,7 +1258,7 @@ export const totalCost = {
         "owner": "product",
         "without": 8000,
         "with": 3259,
-        "tokens": 9.03,
+        "tokens": 8.83,
         "daysWithout": 8.0,
         "daysWith": 3.25
       },
@@ -1250,7 +1271,7 @@ export const totalCost = {
         "owner": "product",
         "without": 10000,
         "with": 4009,
-        "tokens": 9.03,
+        "tokens": 8.83,
         "daysWithout": 10.0,
         "daysWith": 4.0
       },
@@ -1263,7 +1284,7 @@ export const totalCost = {
         "owner": "product",
         "without": 8000,
         "with": 3259,
-        "tokens": 9.03,
+        "tokens": 8.83,
         "daysWithout": 8.0,
         "daysWith": 3.25
       },
@@ -1276,7 +1297,7 @@ export const totalCost = {
         "owner": "product",
         "without": 8000,
         "with": 3259,
-        "tokens": 9.03,
+        "tokens": 8.83,
         "daysWithout": 8.0,
         "daysWith": 3.25
       },
@@ -1289,7 +1310,7 @@ export const totalCost = {
         "owner": "product",
         "without": 8000,
         "with": 3259,
-        "tokens": 9.03,
+        "tokens": 8.83,
         "daysWithout": 8.0,
         "daysWith": 3.25
       },
@@ -1302,7 +1323,7 @@ export const totalCost = {
         "owner": "product",
         "without": 3000,
         "with": 1253,
-        "tokens": 3.39,
+        "tokens": 3.31,
         "daysWithout": 3.0,
         "daysWith": 1.25
       },
@@ -1315,7 +1336,7 @@ export const totalCost = {
         "owner": "product",
         "without": 3000,
         "with": 1253,
-        "tokens": 3.39,
+        "tokens": 3.31,
         "daysWithout": 3.0,
         "daysWith": 1.25
       },
@@ -1328,7 +1349,7 @@ export const totalCost = {
         "owner": "product",
         "without": 8000,
         "with": 3259,
-        "tokens": 9.03,
+        "tokens": 8.83,
         "daysWithout": 8.0,
         "daysWith": 3.25
       },
@@ -1341,7 +1362,7 @@ export const totalCost = {
         "owner": "product",
         "without": 8000,
         "with": 3259,
-        "tokens": 9.03,
+        "tokens": 8.83,
         "daysWithout": 8.0,
         "daysWith": 3.25
       },
@@ -1354,7 +1375,7 @@ export const totalCost = {
         "owner": "product",
         "without": 8000,
         "with": 3259,
-        "tokens": 9.03,
+        "tokens": 8.83,
         "daysWithout": 8.0,
         "daysWith": 3.25
       },
@@ -1367,7 +1388,7 @@ export const totalCost = {
         "owner": "product",
         "without": 8000,
         "with": 3259,
-        "tokens": 9.03,
+        "tokens": 8.83,
         "daysWithout": 8.0,
         "daysWith": 3.25
       },
@@ -1380,7 +1401,7 @@ export const totalCost = {
         "owner": "product",
         "without": 3000,
         "with": 1253,
-        "tokens": 3.39,
+        "tokens": 3.31,
         "daysWithout": 3.0,
         "daysWith": 1.25
       },
@@ -1393,7 +1414,7 @@ export const totalCost = {
         "owner": "product",
         "without": 8000,
         "with": 3259,
-        "tokens": 9.03,
+        "tokens": 8.83,
         "daysWithout": 8.0,
         "daysWith": 3.25
       },
@@ -1406,7 +1427,7 @@ export const totalCost = {
         "owner": "product",
         "without": 3000,
         "with": 1253,
-        "tokens": 3.39,
+        "tokens": 3.31,
         "daysWithout": 3.0,
         "daysWith": 1.25
       },
@@ -1419,7 +1440,7 @@ export const totalCost = {
         "owner": "product",
         "without": 10000,
         "with": 4009,
-        "tokens": 9.03,
+        "tokens": 8.83,
         "daysWithout": 10.0,
         "daysWith": 4.0
       },
@@ -1432,7 +1453,7 @@ export const totalCost = {
         "owner": "product",
         "without": 10000,
         "with": 4009,
-        "tokens": 9.03,
+        "tokens": 8.83,
         "daysWithout": 10.0,
         "daysWith": 4.0
       },
@@ -1445,7 +1466,7 @@ export const totalCost = {
         "owner": "product",
         "without": 10000,
         "with": 4009,
-        "tokens": 9.03,
+        "tokens": 8.83,
         "daysWithout": 10.0,
         "daysWith": 4.0
       },
@@ -1458,7 +1479,7 @@ export const totalCost = {
         "owner": "product",
         "without": 3750,
         "with": 1503,
-        "tokens": 3.39,
+        "tokens": 3.31,
         "daysWithout": 3.75,
         "daysWith": 1.5
       },
@@ -1471,7 +1492,7 @@ export const totalCost = {
         "owner": "product",
         "without": 8000,
         "with": 3259,
-        "tokens": 9.03,
+        "tokens": 8.83,
         "daysWithout": 8.0,
         "daysWith": 3.25
       },
@@ -1484,7 +1505,7 @@ export const totalCost = {
         "owner": "engineering",
         "without": 3250,
         "with": 1510,
-        "tokens": 10.16,
+        "tokens": 9.93,
         "daysWithout": 3.25,
         "daysWith": 1.5
       },
@@ -1496,8 +1517,8 @@ export const totalCost = {
         "epic": "MVP1-E2",
         "owner": "engineering",
         "without": 8750,
-        "with": 3527,
-        "tokens": 27.09,
+        "with": 3526,
+        "tokens": 26.49,
         "daysWithout": 8.75,
         "daysWith": 3.5
       },
@@ -1510,7 +1531,7 @@ export const totalCost = {
         "owner": "engineering",
         "without": 3250,
         "with": 1510,
-        "tokens": 10.16,
+        "tokens": 9.93,
         "daysWithout": 3.25,
         "daysWith": 1.5
       },
@@ -1522,8 +1543,8 @@ export const totalCost = {
         "epic": "MVP1-E2",
         "owner": "engineering",
         "without": 8750,
-        "with": 3527,
-        "tokens": 27.09,
+        "with": 3526,
+        "tokens": 26.49,
         "daysWithout": 8.75,
         "daysWith": 3.5
       },
@@ -1536,7 +1557,7 @@ export const totalCost = {
         "owner": "engineering",
         "without": 3250,
         "with": 1510,
-        "tokens": 10.16,
+        "tokens": 9.93,
         "daysWithout": 3.25,
         "daysWith": 1.5
       },
@@ -1548,8 +1569,8 @@ export const totalCost = {
         "epic": "MVP1-E3",
         "owner": "engineering",
         "without": 8750,
-        "with": 3527,
-        "tokens": 27.09,
+        "with": 3526,
+        "tokens": 26.49,
         "daysWithout": 8.75,
         "daysWith": 3.5
       },
@@ -1561,8 +1582,8 @@ export const totalCost = {
         "epic": "MVP1-E3",
         "owner": "engineering",
         "without": 16500,
-        "with": 6551,
-        "tokens": 50.79,
+        "with": 6550,
+        "tokens": 49.67,
         "daysWithout": 16.5,
         "daysWith": 6.5
       },
@@ -1574,8 +1595,8 @@ export const totalCost = {
         "epic": "MVP1-E3",
         "owner": "engineering",
         "without": 8750,
-        "with": 3527,
-        "tokens": 27.09,
+        "with": 3526,
+        "tokens": 26.49,
         "daysWithout": 8.75,
         "daysWith": 3.5
       },
@@ -1587,8 +1608,8 @@ export const totalCost = {
         "epic": "MVP1-E3",
         "owner": "engineering",
         "without": 8750,
-        "with": 3527,
-        "tokens": 27.09,
+        "with": 3526,
+        "tokens": 26.49,
         "daysWithout": 8.75,
         "daysWith": 3.5
       },
@@ -1601,7 +1622,7 @@ export const totalCost = {
         "owner": "engineering",
         "without": 3250,
         "with": 1510,
-        "tokens": 10.16,
+        "tokens": 9.93,
         "daysWithout": 3.25,
         "daysWith": 1.5
       },
@@ -1613,8 +1634,8 @@ export const totalCost = {
         "epic": "MVP1-E3",
         "owner": "engineering",
         "without": 16500,
-        "with": 6551,
-        "tokens": 50.79,
+        "with": 6550,
+        "tokens": 49.67,
         "daysWithout": 16.5,
         "daysWith": 6.5
       },
@@ -1627,7 +1648,7 @@ export const totalCost = {
         "owner": "engineering",
         "without": 3250,
         "with": 1510,
-        "tokens": 10.16,
+        "tokens": 9.93,
         "daysWithout": 3.25,
         "daysWith": 1.5
       },
@@ -1640,7 +1661,7 @@ export const totalCost = {
         "owner": "engineering",
         "without": 3250,
         "with": 1510,
-        "tokens": 10.16,
+        "tokens": 9.93,
         "daysWithout": 3.25,
         "daysWith": 1.5
       },
@@ -1652,8 +1673,8 @@ export const totalCost = {
         "epic": "MVP1-E3",
         "owner": "engineering",
         "without": 8750,
-        "with": 3527,
-        "tokens": 27.09,
+        "with": 3526,
+        "tokens": 26.49,
         "daysWithout": 8.75,
         "daysWith": 3.5
       },
@@ -1665,8 +1686,8 @@ export const totalCost = {
         "epic": "MVP1-E4",
         "owner": "engineering",
         "without": 8750,
-        "with": 3527,
-        "tokens": 27.09,
+        "with": 3526,
+        "tokens": 26.49,
         "daysWithout": 8.75,
         "daysWith": 3.5
       },
@@ -1678,8 +1699,8 @@ export const totalCost = {
         "epic": "MVP1-E4",
         "owner": "engineering",
         "without": 8750,
-        "with": 3527,
-        "tokens": 27.09,
+        "with": 3526,
+        "tokens": 26.49,
         "daysWithout": 8.75,
         "daysWith": 3.5
       },
@@ -1692,7 +1713,7 @@ export const totalCost = {
         "owner": "engineering",
         "without": 3250,
         "with": 1510,
-        "tokens": 10.16,
+        "tokens": 9.93,
         "daysWithout": 3.25,
         "daysWith": 1.5
       },
@@ -1705,7 +1726,7 @@ export const totalCost = {
         "owner": "engineering",
         "without": 3250,
         "with": 1510,
-        "tokens": 10.16,
+        "tokens": 9.93,
         "daysWithout": 3.25,
         "daysWith": 1.5
       },
@@ -1718,7 +1739,7 @@ export const totalCost = {
         "owner": "engineering",
         "without": 3250,
         "with": 1510,
-        "tokens": 10.16,
+        "tokens": 9.93,
         "daysWithout": 3.25,
         "daysWith": 1.5
       },
@@ -1730,8 +1751,8 @@ export const totalCost = {
         "epic": "MVP1-E5",
         "owner": "engineering",
         "without": 8750,
-        "with": 3527,
-        "tokens": 27.09,
+        "with": 3526,
+        "tokens": 26.49,
         "daysWithout": 8.75,
         "daysWith": 3.5
       },
@@ -1744,7 +1765,7 @@ export const totalCost = {
         "owner": "engineering",
         "without": 3250,
         "with": 1510,
-        "tokens": 10.16,
+        "tokens": 9.93,
         "daysWithout": 3.25,
         "daysWith": 1.5
       },
@@ -1757,7 +1778,7 @@ export const totalCost = {
         "owner": "engineering",
         "without": 3250,
         "with": 1510,
-        "tokens": 10.16,
+        "tokens": 9.93,
         "daysWithout": 3.25,
         "daysWith": 1.5
       },
@@ -1770,7 +1791,7 @@ export const totalCost = {
         "owner": "engineering",
         "without": 3250,
         "with": 1510,
-        "tokens": 10.16,
+        "tokens": 9.93,
         "daysWithout": 3.25,
         "daysWith": 1.5
       },
@@ -1783,7 +1804,7 @@ export const totalCost = {
         "owner": "engineering",
         "without": 3250,
         "with": 1510,
-        "tokens": 10.16,
+        "tokens": 9.93,
         "daysWithout": 3.25,
         "daysWith": 1.5
       },
@@ -1795,8 +1816,8 @@ export const totalCost = {
         "epic": "MVP1-E6",
         "owner": "engineering",
         "without": 8750,
-        "with": 3527,
-        "tokens": 27.09,
+        "with": 3526,
+        "tokens": 26.49,
         "daysWithout": 8.75,
         "daysWith": 3.5
       },
@@ -1808,8 +1829,8 @@ export const totalCost = {
         "epic": "MVP1-E6",
         "owner": "engineering",
         "without": 8750,
-        "with": 3527,
-        "tokens": 27.09,
+        "with": 3526,
+        "tokens": 26.49,
         "daysWithout": 8.75,
         "daysWith": 3.5
       },
@@ -1822,7 +1843,7 @@ export const totalCost = {
         "owner": "engineering",
         "without": 3250,
         "with": 1510,
-        "tokens": 10.16,
+        "tokens": 9.93,
         "daysWithout": 3.25,
         "daysWith": 1.5
       },
@@ -1835,7 +1856,7 @@ export const totalCost = {
         "owner": "engineering",
         "without": 3250,
         "with": 1510,
-        "tokens": 10.16,
+        "tokens": 9.93,
         "daysWithout": 3.25,
         "daysWith": 1.5
       },
@@ -1848,7 +1869,7 @@ export const totalCost = {
         "owner": "engineering",
         "without": 3250,
         "with": 1510,
-        "tokens": 10.16,
+        "tokens": 9.93,
         "daysWithout": 3.25,
         "daysWith": 1.5
       },
@@ -1860,8 +1881,8 @@ export const totalCost = {
         "epic": "MVP1-E7",
         "owner": "engineering",
         "without": 8750,
-        "with": 3527,
-        "tokens": 27.09,
+        "with": 3526,
+        "tokens": 26.49,
         "daysWithout": 8.75,
         "daysWith": 3.5
       },
@@ -1874,7 +1895,7 @@ export const totalCost = {
         "owner": "engineering",
         "without": 3250,
         "with": 1510,
-        "tokens": 10.16,
+        "tokens": 9.93,
         "daysWithout": 3.25,
         "daysWith": 1.5
       },
@@ -1886,10 +1907,127 @@ export const totalCost = {
         "epic": "MVP1-E7",
         "owner": "engineering",
         "without": 8750,
-        "with": 3527,
-        "tokens": 27.09,
+        "with": 3526,
+        "tokens": 26.49,
         "daysWithout": 8.75,
         "daysWith": 3.5
+      },
+      {
+        "id": "MVP1-E8-02",
+        "title": "The cost model's assumptions",
+        "size": "S",
+        "issue": 127,
+        "epic": "MVP1-E8",
+        "owner": "product",
+        "without": 3750,
+        "with": 1503,
+        "tokens": 3.31,
+        "daysWithout": 3.75,
+        "daysWith": 1.5
+      },
+      {
+        "id": "MVP1-E8-03",
+        "title": "Effort for every story",
+        "size": "M",
+        "issue": 128,
+        "epic": "MVP1-E8",
+        "owner": "product",
+        "without": 10000,
+        "with": 4009,
+        "tokens": 8.83,
+        "daysWithout": 10.0,
+        "daysWith": 4.0
+      },
+      {
+        "id": "MVP1-E8-04",
+        "title": "A dependency-aware timeline",
+        "size": "M",
+        "issue": 129,
+        "epic": "MVP1-E8",
+        "owner": "product",
+        "without": 10000,
+        "with": 4009,
+        "tokens": 8.83,
+        "daysWithout": 10.0,
+        "daysWith": 4.0
+      },
+      {
+        "id": "MVP1-E8-05",
+        "title": "The human team's cost, per story and in total",
+        "size": "M",
+        "issue": 130,
+        "epic": "MVP1-E8",
+        "owner": "product",
+        "without": 10000,
+        "with": 4009,
+        "tokens": 8.83,
+        "daysWithout": 10.0,
+        "daysWith": 4.0
+      },
+      {
+        "id": "MVP1-E8-06",
+        "title": "The cost of building it with Claude Code and one product manager",
+        "size": "M",
+        "issue": 131,
+        "epic": "MVP1-E8",
+        "owner": "product",
+        "without": 10000,
+        "with": 4009,
+        "tokens": 8.83,
+        "daysWithout": 10.0,
+        "daysWith": 4.0
+      },
+      {
+        "id": "MVP1-E8-07",
+        "title": "The difference",
+        "size": "S",
+        "issue": 132,
+        "epic": "MVP1-E8",
+        "owner": "product",
+        "without": 3750,
+        "with": 1503,
+        "tokens": 3.31,
+        "daysWithout": 3.75,
+        "daysWith": 1.5
+      },
+      {
+        "id": "MVP1-E8-08",
+        "title": "Token estimate for every V1 story, and a story for every document",
+        "size": "L",
+        "issue": 135,
+        "epic": "MVP1-E8",
+        "owner": "product",
+        "without": 18750,
+        "with": 7517,
+        "tokens": 16.56,
+        "daysWithout": 18.75,
+        "daysWith": 7.5
+      },
+      {
+        "id": "MVP1-E8-14",
+        "title": "Roadmap v6: product work two sprints ahead, environments early, and tokens in the cost",
+        "size": "M",
+        "issue": 252,
+        "epic": "MVP1-E8",
+        "owner": "product",
+        "without": 10000,
+        "with": 4009,
+        "tokens": 8.83,
+        "daysWithout": 10.0,
+        "daysWith": 4.0
+      },
+      {
+        "id": "MVP1-E8-15",
+        "title": "Total Cost from the latest roadmap: so far and projected",
+        "size": "M",
+        "issue": 254,
+        "epic": "MVP1-E8",
+        "owner": "product",
+        "without": 10000,
+        "with": 4009,
+        "tokens": 8.83,
+        "daysWithout": 10.0,
+        "daysWith": 4.0
       },
       {
         "id": "MVP1-E9-01",
@@ -1900,7 +2038,7 @@ export const totalCost = {
         "owner": "product",
         "without": 10000,
         "with": 4009,
-        "tokens": 9.03,
+        "tokens": 8.83,
         "daysWithout": 10.0,
         "daysWith": 4.0
       },
@@ -1912,8 +2050,8 @@ export const totalCost = {
         "epic": "MVP1-E9",
         "owner": "engineering",
         "without": 8750,
-        "with": 3527,
-        "tokens": 27.09,
+        "with": 3526,
+        "tokens": 26.49,
         "daysWithout": 8.75,
         "daysWith": 3.5
       },
@@ -1925,8 +2063,8 @@ export const totalCost = {
         "epic": "MVP1-E9",
         "owner": "engineering",
         "without": 8750,
-        "with": 3527,
-        "tokens": 27.09,
+        "with": 3526,
+        "tokens": 26.49,
         "daysWithout": 8.75,
         "daysWith": 3.5
       },
@@ -1939,7 +2077,7 @@ export const totalCost = {
         "owner": "engineering",
         "without": 3250,
         "with": 1510,
-        "tokens": 10.16,
+        "tokens": 9.93,
         "daysWithout": 3.25,
         "daysWith": 1.5
       },
@@ -1951,8 +2089,8 @@ export const totalCost = {
         "epic": "MVP1-E9",
         "owner": "engineering",
         "without": 8750,
-        "with": 3527,
-        "tokens": 27.09,
+        "with": 3526,
+        "tokens": 26.49,
         "daysWithout": 8.75,
         "daysWith": 3.5
       },
@@ -1965,7 +2103,7 @@ export const totalCost = {
         "owner": "product",
         "without": 3000,
         "with": 1253,
-        "tokens": 3.39,
+        "tokens": 3.31,
         "daysWithout": 3.0,
         "daysWith": 1.25
       },
@@ -1977,8 +2115,8 @@ export const totalCost = {
         "epic": "MVP1-E9",
         "owner": "engineering",
         "without": 8750,
-        "with": 3527,
-        "tokens": 27.09,
+        "with": 3526,
+        "tokens": 26.49,
         "daysWithout": 8.75,
         "daysWith": 3.5
       },
@@ -1991,7 +2129,7 @@ export const totalCost = {
         "owner": "product",
         "without": 3750,
         "with": 1503,
-        "tokens": 3.39,
+        "tokens": 3.31,
         "daysWithout": 3.75,
         "daysWith": 1.5
       },
@@ -2004,7 +2142,7 @@ export const totalCost = {
         "owner": "product",
         "without": 3000,
         "with": 1253,
-        "tokens": 3.39,
+        "tokens": 3.31,
         "daysWithout": 3.0,
         "daysWith": 1.25
       },
@@ -2017,7 +2155,7 @@ export const totalCost = {
         "owner": "product",
         "without": 3000,
         "with": 1253,
-        "tokens": 3.39,
+        "tokens": 3.31,
         "daysWithout": 3.0,
         "daysWith": 1.25
       },
@@ -2029,8 +2167,8 @@ export const totalCost = {
         "epic": "MVP1-E9",
         "owner": "engineering",
         "without": 8750,
-        "with": 3527,
-        "tokens": 27.09,
+        "with": 3526,
+        "tokens": 26.49,
         "daysWithout": 8.75,
         "daysWith": 3.5
       },
@@ -2042,8 +2180,8 @@ export const totalCost = {
         "epic": "MVP1-E9",
         "owner": "engineering",
         "without": 8750,
-        "with": 3527,
-        "tokens": 27.09,
+        "with": 3526,
+        "tokens": 26.49,
         "daysWithout": 8.75,
         "daysWith": 3.5
       },
@@ -2056,7 +2194,7 @@ export const totalCost = {
         "owner": "product",
         "without": 3000,
         "with": 1253,
-        "tokens": 3.39,
+        "tokens": 3.31,
         "daysWithout": 3.0,
         "daysWith": 1.25
       },
@@ -2069,88 +2207,18 @@ export const totalCost = {
         "owner": "product",
         "without": 3000,
         "with": 1253,
-        "tokens": 3.39,
+        "tokens": 3.31,
         "daysWithout": 3.0,
         "daysWith": 1.25
       }
     ],
     "byStoryTotal": {
-      "without": 744250,
-      "with": 305653,
-      "tokens": 1667.25,
-      "stories": 110
+      "without": 849250,
+      "with": 347711,
+      "tokens": 1722.84,
+      "stories": 120
     },
     "notPlanned": [
-      {
-        "id": "MVP1-E0-44",
-        "title": "Product names and versions in folders, documents and story IDs",
-        "size": "L",
-        "personDays": 15,
-        "issue": null
-      },
-      {
-        "id": "MVP1-E8-02",
-        "title": "The cost model's assumptions",
-        "size": "S",
-        "personDays": 3,
-        "issue": null
-      },
-      {
-        "id": "MVP1-E8-03",
-        "title": "Effort for every story",
-        "size": "M",
-        "personDays": 8,
-        "issue": null
-      },
-      {
-        "id": "MVP1-E8-04",
-        "title": "A dependency-aware timeline",
-        "size": "M",
-        "personDays": 8,
-        "issue": null
-      },
-      {
-        "id": "MVP1-E8-05",
-        "title": "The human team's cost, per story and in total",
-        "size": "M",
-        "personDays": 8,
-        "issue": null
-      },
-      {
-        "id": "MVP1-E8-06",
-        "title": "The cost of building it with Claude Code and one product manager",
-        "size": "M",
-        "personDays": 8,
-        "issue": null
-      },
-      {
-        "id": "MVP1-E8-07",
-        "title": "The difference",
-        "size": "S",
-        "personDays": 3,
-        "issue": null
-      },
-      {
-        "id": "MVP1-E8-08",
-        "title": "Token estimate for every V1 story, and a story for every document",
-        "size": "L",
-        "personDays": 15,
-        "issue": null
-      },
-      {
-        "id": "MVP1-E8-14",
-        "title": "Roadmap v6: product work two sprints ahead, environments early, and tokens in the cost",
-        "size": "M",
-        "personDays": 8,
-        "issue": null
-      },
-      {
-        "id": "MVP1-E8-15",
-        "title": "Total Cost from the latest roadmap: so far and projected",
-        "size": "M",
-        "personDays": 8,
-        "issue": null
-      },
       {
         "id": "AUTOREP-E1-01",
         "title": "Python app on AWS Lambda behind the gateway",
@@ -2292,6 +2360,6 @@ export const totalCost = {
         "issue": null
       }
     ],
-    "notPlannedDays": 194
+    "notPlannedDays": 110
   }
 } as const;

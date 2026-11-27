@@ -4402,3 +4402,8 @@ section[id] {
     grid-template-columns: 1fr;
   }
 }
+
+.cost-more-title {
+  margin: 12px 0 6px;
+  font-size: 0.95rem;
+}

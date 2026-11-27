@@ -17,9 +17,9 @@ export const builtTabs = [
 export type BuiltTab = (typeof builtTabs)[number]["slug"];
 
 // The two tabs of Total Cost (MVP1-E8-15, Nikhil 27 Nov 2026; four tabs in MVP1-E8-10), each with
-// its own address. So Far opens at "/how-its-built/total-projected-cost".
+// its own address. Actuals (so far) opens at "/how-its-built/total-projected-cost".
 export const costTabs = [
-  { slug: "so-far", label: "So Far", href: "/how-its-built/total-projected-cost" },
+  { slug: "so-far", label: "Actuals (so far)", href: "/how-its-built/total-projected-cost" },
   { slug: "projected", label: "Projected", href: "/how-its-built/total-projected-cost/projected" },
 ] as const;
 

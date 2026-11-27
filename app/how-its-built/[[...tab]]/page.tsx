@@ -549,11 +549,15 @@ export default async function HowItsBuilt({ params }: { params: Promise<Params> 
 
           {costTab === "so-far" && (
           <div className="cost-panel">
-            <h3 className="section-subtitle">So far: Claude Code against a human team</h3>
+            <h3 className="section-subtitle">Actuals so far: Claude Code against a human team</h3>
             <div className="stat-row">
               <div className="stat">
                 <span className="stat-value">{usd(costs.totals.cost)}</span>
                 <span className="stat-label">Tokens spent so far, at API rates</span>
+              </div>
+              <div className="stat">
+                <span className="stat-value">{costs.totals.storyYield}%</span>
+                <span className="stat-label">Token yield across stories</span>
               </div>
               <div className="stat">
                 <span className="stat-value">{dollars(totalCost.soFar.humanCost)}</span>
@@ -567,15 +571,53 @@ export default async function HowItsBuilt({ params }: { params: Promise<Params> 
               </div>
             </div>
             <p className="note">
-              Priced like the roadmap prices planned stories: product days at the product
-              manager rate ({dollars(totalCost.rates.productManager)} a day), development days
-              at the engineer rate ({dollars(totalCost.rates.engineer)} a day). A built story
-              the roadmap does not plan is engineering work: its size plus{" "}
-              {Math.round(totalCost.productShare * 100)}% for the product manager&apos;s sprint
-              work. Rates are an assumption (Nikhil, 27 Nov 2026).
+              Tokens are what Claude Code&apos;s work would cost an API customer; it is not what I
+              pay, since building runs on my Claude Pro subscription. Build and rework, request by
+              request, are in <Link href="/how-its-built/token-costs">Token Costs</Link>. The human
+              team is priced like the roadmap prices planned stories: product days at the product
+              manager rate ({dollars(totalCost.rates.productManager)} a day), development days at the
+              engineer rate ({dollars(totalCost.rates.engineer)} a day); a built story the roadmap does
+              not plan is engineering work, its size plus {Math.round(totalCost.productShare * 100)}% for
+              the product manager&apos;s sprint work. Rates are an assumption (Nikhil, 27 Nov 2026).
             </p>
+
             <details className="cost-more">
               <summary>Each story built</summary>
+              <h4 className="cost-more-title">Tokens, by story</h4>
+              <table className="cost-table cost-table-small">
+                <thead>
+                  <tr>
+                    <th scope="col">Story</th>
+                    <th scope="col">Tokens</th>
+                    <th scope="col">Cost</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {costs.stories.map((story) => (
+                    <tr key={story.key}>
+                      <th scope="row">{story.name}</th>
+                      <td data-label="Tokens">{mtok(story.buildTokens + story.reworkTokens)}</td>
+                      <td data-label="Cost">
+                        {usd(story.totalCost)}
+                        {story.pending && <span className="cost-pending"> + pending</span>}
+                      </td>
+                    </tr>
+                  ))}
+                  <tr>
+                    <th scope="row">Scaffolding, not tied to a story</th>
+                    <td data-label="Tokens">{mtok(costs.scaffoldingTotals.tokens)}</td>
+                    <td data-label="Cost">{usd(costs.scaffoldingTotals.cost)}</td>
+                  </tr>
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <th scope="row">Total</th>
+                    <td data-label="Tokens">{mtok(costs.totals.tokens)}</td>
+                    <td data-label="Cost">{usd(costs.totals.cost)}</td>
+                  </tr>
+                </tfoot>
+              </table>
+              <h4 className="cost-more-title">A human team, by story</h4>
               <table className="cost-table cost-table-small">
                 <thead>
                   <tr>
@@ -584,7 +626,6 @@ export default async function HowItsBuilt({ params }: { params: Promise<Params> 
                     <th scope="col">Product days</th>
                     <th scope="col">Development days</th>
                     <th scope="col">Human cost</th>
-                    <th scope="col">Tokens</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -597,65 +638,20 @@ export default async function HowItsBuilt({ params }: { params: Promise<Params> 
                       <td data-label="Product days">{num(story.productDays)}</td>
                       <td data-label="Development days">{num(story.devDays)}</td>
                       <td data-label="Human cost">{dollars(story.cost)}</td>
-                      <td data-label="Tokens">{story.tokenCost === null ? "pending" : usd(story.tokenCost)}</td>
                     </tr>
                   ))}
                 </tbody>
+                <tfoot>
+                  <tr>
+                    <th scope="row">Total</th>
+                    <td className="cost-empty" />
+                    <td data-label="Product days">{num(totalCost.soFar.productDays)}</td>
+                    <td data-label="Development days">{num(totalCost.soFar.devDays)}</td>
+                    <td data-label="Human cost">{dollars(totalCost.soFar.humanCost)}</td>
+                  </tr>
+                </tfoot>
               </table>
             </details>
-
-            <h3 className="section-subtitle">Development cost</h3>
-            <div className="stat-row">
-              <div className="stat">
-                <span className="stat-value">{usd(costs.totals.cost)}</span>
-                <span className="stat-label">Tokens so far, at API rates</span>
-              </div>
-              <div className="stat">
-                <span className="stat-value">{costs.totals.storyYield}%</span>
-                <span className="stat-label">Token yield across stories</span>
-              </div>
-            </div>
-            <p className="note">
-              This is what the tokens Claude Code used would cost an API
-              customer. It is not what I pay: building runs on my Claude Pro
-              subscription. Build and rework, request by request, are in{" "}
-              <Link href="/how-its-built/token-costs">Token Costs</Link>.
-            </p>
-
-            <h3 className="section-subtitle">Cost of each story so far</h3>
-            <table className="cost-table cost-table-small">
-              <thead>
-                <tr>
-                  <th scope="col">Story</th>
-                  <th scope="col">Tokens</th>
-                  <th scope="col">Cost</th>
-                </tr>
-              </thead>
-              <tbody>
-                {costs.stories.map((story) => (
-                  <tr key={story.key}>
-                    <th scope="row">{story.name}</th>
-                    <td data-label="Tokens">{mtok(story.buildTokens + story.reworkTokens)}</td>
-                    <td data-label="Cost">
-                      {usd(story.totalCost)}
-                      {story.pending && <span className="cost-pending"> + pending</span>}
-                    </td>
-                  </tr>
-                ))}
-                <tr>
-                  <th scope="row">Scaffolding, not tied to a story</th>
-                  <td data-label="Tokens">{mtok(costs.scaffoldingTotals.tokens)}</td>
-                  <td data-label="Cost">{usd(costs.scaffoldingTotals.cost)}</td>
-                </tr>
-              </tbody>
-              <tfoot>
-                <tr>
-                  <th scope="row">Total</th>
-                  <td data-label="Tokens">{mtok(costs.totals.tokens)}</td>
-                  <td data-label="Cost">{usd(costs.totals.cost)}</td>
-                </tr>
-              </tfoot>
-            </table>
 
             <h3 className="section-subtitle">What I actually pay</h3>
             <dl className="decisions cost-paid">

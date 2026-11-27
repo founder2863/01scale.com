@@ -68,7 +68,7 @@ MVP1-E12-04,Issue resolution timelines,226,S,8 Business readiness,product manage
 MVP1-E12-01,Support SOP,223,S,8 Business readiness,product manager,3.0,1.25,0.0,0.0,9-9,4-4
 MVP1-E12-06,"Release management: test, pilot, phase 1 and GA",228,M,8 Business readiness,product manager,8.0,3.25,0.0,0.0,3-3,3-3
 MVP1-E12-05,Support staff training,227,M,8 Business readiness,product manager,8.0,3.25,0.0,0.0,9-10,4-4
-MVP1-E12-07,Product analytics,245,M,8 Business readiness,product manager,8.0,3.25,2.0,0.75,8-9,3-4
+MVP1-E12-07,Product analytics,245,M,8 Business readiness,product manager,8.0,3.25,2.0,0.75,9-9,3-4
 MVP1-E13-01,P&L ownership and explanation,229,M,8 Business readiness,product manager,8.0,3.25,0.0,0.0,4-4,2-2
 MVP1-E13-03,Unit economics,231,M,8 Business readiness,product manager,8.0,3.25,0.0,0.0,5-5,2-2
 MVP1-E13-02,Profitability tracking,230,M,8 Business readiness,product manager,8.0,3.25,0.0,0.0,6-6,3-3
@@ -106,16 +106,18 @@ MVP1-E3-10,"Spike: LLM extraction options (AWS, Claude, Microsoft)",190,M,Spikes
 MVP1-E6-05,Spike: Stripe Billing APIs,191,S,Spikes,engineer,0.25,0.25,3.0,1.25,1-1,1-1
 MVP1-E0-54,Roadmap tab on How It's Built,188,M,Roadmap on the site,engineer,0.75,0.25,8.0,3.25,not planned,not planned
 MVP1-E8-12,"Four estimates per story, and the plan without and with Claude Code",192,M,Roadmap on the site,engineer,0.75,0.25,8.0,3.25,not planned,not planned
+MVP1-E8-02,The cost model's assumptions,127,S,Product management and cost tooling,product manager,3.0,1.25,0.75,0.25,7-8,2-2
+MVP1-E8-03,Effort for every story,128,M,Product management and cost tooling,product manager,8.0,3.25,2.0,0.75,11-11,3-3
+MVP1-E8-04,A dependency-aware timeline,129,M,Product management and cost tooling,product manager,8.0,3.25,2.0,0.75,12-13,5-5
+MVP1-E8-05,"The human team's cost, per story and in total",130,M,Product management and cost tooling,product manager,8.0,3.25,2.0,0.75,12-12,4-5
+MVP1-E8-06,The cost of building it with Claude Code and one product manager,131,M,Product management and cost tooling,product manager,8.0,3.25,2.0,0.75,12-12,5-5
+MVP1-E8-07,The difference,132,S,Product management and cost tooling,product manager,3.0,1.25,0.75,0.25,13-13,5-5
+MVP1-E8-08,"Token estimate for every V1 story, and a story for every document",135,L,Product management and cost tooling,product manager,15.0,6.0,3.75,1.5,8-8,3-3
+MVP1-E8-14,"Roadmap v6: product work two sprints ahead, environments early, and tokens in the cost",252,M,Product management and cost tooling,product manager,8.0,3.25,2.0,0.75,11-11,4-4
+MVP1-E8-15,Total Cost from the latest roadmap: so far and projected,254,M,Product management and cost tooling,product manager,8.0,3.25,2.0,0.75,12-13,5-5
+MVP1-E0-44,"Product names and versions in folders, documents and story IDs",133,L,Product management and cost tooling,product manager,15.0,6.0,3.75,1.5,11-12,5-5
 MVP1-E3-09,A free daily quota for jobs a person starts,181,S,Product extras,engineer,0.25,0.25,3.0,1.25,6-6,3-3
 MVP1-E6-04,Refunds,92,S,Product extras,engineer,0.25,0.25,3.0,1.25,8-8,4-4
 MVP1-E1-07,Branded sign-in page and address,53,S,Product extras,engineer,0.25,0.25,3.0,1.25,4-4,3-3
 MVP1-E1-08,Sign in with Google,54,M,Product extras,engineer,0.75,0.25,8.0,3.25,11-11,4-4
 MVP1-E3-06,Ask questions about my documents (RAG),88,L,Product extras,engineer,1.5,0.5,15.0,6.0,6-11,4-5
-MVP1-E0-44,"Product names and versions in folders, documents and story IDs",133,L,Waiting for Nikhil's go,engineer,1.5,0.5,15.0,6.0,not planned,not planned
-MVP1-E8-02,The cost model's assumptions,127,S,Waiting for Nikhil's go,engineer,0.25,0.25,3.0,1.25,not planned,not planned
-MVP1-E8-03,Effort for every story,128,M,Waiting for Nikhil's go,engineer,0.75,0.25,8.0,3.25,not planned,not planned
-MVP1-E8-04,A dependency-aware timeline,129,M,Waiting for Nikhil's go,engineer,0.75,0.25,8.0,3.25,not planned,not planned
-MVP1-E8-05,"The human team's cost, per story and in total",130,M,Waiting for Nikhil's go,engineer,0.75,0.25,8.0,3.25,not planned,not planned
-MVP1-E8-06,The cost of building it with Claude Code and one product manager,131,M,Waiting for Nikhil's go,engineer,0.75,0.25,8.0,3.25,not planned,not planned
-MVP1-E8-07,The difference,132,S,Waiting for Nikhil's go,engineer,0.25,0.25,3.0,1.25,not planned,not planned
-MVP1-E8-08,"Token estimate for every V1 story, and a story for every document",135,L,Waiting for Nikhil's go,engineer,1.5,0.5,15.0,6.0,not planned,not planned
