@@ -54,7 +54,8 @@
     "MVP1-E0-52": "MVP1-E0-52 · Design system page shows the components",
     "MVP1-E0-53": "MVP1-E0-53 · Hide the app flow bands on module pages",
     "MVP1-E0-54": "MVP1-E0-54 · Roadmap tab on How It's Built",
-    "MVP1-E8-12": "MVP1-E8-12 · Four estimates per story, and the plan without and with Claude Code"
+    "MVP1-E8-12": "MVP1-E8-12 · Four estimates per story, and the plan without and with Claude Code",
+    "MVP1-E8-13": "MVP1-E8-13 · Roadmap v5: a second product manager, and the cost of each plan"
   },
   "sessions": [
     {
@@ -202,12 +203,12 @@
     {
       "by_kind_usd": {
         "input": 0.03,
-        "output": 5.96,
-        "cache_read": 13.59,
-        "cache_write": 9.61
+        "output": 7.04,
+        "cache_read": 17.01,
+        "cache_write": 10.24
       },
-      "overhead_usd": -3.1627,
-      "tool_total_usd": 29.1883,
+      "overhead_usd": -1.9318,
+      "tool_total_usd": 34.3251,
       "rates_usd_per_million": {
         "claude-opus-5-5": {
           "input": 4.0,
@@ -4109,9 +4110,37 @@
       "models": [
         "claude-opus-5-5"
       ],
-      "tokens": 13379692,
-      "output_tokens": 47437,
-      "cost_usd": 4.131
+      "tokens": 14654406,
+      "output_tokens": 51205,
+      "cost_usd": 4.504
+    },
+    {
+      "session": "c5c5ca89",
+      "ts": "2026-11-26T19:08:46.524Z",
+      "area": "Process",
+      "kind": "scaffolding",
+      "summary": "Questions after PR #193: is a new PR needed, and how is product manager time costed",
+      "n": 15,
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 1284010,
+      "output_tokens": 2785,
+      "cost_usd": 0.3506
+    },
+    {
+      "session": "c5c5ca89",
+      "ts": "2026-11-26T19:15:24.590Z",
+      "area": "MVP1-E8-13",
+      "kind": "build",
+      "summary": "Roadmap v5: second product manager, eight PM stories and epic E16, E11-03 as an AI agent, the cost of each plan; v4 frozen; #192 closed with its costs",
+      "n": 16,
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 11338767,
+      "output_tokens": 31800,
+      "cost_usd": 3.1823
     }
   ]
 }
