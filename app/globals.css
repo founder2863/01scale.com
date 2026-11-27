@@ -4258,3 +4258,18 @@ section[id] {
   overflow: hidden;
   white-space: nowrap;
 }
+
+/* Total Cost (MVP1-E8-15): detail tables folded under a summary. */
+.cost-more {
+  margin: 8px 0 16px;
+}
+
+.cost-more > summary {
+  cursor: pointer;
+  color: var(--link);
+  font-weight: 600;
+}
+
+.cost-more[open] > summary {
+  margin-bottom: 8px;
+}

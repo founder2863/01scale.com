@@ -667,22 +667,34 @@ export const costs = {
       "key": "MVP1-E8-14",
       "name": "MVP1-E8-14 · Roadmap v6: product work two sprints ahead, environments early, and tokens in the cost",
       "requests": 1,
-      "buildTokens": 10850506,
+      "buildTokens": 13820535,
       "reworkTokens": 0,
-      "buildCost": 2.92,
+      "buildCost": 3.7,
       "reworkCost": 0,
-      "totalCost": 2.92,
+      "totalCost": 3.7,
+      "yield": 100,
+      "pending": false
+    },
+    {
+      "key": "MVP1-E8-15",
+      "name": "MVP1-E8-15 · Total Cost from the latest roadmap: so far and projected",
+      "requests": 1,
+      "buildTokens": 10794308,
+      "reworkTokens": 0,
+      "buildCost": 2.8,
+      "reworkCost": 0,
+      "totalCost": 2.8,
       "yield": 100,
       "pending": false
     }
   ],
   "storyTotals": {
-    "requests": 173,
-    "tokens": 766156870,
-    "buildCost": 207.96,
+    "requests": 174,
+    "tokens": 779921207,
+    "buildCost": 211.54,
     "reworkCost": 141.25,
-    "cost": 349.21,
-    "yield": 62,
+    "cost": 352.79,
+    "yield": 63,
     "pending": true
   },
   "scaffolding": [
@@ -712,30 +724,30 @@ export const costs = {
     },
     {
       "name": "Process",
-      "requests": 59,
-      "tokens": 181515985,
-      "cost": 52.68
+      "requests": 60,
+      "tokens": 185262453,
+      "cost": 53.56
     },
     {
       "name": "Tool overhead (background calls)",
       "requests": 0,
       "tokens": 0,
-      "cost": 0.1
+      "cost": -0.5
     }
   ],
   "scaffoldingTotals": {
-    "requests": 110,
-    "tokens": 217067233,
-    "cost": 92.85
+    "requests": 111,
+    "tokens": 220813701,
+    "cost": 93.12
   },
   "totals": {
-    "requests": 283,
-    "tokens": 983224103,
-    "cost": 442.06,
-    "buildCost": 207.96,
+    "requests": 285,
+    "tokens": 1000734908,
+    "cost": 445.92,
+    "buildCost": 211.54,
     "reworkCost": 141.25,
-    "scaffoldingCost": 92.85,
-    "storyYield": 62,
+    "scaffoldingCost": 93.12,
+    "storyYield": 63,
     "overallYield": 49,
     "pendingRequests": 21,
     "pendingEstimate": 12.59,
@@ -743,9 +755,9 @@ export const costs = {
   },
   "byKind": {
     "input": 0.17,
-    "output": 31.46,
-    "cache_read": 80.34,
-    "cache_write": 77.44
+    "output": 32.09,
+    "cache_read": 83.24,
+    "cache_write": 77.77
   },
   "mistakes": {
     "designRedo": {
@@ -767,8 +779,8 @@ export const costs = {
       "cost": 105.4,
       "share": 24,
       "median": 8.2,
-      "typical": 0.67,
-      "extra": 96.09
+      "typical": 0.68,
+      "extra": 95.87
     },
     "mergedTooSoon": {
       "requests": 1,

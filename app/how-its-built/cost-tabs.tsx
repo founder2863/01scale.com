@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { costTabs, type CostTab } from "./tabs";
 
-// The four tabs of Total Cost (MVP1-E8-10). On a desktop, one row. On a phone or tablet,
+// The tabs of Total Cost (MVP1-E8-15: So Far and Projected; four tabs in MVP1-E8-10). On a desktop, one row. On a phone or tablet,
 // the site's pattern for many tabs (MVP1-E0-49): one button showing where you are, which opens the
 // list. Built on <details>, so it works without JavaScript.
 export function CostTabs({ current }: { current: CostTab }) {

@@ -18,14 +18,14 @@ export const humanCosts = {
     "stories": 40,
     "personDays": 205,
     "cost": 205000,
-    "tokenCost": 167.93,
+    "tokenCost": 168.47,
     "tbd": []
   },
   "projected": {
-    "stories": 179,
-    "personDays": 1074,
-    "cost": 1074000,
-    "tokenCost": 222.64,
+    "stories": 180,
+    "personDays": 1082,
+    "cost": 1082000,
+    "tokenCost": 226.1,
     "tbd": []
   },
   "excludedSoFar": {
@@ -191,17 +191,17 @@ export const humanCosts = {
       "epic": "MVP1-E8",
       "inScope": true,
       "projected": {
-        "stories": 14,
-        "personDays": 99,
-        "cost": 99000,
-        "tokenCost": 27.15,
+        "stories": 15,
+        "personDays": 107,
+        "cost": 107000,
+        "tokenCost": 30.61,
         "tbd": []
       },
       "soFar": {
         "stories": 6,
         "personDays": 38,
         "cost": 38000,
-        "tokenCost": 27.15,
+        "tokenCost": 27.69,
         "tbd": []
       }
     },
@@ -2105,13 +2105,28 @@ export const humanCosts = {
       "done": true,
       "issue": 242,
       "closed": "2026-11-27",
-      "tokenCost": 3.18,
+      "tokenCost": 3.72,
       "tokenCostShared": false,
       "tokenCostPending": false
     },
     {
       "id": "MVP1-E8-14",
       "title": "Roadmap v6: product work two sprints ahead, environments early, and tokens in the cost",
+      "product": "MVP1",
+      "epic": "MVP1-E8",
+      "size": "M",
+      "personDays": 8,
+      "cost": 8000,
+      "done": false,
+      "issue": null,
+      "closed": null,
+      "tokenCost": 2.92,
+      "tokenCostShared": false,
+      "tokenCostPending": false
+    },
+    {
+      "id": "MVP1-E8-15",
+      "title": "Total Cost from the latest roadmap: so far and projected",
       "product": "MVP1",
       "epic": "MVP1-E8",
       "size": "M",

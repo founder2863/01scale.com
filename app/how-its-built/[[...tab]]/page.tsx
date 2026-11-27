@@ -4,8 +4,8 @@ import { notFound } from "next/navigation";
 import { costs } from "../costs";
 import { constraints, paid, perExtraction, providers, providersTotal } from "../running-costs";
 import { designSkillCount, rulesHref, skillOrder, skills } from "../skills";
-import { builtTabs, costTabs, type BuiltTab, type CostTab } from "../tabs";
-import { humanCosts } from "../human-costs";
+import { builtTabs, costTabAliases, costTabs, type BuiltTab, type CostTab } from "../tabs";
+import { totalCost } from "../total-cost";
 import { CostPager, CostTabs } from "../cost-tabs";
 import { findMistake, mistakes } from "../mistakes";
 import { articleBody, articleDomains, articles, findArticle } from "../articles";
@@ -16,6 +16,11 @@ const REPO = "https://github.com/founder2863/01scale.com/blob/main";
 
 function usd(value: number | null) {
   return value === null ? "pending" : `$${value.toFixed(2)}`;
+}
+
+// Days with at most one decimal (MVP1-E8-15).
+function num(value: number) {
+  return Number.isInteger(value) ? String(value) : value.toFixed(1);
 }
 
 function dollars(value: number) {
@@ -45,6 +50,7 @@ export function generateStaticParams(): Params[] {
     { tab: [] },
     ...builtTabs.slice(1).map((item) => ({ tab: [item.slug] })),
     ...costTabs.slice(1).map((item) => ({ tab: ["total-projected-cost", item.slug] })),
+    ...Object.keys(costTabAliases).map((slug) => ({ tab: ["total-projected-cost", slug] })),
     // Each roadmap version has its own address; "/how-its-built/roadmap" is the latest.
     ...roadmapVersions.map((item) => ({ tab: ["roadmap", item.slug] })),
     ...mistakes.map((item) => ({ tab: ["expensive-mistakes", item.slug] })),
@@ -62,7 +68,7 @@ function resolve(params: Params): BuiltTab | null {
       return findRoadmapVersion(slug) ? "roadmap" : null;
     }
     if (params.tab?.[0] === "total-projected-cost") {
-      return costTabs.slice(1).some((item) => item.slug === slug) ? "total-projected-cost" : null;
+      return costTabs.slice(1).some((item) => item.slug === slug) || slug in costTabAliases ? "total-projected-cost" : null;
     }
     return params.tab?.[0] === "expensive-mistakes" && (findMistake(slug) || findArticle(slug)) ? "expensive-mistakes" : null;
   }
@@ -74,7 +80,8 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   const resolved = await params;
   const tab = resolve(resolved);
   const article = resolved.tab?.[1] ? findMistake(resolved.tab[1]) ?? findArticle(resolved.tab[1]) : undefined;
-  const costLabel = tab === "total-projected-cost" && resolved.tab?.[1] ? costTabs.find((item) => item.slug === resolved.tab?.[1])?.label : undefined;
+  const costSlug = resolved.tab?.[1] ? costTabAliases[resolved.tab[1]] ?? resolved.tab[1] : undefined;
+  const costLabel = tab === "total-projected-cost" && costSlug ? costTabs.find((item) => item.slug === costSlug)?.label : undefined;
   const label = article?.title ?? costLabel ?? builtTabs.find((item) => item.slug === tab)?.label;
   return {
     title: tab === "skills" ? "How It's Built — 01scale" : `How It's Built · ${label} — 01scale`,
@@ -90,9 +97,11 @@ export default async function HowItsBuilt({ params }: { params: Promise<Params> 
   const article = resolved.tab?.[1] ? findMistake(resolved.tab[1]) : undefined;
   const lesson = resolved.tab?.[1] ? findArticle(resolved.tab[1]) : undefined;
   const lessonBody = lesson ? articleBody(lesson) : null;
-  const costTab: CostTab = (tab === "total-projected-cost" && (resolved.tab?.[1] as CostTab | undefined)) || "actual-token-cost";
-  const doneStories = humanCosts.stories.filter((story) => story.done);
-  const scopedEpics = humanCosts.epics.filter((epic) => epic.inScope);
+  const costTab: CostTab =
+    (tab === "total-projected-cost" &&
+      resolved.tab?.[1] &&
+      ((costTabAliases[resolved.tab[1]] ?? resolved.tab[1]) as CostTab)) ||
+    "so-far";
   return (
     <>
       <section className="hero hero-small">
@@ -527,17 +536,74 @@ export default async function HowItsBuilt({ params }: { params: Promise<Params> 
             Total Cost <span className="status">In progress</span>
           </h2>
           <p className="note">
-            What 01scale has cost with Claude Code, against what a human team
-            would cost for the same stories, so far and projected to the end of
-            MVP1. Visitors pay nothing: every cost lands on me, so every service
+            What 01scale has cost with Claude Code so far, against what a human
+            team would have cost for the same stories, and what the rest of the
+            plan will cost without and with Claude Code: product managers and
+            engineers, plus tokens. The plan is the latest roadmap version,{" "}
+            <Link href={totalCost.version.href}>roadmap {totalCost.version.slug}</Link>. Visitors pay nothing: every cost lands on me, so every service
             has a ceiling, listed under{" "}
             <Link href="/how-its-built/constraints">Constraints</Link>.
           </p>
 
           <CostTabs current={costTab} />
 
-          {costTab === "actual-token-cost" && (
+          {costTab === "so-far" && (
           <div className="cost-panel">
+            <h3 className="section-subtitle">So far: Claude Code against a human team</h3>
+            <div className="stat-row">
+              <div className="stat">
+                <span className="stat-value">{usd(costs.totals.cost)}</span>
+                <span className="stat-label">Tokens spent so far, at API rates</span>
+              </div>
+              <div className="stat">
+                <span className="stat-value">{dollars(totalCost.soFar.humanCost)}</span>
+                <span className="stat-label">A human team for the {totalCost.soFar.stories} stories built</span>
+              </div>
+              <div className="stat">
+                <span className="stat-value">
+                  {num(totalCost.soFar.productDays)} + {num(totalCost.soFar.devDays)}
+                </span>
+                <span className="stat-label">Product + development days they would take</span>
+              </div>
+            </div>
+            <p className="note">
+              Priced like the roadmap prices planned stories: product days at the product
+              manager rate ({dollars(totalCost.rates.productManager)} a day), development days
+              at the engineer rate ({dollars(totalCost.rates.engineer)} a day). A built story
+              the roadmap does not plan is engineering work: its size plus{" "}
+              {Math.round(totalCost.productShare * 100)}% for the product manager&apos;s sprint
+              work. Rates are an assumption (Nikhil, 27 Nov 2026).
+            </p>
+            <details className="cost-more">
+              <summary>Each story built</summary>
+              <table className="cost-table cost-table-small">
+                <thead>
+                  <tr>
+                    <th scope="col">Story</th>
+                    <th scope="col">Size</th>
+                    <th scope="col">Product days</th>
+                    <th scope="col">Development days</th>
+                    <th scope="col">Human cost</th>
+                    <th scope="col">Tokens</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {totalCost.soFar.built.map((story) => (
+                    <tr key={story.id}>
+                      <th scope="row">
+                        {story.id} {story.title}
+                      </th>
+                      <td data-label="Size">{story.size}</td>
+                      <td data-label="Product days">{num(story.productDays)}</td>
+                      <td data-label="Development days">{num(story.devDays)}</td>
+                      <td data-label="Human cost">{dollars(story.cost)}</td>
+                      <td data-label="Tokens">{story.tokenCost === null ? "pending" : usd(story.tokenCost)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </details>
+
             <h3 className="section-subtitle">Development cost</h3>
             <div className="stat-row">
               <div className="stat">
@@ -653,93 +719,108 @@ export default async function HowItsBuilt({ params }: { params: Promise<Params> 
           </div>
           )}
 
-          {costTab === "estimated-human-cost" && (
+          {costTab === "projected" && (
           <div className="cost-panel">
+            <h3 className="section-subtitle">
+              The rest of the plan: without and with Claude Code
+            </h3>
             <div className="stat-row">
               <div className="stat">
-                <span className="stat-value">{dollars(humanCosts.soFar.cost)}</span>
-                <span className="stat-label">Estimated human cost so far</span>
+                <span className="stat-value">{dollars(totalCost.projected.without.total)}</span>
+                <span className="stat-label">Without Claude Code</span>
               </div>
               <div className="stat">
-                <span className="stat-value">{humanCosts.soFar.personDays}</span>
-                <span className="stat-label">Person-days, {humanCosts.soFar.stories} stories done</span>
+                <span className="stat-value">{dollars(totalCost.projected.with.total)}</span>
+                <span className="stat-label">With Claude Code, tokens included</span>
               </div>
               <div className="stat">
-                <span className="stat-value">{usd(humanCosts.soFar.tokenCost)}</span>
-                <span className="stat-label">Measured token cost of the same stories</span>
+                <span className="stat-value">{dollars(totalCost.projected.saved)}</span>
+                <span className="stat-label">
+                  Saved ({Math.round((totalCost.projected.saved / totalCost.projected.without.total) * 100)}%)
+                </span>
               </div>
             </div>
-            <HumanCostNote />
-
-            <h3 className="section-subtitle">Each story done</h3>
-            <HumanStoryTable stories={doneStories} total={humanCosts.soFar} showDone={false} />
-          </div>
-          )}
-
-          {costTab === "projected-token-cost" && (
-          <div className="cost-panel">
-            <div className="coming-soon">
-              <p className="coming-soon-title">Coming Soon...</p>
-              <p>
-                What every MVP1 story, AutoRep V1 included, will cost to build
-                with Claude Code, product and development work shown
-                separately: measured where a story is done, estimated from
-                comparable stories where it is not (story MVP1-E8-06).
-              </p>
-            </div>
-          </div>
-          )}
-
-          {costTab === "projected-human-cost" && (
-          <div className="cost-panel">
-            <div className="stat-row">
-              <div className="stat">
-                <span className="stat-value">{dollars(humanCosts.projected.cost)}</span>
-                <span className="stat-label">Projected human cost of MVP1</span>
-              </div>
-              <div className="stat">
-                <span className="stat-value">{humanCosts.projected.personDays}</span>
-                <span className="stat-label">Person-days, {humanCosts.projected.stories} stories</span>
-              </div>
-              <div className="stat">
-                <span className="stat-value">{humanCosts.soFar.stories} of {humanCosts.projected.stories}</span>
-                <span className="stat-label">Stories done</span>
-              </div>
-            </div>
-            <HumanCostNote />
-
-            <h3 className="section-subtitle">By epic</h3>
-            <table className="cost-table cost-table-small">
+            <table className="cost-table cost-table-text">
               <thead>
                 <tr>
-                  <th scope="col">Epic</th>
-                  <th scope="col">Stories</th>
-                  <th scope="col">Person-days</th>
-                  <th scope="col">Human cost</th>
+                  <th scope="col">Cost</th>
+                  <th scope="col">Without Claude Code</th>
+                  <th scope="col">With Claude Code</th>
                 </tr>
               </thead>
               <tbody>
-                {scopedEpics.map((epic) => (
-                  <tr key={epic.epic}>
-                    <th scope="row">{epic.epic}</th>
-                    <td data-label="Stories">{epic.projected.stories}</td>
-                    <td data-label="Person-days">{epic.projected.personDays}</td>
-                    <td data-label="Human cost">{dollars(epic.projected.cost)}</td>
+                <tr>
+                  <th scope="row">
+                    The team: {totalCost.projected.without.productManagers} product managers and{" "}
+                    {totalCost.projected.without.engineers} engineers, every working day of the plan
+                  </th>
+                  <td data-label="Without Claude Code">
+                    {dollars(totalCost.projected.without.team)} · {totalCost.projected.without.days} days
+                  </td>
+                  <td data-label="With Claude Code">
+                    {dollars(totalCost.projected.with.team)} · {totalCost.projected.with.days} days
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row">Tokens for the remaining stories</th>
+                  <td data-label="Without Claude Code">-</td>
+                  <td data-label="With Claude Code">
+                    {dollars(totalCost.projected.with.tokens)} (product {dollars(totalCost.projected.with.tokensProduct)},
+                    engineering {dollars(totalCost.projected.with.tokensEngineering)})
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row">Total</th>
+                  <td data-label="Without Claude Code">
+                    <strong>{dollars(totalCost.projected.without.total)}</strong>
+                  </td>
+                  <td data-label="With Claude Code">
+                    <strong>{dollars(totalCost.projected.with.total)}</strong>
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row">Product + development days the stories take</th>
+                  <td data-label="Without Claude Code">
+                    {num(totalCost.projected.without.productDays)} + {num(totalCost.projected.without.devDays)}
+                  </td>
+                  <td data-label="With Claude Code">
+                    {num(totalCost.projected.with.productDays)} + {num(totalCost.projected.with.devDays)}
+                  </td>
+                </tr>
+                {totalCost.projected.milestones.map((m) => (
+                  <tr key={m.name}>
+                    <th scope="row">{m.name}</th>
+                    <td data-label="Without Claude Code">
+                      {m.without ? `Month ${m.without.month} · likely ${m.without.p50Month} · worst ${m.without.p90Month}` : "-"}
+                    </td>
+                    <td data-label="With Claude Code">
+                      {m.with ? `Month ${m.with.month} · likely ${m.with.p50Month} · worst ${m.with.p90Month}` : "-"}
+                    </td>
                   </tr>
                 ))}
               </tbody>
-              <tfoot>
-                <tr>
-                  <th scope="row">Total</th>
-                  <td data-label="Stories">{humanCosts.projected.stories}</td>
-                  <td data-label="Person-days">{humanCosts.projected.personDays}</td>
-                  <td data-label="Human cost">{dollars(humanCosts.projected.cost)}</td>
-                </tr>
-              </tfoot>
             </table>
-
-            <h3 className="section-subtitle">Every story</h3>
-            <HumanStoryTable stories={humanCosts.stories} total={humanCosts.projected} showDone />
+            <p className="note">
+              From <Link href={totalCost.version.href}>roadmap {totalCost.version.slug}</Link>,{" "}
+              {totalCost.version.title}. The team is paid for every working day of its plan, busy or
+              not. {totalCost.projected.tokensWhy}
+            </p>
+            <h3 className="section-subtitle">Not in the plan</h3>
+            <p className="note">
+              {totalCost.projected.notPlanned.length} stories in scope that this roadmap version
+              does not plan ({totalCost.projected.notPlannedDays} person-days by size): listed,
+              not priced, until a roadmap version plans them.
+            </p>
+            <details className="cost-more">
+              <summary>The stories not in the plan</summary>
+              <ul className="rm-list">
+                {totalCost.projected.notPlanned.map((s) => (
+                  <li key={s.id}>
+                    {s.id} {s.title} ({s.size})
+                  </li>
+                ))}
+              </ul>
+            </details>
           </div>
           )}
 
@@ -788,76 +869,3 @@ export default async function HowItsBuilt({ params }: { params: Promise<Params> 
   );
 }
 
-// The rate and sizes behind the human cost, always shown as an assumption (MVP1-E8-09, E8-10).
-function HumanCostNote() {
-  const sizes = Object.entries(humanCosts.personDaysPerSize)
-    .map(([size, days]) => `${size} ${days}`)
-    .join(", ");
-  return (
-    <p className="note">
-      Assumption: one {humanCosts.rate.role} at {dollars(humanCosts.rate.usdPerPersonDay)} per
-      person-day ({humanCosts.rate.source}), and person-days per story size of {sizes}. Sizes come
-      from the epics files; a story without a size shows TBD. {humanCosts.scope} Worked out by{" "}
-      <a href={`${REPO}/scripts/costs/human_costs.py`}>one script</a>, updated {humanCosts.updated}.
-    </p>
-  );
-}
-
-// Typed loosely, so a story without a size (TBD) or a measured cost renders without a code change.
-type HumanStory = {
-  id: string;
-  title: string;
-  size: string | null;
-  personDays: number | null;
-  cost: number | null;
-  done: boolean;
-  tokenCost: number | null;
-  tokenCostShared: boolean;
-  tokenCostPending: boolean;
-};
-type HumanTotal = { personDays: number; cost: number; tokenCost: number };
-
-function HumanStoryTable({ stories, total, showDone }: { stories: readonly HumanStory[]; total: HumanTotal; showDone: boolean }) {
-  return (
-    <table className="cost-table">
-      <thead>
-        <tr>
-          <th scope="col">Story</th>
-          <th scope="col">Size</th>
-          <th scope="col">Person-days</th>
-          <th scope="col">Human cost</th>
-          <th scope="col">Token cost</th>
-          {showDone && <th scope="col">Done</th>}
-        </tr>
-      </thead>
-      <tbody>
-        {stories.map((story) => (
-          <tr key={story.id}>
-            <th scope="row">
-              {story.id} · {story.title}
-            </th>
-            <td data-label="Size">{story.size ?? "TBD"}</td>
-            <td data-label="Person-days">{story.personDays ?? "TBD"}</td>
-            <td data-label="Human cost">{story.cost === null ? "TBD" : dollars(story.cost)}</td>
-            <td data-label="Token cost">
-              {story.tokenCost === null ? "not measured" : usd(story.tokenCost)}
-              {story.tokenCostShared && <span className="cost-pending"> shared</span>}
-              {story.tokenCostPending && <span className="cost-pending"> + pending</span>}
-            </td>
-            {showDone && <td data-label="Done">{story.done ? "Yes" : "No"}</td>}
-          </tr>
-        ))}
-      </tbody>
-      <tfoot>
-        <tr>
-          <th scope="row">Total</th>
-          <td className="cost-empty" />
-          <td data-label="Person-days">{total.personDays}</td>
-          <td data-label="Human cost">{dollars(total.cost)}</td>
-          <td data-label="Token cost">{usd(total.tokenCost)}</td>
-          {showDone && <td className="cost-empty" />}
-        </tr>
-      </tfoot>
-    </table>
-  );
-}
