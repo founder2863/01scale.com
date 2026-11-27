@@ -1362,6 +1362,21 @@ As a product leader, I want the work tied to no story (product discovery, questi
 
 **Status: not started.**
 
+### MVP1-E8-18 · Stories in two phases: product, then engineering — L
+As a product leader, I want every story estimated and costed the way the work really happens, so the plan, the human cost and the token cost all tell the same story (Nikhil, 27 Nov 2026). A story starts as an empty shell. The product manager takes it to **ready to develop**, which is the product phase and product token cost. Engineers then build it, which is the engineering phase and engineering token cost. Some stories are product only (pricing, GTM strategy), some engineering only (sandbox set-up).
+- **AC1:** Every MVP1 and AutoRep story has **two sizes**, a product size and an engineering size (S, M, L or none), on one line in the epics file: `- **Sizes:** product M · engineering S`. Each size is that phase's full effort, joint time included (the PM in acceptance, engineers in refinement); the flat 10% and 25% add-ons of the roadmap are retired.
+- **AC2:** The **product phase** covers everything up to ready to develop: requirements and acceptance criteria, UX (user journeys, UI flows) and the technical design (API spec, data model, schema, architecture, sequence diagrams). Nikhil is a technical platform PM, and design is done with PM and UX before development starts. The **engineering phase** covers the build, tests and release. This replaces the 75% / 25% rule for API spec, data model and schema.
+- **AC3:** Each epic gets a product-only story for its PRD and epic (for example `MVP1-E3-00 · PRD and epic`).
+- **AC4:** Claude Code proposes the two sizes for every story in a CSV, done stories included; Nikhil reviews them before they go into the epics files.
+- **AC5:** A new roadmap version, v7 (v6 frozen first, in its own commit), schedules each story's product phase before its engineering phase; `npm run human-costs` and Total Cost price product days at the product manager rate and engineering days at the engineer rate.
+- **AC6:** Every token ledger request carries a **phase** (product or engineering), tagged when it is recorded; past requests are re-tagged from their summaries, with a mixed request split evenly and noted. Rework counts to the phase that does it (an engineer redoing work after a requirement change is engineering rework), with the cause in the summary. The Token Costs table reads the phase instead of the per-story shares in `docs/process/token-classes.json`; pre-requisites keep their classification by subject. The `record-token-costs` skill says how to tag.
+- **AC7:** Projected tokens are worked out per phase: each remaining story's product size at the measured product rate and its engineering size at the measured engineering rate.
+- **Service:** Site (`apps/web`), `scripts/costs/` and `scripts/site/`
+- **API design:** No endpoints.
+- **Database design:** No tables.
+
+Issue #259. **Status: not started.** It may be split when it is picked up (sizes and roadmap v7; ledger phases).
+
 ---
 
 ## E9 · Go-live and operations

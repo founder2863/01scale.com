@@ -15,17 +15,17 @@ export const humanCosts = {
   },
   "scope": "MVP1 only: Platform Core, the platform services, DocFlow (E0 to E7), the cost work itself (E8; Nikhil on PR #159) and AutoRep V1 (E1 to E6). MVP2 is out.",
   "soFar": {
-    "stories": 42,
-    "personDays": 221,
-    "cost": 221000,
-    "tokenCost": 180.63,
+    "stories": 43,
+    "personDays": 229,
+    "cost": 229000,
+    "tokenCost": 185.47,
     "tbd": []
   },
   "projected": {
-    "stories": 180,
-    "personDays": 1082,
-    "cost": 1082000,
-    "tokenCost": 235.34,
+    "stories": 182,
+    "personDays": 1098,
+    "cost": 1098000,
+    "tokenCost": 240.18,
     "tbd": []
   },
   "excludedSoFar": {
@@ -191,17 +191,17 @@ export const humanCosts = {
       "epic": "MVP1-E8",
       "inScope": true,
       "projected": {
-        "stories": 15,
-        "personDays": 107,
-        "cost": 107000,
-        "tokenCost": 39.85,
+        "stories": 17,
+        "personDays": 123,
+        "cost": 123000,
+        "tokenCost": 44.69,
         "tbd": []
       },
       "soFar": {
-        "stories": 8,
-        "personDays": 54,
-        "cost": 54000,
-        "tokenCost": 39.85,
+        "stories": 9,
+        "personDays": 62,
+        "cost": 62000,
+        "tokenCost": 44.69,
         "tbd": []
       }
     },
@@ -2135,7 +2135,37 @@ export const humanCosts = {
       "done": true,
       "issue": 254,
       "closed": "2026-11-27",
-      "tokenCost": 8.46,
+      "tokenCost": 8.9,
+      "tokenCostShared": false,
+      "tokenCostPending": false
+    },
+    {
+      "id": "MVP1-E8-16",
+      "title": "Token Costs: Product and Engineering, so far and projected",
+      "product": "MVP1",
+      "epic": "MVP1-E8",
+      "size": "M",
+      "personDays": 8,
+      "cost": 8000,
+      "done": true,
+      "issue": 256,
+      "closed": "2026-11-27",
+      "tokenCost": 4.4,
+      "tokenCostShared": false,
+      "tokenCostPending": true
+    },
+    {
+      "id": "MVP1-E8-17",
+      "title": "Pre-requisite work as an epic with stories and a projection",
+      "product": "MVP1",
+      "epic": "MVP1-E8",
+      "size": "M",
+      "personDays": 8,
+      "cost": 8000,
+      "done": false,
+      "issue": null,
+      "closed": null,
+      "tokenCost": null,
       "tokenCostShared": false,
       "tokenCostPending": false
     },

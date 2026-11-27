@@ -692,20 +692,32 @@ export const costs = {
       "name": "MVP1-E8-16 · Token Costs by Product and Engineering, so far and projected",
       "requests": 4,
       "buildTokens": 10946977,
-      "reworkTokens": 4822029,
-      "buildCost": 4.4,
+      "reworkTokens": 6659141,
+      "buildCost": 4.34,
+      "reworkCost": 2.26,
+      "totalCost": 6.6,
+      "yield": 62,
+      "pending": false
+    },
+    {
+      "key": "MVP1-E8-18",
+      "name": "MVP1-E8-18 · Stories in two phases: product, then engineering (story and decisions)",
+      "requests": 5,
+      "buildTokens": 6716638,
+      "reworkTokens": 0,
+      "buildCost": 1.93,
       "reworkCost": 0,
-      "totalCost": 4.4,
-      "yield": 69,
-      "pending": true
+      "totalCost": 1.93,
+      "yield": 100,
+      "pending": false
     }
   ],
   "storyTotals": {
-    "requests": 180,
-    "tokens": 820331865,
-    "buildCost": 216.54,
-    "reworkCost": 146.75,
-    "cost": 363.29,
+    "requests": 185,
+    "tokens": 828885615,
+    "buildCost": 218.41,
+    "reworkCost": 149.01,
+    "cost": 367.42,
     "yield": 62,
     "pending": true
   },
@@ -744,32 +756,32 @@ export const costs = {
       "name": "Tool overhead (background calls)",
       "requests": 0,
       "tokens": 0,
-      "cost": 3.62
+      "cost": 3.76
     }
   ],
   "scaffoldingTotals": {
     "requests": 114,
     "tokens": 226495442,
-    "cost": 104.23
+    "cost": 104.37
   },
   "totals": {
-    "requests": 294,
-    "tokens": 1046827307,
-    "cost": 467.52,
-    "buildCost": 216.54,
-    "reworkCost": 146.75,
-    "scaffoldingCost": 104.23,
+    "requests": 299,
+    "tokens": 1055381057,
+    "cost": 471.79,
+    "buildCost": 218.41,
+    "reworkCost": 149.01,
+    "scaffoldingCost": 104.37,
     "storyYield": 62,
     "overallYield": 48,
-    "pendingRequests": 24,
-    "pendingEstimate": 14.31,
-    "pendingEstimated": 18
+    "pendingRequests": 21,
+    "pendingEstimate": 12.59,
+    "pendingEstimated": 15
   },
   "byKind": {
-    "input": 0.18,
-    "output": 33.39,
-    "cache_read": 92.5,
-    "cache_write": 84.41
+    "input": 0.2,
+    "output": 35.32,
+    "cache_read": 97.48,
+    "cache_write": 86.15
   },
   "mistakes": {
     "designRedo": {
@@ -789,10 +801,10 @@ export const costs = {
     "reloads": {
       "requests": 14,
       "cost": 105.4,
-      "share": 23,
+      "share": 22,
       "median": 8.2,
-      "typical": 0.7,
-      "extra": 95.6
+      "typical": 0.68,
+      "extra": 95.87
     },
     "mergedTooSoon": {
       "requests": 1,
@@ -1022,10 +1034,10 @@ export const costs = {
         "name": "E8 · Total projected cost: a human team versus Claude Code",
         "product": {
           "actual": {
-            "tokens": 180313124,
-            "build": 47.78,
-            "rework": 16.26,
-            "total": 64.05
+            "tokens": 188866874,
+            "build": 49.66,
+            "rework": 18.52,
+            "total": 68.18
           },
           "projected": 76.16
         },
@@ -1034,9 +1046,9 @@ export const costs = {
           "projected": null
         },
         "grand": {
-          "actual": 64.05,
+          "actual": 68.18,
           "projected": 76.16,
-          "total": 140.21
+          "total": 144.34
         }
       },
       {
@@ -1233,7 +1245,7 @@ export const costs = {
           "tokens": 130353053,
           "build": null,
           "rework": null,
-          "total": 64.84
+          "total": 64.94
         },
         "projected": null
       },
@@ -1242,14 +1254,14 @@ export const costs = {
           "tokens": 96142389,
           "build": null,
           "rework": null,
-          "total": 39.39
+          "total": 39.43
         },
         "projected": null
       },
       "grand": {
-        "actual": 104.23,
+        "actual": 104.37,
         "projected": null,
-        "total": 104.23
+        "total": 104.37
       }
     },
     "total": {
@@ -1257,10 +1269,10 @@ export const costs = {
       "name": "Total",
       "product": {
         "actual": {
-          "tokens": 603178450,
-          "build": 128.48,
-          "rework": 81.3,
-          "total": 274.64
+          "tokens": 611732200,
+          "build": 130.35,
+          "rework": 83.56,
+          "total": 278.86
         },
         "projected": 408.37
       },
@@ -1269,14 +1281,14 @@ export const costs = {
           "tokens": 443648857,
           "build": 88.06,
           "rework": 65.46,
-          "total": 192.88
+          "total": 192.93
         },
         "projected": 1314.47
       },
       "grand": {
-        "actual": 467.52,
+        "actual": 471.79,
         "projected": 1722.84,
-        "total": 2190.36
+        "total": 2194.63
       }
     },
     "roadmap": {

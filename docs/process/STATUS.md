@@ -56,7 +56,7 @@ Every closed story issue (27 of them) carries its measured token cost and estima
 
 Handoff from session c5c5ca89 (25 to 27 Nov 2026), in the order Nikhil asked for them:
 
-0. ~~Token Costs tab redesign~~: built in `MVP1-E8-16` (#256). Open for Nikhil on the PR: whether the home page, app Overview and vision page text count as Product rather than site code.
+0. ~~Token Costs tab redesign~~: built in `MVP1-E8-16` (#256, PR #257, closed). **Next: `MVP1-E8-18`, stories in two phases** (product, then engineering; two sizes per story; roadmap v7; phase on every ledger request). Nikhil's eight answers are in `docs/decisions/MVP1-E8.md`. Start with the size proposal CSV for Nikhil to review.
 1. **Review roadmap v6 with Nikhil** and start v7 from its gaps (freeze v6 first, in its own commit, before any story changes; never re-run a frozen version after the epics change). Candidates raised but not decided: plan **AutoRep V1** (20 stories, about 110 person-days, the only work outside the plan) so it gets a timeline and a cost; the slow sprint 0 (kept honest by Nikhil).
 2. **GitHub issue fields:** once Nikhil creates four **Number** issue fields named exactly `Product estimate without Claude Code`, `Product estimate with Claude Code`, `Dev estimate without Claude Code` and `Dev estimate with Claude Code` (Settings → Issue fields), fill them on every story issue from `docs/process/roadmap/v<latest>/estimates.csv`. Start and Target dates wait until Nikhil says the plan has settled.
 3. **Two open questions block their stories:** E0-27 (how live numbers reach the Metrics section) and E3-06 (which embeddings provider). The roadmap gives each a decision session; Nikhil answers them in the epics file.
