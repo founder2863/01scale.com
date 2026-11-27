@@ -805,6 +805,53 @@ export default async function HowItsBuilt({ params }: { params: Promise<Params> 
               {totalCost.version.title}. The team is paid for every working day of its plan, busy or
               not. {totalCost.projected.tokensWhy}
             </p>
+            <h3 className="section-subtitle">Cost by story</h3>
+            <p className="note">
+              Every remaining story in the plan, without and with Claude Code: product days at the
+              product manager rate and development days at the engineer rate, plus, with Claude Code,
+              the story&apos;s projected tokens. Grouped by epic below; each story is in the table.
+              These add up to the work ({dollars(totalCost.projected.byStoryTotal.without)} and{" "}
+              {dollars(totalCost.projected.byStoryTotal.with)}), not the team total above, which
+              also pays for idle days.
+            </p>
+            <CostByEpicChart />
+            <details className="cost-more">
+              <summary>Each story ({totalCost.projected.byStoryTotal.stories})</summary>
+              <table className="cost-table cost-table-small">
+                <thead>
+                  <tr>
+                    <th scope="col">Story</th>
+                    <th scope="col">Size</th>
+                    <th scope="col">Without Claude Code</th>
+                    <th scope="col">With Claude Code</th>
+                    <th scope="col">Of which tokens</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {totalCost.projected.byStory.map((story) => (
+                    <tr key={story.id}>
+                      <th scope="row">
+                        {story.id} {story.title}
+                      </th>
+                      <td data-label="Size">{story.size}</td>
+                      <td data-label="Without Claude Code">{dollars(story.without)}</td>
+                      <td data-label="With Claude Code">{dollars(story.with)}</td>
+                      <td data-label="Of which tokens">{usd(story.tokens)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <th scope="row">Total</th>
+                    <td className="cost-empty" />
+                    <td data-label="Without Claude Code">{dollars(totalCost.projected.byStoryTotal.without)}</td>
+                    <td data-label="With Claude Code">{dollars(totalCost.projected.byStoryTotal.with)}</td>
+                    <td data-label="Of which tokens">{usd(totalCost.projected.byStoryTotal.tokens)}</td>
+                  </tr>
+                </tfoot>
+              </table>
+            </details>
+
             <h3 className="section-subtitle">Not in the plan</h3>
             <p className="note">
               {totalCost.projected.notPlanned.length} stories in scope that this roadmap version
@@ -869,3 +916,45 @@ export default async function HowItsBuilt({ params }: { params: Promise<Params> 
   );
 }
 
+// Cost by epic, without and with Claude Code (MVP1-E8-15; Nikhil on PR #253). Horizontal bars on
+// one scale, blue for without and orange for with (the dataviz palette's first two slots,
+// validated against this site's surfaces); every bar carries its value, a hover title, and the
+// story table above is the table view.
+function CostByEpicChart() {
+  const epics = totalCost.projected.byEpic;
+  const max = Math.max(...epics.map((e) => e.without), 1);
+  return (
+    <figure className="cbe" aria-label="Cost by epic, without and with Claude Code">
+      <div className="cbe-legend" aria-hidden="true">
+        <span className="cbe-key cbe-without">Without Claude Code</span>
+        <span className="cbe-key cbe-with">With Claude Code (tokens included)</span>
+      </div>
+      <ul className="cbe-rows">
+        {epics.map((e) => (
+          <li key={e.epic} className="cbe-row">
+            <span className="cbe-name">
+              <span className="cbe-id">{e.epic.replace("MVP1-", "")}</span> {e.name}
+              <span className="cbe-count"> · {e.stories} {e.stories === 1 ? "story" : "stories"}</span>
+            </span>
+            <span className="cbe-bars">
+              <span
+                className="cbe-bar cbe-without"
+                style={{ width: `${(e.without / max) * 100}%` }}
+                title={`${e.epic} without Claude Code: ${dollars(e.without)}`}
+              >
+                <span className="cbe-value">{dollars(e.without)}</span>
+              </span>
+              <span
+                className="cbe-bar cbe-with"
+                style={{ width: `${(e.with / max) * 100}%` }}
+                title={`${e.epic} with Claude Code: ${dollars(e.with)}, of which tokens ${usd(e.tokens)}`}
+              >
+                <span className="cbe-value">{dollars(e.with)}</span>
+              </span>
+            </span>
+          </li>
+        ))}
+      </ul>
+    </figure>
+  );
+}

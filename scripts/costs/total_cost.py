@@ -103,6 +103,40 @@ def main():
     cost = roadmap["cost"]
     without, with_cc, tokens = cost["Without"], cost["With"], cost["tokens"]
 
+    # Cost by story (Nikhil on PR #253): every remaining planned story, priced without and with
+    # Claude Code, grouped by epic. Without: product days at the product manager rate plus
+    # development days at the engineer rate. With: the same with Claude Code's days, plus the
+    # story's projected tokens (the roadmap's rule). These add up to the work, not the team: the
+    # team total also pays for idle days.
+    tk_rate = cost["tokens"]["ratePerPersonDay"]
+    tmodel = rmodel["tokens"]
+    owner = {s["id"]: ("product" if s["person"].startswith("Product") else "engineering") for s in roadmap["plan"]["stories"]}
+    epic_names = {}
+    for path in ("docs/epics/MVP1-EPICS.md",):
+        for m in re.finditer(r"^## (E\d+) · (.+)$", open(path, encoding="utf-8").read(), re.M):
+            epic_names[f"MVP1-{m.group(1)}"] = re.sub(r'\s*\(MVP1 "[a-z]"\)|\s*—\s*`llm`', "", m.group(2)).strip()
+    by_story = []
+    for sid in sorted(planned):
+        st = known.get(sid)
+        if not st or st["done"]:
+            continue
+        e = st["estimates"]
+        days = st["days"] or 0
+        mult = tmodel["engineering_multiplier"] if owner.get(sid) == "engineering" else tmodel["product_multiplier"]
+        story_tokens = round(days * tk_rate * mult * (1 + tmodel["overhead"]), 2)
+        story_without = round(e["productWithout"] * pm_rate + e["devWithout"] * eng_rate)
+        story_with = round(e["productWith"] * pm_rate + e["devWith"] * eng_rate + story_tokens)
+        by_story.append({"id": sid, "title": st["title"], "size": st["size"], "issue": st["issue"],
+                         "epic": sid.rsplit("-", 1)[0], "owner": owner.get(sid, "engineering"),
+                         "without": story_without, "with": story_with, "tokens": story_tokens,
+                         "daysWithout": e["productWithout"] + e["devWithout"], "daysWith": e["productWith"] + e["devWith"]})
+    epics = []
+    for ep in sorted({b["epic"] for b in by_story}, key=lambda x: int(x.split("-E")[1])):
+        rows = [b for b in by_story if b["epic"] == ep]
+        epics.append({"epic": ep, "name": epic_names.get(ep, ""), "stories": len(rows),
+                      "without": sum(b["without"] for b in rows), "with": sum(b["with"] for b in rows),
+                      "tokens": round(sum(b["tokens"] for b in rows), 2)})
+
     # In scope but not planned by the roadmap: listed, not priced.
     not_planned = [
         {"id": s["id"], "title": s["title"], "size": s["size"], "personDays": s["personDays"], "issue": s["issue"]}
@@ -146,6 +180,10 @@ def main():
                  "with": next((f for f in roadmap["forecast"]["With"]["milestones"] if f["name"] == m["name"]), None)}
                 for m in roadmap["plan"]["milestones"] if "live in production" in m["name"]
             ],
+            "byEpic": epics,
+            "byStory": by_story,
+            "byStoryTotal": {"without": sum(b["without"] for b in by_story), "with": sum(b["with"] for b in by_story),
+                             "tokens": round(sum(b["tokens"] for b in by_story), 2), "stories": len(by_story)},
             "notPlanned": not_planned,
             "notPlannedDays": sum(s["personDays"] or 0 for s in not_planned),
         },

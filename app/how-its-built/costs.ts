@@ -678,23 +678,23 @@ export const costs = {
     {
       "key": "MVP1-E8-15",
       "name": "MVP1-E8-15 · Total Cost from the latest roadmap: so far and projected",
-      "requests": 1,
+      "requests": 2,
       "buildTokens": 13160360,
-      "reworkTokens": 0,
+      "reworkTokens": 11361886,
       "buildCost": 3.41,
-      "reworkCost": 0,
-      "totalCost": 3.41,
-      "yield": 100,
+      "reworkCost": 2.73,
+      "totalCost": 6.14,
+      "yield": 54,
       "pending": false
     }
   ],
   "storyTotals": {
-    "requests": 174,
-    "tokens": 782287259,
+    "requests": 175,
+    "tokens": 793649145,
     "buildCost": 212.15,
-    "reworkCost": 141.25,
-    "cost": 353.4,
-    "yield": 63,
+    "reworkCost": 143.98,
+    "cost": 356.13,
+    "yield": 62,
     "pending": true
   },
   "scaffolding": [
@@ -725,39 +725,39 @@ export const costs = {
     {
       "name": "Process",
       "requests": 62,
-      "tokens": 187641897,
-      "cost": 59.77
+      "tokens": 189236775,
+      "cost": 60.14
     },
     {
       "name": "Tool overhead (background calls)",
       "requests": 0,
       "tokens": 0,
-      "cost": -2.7
+      "cost": 0.95
     }
   ],
   "scaffoldingTotals": {
     "requests": 113,
-    "tokens": 223193145,
-    "cost": 97.14
+    "tokens": 224788023,
+    "cost": 101.15
   },
   "totals": {
-    "requests": 287,
-    "tokens": 1005480404,
-    "cost": 450.54,
+    "requests": 288,
+    "tokens": 1018437168,
+    "cost": 457.28,
     "buildCost": 212.15,
-    "reworkCost": 141.25,
-    "scaffoldingCost": 97.14,
-    "storyYield": 63,
-    "overallYield": 49,
+    "reworkCost": 143.98,
+    "scaffoldingCost": 101.15,
+    "storyYield": 62,
+    "overallYield": 48,
     "pendingRequests": 21,
     "pendingEstimate": 12.59,
     "pendingEstimated": 15
   },
   "byKind": {
     "input": 0.18,
-    "output": 32.67,
-    "cache_read": 86.92,
-    "cache_write": 78.13
+    "output": 32.75,
+    "cache_read": 87.73,
+    "cache_write": 83.98
   },
   "mistakes": {
     "designRedo": {
@@ -779,8 +779,8 @@ export const costs = {
       "cost": 105.4,
       "share": 23,
       "median": 8.2,
-      "typical": 0.68,
-      "extra": 95.87
+      "typical": 0.7,
+      "extra": 95.61
     },
     "mergedTooSoon": {
       "requests": 1,
