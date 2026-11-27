@@ -232,6 +232,10 @@
     "MVP1-E8-16": {
       "product": 1.0,
       "why": "Cost work"
+    },
+    "MVP1-E8-18": {
+      "product": 1.0,
+      "why": "Cost and roadmap work"
     }
   },
   "prerequisiteDefaults": {

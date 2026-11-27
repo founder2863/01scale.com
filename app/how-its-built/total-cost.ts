@@ -14,13 +14,13 @@ export const totalCost = {
   },
   "productShare": 0.1,
   "soFar": {
-    "tokensSpent": 459.5,
-    "tokensPending": 21,
-    "stories": 42,
-    "productDays": 34.5,
-    "devDays": 209.0,
-    "humanCost": 243500,
-    "storyTokenCost": 180.63,
+    "tokensSpent": 466.93,
+    "tokensPending": 22,
+    "stories": 43,
+    "productDays": 35.25,
+    "devDays": 217.0,
+    "humanCost": 252250,
+    "storyTokenCost": 185.47,
     "built": [
       {
         "id": "MVP1-E0-10",
@@ -481,8 +481,19 @@ export const totalCost = {
         "productDays": 8.0,
         "devDays": 2.0,
         "cost": 10000,
-        "tokenCost": 8.46,
+        "tokenCost": 8.9,
         "basis": "roadmap v6"
+      },
+      {
+        "id": "MVP1-E8-16",
+        "title": "Token Costs: Product and Engineering, so far and projected",
+        "size": "M",
+        "issue": 256,
+        "productDays": 0.75,
+        "devDays": 8.0,
+        "cost": 8750,
+        "tokenCost": 4.4,
+        "basis": "engineering, size plus sprint product work"
       }
     ]
   },
@@ -2242,6 +2253,13 @@ export const totalCost = {
     },
     "notPlanned": [
       {
+        "id": "MVP1-E8-17",
+        "title": "Pre-requisite work as an epic with stories and a projection",
+        "size": "M",
+        "personDays": 8,
+        "issue": null
+      },
+      {
         "id": "AUTOREP-E1-01",
         "title": "Python app on AWS Lambda behind the gateway",
         "size": "M",
@@ -2382,6 +2400,6 @@ export const totalCost = {
         "issue": null
       }
     ],
-    "notPlannedDays": 110
+    "notPlannedDays": 118
   }
 } as const;

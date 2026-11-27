@@ -69,3 +69,20 @@
 | Phones | Not supported for this table: below 1280 pixels it shows "Open on a laptop or desktop to see this report." |
 
 **Options not chosen.** A sticky first column with sideways scrolling, or one card per epic, on phones (Nikhil: no phone support for this report); projecting build and rework from the measured rework share (show "—" instead).
+
+## 2026-11-27 · Stories in two phases, product then engineering (MVP1-E8-18)
+
+**Decided by:** Nikhil, answering eight questions after PR #257.
+
+A story starts as an empty shell. The product manager takes it to ready to develop (product phase, product token cost); engineers then build it (engineering phase, engineering token cost). Some stories are product only, some engineering only.
+
+| Question | Decision |
+|---|---|
+| Size | Two sizes per story, product and engineering, either can be none. Replaces the flat 10% product share and 25% joint share. |
+| Where ready to develop ends | Technical design (API spec, data model, schema, architecture, sequence diagrams) is in the product phase: design is done with PM and UX before development starts, and Nikhil is a technical platform PM who does it. Replaces the 75% / 25% rule. |
+| Token ledger | Each request is tagged with its phase when recorded; past requests are re-tagged from their summaries. |
+| Rework | Counts to the phase that does it, with the cause noted. |
+| Joint time | Inside the two sizes. |
+| Epic-level product work | Each epic gets a product-only story for its PRD and epic. |
+| Re-estimating | Claude Code proposes both sizes for every story in a CSV; Nikhil reviews; they go into a new roadmap version, v7. |
+| PR #257 | Merged as it is; the numbers move to the phase model in MVP1-E8-18. |

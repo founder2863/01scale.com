@@ -58,7 +58,8 @@
     "MVP1-E8-13": "MVP1-E8-13 · Roadmap v5: a second product manager, and the cost of each plan",
     "MVP1-E8-14": "MVP1-E8-14 · Roadmap v6: product work two sprints ahead, environments early, and tokens in the cost",
     "MVP1-E8-15": "MVP1-E8-15 · Total Cost from the latest roadmap: so far and projected",
-    "MVP1-E8-16": "MVP1-E8-16 · Token Costs by Product and Engineering, so far and projected"
+    "MVP1-E8-16": "MVP1-E8-16 · Token Costs by Product and Engineering, so far and projected",
+    "MVP1-E8-18": "MVP1-E8-18 · Stories in two phases: product, then engineering (story and decisions)"
   },
   "sessions": [
     {
@@ -231,7 +232,7 @@
         "cache_write": 0.0
       },
       "overhead_usd": 0,
-      "tool_total_usd": 4.3961,
+      "tool_total_usd": 7.4264,
       "rates_usd_per_million": {},
       "id": "bca467e6-6c9f-5e93-b12b-7c5143f68008",
       "splits": []
@@ -4324,7 +4325,7 @@
       ],
       "tokens": 10946977,
       "output_tokens": 49494,
-      "cost_usd": 4.3961
+      "cost_usd": 4.7384
     },
     {
       "session": "bca467e6",
@@ -4338,8 +4339,7 @@
       ],
       "tokens": 448903,
       "output_tokens": 3435,
-      "cost_usd": null,
-      "estimated_usd": 0.1772
+      "cost_usd": 0.1927
     },
     {
       "session": "bca467e6",
@@ -4353,8 +4353,7 @@
       ],
       "tokens": 454866,
       "output_tokens": 2184,
-      "cost_usd": null,
-      "estimated_usd": 0.1444
+      "cost_usd": 0.1439
     },
     {
       "session": "bca467e6",
@@ -4366,10 +4365,66 @@
       "models": [
         "claude-opus-5-5"
       ],
-      "tokens": 3918260,
-      "output_tokens": 19878,
+      "tokens": 5755372,
+      "output_tokens": 25469,
+      "cost_usd": 1.985
+    },
+    {
+      "session": "bca467e6",
+      "n": 5,
+      "ts": "2026-11-27T20:53:25.688Z",
+      "area": "MVP1-E8-18",
+      "kind": "build",
+      "summary": "Questions on PR #257: whether the home page and app Overview work has stories (it does, in E0)",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 532300,
+      "output_tokens": 856,
+      "cost_usd": 0.1095
+    },
+    {
+      "session": "bca467e6",
+      "n": 6,
+      "ts": "2026-11-27T20:55:20.221Z",
+      "area": "MVP1-E8-18",
+      "kind": "build",
+      "summary": "Questions: how story sizes split product and engineering work in the roadmap; recommend one rule",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 537545,
+      "output_tokens": 1992,
+      "cost_usd": 0.1594
+    },
+    {
+      "session": "bca467e6",
+      "n": 7,
+      "ts": "2026-11-27T21:03:18.781Z",
+      "area": "MVP1-E8-18",
+      "kind": "build",
+      "summary": "Questions on the real-world process: product phase then engineering phase; eight questions for Nikhil",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 272253,
+      "output_tokens": 1945,
+      "cost_usd": 0.0974
+    },
+    {
+      "session": "bca467e6",
+      "n": 8,
+      "ts": "2026-11-27T21:26:52.681Z",
+      "area": "MVP1-E8-18",
+      "kind": "build",
+      "summary": "Close MVP1-E8-16 (#256) with its costs; record Nikhil's answers; write story MVP1-E8-18 and issue #259",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "tokens": 2212045,
+      "output_tokens": 6594,
       "cost_usd": null,
-      "estimated_usd": 1.3981
+      "estimated_usd": 0.6347
     }
   ]
 }

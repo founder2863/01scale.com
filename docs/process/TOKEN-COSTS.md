@@ -2,7 +2,7 @@
 
 What it costs to build 01scale with Claude Code, per story. Generated from `docs/process/token-ledger.json` by `npm run costs`; do not edit by hand.
 
-Updated 2026-11-27. 294 requests across 10 session(s). Total **$467.52** for 1,046.8 million tokens.
+Updated 2026-11-27. 298 requests across 10 session(s). Total **$470.55** for 1,052.2 million tokens.
 
 ## Per story
 
@@ -65,8 +65,9 @@ Updated 2026-11-27. 294 requests across 10 session(s). Total **$467.52** for 1,0
 | MVP1-E8-13 · Roadmap v5: a second product manager, and the cost of each plan | 1 | 13.40M | $3.72 | $0.00 | $3.72 | 100% |
 | MVP1-E8-14 · Roadmap v6: product work two sprints ahead, environments early, and tokens in the cost | 1 | 13.82M | $3.70 | $0.00 | $3.70 | 100% |
 | MVP1-E8-15 · Total Cost from the latest roadmap: so far and projected | 3 | 35.44M | $3.41 | $5.49 | $8.90 | 37% |
-| MVP1-E8-16 · Token Costs by Product and Engineering, so far and projected | 4 | 15.77M | $4.40 | $0.00 | $4.40 (part pending) | 69% |
-| **Total** | **180** | **820.33M** | **$216.54** | **$146.75** | **$363.29** (part pending) | **62%** |
+| MVP1-E8-16 · Token Costs by Product and Engineering, so far and projected | 4 | 17.61M | $4.74 | $2.32 | $7.06 | 62% |
+| MVP1-E8-18 · Stories in two phases: product, then engineering (story and decisions) | 4 | 3.55M | $0.37 | $0.00 | $0.37 (part pending) | 100% |
+| **Total** | **184** | **825.72M** | **$217.25** | **$149.07** | **$366.32** (part pending) | **62%** |
 
 ## Scaffolding (not tied to a story)
 
@@ -94,7 +95,7 @@ Each ledger row counts toward Product, Engineering or both (`docs/process/token-
 | E5 · JSON review, metadata and CSV | 2.0M | $0.71 | $0.00 | $0.71 | — | 0.7M | $0.24 | $0.00 | $0.24 | $66.21 | $0.95 | $66.21 | $67.16 |
 | E6 · Payment | 7.3M | $1.13 | $6.01 | $7.14 | — | 2.4M | $0.38 | $2.00 | $2.38 | $82.77 | $9.52 | $82.77 | $92.29 |
 | E7 · Success, download and email | 11.0M | $0.65 | $1.46 | $2.11 | — | 3.7M | $0.22 | $0.49 | $0.70 | $62.91 | $2.81 | $62.91 | $65.72 |
-| E8 · Total projected cost: a human team versus Claude Code | 180.3M | $47.78 | $16.26 | $64.05 | $76.16 | — | — | — | — | — | $64.05 | $76.16 | $140.21 |
+| E8 · Total projected cost: a human team versus Claude Code | 185.7M | $48.49 | $18.59 | $67.08 | $76.16 | — | — | — | — | — | $67.08 | $76.16 | $143.24 |
 | E9 · Go-live and operations | — | — | — | — | $28.69 | — | — | — | — | $168.87 | — | $197.56 | $197.56 |
 | E10 · CRO function enablement: sales | — | — | — | — | $47.46 | — | — | — | — | — | — | $47.46 | $47.46 |
 | E11 · CMO function enablement: marketing | — | — | — | — | $35.32 | — | — | — | — | — | — | $35.32 | $35.32 |
@@ -105,14 +106,14 @@ Each ledger row counts toward Product, Engineering or both (`docs/process/token-
 | E16 · General Counsel function enablement: legal | — | — | — | — | $8.83 | — | — | — | — | — | — | $8.83 | $8.83 |
 | AutoRep V1 | 7.6M | $1.60 | $0.92 | $2.52 | — | 8.6M | $1.75 | $0.00 | $1.75 | — | $4.27 | — | $4.27 |
 | MVP2 stories | 5.6M | $7.99 | $0.00 | $7.99 | — | — | — | — | — | — | $7.99 | — | $7.99 |
-| Pre-requisites | 130.4M | — | — | $64.84 | — | 96.1M | — | — | $39.39 | — | $104.23 | — | $104.23 |
-| **Total** | 603.2M | $128.48 | $81.30 | $274.64 | $408.37 | 443.6M | $88.06 | $65.46 | $192.88 | $1,314.47 | $467.52 | $1,722.84 | $2,190.36 |
+| Pre-requisites | 130.4M | — | — | $64.85 | — | 96.1M | — | — | $39.38 | — | $104.23 | — | $104.23 |
+| **Total** | 608.6M | $129.19 | $83.62 | $277.68 | $408.37 | 443.6M | $88.06 | $65.46 | $192.87 | $1,314.47 | $470.55 | $1,722.84 | $2,193.39 |
 
 ## Totals
 
-- Build $216.54, rework $146.75, scaffolding $104.23.
+- Build $217.25, rework $149.07, scaffolding $104.23.
 - Token yield across stories (build ÷ build + rework): 62%.
-- 18 pending request(s) were never priced by the tool; estimated at about $14.31 from their measured tokens at list prices (an upper bound), not included in the totals above.
+- 16 pending request(s) were never priced by the tool; estimated at about $13.23 from their measured tokens at list prices (an upper bound), not included in the totals above.
 - Share of all tokens that went into kept story work: 48%.
 
 ## Definitions
